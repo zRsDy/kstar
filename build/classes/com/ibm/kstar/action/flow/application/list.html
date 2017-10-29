@@ -1,0 +1,57 @@
+<@pui.body> 
+		<div class="col-xs-12">
+			<table style="width: 100%" >
+				<tr>
+					<td valign="top">
+						<@form.table id="t1"
+						class="col-xs-12"
+						shrinkToFit = 'true'
+						title="${lovGroup.name}"
+						url = "${ctx}/flow/application/page.html?groupId=${lovGroup.id}"
+						addURL="'${ctx}/flow/application/add.html?groupId=${lovGroup.id}'"
+						editURL="'${ctx}/flow/application/edit.html'"
+						deleteURL="'${ctx}/flow/application/delete.html'"
+						rowNum = "20"
+						colModel = "[
+						  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:true,align:'center' }, 
+						  { name : 'code', label : '${i18n.get('编码')}', width : 90 ,sortable:true}, 
+						  { name : 'name', label : '${i18n.get('名称')}', width : 150 ,sortable:true },
+						  { name : 'memo', label : '${i18n.get('备注')}', width : 150 ,sortable:true }
+						  ]"
+						buttons = "[
+					  		{
+					  			id:'config',
+					  			label : '${i18n.get('设计流程')}',
+					  			icon : 'icon-trash',
+					  			own : true,
+					  			handler : function(e,rowData){
+									if(!selected_t1){
+										alert('${i18n.get('没有选中任何数据!')}');
+										return;
+									}
+									window.open ('${ctx}/flow/design.html?applicationCode='+selected_t1.code) ;
+					  			}
+					  		}
+					  	]"
+						>
+						
+						<div class="col-xs-12">
+							<input type="hidden" id="parentId" name="parentId" />
+							<div class="form-group col-xs-3">
+								<input type="text" id="searchKey" name="searchKey" placeholder='查询关键字' />
+							</div>	
+							<div class="form-group col-xs-2">
+								<button type="submit" class="btn btn-info" > 
+									<i class="icon-search bigger-110"></i>
+									${i18n.get('查询')}
+								</button>
+							</div>
+						</div>
+						
+						</@form.table>
+					</td>
+				</tr>
+			</table>	
+		</div>
+		
+</@pui.body>

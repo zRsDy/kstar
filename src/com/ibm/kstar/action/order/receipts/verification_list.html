@@ -1,0 +1,75 @@
+<@pui.body>
+<script type="text/javascript">
+
+	
+</script>
+	<#if permission["P06ReceiptVerT2DetailRefresh"]?? >
+		<#assign refreshTab= "true"   />
+	</#if>
+
+    <#--系统管控到款核销了不允许销售取消到款核核销关系。只能允许商务取消！-->
+	<#if permission["P06ReceiptVerT2DetailDelete"]??>
+		<#assign deleteRow= "true"   />
+	</#if>
+	
+	<div class="col-xs-12" >
+		<@form.table id="verificationListForm" 
+			shrinkToFit = 'true'
+			checkbox="true"
+			class="col-xs-12" 
+			title="${i18n.get('核销明细')}" 
+			url = "${ctx}/receipts/getVerificationList.html"
+			rowNum = "10" 
+			search = "false"
+			colModel = "[ 
+				{name:'id',label:'',hidden:true,width:100,sortable:false,align:'center' }, 
+				{name:'contractId',label:'${i18n.get('合同ID')}',hidden:true,width:100,sortable:false,align:'center' },  
+				{name:'contractCode',label:'${i18n.get('合同编号')}',hidden:false,width:150,sortable:false,align:'center' },  
+				{name:'receiptsPlan',label:'${i18n.get('合同收款计划行')}',hidden:true,width:100,sortable:false,align:'center' }, 
+				{name:'receiptsPlanLable',label:'${i18n.get('合同收款计划行')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'receiptsStage',label:'${i18n.get('收款阶段')}',hidden:true,width:100,sortable:false,align:'center' }, 
+				{name:'receiptsStageLable',label:'${i18n.get('收款阶段')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'deliveryId',label:'${i18n.get('出货申请ID')}',hidden:true,width:100,sortable:false,align:'center',hidden:true }, 
+				{name:'deliveryCode',label:'${i18n.get('出货申请编码')}',hidden:false,width:150,sortable:false,align:'center' }, 
+				{name:'planAmount',label:'${i18n.get('计划金额')}',hidden:false,width:100,sortable:false,align:'center'},
+				{name:'amount',label:'${i18n.get('核销金额')}',hidden:false,width:100,sortable:false,align:'center'}, 
+				{name:'receiptsType',label:'${i18n.get('收款分类')}',hidden:true,width:100,sortable:false,align:'center' },
+				{name:'receiptsTypeLable',label:'${i18n.get('收款分类')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'bizDept',label:'${i18n.get('业务部门')}',hidden:true,width:150,sortable:false,align:'center' }, 
+				{name:'bizDeptLable',label:'${i18n.get('业务部门')}',hidden:false,width:150,sortable:false,align:'center' }, 
+				{name:'salesmanId',label:'${i18n.get('销售人员ID')}',hidden:true,width:100,sortable:false,align:'center' }, 
+				{name:'salesmanName',label:'${i18n.get('销售人员')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'remarks',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:false,align:'center'},
+				{name:'explain',label:'${i18n.get('说明')}',hidden:false,width:150,sortable:false,align:'center'}
+			]" 
+			buttons = "[
+				{
+					id:'refreshTab',
+					label : '${i18n.get('刷新')}',
+					icon : 'icon-refresh',
+					own : ${refreshTab!'false'},
+					handler : function(e,rowData){
+						reload_verificationListForm();
+					}
+				},{
+					id:'deleteRow',
+					label : '${i18n.get('删除')}',
+					icon : 'icon-remove',
+					own : ${deleteRow!'false'},
+					handler : function(e,rowData){
+						deleteVerification(e,${isBusiness?string('true','false')});
+					}
+				}
+			]" 
+			
+			onComplete = "function() { 
+				$('#verificationListForm').setGridWidth($(window).width()-30);
+			}"
+			
+			> 
+			<input type="hidden" id="receId" name="receId" />
+			<input type="hidden" id="paymentCustId" name="paymentCustId" />
+			<input type="hidden" id="correctCustId" name="correctCustId" />
+		</@form.table> 
+	</div>
+</@pui.body>

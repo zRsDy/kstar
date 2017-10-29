@@ -1,0 +1,11 @@
+<@pui.body> 
+	<script type="text/javascript">
+		$(window).resize(function(){  
+		 	$("#authOutListForm").setGridWidth($(window).width());
+			$("#authInListForm").setGridWidth($(window).width());
+		});
+	</script>
+	<div class="col-xs-12">
+		<@plug.tabs tabMain=tabMain></@plug.tabs>
+	</div>
+</@pui.body>

@@ -1,0 +1,493 @@
+<@pui.body>
+<@form.panel title="${i18n.get('商机变更')}">
+<@form.form id="t1"
+success="function(){
+parent.currentParent.reload_quot1();
+}"
+class="form-horizontal">
+
+    <div style="height: 15px;">
+        <div style="padding-right: 20px; float: right;padding-top: 3px;">
+
+        <#-- 商机列表-提交变更-保存并提交 --><#-- /change/saveUpdate.html -->
+            <#if permission["P03BizOppoSubmitChange"]??>
+                <button
+                    <#if boc.auditStatus?default('') != 'Completed' && boc.auditStatus?default('') != 'Pending' && boc.auditStatus?default('') != 'Rejected' >  disabled="disabled" </#if>
+                        class="btn btn-info" type="button" onclick="saveUpdate();">
+                    <i class="icon-ok bigger-110"></i>
+                    	${i18n.get('保存并提交')}
+                </button>
+            </#if>
+            <!--<button-->
+                    <!--class="btn btn-info" type="button" onclick="startChangeProcess();">-->
+                <!--<i class="icon-ok bigger-110"></i>-->
+                <!--提交-->
+            <!--</button>-->
+        </div>
+    </div>
+    </br>
+    </br>
+
+    <p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('商机基本信息')}</p>
+
+    <div class="main" id="main" style="padding-left: 1px; border-top: 2px solid #e9e9e9 ;">
+        <input type="hidden" id="pid" name="pid" value="${(entity.id)!}"/>
+        <input type="hidden" id="conflictStatus" name="conflictStatus" value="00" />
+        <div class="biz_basic_info" id="top02">
+            <table border="0" cellpadding="0" cellspacing="0">
+                <tr align="left">
+                    <td align="right" width="5%">
+        ${i18n.get('报备单位')}
+                    </td>
+                    <td align="left" width="20%">
+                        <@form.input name="enterpriseName" type="text"
+                        id="enterpriseName" value="${(entity.enterpriseName)!}"
+                        readonly ="readonly"
+                        />
+                    </td>
+                    <td align="right" width="5%">
+        ${i18n.get('商机编号')}
+                    </td>
+                    <td align="left" width="20%">
+                        <@form.input name="number" type="text"
+                        id="number" value="${(entity.number)!}"
+                        readonly ="readonly"
+                        />
+                    </td>
+                    <td align="right" width="5%">
+        ${i18n.get('变更状态')}
+                    </td>
+                    <td align="left" width="20%">
+                        <@form.select
+                        style="width: 163px;"
+                        id="auditStatus" name="auditStatus"
+                        code="PROCESS_STATUS"
+                        idKey="code"
+                        value ="${(boc.auditStatus)!}"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+        ${i18n.get('销售员')}
+                    </td>
+                    <td align="left">
+                        <@form.input name="saler" type="text"
+                        id="saler" value="${(entity.salerName)!}"
+                        readonly ="readonly"
+                        />
+                    </td>
+                    <td align="right">
+        ${i18n.get('报备人')}
+                    </td>
+                    <td align="left">
+                        <@form.input name="createdByIdName" type="text"
+                        id="createdByIdName" value="${(entity.createdByIdName)!}"
+                        readonly ="readonly"
+                        />
+                    </td>
+                    <td align="right">
+                    </td>
+                    <td align="left">
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+          ${i18n.get('销售员电话')}
+                    </td>
+                    <td align="left">
+                        <@form.input name="salerPhone" type="text"
+                        id="salerPhone" value="${(entity.salerPhone)!}"
+                        readonly ="readonly"
+                        />
+                    </td>
+                    <td align="right">
+          ${i18n.get('报备日期')}
+                    </td>
+                    <td align="left">
+                        <@form.date name="createdAt"
+                        id="createdAt" value="${(entity.createdAt?date)!}"
+                        />
+                    </td>
+                    <td align="right">
+                    </td>
+                    <td align="left">
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <input type="hidden" id="priceTableId" name="priceTableId" value="${(priceTableId)!''}">
+        <div class="biz_basic_info" id="top02">
+            <p style="width: 100%; padding-top: 0px; margin-top: 15px; background-color: #E9E9E9; height: 25px">${i18n.get('变更基本信息')}</p>
+            <div class="m-table">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <input id="id" name="id" type="hidden" value="${(boc.id)!}" >
+                        <input id="sourceId" name="sourceId" type="hidden" value="${(entity.id)!}" class="dataput" >
+
+                        <thead>
+                        <tr>
+                            <th width="10%" bgcolor="#29629a" style="color:#fff">${i18n.get('序号')}</th>
+                            <th width="20%" bgcolor="#29629a" style="color:#fff">${i18n.get('商机属性')}</th>
+                            <th width="20%" bgcolor="#29629a" style="color:#fff">${i18n.get('现状')}</th>
+                            <th width="50%" bgcolor="#29629a" style="color:#fff">${i18n.get('最新（更新为）')}</th>
+                        </tr>
+                        <tr>
+                            <th width="10%">1</th>
+                            <th width="20%">${i18n.get('商机名称')}</th>
+                            <th width="20%" <#if (boc.opportunityName)! != (boc.opportunityName2)! > bgcolor="#ffb6c1" </#if> >${(boc.opportunityName)!}</th>
+                            <input id="opportunityName" name="opportunityName" class="dataput" type="hidden" value="${(boc.opportunityName)!}" >
+                            <th width="50%" <#if (boc.opportunityName)! != (boc.opportunityName2)! > bgcolor="#ffb6c1" </#if> >
+                            <@form.input name="opportunityName2" type="text" class="dataput"
+                            style="float:left; width:99%; border:1px solid #006666;"
+                            id="opportunityName2" value="${(boc.opportunityName2)!}"
+                            />
+                            </th>
+                        </tr>
+                        <tr>
+
+                            <th width="10%">2</th>
+                            <th width="20%">${i18n.get('商机所在地')}</th>
+                            <th width="20%" <#if (boc.bizOppAddressName)! != (boc.bizOppAddressName2)! > bgcolor="#ffb6c1" </#if> >${(boc.bizOppAddressName)!}</th>
+                            <input id="bizOppAddressName" name="bizOppAddressName" class="dataput" type="hidden" value="${(boc.bizOppAddressName)!}" >
+                            <th width="50%" <#if (boc.bizOppAddressName)! != (boc.bizOppAddressName2)! > bgcolor="#ffb6c1" </#if> >
+                            <input id="bizOppAddressName2" name="bizOppAddressName2" class="dataput" type="hidden" value="${(boc.bizOppAddressName2)!}" >
+                            <@form.select
+                            code="ADDRESSREGION"
+                            class="dataput"
+                            required="${i18n.get('请选择')}"
+                            level="2"
+                            childId="layer32"
+                            style="width:110px;"
+                            id="layer22" name="layer22"
+                            placeholder="${i18n.get('省')}"
+                            tip=""
+                            value="${(boc.layer22)!}"
+                            onChange="function(){
+                            reload_layer32();
+                            reload_layer42();
+                            $('#bizOppAddressName2').val($('#layer22 option:selected').html()+'/');
+                            }"
+                            onLoadSuccess="function(){
+
+                            reload_layer32();
+                            reload_layer42();
+                            }"
+                            />
+
+                            <@form.select
+                            code="ADDRESSREGION"
+                            level="3"
+                            required="${i18n.get('请选择')}"
+                            class="dataput"
+                            style="width:110px;"
+                            parentId="layer22"
+                            id="layer32" name="layer32"
+                            placeholder="${i18n.get('市')}"
+                            tip=""
+                            value="${(boc.layer32)!}"
+                            onChange="function(){
+                            reload_layer42();
+                            $('#bizOppAddressName2').val($('#layer22 option:selected').html()+'/' + $('#layer32 option:selected').html()+'/');
+                            }"
+                            onLoadSuccess="function(){
+
+                            reload_layer42();
+                            }"
+                            />
+
+                            <@form.select
+                            code="ADDRESSREGION"
+                            level="4"
+                            class="dataput"
+                            style="width:110px;"
+                            parentId="layer32"
+                            required="${i18n.get('请选择')}"
+                            id="layer42" name="layer42"
+                            placeholder="${i18n.get('区/县')}"
+                            tip=""
+                            value="${(boc.layer42)!}"
+                            onChange="function(){
+                            $('#bizOppAddressName2').val($('#layer22 option:selected').html()+'/' + $('#layer32 option:selected').html()+'/' + $('#layer42 option:selected').html());
+                            }"
+                            />
+
+                            </th>
+                        </tr>
+                        <tr>
+                            <th width="10%">3</th>
+                            <th width="20%">${i18n.get('详细地址')}</th>
+                            <th width="20%" <#if (boc.address)! != (boc.address2)! > bgcolor="#ffb6c1" </#if> >${(boc.address)!}</th>
+                            <input id="address" name="address" class="dataput" type="hidden" value="${(boc.address)!}" >
+                            <th width="50%" <#if (boc.address)! != (boc.address2)! > bgcolor="#ffb6c1" </#if> >
+                            <@form.input name="address2" type="text" class="dataput"
+                            style="float:left; width:99%; border:1px solid #006666;"
+                            id="address2" value="${(boc.address2)!}"
+                            />
+                            </th>
+                        </tr>
+                        <#if userType == "A">
+                        <tr>
+                        	<th width="10%">4</th>
+                            <th width="20%">${i18n.get('终端用户')}</th>
+                            <th width="20%" <#if (boc.clientId)! != (boc.clientId2)! > bgcolor="#ffb6c1" </#if> >${(boc.clientName)!}</th>
+                            <input id="clientName" name="clientName" class="dataput" type="hidden" value="${(boc.clientName)!}" >
+                            <th width="50%" <#if (boc.clientId)! != (boc.clientId2)! > bgcolor="#ffb6c1" </#if> >
+                            
+                            <@form.autocomplete  id="clientId2" name="clientId2"
+                            idKey='id'
+                            class="dataput"
+                            style="float:left; width:99%; border:1px solid #006666;"
+                            required="${i18n.get('请选择客户')}"
+                            formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+                            url="function(){ return '${ctx}/lovcustom/autocomplete_custom.html'; }"
+                            value="{id: '${(entity.clientId)!}',customFullName:'${(entity.clientName)!}'}"
+
+                            onSelect="function(data){
+                            $('#clientName2').val(data.customFullName);
+                            }"
+                            />
+                         	<input id="clientName2" class="dataput" name="clientName2" type ="hidden" value="${(boc.clientName2)!}" />
+                            </th>
+                        </tr>
+                        <#else>
+                        <tr>
+                        	<th width="10%">4</th>
+                            <th width="20%">${i18n.get('终端用户')}</th>
+                            <th width="20%" <#if (boc.clientId)! != (boc.clientId2)! > bgcolor="#ffb6c1" </#if> >${(boc.clientName)!}</th>
+                            <input id="clientName" name="clientName" class="dataput" type="hidden" value="${(boc.clientName)!}" >
+                            <th width="50%" <#if (boc.clientId)! != (boc.clientId2)! > bgcolor="#ffb6c1" </#if> >
+                            <@form.input name="clientName2" type="text" class="dataput"
+                            style="float:left; width:99%; border:1px solid #006666;"
+                            id="clientName2" value="${(boc.clientName2)!}"
+                            />
+                            </th>
+                        </tr>
+                        </#if>
+                        <tr>
+                            <th width="10%">5</th>
+                            <th width="20%">${i18n.get('招标单位')}</th>
+                            <th width="20%" <#if (boc.bidUnit)! != (boc.bidUnit2)! > bgcolor="#ffb6c1" </#if> >${(boc.bidUnit)!}</th>
+                            <input id="bidUnit" name="bidUnit" class="dataput" type="hidden" value="${(boc.bidUnit)!}" >
+                            <th width="50%" <#if (boc.bidUnit)! != (boc.bidUnit2)! > bgcolor="#ffb6c1" </#if> >
+                            <@form.input class="dataput" name="bidUnit2" type="text" style="float:left; width:99%; border:1px solid #006666;"
+                            id="bidUnit2" value="${(boc.bidUnit2)!}"
+                            />
+                            </th>
+                        </tr>
+                        <tr>
+                            <th width="10%">6</th>
+                            <th width="20%">${i18n.get('商机阶段')}</th>
+                            <th width="20%" <#if (boc.opportunityStep)! != (boc.opportunityStep2)! > bgcolor="#ffb6c1" </#if> >${(boc.opportunityStepName)!}</th>
+                            <input id="opportunityStep" name="opportunityStep" class="dataput" type="hidden" value="${(boc.opportunityStep)!}" >
+                            <th width="50%" <#if (boc.opportunityStep)! != (boc.opportunityStep2)! > bgcolor="#ffb6c1" </#if> >
+                            <@form.select
+                            id="opportunityStep2" name="opportunityStep2"
+                            code="SALES_METHODS"
+                            required="${i18n.get('不能为空')}"
+                            level="2"
+                            class="dataput"
+                            value ="${(boc.opportunityStep2)!}"
+                            style="float:left; width:99%; border:1px solid #006666;"
+                            />
+                            </th>
+                        </tr>
+                        <tr>
+                            <th width="10%">7</th>
+                            <th width="20%">${i18n.get('招标号')}</th>
+                            <th width="20%" <#if (boc.bidNo)! != (boc.bidNo2)! > bgcolor="#ffb6c1" </#if> >${(boc.bidNo)!}</th>
+                            <input id="bidNo" name="bidNo" class="dataput" type="hidden" value="${(boc.bidNo)!}" >
+                            <th width="50%" <#if (boc.bidNo)! != (boc.bidNo2)! > bgcolor="#ffb6c1" </#if> >
+                            <@form.input class="dataput" name="bidNo2" type="text" style="float:left; width:99%; border:1px solid #006666;"
+                            id="bidNo2" value="${(boc.bidNo2)!}"
+                            />
+                            </th>
+                        </tr>
+                        <tr>
+                            <th width="10%">8</th>
+                            <th width="20%">${i18n.get('预计成交时间')}</th>
+                            <th width="20%" <#if (((boc.planFinDate?string("yyyy-MM-dd"))!'无数据') != ((boc.planFinDate2?string("yyyy-MM-dd"))!'无数据')) > bgcolor="#ffb6c1" </#if> >${(boc.planFinDate?date)!}</th>
+                            <input id="planFinDate" name="planFinDate" class="dataput" type="hidden" value="${(boc.planFinDate?date)!}" >
+                            <th width="50%" <#if (((boc.planFinDate?string("yyyy-MM-dd"))!'无数据') != ((boc.planFinDate2?string("yyyy-MM-dd"))!'无数据')) > bgcolor="#ffb6c1" </#if> >
+                            <@form.date name="planFinDate2"
+                            id="planFinDate2" value="${(boc.planFinDate2?date)!}" class="dataput"
+                            style="float:left; width:99%; border:1px solid #006666;"
+                            />
+                            </th>
+                        </tr>
+
+                        <tr>
+                            <th width="10%">9</th>
+                            <th width="20%">${i18n.get('项目概况及推动说明')}</th>
+                            <th width="20%" <#if (boc.projectProgress)! != (boc.projectProgress2)! > bgcolor="#ffb6c1" </#if> >${(boc.projectProgress)!}</th>
+                            <input id="projectProgress" name="projectProgress" class="dataput" type="hidden" value="${(boc.projectProgress)!}" >
+                            <th width="50%" <#if (boc.projectProgress)! != (boc.projectProgress2)! > bgcolor="#ffb6c1" </#if> >
+                            <@form.input name="projectProgress2" type="text" style="float:left; width:99%; border:1px solid #006666;" class="dataput"
+                            id="projectProgress2" value="${(boc.projectProgress2)!}" />
+                            </th>
+                        </tr>
+                        <!--  
+                        <tr>
+                            <th width="10%">10</th>
+                            <th width="20%">${i18n.get('竞争品牌')}</th>
+                            <th width="20%" <#if (boc.competitiveBrands)! != (boc.competitiveBrands2)! > bgcolor="#ffb6c1" </#if> >${(boc.competitiveBrands)!}</th>
+                            <input id="competitiveBrands" name="competitiveBrands" class="dataput" type="hidden" value="${(boc.competitiveBrands)!}" >
+                            <th width="50%" <#if (boc.competitiveBrands)! != (boc.competitiveBrands2)! > bgcolor="#ffb6c1" </#if> >
+                            <@form.input name="competitiveBrands2" type="text" style="float:left; width:99%; border:1px solid #006666;" class="dataput"
+                            id="competitiveBrands2" value="${(boc.competitiveBrands2)!}" />
+                            </th>
+                        </tr>  -->
+
+
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+</div>
+
+<div id="info1" style="padding-top: 20px;" class="row">
+		<div class="col-xs-12">
+			<input type="hidden" id="selectedId1"  />
+			<@plug.tabs tabMain=tabMainInfo1>
+		</@plug.tabs>
+	</div>
+</div>
+
+<div id="info2" style="padding-top: 20px;" class="row">
+		<div class="col-xs-12">
+			<input type="hidden" id="selectedId2"  />
+			<@plug.tabs tabMain=tabMainInfo2>
+		</@plug.tabs>
+	</div>
+</div>
+
+
+
+<script>
+    
+    function getDataPuts() {
+        var str = "&";
+        var arr = $(".dataput");
+        arr.each(function (index, obj) {
+            if (obj.value) {
+                str = str + obj.name + "=" + obj.value + "&";
+            }
+        });
+        return str;
+    }
+
+    function saveUpdate() {
+    	
+    	var flag = true;
+    	
+    	var clientName = $("#clientName2").val();
+    	var opportunityName2 = $("#opportunityName2").val();
+    	var layer22 = $("#layer22").val();
+    	var layer32 = $("#layer32").val();
+    	var address2 = $("#address2").val();
+    	var projectProgress2 = $("#projectProgress2").val();
+    	var opportunityStep2 = $("#opportunityStep2").val();
+    	
+    	if(opportunityStep2 == ''){
+    		alert('${i18n.get("商机阶段不能为空！")}');
+    		flag = false;
+    	}
+    	
+    	if(clientName == '' || clientName == undefined ){
+    		alert('${i18n.get("终端用户不能为空！")}');
+    		flag = false;
+    	}
+    	
+    	if(opportunityName2 == ''){
+    		alert('${i18n.get("商机名称不能为空！")}');
+    		flag = false;
+    	}
+    	
+    	if(layer22 == '' || layer32 == ''){
+    		alert('${i18n.get("商机所在地省、市地址不能为空！")}');
+    		flag = false;
+    	}
+    	
+    	if(address2 == ''){
+    		alert('${i18n.get("详细地址不能为空！")}');
+    		flag = false;
+    	}
+    	
+    	if(projectProgress2 == ''){
+    		alert('${i18n.get("项目概况及推动说明不能为空！")}');
+    		flag = false;
+    	}
+    	
+    	var form = $("#form_t1").serializeArray();
+    	
+    	var data = {};
+    	
+    	$.each(form, function(i, elt) {
+    		data[form[i].name] = form[i].value;
+    	});
+    	
+    	data.integrators = $("#integrator").jqGrid("getRowData");
+    	data.details = $("#t10").jqGrid("getRowData");
+    	
+    	data = JSON.stringify(data);
+    	
+        //var bocId = "${boc.id?default('')}";
+        
+        if(flag){
+	        $.ajax({
+	            type: "post",
+	            url: "${ctx}/change/saveUpdate.html",
+	            data: data,
+	            dataType: 'json',
+	            contentType:"application/json;charset=utf-8",
+	            success: function (msg) {
+	            	alert('${i18n.get('提交变更成功！')}'); 
+	                //parent.currentParent2.reload_t1();
+	                $("button").attr("disabled","disabled");
+	                api.close();
+	            },
+	            error: function (e) {
+	//                var msg = eval("(" + e.responseText + ")");
+	                if (e) {
+	                    alert(e);
+	                } else {
+	                	alert('${i18n.get('操作失败，请联系管理员')}'); 
+	                }
+	            }
+	        });
+        }
+    }
+    
+    function startChangeProcess() {
+        var bocId = "${boc.id?default('')}";
+        if ('' === bocId) {
+            alert('${i18n.get('数据未保存，请先保存再提交。')}'); 
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url: "${ctx}/change/startChangeProcess.html",
+            async: true,
+            data: "id=" + bocId +"&number=${(entity.number)!}",
+            dataType: 'json',
+            success: function (msg) {
+            	alert('${i18n.get('流程申请提交成功！')}'); 
+                api.close();
+            },
+            error: function (e) {
+                var msg = eval("(" + e.responseText + ")");
+                if (msg) {
+                    alert(msg.message);
+                } else {
+                	alert('${i18n.get('操作失败，请联系管理员')}'); 
+                }
+            }
+        });
+    }
+
+
+</script>
+</@form.form>
+</@form.panel>
+</@pui.body>

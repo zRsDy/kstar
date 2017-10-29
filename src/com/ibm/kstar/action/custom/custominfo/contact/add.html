@@ -1,0 +1,183 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="t1" success="function(){ parent.currentParent.reload_contact(); }" class="form-horizontal" >
+		<input id="customId" name="customId" type="hidden"  value="${(customRelaContact.customId)!}">
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>${i18n.get('姓名')} : 
+			</label>
+			<@form.input
+			id="contactName"  
+			name="contactName" 
+			placeholder="" 
+			required="${i18n.get('不能为空！')}"
+			tip="" 
+			value="${(customRelaContact.contactName)!}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				${i18n.get('性别')} : 
+			</label>
+			
+			<@form.select style="width: 147px;"
+				id="contactSex" name="contactSex" 
+				code="SEX" 
+				value ="${(customRelaContact.contactSex)!}"
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				${i18n.get('年龄')} : 
+			</label>
+			<@form.input
+			id="age"  
+			name="age" 
+			placeholder="" 
+			tip="" 
+			value="${(customRelaContact.age)!}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				${i18n.get('部门')} : 
+			</label>
+			<@form.input
+			id="contactDept"  
+			name="contactDept" 
+			placeholder="" 
+			tip="" 
+			value="${(customRelaContact.contactDept)!}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>${i18n.get('职务')} : 
+			</label>
+			<@form.input
+			id="contactBusiness"  
+			name="contactBusiness" 
+			placeholder="" 
+			required="${i18n.get('不能为空！')}"
+			tip="" 
+			value="${(customRelaContact.contactBusiness)!}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				${i18n.get('主管领域')} : 
+			</label>
+			<@form.input
+			id="contactCompetent"  
+			name="contactCompetent" 
+			placeholder="" 
+			tip="" 
+			value="${(customRelaContact.contactCompetent)!}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>${i18n.get('角色 ')}: 
+			</label>
+			
+			<@form.select  style="width: 147px;"
+				id="contactRole" name="contactRole" 
+				code="CANTACTROLE" 
+				required="${i18n.get('不能为空！')}"
+				value ="${(customRelaContact.contactRole)!}"
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>${i18n.get('电话 ')}: 
+			</label>
+			<@form.input
+			id="contactTel"  
+			name="contactTel" 
+			placeholder="" 
+			required="${i18n.get('不能为空！')}"
+			tip="" 
+			value="${(customRelaContact.contactTel)!}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" >${i18n.get('传真')}  : </label>
+			<@form.input
+			id="contactFax"  
+			name="contactFax" 
+			placeholder="" 
+			tip="" 
+			value="${(customRelaContact.contactFax)!}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > E-mail : </label>
+			<@form.input
+			id="contactMail"  
+			name="contactMail" 
+			placeholder="" 
+			tip="" 
+			value="${(customRelaContact.contactMail)!}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > ${i18n.get('决策权重')} : </label>
+			<@form.input
+			id="weight"  
+			name="weight" 
+			placeholder="" 
+			tip="" 
+			value="${(customRelaContact.weight)!}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" >${i18n.get('利益诉求')}  : </label>
+			<@form.input
+			id="appeal"  
+			name="appeal" 
+			placeholder="" 
+			tip="" 
+			value="${(customRelaContact.appeal)!}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" >${i18n.get('兴趣爱好')}  : </label>
+			<@form.input
+			id="interest"  
+			name="interest" 
+			placeholder="" 
+			tip="" 
+			value="${(customRelaContact.interest)!}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" >${i18n.get('有效 ')} : </label>
+			
+			<@form.select  style="width: 147px;"
+				id="contactValid" name="contactValid" 
+				code="COMMONYN" 
+				required="${i18n.get('不能为空！')}"
+				value ="${(customRelaContact.contactValid)!}"
+			/>
+		</div>
+		
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+		<div class="clearfix form-actions">
+			<div class="col-md-offset-5 col-md-7">
+				<button class="btn btn-info submit" type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				&nbsp; &nbsp; &nbsp;
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+	</@form.form>
+	</@form.panel>
+</@pui.body>
+</#escape>

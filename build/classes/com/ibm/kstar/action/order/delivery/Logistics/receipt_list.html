@@ -1,0 +1,268 @@
+<@pui.body>
+<style type="text/css">
+	table {
+	border-collapse: collapse;
+	border-color: #ff0000;
+	}
+	
+	table td {
+		padding:1px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	select {
+		width: 180px;
+	}
+</style>
+	<#if permission["P06SignListEdit"]?? >
+		<#assign editURL= "'${ctx}/logistics/edit.html'"  />
+	</#if>
+
+	<@form.table id="logisticsReceiptsListForm" 
+		class="col-xs-12" 
+		title="${i18n.get('签收单')}" 
+		height="550"
+		url ="${ctx}/logistics/page.html" 
+		editURL = "${editURL!}"
+		rowNum = "20"
+		colModel = "[
+			{name:'id',label:'id',hidden:true,width:150,sortable:false,align:'center'},
+			{name:'deliveryLinesNum',label:'${i18n.get('出货明细行号')}',hidden:true,width:150,sortable:false,align:'center'},
+			{name:'receiptCode',label:'${i18n.get('签收单编号')}',hidden:false,width:150,sortable:true,align:'center'},
+			{name:'createdByName',label:'${i18n.get('创建人')}',hidden:false,width:80,sortable:true,align:'center'},
+			{name:'singleCustName',label:'${i18n.get('客户名称')}',hidden:false,width:150,sortable:false,align:'center'},
+			{name:'sourceCode',label:'${i18n.get('公司合同号')}',hidden:false,width:160,sortable:true,align:'center'},
+			{name:'logisticsNo',label:'${i18n.get('物流单号')}',hidden:false,width:150,sortable:true,align:'center'},
+			{name:'logisticsContactsName',label:'${i18n.get('当地物流联系人')}',hidden:false,width:100,sortable:true,align:'center'}, 
+			{name:'logisticsContactsTel',label:'${i18n.get('联系人电话')}',hidden:false,width:120,sortable:true,align:'center'},
+			{name:'localLogisticsNo',label:'${i18n.get('当地物流编号')}',hidden:false,width:120,sortable:true,align:'center'},
+			{name:'estimateArrivalTime',label:'${i18n.get('预计到达时间')}',hidden:false,width:90,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+			{name:'actualArrivalTime',label:'${i18n.get('实际到达时间')}',hidden:false,width:90,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+			{name:'receAddress',label:'${i18n.get('收货地址')}',hidden:false,width:150,sortable:true,align:'center', editable : false},
+			{name:'consignee',label:'${i18n.get('收货人')}',hidden:false,width:80,sortable:true,align:'center', editable : false},
+			{name:'consigneeTel',label:'${i18n.get('收货人电话')}',hidden:false,width:120,sortable:true,align:'center',editable : false},
+			{name:'statusLable',label:'${i18n.get('状态')}',hidden:false,width:80,sortable:false,align:'center'},
+			{name:'remarks',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:false,align:'center',editable : false},
+			{name:'externalNo',label:'${i18n.get('出货单编号（外部）')}',hidden:false,width:120,sortable:true,align:'center'},
+			{name:'orderCode',label:'${i18n.get('订单编号')}',hidden:false,width:150,sortable:true,align:'center'},	
+			{name:'deliveryCode',label:'${i18n.get('出货申请编号')}',hidden:false,width:150,sortable:true,align:'center'},
+			{name:'invoicePrintTime',label:'${i18n.get('出货单打印日期（外部）')}',hidden:false,width:90,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+			{name:'logisticsCompanyLable',label:'${i18n.get('物流公司')}',hidden:false,width:150,sortable:false,align:'center'},
+			{name:'createdAt',label:'${i18n.get('创建日期 ')}',hidden:false,width:90,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+			]"  
+			buttons = "[
+			
+			]" > 
+			<div class="col-xs-12" style="padding-top: 20px;">
+				<table>
+					<tr>
+						<td align="right" width="100px">
+							${i18n.get('签收单编号：')} 
+						</td>
+						<td width="200px">
+							<@form.input
+								id="receiptCode"  name="receiptCode" 
+								placeholder="" 
+								tip="" 
+							/>
+						</td>
+						</td>
+						<td align="right" width="180px">
+							${i18n.get('CRM订单编号：')} 
+						</td>
+						<td width="200px">
+							<@form.input   
+								id="orderCode"  name="orderCode"
+								tip="" 
+								/>
+						</td>
+						<td align="right" width="180px">
+							${i18n.get('出货申请编号：')} 
+						</td>
+						<td width="200px">
+							<@form.input
+							id="deliveryCode"  name="deliveryCode" 
+							placeholder="" 
+							tip="" 
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td  align="right" width="180px">
+							${i18n.get('物流公司：')} 
+						</td>
+						<td width="200px">
+							<@form.select 
+				         		id="logisticsCompany"  name="logisticsCompany" 
+				         		placeholder="${i18n.get('请选择物流公司')}" 
+								code="TRANSPORT_CO"
+								idKey="code"
+								/>
+						</td>
+						<td align="right">
+							${i18n.get('物流运单号：')} 
+						</td>
+						<td>
+							<@form.input   
+								id="logisticsNo"  name="logisticsNo" 
+								tip="" 
+								/>
+						</td>
+						<td  align="right">
+							${i18n.get('出货单编号（外部）：')} 
+						</td>
+						<td>
+							<@form.input
+							id="externalNo"  name="externalNo" 
+							placeholder="" 
+							tip="" 
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td  align="right">
+							${i18n.get('收货人：')} 
+						</td>
+						<td>
+							<@form.input
+								id="consignee"  name="consignee" 
+								placeholder=""
+								tip=""  
+								/>
+						</td>
+						<td  align="right">
+							${i18n.get('收货人电话：')} 
+						</td>
+						<td>
+							<@form.input
+								id="consigneeTel"  name="consigneeTel" 
+								placeholder="" 
+								tip=""  
+								/>
+						</td>
+						<td  align="right">
+							${i18n.get('状态：')}
+						</td>
+						<td>
+							<@form.select 
+				         		id="status"  name="status"
+				         		placeholder="${i18n.get('请选择状态')}" 
+								code="LOGISTICS_RECEIPT_STATUS"
+								idKey="code"
+								/>
+						</td>
+					</tr>
+					<tr>
+						<td  align="right">
+							${i18n.get('创建人：')} 
+						</td>
+						<td>
+							<@form.autocomplete  id="createdById" name="createdById" 
+								placeholder="${i18n.get('请选择创建人')}"
+								idKey='employeeId'
+								multiple="false"
+								formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+								url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+						/>
+						</td>
+						<td  align="right">
+							${i18n.get('创建日期从：')} 
+						</td>
+						<td>
+							<@form.date   
+								id="createTimeStart"  name="createTimeStart" 
+								placeholder="${i18n.get('请选择日期')}" 
+								tip="" 
+								/>
+						</td>
+						<td  align="right">
+							${i18n.get('创建日期至：')} 
+						</td>
+						<td>
+							<@form.date   
+								id="createTimeEnd"  name="createTimeEnd" 
+								placeholder="${i18n.get('请选择日期')}" 
+								tip="" 
+								/>
+						</td>
+					</tr>
+					<tr>
+						<td  align="right">
+							${i18n.get('ERP订单编号：')} 
+						</td>
+						<td>
+							<@form.input
+								id="erpOrderCode"  name="erpOrderCode" 
+								placeholder="" 
+								tip=""  
+								/>
+						</td>
+						<td  align="right">
+							${i18n.get('销售员：')} 
+						</td>
+						<td>
+							<@form.autocomplete  id="salesmanId" name="salesmanId" 
+								placeholder="${i18n.get('请选择销售人员')}"
+								idKey='employeeId'
+								required="${i18n.get('请选择销售人员')}"
+								multiple="false"
+								formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+								url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+							/>
+						</td>
+						<td  align="right">
+							${i18n.get('所属部门：')} 
+						</td>
+						<td>
+							<@form.select
+								id="salesmanDep"  name="salesmanDep"  code="SALES_DEPARTMENT" 
+								placeholder="${i18n.get('请选择所属部门')}" 
+								idKey='id'
+								level = "2"
+								/>
+						</td>
+					</tr>
+					<tr>
+						<td  align="right">
+							${i18n.get('商务专员：')} 
+						</td>
+						<td>
+							<@form.autocomplete  id="businessManagerId" name="businessManagerId" 
+								placeholder="${i18n.get('请选择商务专员')}"
+								idKey='employeeId'
+								required="${i18n.get('请选择商务专员')}"
+								multiple="false"
+								formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+								url="function(){ return '${ctx}/common/selectTradeCommisioner.html'; }"
+								
+							/>
+						</td>
+						<td  align="right">
+							${i18n.get('签收单打印日期从：')} 
+						</td>
+						<td>
+						<@form.date   
+								id="invoicePrintTimeBegin"  name="invoicePrintTimeBegin" 
+								placeholder="${i18n.get('请选择日期')}" 
+								tip="" 
+								/>
+					    </td>
+					    <td  align="right">
+							${i18n.get('签收单打印日期至：')} 
+						</td>
+						<td>
+						<@form.date   
+								id="invoicePrintTimeEnd"  name="invoicePrintTimeEnd" 
+								placeholder="${i18n.get('请选择日期')}" 
+								tip="" 
+								/>
+					    </td>
+				   </tr>
+				</table>
+			</div> 
+	</@form.table>
+</@pui.body>

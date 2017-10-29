@@ -1,0 +1,162 @@
+<#if (permission["P09TrainContentAdd"])??>
+	<#assign addURL_content="true" />
+</#if>
+<#if (permission["P09TrainContentEdit"])??>
+	<#assign editURL_content="true" />
+</#if>
+<#if (permission["P09TrainContentDelete"])??>
+	<#assign deleteURL_content="'${ctx}/activityApply/deleteContent.html?businessType=train'" />
+</#if>
+<#if (permission["P09TrainContentMake"])??>
+	<#assign makeURL_content="true" />
+</#if>
+<#if (permission["P09TrainContentFileAdd"])??>
+	<#assign fileAddURL_content="true" />
+</#if>
+<#if (permission["P09TrainContentFileDelete"])??>
+	<#assign fileDeleteURL_content="true" />
+</#if>
+
+<@form.table id="content" 
+	class="col-xs-12"
+	title="${i18n.get('主要活动内容')}"
+	url = "${ctx}/activityApply/pageContent.html?applyId1=${(applyId)!}"
+	deleteURL = "${deleteURL_content!}"
+	search="false"
+	checkbox="true"
+	rowNum = "10"
+	colModel = "[
+		{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+		{name:'trainProject',label:'${i18n.get('培训项目')}',hidden:false,width:200,sortable:true,align:'left' }, 
+		{name:'activityPlace',label:'${i18n.get('地点')}',hidden:false,width:250,sortable:true,align:'left' }, 
+		{name:'contentDesc',label:'${i18n.get('内容描述')}',hidden:false,width:300,sortable:true,align:'left' }, 
+		{name:'responsiblePerson',label:'${i18n.get('负责人员')}',hidden:false,width:80,sortable:true,align:'center' }, 
+		{name:'actualActDate',label:'${i18n.get('执行日期')}',hidden:false,width:80,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+		{name:'maker',label:'${i18n.get('执行人员')}',hidden:true,width:80,sortable:true,align:'center'}, 
+		{name:'makerName',label:'${i18n.get('执行人员')}',hidden:false,width:80,sortable:true,align:'center'}, 
+		{name:'status',label:'${i18n.get('状态')}',hidden:false,width:80,sortable:true,align:'center' }, 
+		{name:'makeExplain',label:'${i18n.get('执行说明')}',hidden:false,width:350,sortable:true,align:'left',formatter:function(cellvalue, options, rowObject){ return editMakeExplain(cellvalue, options, rowObject) } },
+	]"
+	buttons = "[
+		{
+  			id:'add_content',
+  			label : '${i18n.get('新增')}',
+  			icon : 'icon-plus',
+  			own : ${addURL_content!'false'},
+  			handler : function(e,rowData){
+				if(!selected_apply){
+					exalert(e,'${i18n.get('没有选中任何数据!')}');
+					return;
+				}else if(canEdit(selected_apply.statusName)){
+					myAlert(e,'${i18n.get('新增')}');
+					return;
+				}
+				parent.dialog('${i18n.get('新增')}','${ctx}/activityApply/addOrEditContent.html?businessType=train&applyId='+selected_apply.id,window);
+  			}
+  		},
+  		{
+  			id:'edit_content',
+  			label : '${i18n.get('修改')}',
+  			icon : 'icon-pencil',
+  			own : ${editURL_content!'false'},
+  			handler : function(e,rowData){
+				if(selectedList_content.length != 1){
+					exalert(e,'${i18n.get('请选择一条数据进行修改!')}');
+					return;
+				}else{
+					var statusEdit = !canEdit(selected_apply.statusName);
+					var requestPath = '${ctx}/activityApply/addOrEditContent.html?businessType=train&id='+selectedList_content[0].id+'&statusEdit='+statusEdit;
+					parent.dialog('${i18n.get('修改')}', requestPath, window);
+				}
+  			}
+  		},
+  		{
+  			id:'make_content',
+  			label : '${i18n.get('执行')}',
+  			icon : 'icon-save',
+  			own : ${makeURL_content!'false'},
+  			handler : function(e,rowData){
+  				if(selected_apply.statusName != '审批通过'){
+  					exalert(e,'${i18n.get('只有审批通过的数据才能被执行!')}');
+					return;
+  				}
+				if(selectedList_content.length == 0){
+					exalert(e,'${i18n.get('请选择需要执行的数据!')}');
+					return;
+				}
+				var selectedIds = [];
+				var flag = true;
+				$.each(selectedList_content,function(i,item){
+		 			selectedIds.push(item.id);
+		 			if(item.status != '未执行'){
+		 				flag = false;
+		 				exalert(e,'${i18n.get('只有未执行的数据才能被执行!')}');
+						return;
+		 			}
+		 		});
+		 		if(flag){
+			 		bootbox.confirm('${i18n.get('你确定要执行吗？')}', function(result) {
+				        if(result) {
+				            ajax({
+								url: '${ctx}/activityApply/makeContent.html',
+								type: 'POST',
+								data: {ids:selectedIds},
+								success : function(result) {
+									reload_content();
+									exalert(e,'${i18n.get('执行成功！')}');
+								}
+							});
+                         }
+                     });
+                 }
+  			}
+  		}
+	]" > 
+	
+	<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">	
+		<div class="form-group col-xs-3">
+			<input type ="hidden" class="applyId" name ="applyId" />
+			<input type="text" id="searchKey" name="searchKey" placeholder='请输入项目或地点或描述' size="30" />
+		</div>	
+	</div> 
+</@form.table>
+<input type ="hidden" id="contentId" />
+<div id="attachmentId"></div>
+<script type="text/javascript">
+function reload_content_2(contentId){
+	$("#contentId").val(contentId);
+	reload_content();
+}
+function onComplete_content(){
+	var contentId = $("#contentId").val();
+	$('#'+contentId).trigger('click');
+}
+
+$(document).ready(function() {
+	initContent();
+});
+
+function initContent(){
+	showAttachmentPage("attachmentId","${ctx}/common/attachment/attachment.html?docGroupCode=TrainContentDocType&businessType=content&unableAdd=true&unableDelete=true");
+}
+
+function editMakeExplain(cellvalue, options, rowObject){
+	if(cellvalue == undefined){
+		cellvalue = "";
+	}
+	if(rowObject.status == '未执行'){
+		return '<input style="width:100%;" type="text" onBlur="submit(\''+options.rowId+'\',\'makeExplain\',this.value)" value="'+cellvalue+'" />';
+	}else{
+		return '<div align="left">'+cellvalue+'</div>';
+	}
+}
+function submit(id,column,value){
+	ajax({
+        url: '${ctx}/activityApply/submitColumnValue.html',
+        type: 'POST',
+        data: {contentId:id,column:column,value:value},
+        success : function(result) {
+        }
+    });
+}
+</script>

@@ -1,0 +1,27 @@
+
+	<@form.table id="pay" 
+	class="col-xs-12"
+	title="${i18n.get('回款计划列表')}" 
+	url = "${ctx}/standard/verification/page.html?contrId=${contrId}" 
+	rowNum = "10" 
+	addURL = "'${ctx}/standard/verification/add.html?contrId=${contrId}'" 
+	editURL= "'${ctx}/standard/verification/edit.html'" 
+	deleteURL = "'${ctx}/standard/verification/delete.html'" 
+	colModel = "[
+		{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },		
+		{name:'veriNo',label:'${i18n.get('核销单编号')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'loanId',label:'${i18n.get('借货合同编号')}',hidden:true,width:100,sortable:true,align:'center' },		
+		{name:'loanCode',label:'${i18n.get('借货合同编号')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'materCode',label:'${i18n.get('物料号')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'proName',label:'${i18n.get('产品名称')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'curVeriNum',label:'${i18n.get('本次核销数量')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'notVeriedNum',label:'${i18n.get('未核销数量')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'veriedNum',label:'${i18n.get('已核销数量')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'remark',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:true,align:'center' }
+		]"
+		onSelectRow= "function(selectedData){
+		}"
+		buttons = "[]" > 
+	</@form.table> 
+	
+

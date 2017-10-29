@@ -1,0 +1,1046 @@
+<#escape x as x?html>
+<@pui.body>
+				
+	<#if (permission["P04T1ProjList4"])??>
+		<#assign moveEnable="true" />
+	</#if>		
+	
+	<#if (permission["PRICE_COLUMN_DISABLE_METHOD"])??>
+		<#assign hiddenvalue="true" />
+	</#if>	
+				
+	<#if (permission["P04T1ProjList2"])??>
+		<#assign listUrl="${ctx}/quot/prjLstPage.html?qid=${qid}&typ=${typ}" />
+	</#if>
+	
+	<#if (permission["P04T1ProjListEdit"])??>
+		<#assign editURL="'${ctx}/quot/catalog/catalogedit.html?qid=${qid}&typ=${typ}&pricetableid=${pricetableid}'" />
+	</#if>
+	
+	<#if (permission["P04T1ProjListDeleteProd"])??>
+		<#assign deleteURL="'${ctx}/quot/catalog/deletecatalog.html?qid=${qid}&typ=${typ}'" />
+	</#if>
+	
+	<#if (permission["P04T1ProjListAddProdPackage"])??>
+		<#assign ifaddcatButton="true" />
+	</#if>
+	
+	<#if (permission["P04T1ProjListAddProd"])??>
+		<#assign ifaddstprdButton="true" />
+	</#if>
+	
+	<#if (permission["P04T1ProjListAddNonStaProd1"])??>
+		<#assign ifaddnprdButton="true" />
+	</#if>
+	
+	<#if (permission["P04T1ProjListAddOutSouceProd1"])??>
+		<#assign ifaddexprdButton="true" />
+	</#if>
+			
+	<#if (permission["P04T1ProjListSubmitPrice"])??>
+		<#assign ifquotsubmitButton="true" />
+	</#if>
+	
+	<#if (permission["P04T1ProjListSpecialOffer"])??>
+		<#assign ifpriceprocessButton="true" />
+	</#if>		
+			
+	
+	<#if (permission["QUOTE_PRO_ENABLE_IN_APP_METHOD"])??>
+		<#assign ifenableUpdate="Y" />
+	<#else>
+		<#assign ifenableUpdate="N" />
+	</#if>	
+
+	<#if ('${processpage}')?? && '${processpage}' == 'Y'>
+		<#assign editvalue1="false" />
+	</#if>			
+						
+	<#if ('${processpage}')?? && '${processpage}' == 'P11'>
+		<#assign editvalue1="false" />
+	</#if>
+	
+	<#if ('${processpage}')?? && '${processpage}' == 'P12'>
+		<#assign editvalue1="true" />
+	</#if>
+	
+	<#if ('${processpage}')?? && '${processpage}' == 'P12'>
+		<#assign ifsubmitspButton="true" />
+	</#if>
+		
+	<#if ('${processpage}')?? && '${processpage}' == 'P13'>
+		<#assign editvalue="true" />
+	</#if>	
+	
+	<#if ('${processpage}')?? && '${processpage}' == 'P13'>
+		<#assign editvalue1="false" />
+	</#if>	
+	
+	<#if ('${processpage}')?? && '${processpage}' == 'P12'>
+		<#assign submitlineUrl="'${ctx}/quot/catalog/submitLinesa.html'" />
+	<#else>
+		<#assign submitlineUrl="'${ctx}/quot/catalog/submitLines.html'" />
+	</#if>			
+		
+		
+	<#if ('${processpage}')?? && '${processpage}' == 'P13'>
+		<#assign submitlineUrl="'${ctx}/quot/catalog/submitLinesa.html'" />
+	</#if>
+	
+	<#if (permission["P04T1ProjListSubmitEdit"])??>
+		<#assign editvalue2="true" />
+	</#if>		
+		
+	<!--${processpage}-->
+	
+		
+	<table style="width: 90%;" >	
+		<tr>
+			<td valign="top">
+				<@form.table id="prjlst"
+				class="col-xs-12"
+				shrinkToFit = 'false'
+				grouping = 'true'
+				groupingView = "{ groupField : ['prdCtg'] }"
+				title="${i18n.get('工程清单列表')}"
+				url = "${listUrl!}"
+				rowNum = "500"
+				rowNumList = "[100,200,300,400,500]"
+				editURL = "${editURL!}"
+				deleteURL = "${deleteURL!}" 
+				colModel = "[
+				  { name : 'id', label : 'prjlstID',hidden : true, width : 30 ,sortable:false},
+				  { name : 'lineNum', label : '${i18n.get('行号')}', hidden : true,width : 50 ,sortable:false },
+				  { name : 'prdNm', label : '${i18n.get('产品名称')}', width : 50 ,hidden : true,sortable:false },
+				  { name : 'act', label : '${i18n.get('产品名称')}',  width : 120 ,sortable:false,hidden : false, formatter:function(cellvalue, options,rowdata){ return aFormatName(rowdata) }  },
+				  { name : 'salCtg', label : '${i18n.get('销售产品分类')}', width : 120 ,sortable:false ,editable : false },
+				  { name : 'prdCtg', label : '${i18n.get('CRM产品类别')}', width : 120 ,sortable:false ,editable : false },
+				  { name : 'prdTyp', label : '${i18n.get('产品型号')}', width : 140 ,sortable:false ,editable : false },
+				  { name : 'materCode', label : '${i18n.get('物料号')}',width:80, hidden : false , sortable:false ,editable : false },
+				  { name : 'prdUnt', label : '${i18n.get('单位')}', width : 50 ,sortable:false ,editable : false },
+				  { name : 'prdSprc', label : '${i18n.get('公开价格')}', width : 100 ,align:'right',sortable:false  ,editable : false},
+				  { name : 'goldPrc', label : '${i18n.get('金牌价格')}', width : 100 ,align:'right',sortable:false  ,editable : ${editvalue1!'true'}, hidden : ${hiddenvalue!'false'}},
+				  { name : 'applyDiscount', label : '${i18n.get('申请折扣')}（%）', width : 100 ,align:'right',sortable:false  ,editable : false},
+				  { name : 'applyPrc', label : '${i18n.get('申请价格')}', width : 100 ,align:'right',sortable:false ,editable : ${editvalue1!'true'}, hidden : ${hiddenvalue!'false'} },
+				  { name : 'applyAmt', label : '${i18n.get('申请金额')}', hidden : true ,align:'right', width : 120 ,sortable:false ,editable : false, formatter:function(cellvalue, options,rowdata){ return sumApplyAmt(rowdata) }  },
+				  { name : 'approveDiscount', label : '${i18n.get('批复折扣')}（%）', width : 100 ,align:'right',sortable:false  ,editable : ${editvalue2!'false'}},
+				  { name : 'approvePrc', label : '${i18n.get('批复价格')}', width : 100 ,align:'right',sortable:false  ,editable : ${editvalue2!'false'}},
+				  { name : 'approveAmt', label : '${i18n.get('批复金额')}', hidden : true ,align:'right', width : 120 ,sortable:false ,editable : false, formatter:function(cellvalue, options,rowdata){ return sumApproveAmt(rowdata) }  },
+				  { name : 'amt', label : '${i18n.get('数量')}', width : 100 ,align:'right',sortable:false,editable : ${editvalue1!'true'} },
+	  			  { name : 'ttlUnt', label : '${i18n.get('单品总金额')}', width : 50 ,align:'right',sortable:false ,editable : false, hidden : ${hiddenvalue!'false'}, formatter:'number',formatoptions:{decimalPlaces : 3,defaultValue:''} },
+				  { name : 'avgTtl', label : '${i18n.get('平均总单价')}' ,sortable:false ,editable : false ,hidden :true },
+				  { name : 'proDesc', label : '${i18n.get('产品描述')}',width:400, hidden : false , sortable:false ,editable : false },
+				  { name : 'notes', label : '${i18n.get('备注')}',editable : true ,sortable:false },
+				  { name : 'proId', label : 'prdId', hidden : true , sortable:false},
+				  { name : 'prdCtgid', label : 'prdCtgId', hidden : true , sortable:false},
+				  { name : 'optTxt2', label : 'prdCtgId', hidden : true , sortable:false},
+				  { name : 'lvId', label : 'lvId', hidden : true , sortable:false}
+				  
+				  ]"
+	
+	search="false"
+				  
+	ondblClickRow= "function(id){	 
+
+		var rowData = $('#prjlst').jqGrid('getRowData',id);
+		
+	if(rowData['prdCtg'] && rowData['prdCtg'] !=''){
+	
+		var old_prc = $('#prjlst input[id=\\''+id + '_applyPrc\\']').val();
+		var old_amt = $('#prjlst input[id=\\''+id+'_amt\\']').val();
+		var old_sprc = rowData['prdSprc'] ; 
+		var prov_amt = rowData['amt'] ;
+		var old_dis = $('#prjlst input[id=\\''+id+'_applyDiscount\\']').val();
+		var sprc = (old_sprc==''||old_sprc=='undefined')?0:parseFloat(old_sprc);
+		var old_adis = $('#prjlst input[id=\\''+id+'_approveDiscount\\']').val();
+		var old_approvePrc = $('#prjlst input[id=\\''+id+'_approvePrc\\']').val();
+		var old_goldPrc = $('#prjlst input[id=\\''+id+'_goldPrc\\']').val();
+
+		
+		var cur_prc = old_prc;
+		var cur_amt = old_amt;
+		var cur_dis = old_dis;
+		var cur_adis = old_adis;
+		var cur_approvePrc = old_approvePrc;
+		var curprov_amt = prov_amt;
+		var cur_goldPrc = old_goldPrc;
+		
+		var a;
+		$('#prjlst input[id=\\''+id+'_goldPrc\\']').bind('input',function(event){
+			var goldPrc = $(this).val();
+			var cur_goldPrc = goldPrc;
+			if(goldPrc){
+				var re = /^[0-9].*$/ ;
+				var prdSprc = 0;
+				if(!isNaN(goldPrc) && re.test(goldPrc)){
+					if(goldPrc != null && goldPrc != ''){
+						prdSprc = ( parseFloat(cur_goldPrc) / 0.22).toFixed(3);
+						a = prdSprc;
+						$('#prjlst').jqGrid('setRowData', id, {'prdSprc': prdSprc });
+					}
+				}else{
+					alert('${i18n.get('金牌价格必须为数字')}！');
+					$(this).val(old_goldPrc);
+				}
+			}else{
+				$(this).val(old_goldPrc);
+			}
+			
+ 		});
+ 		
+		$('#prjlst input[id=\\''+id+'_applyDiscount\\']').bind('input',function(event){
+			var dis = $(this).val();
+			cur_dis=dis;
+			if(dis){ 
+				var re = /^[0-9].*$/ ;
+				var ttlU = 0;
+				var prc= 0 ;
+				if(!isNaN(dis) && re.test(dis)){
+					if(sprc != null && sprc !='' && re.test(sprc)){
+						prc = ( parseFloat(sprc) * parseFloat(dis)/100 ).toFixed(3);
+						if(cur_amt != null && cur_amt !='' && re.test(cur_amt)){
+							if(cur_approvePrc!=null && cur_approvePrc !='' && re.test(cur_approvePrc)){
+								ttlU = ( parseFloat(cur_approvePrc) * parseFloat(cur_amt) ).toFixed(3);
+							}else{
+								if(prc!=null && prc !='' && re.test(prc)){
+									ttlU = ( parseFloat(prc) * parseFloat(cur_amt) ).toFixed(3);
+								}
+							}
+						}
+						$('#prjlst').jqGrid('setRowData', id, {'applyPrc': prc ,  'ttlUnt' : ttlU});
+					}else{
+						alert('${i18n.get('没有价格，不能按折扣申请')}');
+						$('#prjlst').jqGrid('setRowData', id, {'applyDiscount': ''});
+					}
+				}else{
+					alert('${i18n.get('折扣必须为数字')}！');
+					$(this).val(old_dis);
+				}
+			}else{
+				$(this).val(old_dis);
+			}
+ 		});
+ 		
+ 		$('#prjlst input[id=\\''+id+'_approveDiscount\\']').bind('input',function(event){
+			var adis = $(this).val();
+			cur_adis=adis;
+			if(adis){ 
+				var re = /^[0-9].*$/ ;
+				var ttlU = 0;
+				var prc= 0 ;
+				if(!isNaN(adis) && re.test(adis)){
+					if(sprc != null && sprc !='' && re.test(sprc)){
+						prc = ( parseFloat(sprc) * parseFloat(adis)/100 ).toFixed(3);
+						if(curprov_amt != null && curprov_amt !='' && re.test(curprov_amt)){
+							if(prc!=null && prc !='' && re.test(prc)){
+								ttlU = ( parseFloat(prc) * parseFloat(curprov_amt) ).toFixed(3);
+							}else{
+								if(cur_prc!=null && cur_prc !='' && re.test(cur_prc)){
+									ttlU = ( parseFloat(cur_prc) * parseFloat(curprov_amt) ).toFixed(3);
+								}
+							}
+						}
+						$('#prjlst').jqGrid('setRowData', id, {'approvePrc': prc ,  'ttlUnt' : ttlU});
+					}
+				}else{
+					alert('${i18n.get('折扣必须为数字')}！');
+					$(this).val(old_adis);
+				}
+			}else{
+				$(this).val(old_adis);
+			}
+ 		});
+ 		
+ 		
+ 				 		
+ 		$('#prjlst input[id=\\''+id+'_approvePrc\\']').bind('input',function(event){
+			var aprc = $(this).val();
+			cur_approvePrc = aprc;
+			if(aprc){ 
+				var re = /^[0-9].*$/ ;
+				var ttlU = 0;
+				var apdiscount = 0 ;
+				if(!isNaN(aprc) && re.test(aprc) ){
+					if(sprc != null && sprc !='' && re.test(sprc)){
+						if(curprov_amt != null && curprov_amt !='' && re.test(curprov_amt)){
+							if(cur_approvePrc!=null && cur_approvePrc !='' && re.test(cur_approvePrc)){
+								ttlU = ( parseFloat(cur_approvePrc) * parseFloat(curprov_amt) ).toFixed(3);
+							}else{
+								if(cur_prc!=null && cur_prc !='' && re.test(cur_prc)){
+									ttlU = ( parseFloat(cur_prc) * parseFloat(curprov_amt) ).toFixed(3);
+								}
+							}
+						}
+						apdiscount = ( parseFloat(aprc)/parseFloat(sprc)*100 ).toFixed(3);
+						$('#prjlst').jqGrid('setRowData', id, {'approveDiscount': apdiscount ,  'ttlUnt' : ttlU});
+					}
+				}else{
+					alert('${i18n.get('折扣必须为数字')}！');
+					$(this).val(old_approvePrc);
+				}
+			}else{
+				$(this).val(old_approvePrc);
+			}
+ 		});
+ 		
+ 		
+ 		
+ 		
+ 		$('#prjlst input[id=\\''+id+'_applyPrc\\']').bind('input',function(event){
+			var alprc = $(this).val();
+			cur_prc = alprc;
+			if(alprc){ 
+				var re = /^[0-9].*$/ ;
+				var ttlU = 0;
+				var aldiscount = 0 ;
+				if(!isNaN(alprc) && re.test(alprc) && re.test(sprc)){
+					if(cur_amt != null && cur_amt !='' && re.test(cur_amt)){
+						if(cur_approvePrc!=null && cur_approvePrc !='' && re.test(cur_approvePrc)){
+							ttlU = ( parseFloat(cur_approvePrc) * parseFloat(cur_amt) ).toFixed(3);
+						}else{
+							if(cur_prc!=null && cur_prc !='' && re.test(cur_prc)){
+								ttlU = ( parseFloat(cur_prc) * parseFloat(cur_amt) ).toFixed(3);
+							}
+						}
+					}
+					if(sprc!=0){
+						aldiscount = ( parseFloat(alprc)/parseFloat(sprc)*100 ).toFixed(3);
+						$('#prjlst').jqGrid('setRowData', id, {'applyDiscount': aldiscount ,  'ttlUnt' : ttlU});
+					}else{
+						aldiscount = ( parseFloat(alprc)/parseFloat(a)*100 ).toFixed(3);
+						$('#prjlst').jqGrid('setRowData', id, {'applyDiscount': aldiscount ,  'ttlUnt' : ttlU});
+					}
+				}else{
+					alert('${i18n.get('折扣必须为数字')}！');
+					$(this).val(old_prc);
+				}
+			}else{
+				$(this).val(old_prc);
+			}
+ 		});
+ 		
+ 		
+ 		
+
+	
+		$('#prjlst input[id=\\''+id+'_amt\\']').bind('input',function(event){
+			debugger;
+			var qty = $(this).val();
+			cur_amt = qty;
+			if(qty){
+				var re = /^[0-9]+$/ ;
+				var re1 = /^[0-9].*$/ ;
+				var ttlU = 0;
+				if(!isNaN(qty) && re1.test(qty)){
+					if(cur_approvePrc!=null && cur_approvePrc !='' && re1.test(cur_approvePrc)){
+						ttlU = ( parseFloat(cur_approvePrc) * parseFloat(qty) ).toFixed(3);
+					}else if(cur_prc!=null && cur_prc !='' && re1.test(cur_prc)){
+						ttlU = ( parseFloat(cur_prc) * parseFloat(qty) ).toFixed(3);
+					}else{
+						var row = $('#prjlst').jqGrid('getRowData',id);
+						cur_prc = row['applyPrc'];
+						ttlU = ( parseFloat(cur_prc) * parseFloat(qty) ).toFixed(3);
+					}
+					$('#prjlst').jqGrid('setRowData', id, { 'ttlUnt' : ttlU});
+				}else{
+					alert('${i18n.get('数量为正数字')}！');
+					$(this).val(old_amt);
+				}
+			}else{
+					$(this).val(old_amt);
+			}
+ 		});
+
+	
+	}else{
+		$('#prjlst').trigger('blur');
+	
+	}
+		
+	}"
+			
+		
+			
+	footerrow = "true"
+	gridComplete = "function() {
+		$('#prjlst').footerData('set',{'prdCtg':'${i18n.get('合计')}'});
+		var rowNum = parseInt($('#prjlst').getGridParam('records'),10);
+		if(rowNum > 0){
+			$('.ui-jqgrid-sdiv').show();
+			var applyAmt  = $('#prjlst').getCol('applyAmt',false,'sum');
+			var approveAmt  = $('#prjlst').getCol('approveAmt',false,'sum');
+			var conAmt  = $('#prjlst').getCol('ttlUnt',false,'sum');
+			$('#prjlst').footerData('set',{'prdCtg':'${i18n.get('合计')}','applyPrc':applyAmt, 'approvePrc':approveAmt, 'ttlUnt':conAmt});
+		}
+	}"
+	
+	onLineEditAfter = "function(id,rowData){
+		$('#prjlst').footerData('set',{'prdCtg':'${i18n.get('合计')}'});
+		var rowNum = parseInt($('#prjlst').getGridParam('records'),10);
+		if(rowNum > 0){
+			$('.ui-jqgrid-sdiv').show();
+			var applyAmt  = $('#prjlst').getCol('applyAmt',false,'sum');
+			var approveAmt  = $('#prjlst').getCol('approveAmt',false,'sum');
+			var conAmt  = $('#prjlst').getCol('ttlUnt',false,'sum');
+			$('#prjlst').footerData('set',{'prdCtg':'${i18n.get('合计')}','applyPrc':applyAmt, 'approvePrc':approveAmt, 'ttlUnt':conAmt});
+			$('#amount').val(conAmt);
+		}
+	}"
+						  
+						  
+				 buttons = "[
+
+						{
+				  			id:'addstprdButton',
+				  			label : '${i18n.get('新增产品')}',
+				  			own : ${ifaddstprdButton!'false'},
+				  			handler : function(e,rowData){	
+								$('#selectProductMulti').click();
+							}
+						},
+				 		{
+				  			id:'addnprdButton',
+				  			label : '${i18n.get('新增非标产品')}',
+				  			own : ${ifaddnprdButton!'false'},
+				  			handler : function(e,rowData){
+								$('#noStdProductSelectLst').click();
+							}
+						},
+						 {
+				  			id:'addexprdButton',
+				  			label : '${i18n.get('新增外购产品')}',
+				  			own : ${ifaddexprdButton!'false'},
+				  			handler : function(e,rowData){		
+								$('#noStdProductSelectLst').click();
+
+							}
+						},  
+						{
+				  			id:'submitLines',
+				  			label : '${i18n.get('保存')}',
+				  			own : 'true',
+				  			handler : function(e,rowData){
+				  				submitLines();
+							}
+						},
+						{
+				  			id:'quotsubmitButton',
+				  			label : '${i18n.get('提交报价')}',
+				  			own : ${ifquotsubmitButton!'false'},
+				  			handler : function(e,rowData){
+				  				var d = {};
+		  						d.qid = '${qid}';
+								bootbox.confirm('${i18n.get('你确定要提交报价吗')}?', function(result) {
+									if(result) {
+											ajax({
+													type:'post',
+													url : '${ctx}/quotprocess/submitquotProcess.html',  
+													data: d,
+													success : function(result) {
+														alert('${i18n.get('报价已经提交')}！');  
+													}
+												});
+											}
+								});
+							}
+						},
+						{
+				  			id:'submitspButton',
+				  			label : '${i18n.get('提交特价申请')}',
+				  			own : ${ifpriceprocessButton!'false'},
+				  			handler : function(e,rowData){
+				  				var d = {};
+		  						d.qid = '${qid}';
+								bootbox.confirm('${i18n.get('你确定要提交特价申请吗')}?', function(result) {
+									if(result) {
+										ajax({
+												type:'post',
+												url : '${ctx}/quotprocess/startSpProcess.html',  
+												data: d,
+												success : function(result) {
+													alert('${i18n.get('特价申请已经提交')}！');
+													window.location.reload();   
+												}
+											});
+										}
+								});
+							}
+						},{
+					  			id:'exportQuotPrjlstListBtn',
+					  			label : '${i18n.get('导出')}',
+								own : 'true',
+					  			handler : function(e,rowData){
+					  				QuotPrjlstExport(e,rowData);
+								}
+							} 
+				  	]"
+				>
+				
+				<div class="col-xs-12">
+					<input type="hidden" id="parentId" name="parentId" />
+					<div class="form-group col-xs-3">
+						<input type="text" id="searchKey" name="searchKey" placeholder='${i18n.get('查询关键字')}' />
+					</div>	
+					<div class="form-group col-xs-2">
+						<button type="submit" class="btn btn-info" > 
+							<i class="icon-search bigger-110"></i>
+							${i18n.get('查询')}
+						</button>
+					</div>
+				</div>
+				</@form.table>
+			</td>
+		</tr>
+	</table>
+	
+	
+		
+<script type="text/javascript">
+
+
+$(document).ready(function(){
+	 var submitmrk = "${quotsubmitstatus}";
+	 if(submitmrk=="Y"){
+		 $("#quotsubmitButton").attr("disabled","disabled");
+		 $("#edit_prjlst").attr("disabled","disabled");
+		 $("#delete_prjlst").attr("disabled","disabled");
+		 $("#addcatButton").attr("disabled","disabled");
+		 $("#addstprdButton").attr("disabled","disabled");
+		 $("#addnprdButton").attr("disabled","disabled");
+		 $("#addexprdButton").attr("disabled","disabled");
+	 }else{
+		 $("#quotsubmitButton").removeAttr("disabled");
+		 $("#edit_prjlst").removeAttr("disabled");
+		 $("#delete_prjlst").removeAttr("disabled");
+		 $("#addcatButton").removeAttr("disabled");
+		 $("#addstprdButton").removeAttr("disabled");
+		 $("#addnprdButton").removeAttr("disabled");
+		 $("#addexprdButton").removeAttr("disabled");
+	 }
+	 
+	 var sprvmrk = "${sprvmrkstatus}";
+	 if(sprvmrk=="N"){
+		 $("#priceprocessButton").attr("disabled","disabled");
+		 $("#quotsubmitButton").removeAttr("disabled");
+	 }else{
+		 $("#priceprocessButton").removeAttr("disabled");
+		 $("#quotsubmitButton").attr("disabled","disabled");
+	 }
+	 
+ 	if('${ifProReviewStatus}'=="Y"){
+	 	$("#edit_prjlst").attr("disabled","disabled");
+	 	$("#delete_prjlst").attr("disabled","disabled");
+	 	$("#addcatButton").attr("disabled","disabled");
+	 	$("#addstprdButton").attr("disabled","disabled");
+	 	$("#addnprdButton").attr("disabled","disabled");
+	 	$("#addexprdButton").attr("disabled","disabled");
+	 	$("#quotsubmitButton").attr("disabled","disabled");
+	 	$("#priceprocessButton").attr("disabled","disabled");
+ 	}
+ 	
+ 	
+ 	/* if('${processpage}'=="P12"){
+ 		$("#submitspButton").removeAttr("disabled");
+ 	}else{
+ 		$("#submitspButton").attr("disabled","disabled");
+ 	} */
+ 	
+ 	if('${applyPrcStatus}'=="1"){
+		$("#submitspButton").attr("disabled","disabled");
+	}else{
+		$("#submitspButton").removeAttr("disabled");
+	} 
+ 	
+ 	if('${processpage}'=="P11"){
+ 		$("#addstprdButton").removeAttr("disabled");
+ 	}else{
+ 		$("#addstprdButton").attr("disabled","disabled");
+ 	}
+ 	
+ 	if('${processpage}'=="P11"){
+ 		$("#addexprdButton").removeAttr("disabled");
+ 	}else{
+ 		$("#addexprdButton").attr("disabled","disabled");
+ 	}
+ 	
+ 	if('${processpage}'=="P1"){	
+ 		if('${ifenableUpdate}'=="N"){
+ 		 	$("#edit_prjlst").attr("disabled","disabled");
+ 		 	$("#delete_prjlst").attr("disabled","disabled");
+ 		 	$("#addcatButton").attr("disabled","disabled");
+ 		 	$("#addstprdButton").attr("disabled","disabled");
+ 		 	$("#addnprdButton").attr("disabled","disabled");
+ 		 	$("#addexprdButton").attr("disabled","disabled");
+ 		 	$("#quotsubmitButton").attr("disabled","disabled");
+ 		 	$("#priceprocessButton").attr("disabled","disabled");
+ 		}
+ 	}
+ 	
+ 	if('${processpage}'=="P3"){
+	 	$("#edit_prjlst").attr("disabled","disabled");
+	 	$("#delete_prjlst").attr("disabled","disabled");
+	 	$("#addcatButton").attr("disabled","disabled");
+	 	$("#addstprdButton").attr("disabled","disabled");
+	 	$("#addnprdButton").attr("disabled","disabled");
+	 	$("#addexprdButton").attr("disabled","disabled");
+	 	$("#quotsubmitButton").attr("disabled","disabled");
+	 	$("#priceprocessButton").attr("disabled","disabled");
+ 	}
+ 	
+ 	if('${processpage}'=="P5"){
+	 	$("#edit_prjlst").attr("disabled","disabled");
+	 	$("#delete_prjlst").attr("disabled","disabled");
+	 	$("#addcatButton").attr("disabled","disabled");
+	 	$("#addstprdButton").attr("disabled","disabled");
+	 	$("#addnprdButton").attr("disabled","disabled");
+	 	$("#addexprdButton").attr("disabled","disabled");
+	 	$("#quotsubmitButton").attr("disabled","disabled");
+	 	$("#priceprocessButton").attr("disabled","disabled");
+ 	}
+ 	
+ 	if('${processpage}'=="P6"){
+	 	$("#edit_prjlst").attr("disabled","disabled");
+	 	$("#delete_prjlst").attr("disabled","disabled");
+	 	$("#addcatButton").attr("disabled","disabled");
+	 	$("#addstprdButton").attr("disabled","disabled");
+	 	$("#addnprdButton").attr("disabled","disabled");
+	 	$("#addexprdButton").attr("disabled","disabled");
+	 	$("#quotsubmitButton").attr("disabled","disabled");
+	 	$("#priceprocessButton").attr("disabled","disabled");
+ 	}
+ 	
+ 	if('${processpage}'=="P7"){
+	 	$("#edit_prjlst").attr("disabled","disabled");
+	 	$("#delete_prjlst").attr("disabled","disabled");
+	 	$("#addcatButton").attr("disabled","disabled");
+	 	$("#addstprdButton").attr("disabled","disabled");
+	 	$("#addnprdButton").attr("disabled","disabled");
+	 	$("#addexprdButton").attr("disabled","disabled");
+	 	$("#quotsubmitButton").attr("disabled","disabled");
+	 	$("#priceprocessButton").attr("disabled","disabled");
+ 	}
+ 	
+ 	if('${processpage}'=="P8"){
+	 	$("#edit_prjlst").attr("disabled","disabled");
+	 	$("#delete_prjlst").attr("disabled","disabled");
+	 	$("#addcatButton").attr("disabled","disabled");
+	 	$("#addstprdButton").attr("disabled","disabled");
+	 	$("#addnprdButton").attr("disabled","disabled");
+	 	$("#addexprdButton").attr("disabled","disabled");
+	 	$("#quotsubmitButton").attr("disabled","disabled");
+	 	$("#priceprocessButton").attr("disabled","disabled");
+ 	}
+ 	
+ 	if('${processpage}'=="P9"){
+	 	$("#edit_prjlst").attr("disabled","disabled");
+	 	$("#delete_prjlst").attr("disabled","disabled");
+	 	$("#addcatButton").attr("disabled","disabled");
+	 	$("#addstprdButton").attr("disabled","disabled");
+	 	$("#addnprdButton").attr("disabled","disabled");
+	 	$("#addexprdButton").attr("disabled","disabled");
+	 	$("#quotsubmitButton").attr("disabled","disabled");
+	 	$("#priceprocessButton").attr("disabled","disabled");
+ 	}
+ 	
+ 	if('${processpage}'=="P10"){
+	 	$("#edit_prjlst").attr("disabled","disabled");
+	 	$("#delete_prjlst").attr("disabled","disabled");
+	 	$("#addcatButton").attr("disabled","disabled");
+	 	$("#addstprdButton").attr("disabled","disabled");
+	 	$("#addnprdButton").attr("disabled","disabled");
+	 	$("#addexprdButton").attr("disabled","disabled");
+	 	$("#quotsubmitButton").attr("disabled","disabled");
+	 	$("#priceprocessButton").attr("disabled","disabled");
+ 	}
+ 	
+ 	
+ 	if('${processpage}'=="N"){
+
+		 $("#quotsubmitButton").removeAttr("disabled");
+		 $("#edit_prjlst").removeAttr("disabled");
+		 $("#delete_prjlst").removeAttr("disabled");
+		 $("#addcatButton").removeAttr("disabled");
+		 $("#addstprdButton").removeAttr("disabled");
+		 $("#addnprdButton").removeAttr("disabled");
+		 $("#addexprdButton").removeAttr("disabled");
+ 	}
+ 	$("#exportQuotPrjlstListBtn").removeAttr("disabled");
+ 	
+});
+
+var selectId = "";
+function proSelect(rowid){
+	selectId = rowid ;
+	$('#selectProduct').click();
+}
+
+
+function enablesprvbutton(){
+	 $("#priceprocessButton").removeAttr("disabled");
+	 $("#quotsubmitButton").attr("disabled","disabled");
+}
+
+
+function disablesprvbutton(){
+	 $("#priceprocessButton").attr("disabled","disabled");
+	 $("#quotsubmitButton").removeAttr("disabled");
+}
+
+var newrowid = 0;
+var checkGoldPrc;
+//${i18n.get('批量增加行')}
+function addRowBatch(datas){
+	$.each(datas,function(i,data){
+ 		delete data.id ;
+ 		//if($('#parentId').val()=='undefined' || $('#parentId').val()==''){}
+ 		//data['lvmenber.parentId'] = $('#parentId').val();
+		data['prdNm'] = data.productName;
+		data['prdUnt'] = data.unit;
+		data['prdSprc'] = data.catalogPriceShow1;
+		data['prdTyp'] = data.proModel;
+		data['materCode'] = data.materielCode;
+		data['prdCtg'] = data.crmCategoryLable;
+		data['prdCtgid'] = data.crmCategory;
+		data['proId'] = data.proId;
+		data['goldPrc'] = data.catalogPriceShow;
+		data['proDesc'] = data.proDesc;
+		data['salCtg'] = data.displayCatalogName;
+		data['optTxt2'] = data.optTxt2;
+		
+		newrowid = newrowid+1;  
+	    //${i18n.get('将新添加的行插入到第一列')} 
+	    $("#prjlst").jqGrid("addRowData", newrowid, data, "last");  
+	    //${i18n.get('设置grid单元格不可编辑')}  
+	    $("#prjlst").setGridParam({cellEdit:false});  
+	    //${i18n.get('设置grid单元格可编辑')}
+	    //$("#prjlst").jqGrid('editRow', newrowid, false);  
+	    //${i18n.get('初始化订单行')}
+	    //initLine(newrowid,data);
+	    checkGoldPrc = data['goldPrc'];
+	    
+		if(checkGoldPrc == null || checkGoldPrc == '' ){
+			$('#prjlst').setColProp("goldPrc",{editable:true});  
+		}else{
+			$('#prjlst').setColProp("goldPrc",{editable:false});  
+		}
+	});
+}
+
+function getGrid_prjlst(){
+    $('#prjlst').trigger('blur');
+    var grid_data =$('#prjlst').jqGrid('getRowData');
+    return JSON.stringify(grid_data);
+}
+
+
+//${i18n.get('批量增加行')}
+function addNoStdProdRowBatch(datas){
+ 	$.each(datas,function(i,data){
+
+		//if($('#parentId').val()=='undefined' || $('#parentId').val()==''){}
+ 		//data['lvmenber.parentId'] = $('#parentId').val();
+ 		data['prdNm'] = data.proName;
+ 		/* data['prdUnt'] = data.unitLable;
+ 		data['prdSprc'] = data.catalogPrice;*/
+ 		data['prdTyp'] = data.proModel;
+ 		data['materCode'] = data.materielCode; 
+ 		data['prdCtg'] = data.crmCategoryLable;
+ 		data['prdCtgid'] = data.crmCategory;
+ 		data['proDesc'] = data.proDesc; 
+ 		data['proId'] = data.id;
+ 		data['salCtg'] = data.displayCatalogName;
+ 		
+ 		delete data['id'];
+			
+ 		newrowid = newrowid+1;  
+		//${i18n.get('将新添加的行插入到第一列')} 
+ 	    $("#prjlst").jqGrid("addRowData", newrowid, data, "last");  
+		//${i18n.get('设置grid单元格不可编辑')}  
+ 	    $("#prjlst").setGridParam({cellEdit:false});  
+		//${i18n.get('设置grid单元格可编辑')}
+		//$("#prjlst").jqGrid('editRow', newrowid, false);  
+		//${i18n.get('初始化订单行')}
+		//initLine(newrowid,data);
+ 	});
+}
+
+function QuotPrjlstExport(e,rowData){
+		bootbox.confirm('${i18n.get('您确定要导出选中的数据吗')}？' , function(result) {
+		if(result) {
+			window.location.href = '${ctx}/quot/quotPrjlstExport.html?qid=${qid}&typ=${typ}';
+		}
+	});
+}
+
+function submitLines(){
+	
+	$('#prjlst').trigger('blur');
+	var ids = $('#prjlst').jqGrid('getDataIDs');
+	var d={};
+	var datas = [];
+	var optTxt2Flag = true;
+	var flag = true;
+	var approveDiscount;
+	
+	$.each(ids,function(i,id){
+		var line = $('#prjlst').jqGrid('getRowData',id);
+		if(line && line['prdCtg']){
+		if( line['amt']=='' || line['applyPrc']==''){
+			curid = id; 
+			 flg = false;
+			 return false;
+		}else{
+			flg = true;
+			datas.push(line);
+		}
+		
+		var f = $('#boName').val();
+		if(line.optTxt2=='1' && !(f)){
+			optTxt2Flag = false;
+			return false;
+		}
+		
+		var goldPrc = line['goldPrc'];
+		if(goldPrc == '' || goldPrc == null){
+			flag = false;
+		}
+		
+		approveDiscount = line['approveDiscount'];
+		
+	 }
+	})
+	
+	if(optTxt2Flag == false){
+		alert("${i18n.get('当前报价单含有报备机型，请关联商机')}");
+		return;
+	}
+	
+	if(flg == false) {    
+		alert('${i18n.get('申请价格 和 数量 不能为空')}');  
+		$('#prjlst').editRow(id,true);      
+		return false;
+	}
+	
+	if(flag == false){
+		alert("${i18n.get('金牌价格不能为空')}");
+		$('#prjlst').editRow(id,true);      
+		return false;
+	}
+	
+	if(approveDiscount==''){
+		if(checkGoldPrc == null || checkGoldPrc == ''){
+			alert('${i18n.get('存在金牌价为空的产品，请点击【价格评审】按钮发起评审流程')}');  
+		}
+	}
+	
+	if(datas.length<1) return;
+	d.listStr= JSON.stringify(datas);
+	d.quotID = '${qid}';
+	d.typ = '${typ}';
+	bootbox.confirm('${i18n.get('你确定要提交保存数据吗')}?', function(result) {
+		if(result) {
+			var dialog = bootbox.dialog({
+			    message: '${i18n.get('数据保存中')}......',
+			    closeButton: false
+			});
+			ajax({
+				type:'post',
+				url : ${submitlineUrl!},  
+				dataType : 'json',
+				data: d,
+				success : function(result) {
+					$('#button1').click();
+					reload_prjlst();
+					dialog.modal('hide');
+					//window.location.reload(); 
+				},
+				error : function(result) {
+					alert(result); 
+					reload_prjlst();
+					dialog.modal('hide');
+					//window.location.reload(); 
+				},
+				
+			});			
+		}
+	});
+}
+
+function checkBiz(event){
+	
+   	grid = $('#prjlst').jqGrid("getRowData");
+    
+    listStr= JSON.stringify(grid);
+    
+    var flag = true;
+    if(grid.length>0){
+    	$.ajax({
+            type: "post",
+            url: "${ctx}/quot/catalog/chekcBiz.html",
+            async: false,
+            data: "data="+listStr,
+            dataType: 'json',
+            success: function (e) {
+                if (e.status == 'error') {
+                    alert(e.message || '${i18n.get('未知错误')}');
+                    flag = false;
+                }
+            },
+            error:function (xhr, status, statusText) {
+                alert(xhr.responseJSON.message || '${i18n.get('未知错误')}');
+                flag = false;
+
+            }
+        });
+    }
+    return flag;
+	
+}
+
+
+function aFormatName(rowData){
+	//${i18n.get('给添加的列加选择按钮')}  
+	var lable = '${i18n.get('选择产品')}';
+	if(rowData && rowData['prjlst']){
+		lable =  rowData['prjlst'].prdNm;
+	}else if(rowData && rowData['prdNm']){
+		lable =  rowData['prdNm'];
+	}
+	var ps ='';
+	if((rowData && rowData['prdCtg']) || (rowData && rowData.prdCtg)){
+		ps =  '<a href="#" onclick="proSelect(\''+rowData['id']+'\');" >'+lable+'</a>';
+	}else{
+		ps = lable;
+	}
+	return ps;
+}
+
+
+
+function sumApplyAmt(rowData){
+	// ${i18n.get('计算申请金额')}
+	var amt = 0;
+	var prc = 0 ; 
+	var num = 1; 
+	if(rowData && rowData['prjlst']){
+		
+		prc =  rowData['prjlst'].applyPrc;
+		if(rowData['prjlst'].amt!=''){
+			num = rowData['prjlst'].amt;
+		}
+	}else if(rowData && rowData['applyPrc']){
+		prc =  rowData['applyPrc'];
+		if(rowData['amt']!=''){
+			num = rowData['amt'];
+		}
+	}
+	amt = prc*num; 
+	amt = isNaN(amt)?'':amt;
+	return amt;
+	
+}
+
+
+
+
+function sumApproveAmt(rowData){
+	// ${i18n.get('计算批复金额')}
+	var amt = 0;
+	var prc = 0 ; 
+	var num = 1; 
+	if(rowData && rowData['prjlst']){
+		if(rowData['prjlst'].approvePrc ==''){
+			prc =  rowData['prjlst'].applyPrc;			
+		}else{
+			prc =  rowData['prjlst'].approvePrc;			
+		}
+		if(rowData['prjlst'].amt!=''){
+			num = rowData['prjlst'].amt;
+		}
+	}else if(rowData && rowData['approvePrc']){
+		if(rowData['approvePrc'] ==''){
+			prc =  rowData['applyPrc'];			
+		}else{
+			prc =  rowData['approvePrc'];			
+		}
+		if(rowData['amt']!=''){
+			num = rowData['amt'];
+		}
+	}
+	amt = prc*num;
+	amt = isNaN(amt)?'':amt; 
+	return amt;
+	
+}
+
+
+
+
+function checkForm(cellvalue){
+	//alert("*****" + cellvalue);
+	var html="<input type=\"checkbox\"  onclick=\"return false;\" />";
+	if(cellvalue == 'N'){
+		 return "<input type=\"checkbox\" checked=\"checked\"  onclick=\"return false;\"/>";
+		
+	}else if(cellvalue == 'Y'){
+		return html;
+	}
+}
+</script>
+
+    <div style="display: none;" >
+		<@biz.picker_product id="selectProduct" 
+				urlFunction="function(){
+					return '${ctx}/common/product/selectList.html?priceTableId=${pricetableid}' }"
+				button="${i18n.get('选择产品')}"
+				callback="function(data){
+					if(data){
+               			delete data.id ;
+						data['prdNm'] = data.productName;
+						data['prdUnt'] = data.unitLable;
+						data['prdSprc'] = data.catalogPriceShow1;
+						data['prdTyp'] = data.proModel;
+						data['materCode'] = data.materielCode;
+						data['prdCtg'] = data.crmCategoryLable;
+						data['prdCtgid'] = data.crmCategory;
+						data['proId'] = data.proId;
+						data['goldPrc'] = data.catalogPriceShow;
+					    data['proDesc'] = data.proDesc;
+					    data['salCtg'] = data.displayCatalogName;
+					    data['optTxt2']=data.optTxt2
+					    data['act'] = data.productName;
+					    
+					    $('#prjlst').jqGrid('setRowData',selectId,data);
+					 }
+				}"
+		/>
+	</div>
+
+
+	<div style="display: none;" >
+		<@biz.picker_product id="selectProductMulti" urlFunction="function(){return '${ctx}/common/product/multiSelectList.html?priceTableId=${pricetableid}';}"
+				button="${i18n.get('批量选择产品')}" 
+				callback="function(datas){
+					if(datas){
+                 		addRowBatch(datas);
+					 }
+				}"
+		/>
+	</div>
+
+
+	<div style="display: none;" >
+		<@biz.picker_product id="noStdProductSelectLst" urlFunction="function(){return '${ctx}/common/product/selectNoPrdList.html?priceTableId=${pricetableid}';}"
+				button="${i18n.get('批量选择产品')}" 
+				callback="function(datas){
+					if(datas){
+                 		addNoStdProdRowBatch(datas);
+					 }
+				}"
+		/>
+	</div>
+
+
+</@pui.body>
+</#escape>
+

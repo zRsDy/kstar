@@ -1,0 +1,37 @@
+@charset "utf-8";
+/* --情景分析样式--*/
+.showmessage{color:#222;height:40px;line-height:40px;text-shadow:1px 1px 0 #fe6767,-1px -1px 0 #fe6767;}
+.color_num1{background:#F1F1F1;border:1px solid #D9D9D9;color:#444;float:left;font-size:12px;font-weight:bold;letter-spacing:10px;margin-left:15px;text-align:right;width:175px;}
+.color_num2{color:#444;float:left;font-size:12px;font-weight:bold;letter-spacing:10px;text-align:left;text-indent:7px;width:20px;}
+.color_num3{background:#F1F1F1;border:1px solid #D9D9D9;color:#444;float:left;font-size:12px;font-weight:bold;letter-spacing:10px;text-align:left;text-indent:5px;width:170px;}
+.shownum{height:40px;line-height:30px;overflow:hidden;}
+.overlay_btn{text-align:center;}
+
+.overlay_btn{text-align:center;}
+.dataTables_length label{margin-left:20px;color:#333;}
+.DataTables_sort_wrapper{text-align:left;width:100%;}
+table.dataTable thead th.noimg{padding:3px 5px;}
+table.dataTable thead th.noimg span{display:none;}
+table.dataTable thead th.noimg div.DataTables_sort_wrapper{text-align:center!important;}
+.dataTables_filter label{color:#333;}
+.form_bg dl.form_wrap dd table{margin-top:-18px;}
+.scenarioReportpart{width:48.8888888889%;height:350px;float:left;margin:5px;text-align:center;border:1px solid #c9dcf7;}
+
+/*--Table表格--*/
+.openable_tbody2 p{font-size:11px;line-height:17px;padding:0;}
+.openable_tbody2 td{padding-bottom:5px;padding-top:5px;text-align:center;vertical-align:middle;}
+.openable_tbody2 th{padding:5px;text-align:center;vertical-align:middle;}
+.openable_tbody2 tr.total td{background:#ddd;font-weight:bold;}
+
+/*--EC模拟报表--*/
+.form_bg{overflow:hidden;zoom:1;background:#fff;border:solid #ccc;border-width:0 1px 1px;margin:4px;}
+.form_title{height:26px;line-height:26px;padding:0 10px;background:#004cfe;color:#fff;font-size:13px;font-weight:bold;}
+.form_wrap{zoom:1;margin:10px 10px 0;}
+.form_wrap dt{font-size:12px;height:24px;line-height:24px;padding:0 20px;background:#d9e4ff;}
+.form_wrap dd{float:left;width:48%;overflow:;}
+.form_wrap dd.three{float:left;width:33%;overflow:;}
+.form_list{margin:0 auto;zoom:1;overflow:hidden;}
+.form_list li{padding:4px 0 0 40%;width:60%;float:left;min-height:26px;}
+.form_list li label{float:left;margin-left:-200px;width:200px;text-align:right;font-style:normal;height:24px;line-height:24px;}
+.form_list li select{width:180px;height:22px;line-height:22px;border:1px solid #669bdc;}
+.form_list li input.ipt_text{width:178px;height:20px;line-height:20px;text-indent:4px;border:1px solid #669bdc;}

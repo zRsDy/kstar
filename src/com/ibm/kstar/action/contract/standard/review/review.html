@@ -1,0 +1,299 @@
+
+<#escape x as x?html>
+
+
+	<#if (permission['P05ConT7ProReviewAdd'])?? || (permission['P05ChangeT5ProReviewAdd'])?? || (permission['P05PIT7ProReviewAdd'])??  >
+		<#assign addProdPer='true' >
+	</#if>
+	<#if (permission['P05ConT7ProReviewEdit'])?? || (permission['P05ChangeT5ProReviewEdit'])?? || (permission['P05PIT7ProReviewEdit'])??   >
+		<#assign editProdPer='true'>
+	</#if>
+	<#if (permission['P05ConT7ProReviewDelete'])??  || (permission['P05ChangeT5ProReviewDelete'])?? || (permission['P05PIT7ProReviewDelete'])??  >
+		<#assign delProdPer='true'>
+	</#if>
+	<#if (permission['P05ConT7ProReviewStartReview'])??  || (permission['P05ChangeT5ProReviewStartReview'])?? || (permission['P05PIT7ProReviewStartReview'])??  >
+		<#assign startRevPer='true'>
+	</#if>
+	<#if (permission['P05ConT7ProReviewReviewComplete'])??  || (permission['P05ChangeT5ProReviewReviewComplete'])?? || (permission['P05PIT7ProReviewReviewComplete'])??  >
+		<#assign endRevPer='true'>
+	</#if> 
+	<#if (permission['P05ConT8ReviewHistoryFlowchar'])??  || (permission['P05ChangeT5ProReviewFlowchart'])?? || (permission['P05PIT7ProReviewFlowchart'])??  >
+		<#assign flowcharPer='true'>
+	</#if>
+	<#if (permission['P05ConT8ReviewHistoryRevHistory'])??  || (permission['P05ChangeT5ProReviewHistory'])?? || (permission['P05PIT7ProReviewHistory'])??  >
+		<#assign flowHistoryPer='true'>
+	</#if>
+
+<@form.table id="prjevlLst" 
+	class="col-xs-12"
+	title="${i18n.get('合同评审')}" 
+	checkbox="true"
+	url = "${ctx}/standard/review/page.html?contrId=${contrId}" 
+	rowNum = "20" 
+	editURL=  "${editURL!}" 
+	deleteURL =  "${deleteURL!}" 
+	colModel = "[
+		{name:'id',label:'${i18n.get('评审')}ID',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'seqno',label:'${i18n.get('序号')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'evlTyp',label:'${i18n.get('评审类别')}',hidden:true,width:200,sortable:false,align:'center' },
+		{name:'evlTypDesc',label:'${i18n.get('评审类别')}',hidden:false,width:200,sortable:false,align:'center' },
+		{name:'evlSt',label:'${i18n.get('评审状态')}',hidden:true,width:150,sortable:false,align:'center' },
+		{name:'evlStDesc',label:'${i18n.get('评审状态')}',hidden:false,width:150,sortable:false,align:'center' },
+		{name:'sbmDt',label:'${i18n.get('提交时间')}',hidden:true,width:150,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate(cellvalue) }},
+		{name:'evlRs',label:'${i18n.get('评审结论')}',hidden:true,width:150,sortable:false,align:'center' },
+		{name:'evlMm',label:'${i18n.get('评审人')}',hidden:false,width:200,sortable:false,align:'center' },
+		{name:'evlSg',label:'${i18n.get('评审人意见')}',hidden:false,width:650,sortable:false,align:'center' },
+		{name:'finDt',label:'${i18n.get('评审完成时间')}',hidden:true,width:150,sortable:false,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }}
+		]" 
+		search="false"
+		ondblClickRow= "function(selectedData){
+			debugger;
+			if(${flowcharPer!'false'}){
+				parent.dialog('${i18n.get('流程图')}','${ctx}/contrstdprocess/flowDesign.html?id='+selected_prjevlLst.id,window);
+			}
+		}"
+		buttons = "[
+						{
+				  			id:'addstdRevButton',
+				  			label : '${i18n.get('新增')}',
+							own : ${addProdPer!'false'},
+							handler : function(e,rowData){
+							    var cType = $('#contrRevFormCTp').val();
+								var addURL='${ctx}/standard/review/add.html?quotCode=${contrId}&typ=${typ}&contrRevFormCTp='+cType ;
+								parent.dialog('${i18n.get('新增')}', addURL ,window);
+							}
+						},
+						{
+				  			id:'editstdRevButton',
+				  			label : '${i18n.get('修改')}',
+							own : ${editProdPer!'false'},
+							handler : function(e,rowData){
+								$('#prjevlLst').trigger('blur');
+								if(!selected_prjevlLst){
+								  　　	alert('${i18n.get('请选择要编辑的行数据')}');
+								  　　	return;		
+								}else{
+									bootbox.confirm('${i18n.get('您确定要修改该记录吗')}' , function(result) {
+										if(result) { 
+											var editURL='${ctx}/standard/review/edit.html?id='+selected_prjevlLst.id;
+											parent.dialog('${i18n.get('新增')}', editURL ,window);
+										}
+									});
+								}
+							}
+						},
+						{
+				  			id:'delstdRevButton',
+				  			label : '${i18n.get('删除')}',
+							own : ${delProdPer!'false'},
+							handler : function(e,rowData){
+								debugger;
+								var delid = $('#prjevlLst').jqGrid('getGridParam','selarrrow');
+								$('#prjevlLst').trigger('blur');
+								if(delid.length == 0){
+								  　　	alert('${i18n.get('请选择要删除的行数据')}');
+								  　　	return;		
+								}else{
+									var da={}; 
+									d=[];
+									
+									$.each(delid,function(i,item){
+										d.push(item);
+									})
+									da.ids = d;
+									bootbox.confirm('${i18n.get('您确定要删除该记录吗')}' , function(result) {
+										if(result) { 
+											var dialog = bootbox.dialog({
+											    message: '${i18n.get('数据删除中')}......',
+											    closeButton: false
+											});
+											ajax({
+												type:'post',
+												url : '${ctx}/standard/review/delete.html',  
+												dataType : 'json',
+												data: da,
+												success : function(result) {
+													reload_prjevlLst();
+													dialog.modal('hide');
+													alert('${i18n.get('操作成功')}！'); 
+													window.location.reload(); 
+												},
+												error : function(result){
+													dialog.modal('hide');
+												}
+											});
+										}
+									});
+								}
+							}
+						},
+				  		{
+				  			id:'start',
+				  			label : '${i18n.get('启动评审')}',
+				  			icon : 'icon-trash',
+							own : ${startRevPer!'false'},
+				  			handler : function(e,rowData){ 
+					  			var da={} ;
+					  			da.contractId = $('#contrId').val();
+					  			var prjrows= $('#prjevlLst').jqGrid('getGridParam','selarrrow');  
+					  			var ids=[];
+					  			var countType = [];
+					  			var flag = true;
+					  			if(prjrows.length>0){	
+							 		$.each(prjrows,function(i,id){
+			 							var item = $('#prjevlLst').jqGrid('getRowData',id);
+							 			ids.push(item.id);
+							 			countType.push(item.evlTypDesc);
+							 		});	
+							 		var flag = checkEvlTypDesc(countType);
+							 		da.ids= ids;
+								    var cType = $('#contrRevFormCTp').val();
+							 		da.typ= '${typ}';
+							 		da.contrRevFormCTp=cType ;
+							 		if(flag){
+							 			bootbox.confirm('${i18n.get('您确定要开启此合同的审批流程吗')}？' , function(result) {
+									if(result) {
+										ajax({
+											type:'post',
+											url : '${ctx}/standard/review/startContractReviewProcess.html',
+											dataType : 'json',
+											data: da,
+											success : function(result) {
+												alert('${i18n.get('合同审批流程已开启')}');
+												reload_prjevlLst();
+												}
+											});
+											}
+										});
+							 		}
+				  				}else{
+				  					alert('${i18n.get('请选择数据')}！');
+				  				}
+				  			}
+				  		},
+				  		{
+				  			id:'complete',
+				  			label : '${i18n.get('评审完成')}',
+				  			icon : 'icon-trash',
+							own : ${endRevPer!'false'},
+				  			handler : function(e,rowData){ 
+				  			var prjrows= $('#prjevlLst').jqGrid('getRowData');  
+				  			if(prjrows.length > 0 || $('#contrType').val() == '${CONTR_STAND_0103.id!''}'){
+				  				var d= {};
+				  				d.contrId='${contrId}';
+				  					bootbox.confirm('${i18n.get('您确定合同评审完成了吗')}？' , function(result) {
+										if(result) {
+											ajax({
+												type:'post',
+												url : '${ctx}/standard/review/completeContrReviewProcess.html',
+												data: d,
+												success : function(result) {
+													reload_prjevlLst();
+													window.location.reload();
+												}
+											});
+										}
+									});
+				  				}else{
+				  					alert('${i18n.get('请先添加评审数据并启动合同评审')}！');
+				  				}
+								
+				  			}
+				  		}, 
+					  		{
+					  			id:'view',
+					  			label : '${i18n.get('审批历史')}',
+					  			icon : 'icon-trash',
+								own : ${flowcharPer!'false'},
+					  			handler : function(e,rowData){
+					  				if(!selected_prjevlLst){
+										alert('${i18n.get('没有选中任何数据')}!');
+										return;
+									}
+									parent.dialog('${i18n.get('流程图')}','${ctx}/contrstdprocess/flowDesign.html?id='+selected_prjevlLst.id,window);
+					  			}
+					  		}
+				  	]" 
+				  	
+				search="false"> 
+	</@form.table> 
+
+
+	<input id = "contrRevFormCTp" name = "contrRevFormCTp" type="hidden" value=""/>
+
+
+<@form.table id="contrHisItem" 
+	class="col-xs-12"
+	title="${i18n.get('审批历史明细')}" 
+	url = "${ctx}/standard/review/hisItem.html?contrId=${contrId}" 
+	rowNum = "100" 
+	shrinkToFit='true'
+	rownumbers = 'true'
+
+	grouping = "true"
+	groupingView = "{ groupField : ['processDefinitionName'] ,groupText : [ '<b>{0}</b>' ]  }"
+	
+	colModel = "[
+		{name:'id',label:'ID',hidden:true,sortable:false,align:'center' },		
+		{name:'activityName',label:'${i18n.get('环节')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'operatorName',label:'${i18n.get('办理人')}',hidden:false,width:100,sortable:false,align:'center' },		
+		{name:'comment',label:'${i18n.get('意见建议')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'startTime',label:'${i18n.get('开始时间')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate(cellvalue) } },
+		{name:'endTime',label:'${i18n.get('结束时间')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate(cellvalue) } },
+		{name:'processDefinitionName',label:'${i18n.get('评审类别')}',hidden:false,width:150,sortable:false,align:'center' }
+		]"
+		onSelectRow= "function(selectedData){
+		}"
+		search="false"
+		> 
+</@form.table> 
+
+
+		
+<script type="text/javascript">
+$(document).ready(function(){
+	var editFlag = "${editFlag}"; 
+	var btns = document.getElementsByTagName("button");
+	if(editFlag=="N"){
+		/* $.each(btns,function(){
+			($(this)).attr("disabled","disabled");
+		}); */
+		$(".btn_prjevlLst").attr("disabled","disabled");
+	}
+	var reviewEditFlag="${reviewEditFlag}";
+	if(reviewEditFlag=="Y"){
+		/* $.each(btns,function(){
+			($(this)).removeAttr("disabled","disabled");
+		}); */
+		$(".btn_prjevlLst").removeAttr("disabled","disabled");
+	}
+	$('#view').removeAttr("disabled","disabled");
+	
+	$("#contrRevFormCTp").val(getContrFormCTp());
+	
+});
+function showView(cellvalue,rowObject){
+	
+	var html="<a  href=\"${ctx}/standard/history/historyview.html?contrId="+rowObject.id +"\" target=\"blank\" id=\"downPdf\">" + cellvalue + "</a>";
+
+	return html;
+}
+
+function checkEvlTypDesc(countType){
+	var flag = true;
+	countType.sort();
+	for(var i = 0; i < countType.length - 1; i++)
+	{
+	   if (countType[i] == countType[i+1])
+	    {
+		   var flag = false;
+	       alert("${i18n.get('请不要选择的相同的评审同时启动：')}" + countType[i]);
+	       break;
+	    }
+	}
+	return flag;
+}
+   
+</script>
+
+</#escape>

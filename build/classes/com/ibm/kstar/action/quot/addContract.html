@@ -1,0 +1,62 @@
+<@pui.body>
+		<@form.panel title="">
+		<@form.form id="t1"
+			success="function(){ 
+				try{
+					parent.currentParent.reload_cnt(); 
+				}catch(e){
+				} 
+			}" 
+			class="form-horizontal">	
+
+					<@form.input
+					id="quotCode"  name="quotCode" 
+					type="hidden"
+					value="${(cntInfo.quotCode)!}" 
+					/>
+					
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="cntId"> ${i18n.get('合同编号')} : </label>
+					  
+					<@form.input
+					id="cntId"  name="cntId" 
+					value="${(cntInfo.cntId)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="cntNm"> ${i18n.get('合同名称')} : </label>
+					  
+					<@form.input
+					id="cntNm"  name="cntNm" 
+					value="${(cntInfo.cntNm)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right"> ${i18n.get('合同类型')} : </label>					  
+					<@form.select  id="cntTyp" name="cntTyp" code="CNTTYPE" idKey='code' style="width:160px;" value="${(cntInfo.cntTyp)!}" /> 
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="cntDt"> ${i18n.get('创建日期')}: </label>					  
+					<@form.input
+					id="cntDt"  name="cntDt" 
+					value="${(cntInfo.cntDt)!}" 
+					/>
+				</div>
+
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info" type="submit">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+</@pui.body>

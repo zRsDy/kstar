@@ -1,0 +1,29 @@
+<#escape x as x?html>
+<@form.table id="tableQuot" 
+	class="col-xs-12"
+height="131px"
+	title="${i18n.get('报价单基本信息列表')}" 
+	url = "${ctx}/custom/baseinfo/info360/quot360Show.html?customCode=${(customInfo.customCode)!}" 
+	rowNum = "5" 
+	colModel = "[
+		{name:'id',label:${i18n.get('报价单ID')}'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'quotCode',label:'${i18n.get('报价单编码')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'quotName',label:'${i18n.get('报价单名称')}',hidden:false,width:200,sortable:false,align:'center' },
+		{name:'customerName',label:'${i18n.get('客户')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'status',label:'${i18n.get('状态')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatstatusArr(cellvalue) } },
+		{name:'salesRep',label:'${i18n.get('销售代表')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'boName',label:'${i18n.get('商机名称')}',hidden:false,width:200,sortable:false,align:'center'},
+		{name:'priceList',label:'${i18n.get('价格表')}',hidden:false,width:200,sortable:false,align:'center' },
+		{name:'currency',label:'${i18n.get('货币')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'amount',label:'${i18n.get('总额')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'creator',label:'${i18n.get('创建人')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'createTime',label:'${i18n.get('创建日期')}',hidden:false,width:100,sortable:false,formatter:function(cellvalue, options){ return formatDate(cellvalue) },align:'center' },
+		{name:'bidResults',label:'${i18n.get('投标结果')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatbidResultsArr(cellvalue) } },
+		{name:'bidResReason',label:'${i18n.get('丢标/赢标原因')}',hidden:false,width:100,sortable:false,align:'center' }
+		]" 
+		 >
+
+
+</@form.table> 
+
+</#escape>

@@ -1,0 +1,278 @@
+<@cui.body>
+<#if (permission["P09RebatePolicyAdd"])??>
+	<#assign addURL="'${ctx}/rebatePolicy/addOrEdit.html'" />
+</#if>
+<#if (permission["P09RebatePolicyEdit"])??>
+	<#assign editURL="true" />
+</#if>
+<#if (permission["P09RebatePolicyDelete"])??>
+	<#assign deleteURL="true" />
+</#if>
+<#if (permission["P09RebatePolicySubmit"])??>
+	<#assign submitURL="true" />
+</#if>
+<#if (permission["P09RebatePolicyCompute"])??>
+	<#assign computeURL="true" />
+</#if>
+
+	<div class="col-xs-12">
+		<@form.table id="policy"
+			class="col-xs-12"
+			title="${i18n.get('返利政策')}"
+			url = "${ctx}/rebatePolicy/page.html"
+			rowNum = "10"
+			addURL = "${addURL!}"
+			colModel = "[
+				{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+				{name:'policyCode',label:'${i18n.get('政策编号')}',hidden:false,width:90,sortable:true,align:'center' }, 
+				{name:'policyName',label:'${i18n.get('政策名称')}',hidden:false,width:170,sortable:true,align:'center' }, 
+				{name:'customName',label:'${i18n.get('客户名称')}',hidden:false,width:150,sortable:true,align:'left' }, 
+				{name:'rebateTypeName',label:'${i18n.get('返利类型')}',hidden:false,width:60,sortable:true,align:'center' }, 
+				{name:'statusName',label:'${i18n.get('状态')}',hidden:false,width:60,sortable:true,align:'center' }, 
+				{name:'currencyName',label:'${i18n.get('货币')}',hidden:false,width:70,sortable:true,align:'center' }, 
+				{name:'startDate',label:'${i18n.get('起始日期')}',hidden:false,width:80,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }}, 
+				{name:'endDate',label:'${i18n.get('结束日期')}',hidden:false,width:80,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+				{name:'organization',label:'${i18n.get('组织')}',hidden:true,width:150,sortable:true,align:'left' }, 
+				{name:'organizationName',label:'${i18n.get('组织')}',hidden:false,width:150,sortable:true,align:'left' }, 
+				{name:'contractCode',label:'${i18n.get('合同编号')}',hidden:false,width:100,sortable:true,align:'center'}, 
+				{name:'agreeCode',label:'${i18n.get('协议编号')}',hidden:false,width:100,sortable:true,align:'center'}, 
+				{name:'salesman',label:'${i18n.get('销售员')}',hidden:false,width:70,sortable:true,align:'center' }, 
+				{name:'explain',label:'${i18n.get('说明')}',hidden:false,width:400,sortable:true,align:'left' }
+			]" 
+			onSelectRow="function(){
+				$('#policyId').val(selected_policy.id);
+				reload_clause();
+			}"
+			onComplete="function(){
+				$('#policyId').val('');
+			}"
+			buttons = "[
+				{
+		  			id:'edit_policy',
+		  			label : '${i18n.get('修改')}',
+		  			icon : 'icon-pencil',
+		  			own : ${editURL!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_policy){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}else{
+							var statusEdit = !canEdit(selected_policy.statusName);
+							parent.dialog('${i18n.get('新增')}', '${ctx}/rebatePolicy/addOrEdit.html?id='+selected_policy.id+'&statusEdit='+statusEdit, window);
+						}
+		  			}
+		  		},
+				{
+		  			id:'delete_policy',
+		  			label : '${i18n.get('删除')}',
+		  			icon : 'icon-trash',
+		  			own : ${deleteURL!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_policy){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}else if(canEdit(selected_policy.statusName)){
+							myAlert(e,'${i18n.get('删除')}');
+							return;
+						}else{
+							bootbox.confirm('${i18n.get('你确定要删除数据吗？')}', function(result) {
+                                if(result){	
+									ajax({
+										url: '${ctx}/rebatePolicy/delete.html',
+										type: 'POST',
+										data: {id:selected_policy.id},
+										success : function(result) {
+											reload_policy();
+											exalert(e,'${i18n.get('删除成功！')}');
+										}
+									});
+								}
+							});
+						}
+		  			}
+		  		},
+				{
+		  			id:'submit_policy',
+		  			label : '${i18n.get('提交')}',
+		  			icon : 'icon-save',
+		  			own : ${submitURL!'false'},
+		  			handler : function(e,rowData){
+		  				var clausedata = $('#clause').jqGrid('getRowData');
+						if(!selected_policy){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}else if(canEdit(selected_policy.statusName)){
+							myAlert(e,'${i18n.get('提交')}');
+							return;
+						}else if(clausedata.length == 0){
+							exalert(e,'${i18n.get('没有条款信息，不能提交！')}');
+							return;
+						}else{
+							bootbox.confirm('${i18n.get('你确定要提交数据吗？')}', function(result) {
+                                if(result){	
+									ajax({
+										url: '${ctx}/rebatePolicy/submit.html',
+										type: 'POST',
+										data: {id:selected_policy.id},
+										success : function(result) {
+											reload_policy();
+											exalert(e,'${i18n.get('提交成功！')}');
+										}
+									});
+								}
+							});
+						}
+		  			}
+		  		},
+		  		{
+		  			id:'compute_policy',
+		  			label : '${i18n.get('计算')}',
+		  			icon : 'icon-save',
+		  			own : ${computeURL!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_policy){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}else if(selected_policy.statusName != '审批通过'){
+							exalert(e,'${i18n.get('只有审批通过后，才能计算!')}');
+							return;
+						}else{
+							ajax({
+								url: '${ctx}/rebatePolicy/compute.html',
+								type: 'POST',
+								data: {id:selected_policy.id},
+								success : function(result) {
+									exalert(e,'${i18n.get('计算成功！')}');
+								}
+							});
+						}
+		  			}
+		  		}
+			]" > 
+			
+			<div class="col-xs-12">
+				<div class="form-group col-xs-2" align="right">${i18n.get('政策编号 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="policyCode" size="30" />
+				</div>	
+				<div class="form-group col-xs-2" align="right">${i18n.get('政策名称 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="policyName" size="30" />
+				</div>
+				<div class="form-group col-xs-2" align="right">${i18n.get('客户名称 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="customName" size="30" />
+				</div>
+			</div> 
+		</@form.table>
+		
+		<#if (permission["P09RebatePolicyClauseAdd"])??>
+			<#assign addURL_clause="true" />
+		</#if>
+		<#if (permission["P09RebatePolicyClauseEdit"])??>
+			<#assign editURL_clause="true" />
+		</#if>
+		<#if (permission["P09RebatePolicyClauseDelete"])??>
+			<#assign deleteURL_clause="'${ctx}/rebatePolicy/deleteClause.html'" />
+		</#if>
+		<div id="clauseDiv">
+		<@form.table id="clause" 
+			class="col-xs-12"
+			title="条款信息${i18n.get('')}"
+			url = "${ctx}/rebatePolicy/pageClause.html"
+			rowNum = "10"
+			deleteURL = "${deleteURL_clause!}"
+			colModel = "[
+				{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+				{name:'productGroupName',label:'${i18n.get('产品组')}',hidden:false,width:250,sortable:true,align:'center' }, 
+				{name:'referenceQuantity',label:'${i18n.get('基准量')}',hidden:false,width:100,sortable:true,align:'center' }, 
+				{name:'leastReturnRate',label:'${i18n.get('至少回款率')}',hidden:false,width:70,sortable:true,align:'center' }, 
+				{name:'finishRate',label:'${i18n.get('完成率')}',hidden:false,width:50,sortable:true,align:'center' }, 
+				{name:'rebateRate',label:'${i18n.get('返利比例（%）')}',hidden:false,width:90,sortable:true,align:'center'}, 
+				{name:'finishRate2',label:'${i18n.get('完成率')}',hidden:false,width:50,sortable:true,align:'center' }, 
+				{name:'rebateRate2',label:'${i18n.get('返利比例（%）')}',hidden:false,width:90,sortable:true,align:'center' }, 
+				{name:'rebateRatio',label:'${i18n.get('返利系数（%）')}',hidden:false,width:90,sortable:true,align:'center' }, 
+				{name:'yearNoGrowth',label:'${i18n.get('同比增长（%）')}',hidden:false,width:90,sortable:true,align:'center' }, 
+				{name:'excessRebate',label:'${i18n.get('超额返利（%）')}',hidden:false,width:90,sortable:true,align:'center' }, 
+				{name:'remark',label:'${i18n.get('备注')}',hidden:false,width:400,sortable:true,align:'left' },
+			]" 
+			searchClick="function(){
+				$('#clauseId').val('');
+			}"
+			buttons = "[
+				{
+		  			id:'add_clause',
+		  			label : '${i18n.get('新增')}',
+		  			icon : 'icon-plus',
+		  			own : ${addURL_clause!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_policy){
+							exalert(e,'${i18n.get('请选择申请单数据！')}');
+							return;
+						}else if(canEdit(selected_policy.statusName)){
+							myAlert(e,'${i18n.get('新增')}');
+							return;
+						}
+						var requestPath = '${ctx}/rebatePolicy/addOrEditClause.html?policyId='+selected_policy.id+'&typeName='+selected_policy.rebateTypeName;
+						parent.dialog('${i18n.get('条款信息')}', requestPath, window);
+		  			}
+		  		},
+		  		{
+		  			id:'edit_clause',
+		  			label : '${i18n.get('修改')}',
+		  			icon : 'icon-pencil',
+		  			own : ${editURL_clause!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_clause){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}else if(!selected_policy){
+							exalert(e,'${i18n.get('没有选中任何申请单号!')}');
+							return;
+						}else{
+							var statusEdit = !canEdit(selected_policy.statusName);
+							var requestPath = '${ctx}/rebatePolicy/addOrEditClause.html?id='+selected_clause.id+'&typeName='+selected_policy.rebateTypeName+'&statusEdit='+statusEdit;
+							parent.dialog('${i18n.get('条款信息')}', requestPath, window);
+						}
+		  			}
+		  		}
+			]" > 
+			
+			<div class="col-xs-12">	
+				<input type="hidden" id="policyId" name="policyId" />
+				<div class="form-group col-xs-2" align="right">${i18n.get('产品组 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="productGroupName" size="30" />
+				</div>
+			</div> 
+		</@form.table>
+		<input type="hidden" id="clauseId" />
+		</div>
+	</div>
+</@cui.body>
+<script type="text/javascript">
+function reload_policy_2(policyId){
+	$("#policyId").val(policyId);
+	$("#clauseId").val('');
+	reload_policy();
+}
+function onComplete_policy(){
+	var policyId = $("#policyId").val();
+	$('#'+policyId).trigger('click');
+}
+
+function reload_clause_2(clauseId){
+	$("#clauseId").val(clauseId);
+	reload_clause();
+}
+function onComplete_clause(){
+	var clauseId = $("#clauseId").val();
+	$('#'+clauseId).trigger('click');
+}
+function canEdit(status){
+	return status != '新建' && status != '已驳回';
+}
+function myAlert(e,type){
+	exalert(e,'只有新建或已驳回的数据可'+type+'!');
+}
+</script>

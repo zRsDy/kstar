@@ -1,0 +1,128 @@
+<#if permission["/LOV/MEMBER/ImportProduct"]?? >
+	<#assign importURL= "'${ctx}/lov/member/importProductModel.html'"   />
+</#if>
+<#if permission["/LOV/MEMBER/ExportProduct"]?? >
+    <#assign exportURL= "'${ctx}/lov/member/exportProductModel.html'"   />
+</#if>
+
+<@pui.body>
+		<div class="col-xs-12"   style="padding-left: 0px;">
+			<table style="width: 100%" >
+				<tr>
+					<!-- //TODO 临时代码 -->
+					<#if LOGIN_USER.employee.no = 'AAAA' >
+						<#assign movable = 'true' />
+					</#if>
+					<#if lovGroup?? && lovGroup.treeFlag?? && lovGroup.treeFlag == 'Y'>
+						<td id="treeTd" style="width: 300px" valign="top">
+							<@form.panel title="${i18n.get('维度树')}" style='height:100'>
+								<@plug.tree 
+								checkbox="false" 
+								id="tree1" 
+								moveEdit = "${movable!'false'}"
+								onMove = "function(dragNode,newParentNode,moveType){
+									var data = {
+										dragNodeId : dragNode[0].id,
+										newParentNodeId : newParentNode != null ? newParentNode.id : null
+									}
+									if(moveType == 'inner'){
+										ajax({
+											type:'post',
+											url : '${ctx}/lov/member/move.html',
+											data: data,
+											success : function(result) {
+												alert('${i18n.get('移动成功')}');
+											},
+											error : function(result) {
+												alert('${i18n.get('移动失败')}');
+											}
+										});
+									}else{
+										reload_tree1();
+									}
+								}"
+								asyncUrl='${ctx}/lov/member/tree.html?groupId=${lovGroup.id}'
+								onClick=" function(event, treeId, treeNode){
+							  		$('#parentId').val(treeNode.id);
+							  		reload_t1();
+							  	}"
+							  	
+							  	onRightClick="function(event, treeId, treeNode) {
+								   	var treeObj = $.fn.zTree.getZTreeObj(treeId);
+									var nodes = treeObj.getNodes();
+									if (nodes.length>0) {
+										treeObj.cancelSelectedNode();
+									}
+									$('#parentId').val('');
+									reload_t1();
+								}"
+							  	
+							  	isParent="function(data){
+							  		return data.leafFlag == 'N';
+							  	}"
+								/>
+							</@form.panel>
+						</td>
+					</#if>
+					
+					<#if !(lovGroup.lockedFlag)?? || lovGroup.lockedFlag != "N">
+						<#if permission["/LOV/MEMBER/ADD"]?? >
+							<#assign addURL = "'${ctx}/lov/member/add.html?groupId=${lovGroup.id}&parentId=' + $('#parentId').val()" />
+						</#if>
+						
+						<#if permission["/LOV/MEMBER/EDIT"]??>
+							<#assign editURL = "'${ctx}/lov/member/edit.html'" />
+						</#if>
+						
+						<#if permission["/LOV/MEMBER/DELETE"]??>
+							<#assign deleteURL = "'${ctx}/lov/member/delete.html'" />
+						</#if>
+					</#if>
+					<#if lovGroup ?? && lovGroup.code='PRODUCTMODE'>
+						<#assign isReport = "{ name : 'optTxt2', label : '${i18n.get('是否报备')}', width : 150 , sortable:false, align:'center', formatter:function(cellvalue, options){ return (cellvalue==1)?'是':'否' } }," >
+					</#if>
+					<td valign="top">
+						<@form.table id="t1"
+						class="col-xs-12"
+						shrinkToFit = 'true'
+						title="${i18n.get('维度 ：')}${lovGroup.name}"
+						url = "${ctx}/lov/member/page.html?groupId=${lovGroup.id}"
+						rowNum = "20"
+						addURL = "${addURL!}"
+						editURL = "${editURL!}"
+						deleteURL= "${deleteURL!}"
+						importURL = "${importURL!}"
+                        exportURL =  "${exportURL!}"
+						importTempletURL="productModelImportTemplet.html"
+						colModel = "[
+						  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:false,align:'center' }, 
+						  { name : 'code', label : '${i18n.get('编码')}', width : 90 ,sortable:false}, 
+						  { name : 'oldName', label : '${i18n.get('名称')}', width : 150 ,sortable:false },
+						  { name : 'optTxt7', label : '${i18n.get('英文名称')}', width : 150 ,sortable:false },
+						  { name : 'optTxt8', label : '${i18n.get('繁体名称')}', width : 150 ,sortable:false },
+							${isReport!''}
+						  { name : 'parentId', label : '', hidden : true, width : 150 ,sortable:false },
+						  { name : 'memo', label : '${i18n.get('备注')}' ,sortable:false },
+						  { name : 'no', label : '${i18n.get('序号')}' ,sortable:false }
+						  ]"
+						>
+						
+						<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">
+							<input type="hidden" id="parentId" name="parentId" />
+							<div class="form-group col-xs-3">
+								<input type="text" id="searchKey" name="searchKey" placeholder='查询关键字' />
+							</div>	
+							<div class="form-group col-xs-2">
+								<button type="submit" class="btn btn-info" > 
+									<i class="icon-search bigger-110"></i>
+									${i18n.get('查询')}
+								</button>
+							</div>
+						</div>
+						</@form.table>
+					</td>
+				</tr>
+			</table>	
+		</div>
+		
+</@pui.body>

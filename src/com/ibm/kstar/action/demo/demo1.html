@@ -1,0 +1,50 @@
+<@pui.body nav1="${i18n.get('用户管理123')}" nav2="${i18n.get('新增/编辑')}" type="popup">
+<div class="hr hr-18 dotted hr-double"></div>
+<div class="col-xs-12" >
+    <@form.form id="t1"
+    success="function(){parent.currentParent.reload_t1(); }" class="form-horizontal"
+    >
+
+    <div class="form-group" >
+        <label class="col-sm-3 control-label no-padding-right" for="ss"> ${i18n.get('编码123123 :')} </label>
+        <@form.select
+        code="TERRITORY"
+        id="ts"
+        name="ts"
+        placeholder=""
+        tip=""
+        value="297edff85a7e1704015a7e3cd0e1000a"
+        />
+    </div>
+    <div class="form-group" >
+        <@form.select
+            code="TERRITORY"
+            level="6"
+            style="width: 250px"
+            url="function(){ return '${ctx}/lov/member/selectSkip.html?parentId=297edff85a7e1704015a7e3cd0e1000a' ; }"
+            id="ss"
+            name="ss"
+            placeholder=""
+            tip=""
+            value=""
+        />
+    </div>
+
+
+    <div class="hr hr-18 dotted hr-double"></div>
+    <div class="clearfix form-actions">
+        <div class="col-md-offset-5 col-md-7">
+            <button class="btn btn-info" type="submit">
+                <i class="icon-ok bigger-110"></i>
+                ${i18n.get('保存')}
+            </button>
+            &nbsp; &nbsp; &nbsp;
+            <button class="btn" type="button" onclick="javascript:api.close()">
+                <i class="icon-undo bigger-110"></i>
+                ${i18n.get('关闭')}
+            </button>
+        </div>
+    </div>
+</@form.form>
+</div>
+</@pui.body>

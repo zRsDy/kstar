@@ -1,0 +1,38 @@
+<@pui.body>
+	<div class="col-xs-12">
+			<table style="width: 100%" >
+				<tr>
+					<td id="treeTd" style="width: 300px" valign="top" rowspan="2">
+						<@form.panel title="${i18n.get('维度树')}" style='height:100'>
+							<@plug.tree 
+							checkbox="false" 
+							id="tree1" 
+							moveEdit = 'true'
+							asyncUrl='${ctx}/lov/member/selectPriceOrgTree.html?groupId=ORG&leafFlag=N'
+						  	ondblClick=" function(event, treeId, treeNode){
+						  		var selected_select = {};
+						  		selected_select.id = treeNode.id;
+						  		selected_select.name = treeNode.name;
+						  		selected_select.optTxt3 = treeNode.optTxt3;
+						  		parent.currentParent.${pickerId}_callback(selected_select);
+								frameElement.api.close();
+						  	}"
+						  	dataFilter="function(data){
+						  		if(data.leafFlag == 'Y'){
+						  			data.icon = '${ctx}/assets/css/zTreeStyle/img/diy/3.png'
+						  			if(data.optTxt2 == 'Y'){
+						  				data.icon = '${ctx}/assets/css/zTreeStyle/img/diy/5.png'
+						  			}
+						  		}
+						  		return data;
+						  	}"
+						  	isParent="function(data){
+						  		return data.leafFlag == 'Y';
+						  	}"
+							/>
+						</@form.panel>
+					</td>
+				</tr>
+			</table>	
+		</div>
+</@pui.body>

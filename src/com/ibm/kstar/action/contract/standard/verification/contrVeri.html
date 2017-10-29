@@ -1,0 +1,207 @@
+<@pui.body>
+<@form.panel title="${i18n.get('借货核销')}">
+<table>
+<tbody> 
+    <tr>
+    <td><@form.table id="loanVeriDetlLst" 
+			class="col-xs-12"
+			title="${i18n.get('待核销借货合同列表')}"
+			datatype = "local" 
+			rowNum = "200" 
+			shrinkToFit = 'true'
+			checkbox = "true"
+			colModel = "[
+				{name:'id',label:'ID',hidden:true,width:10,sortable:false,align:'center' },
+				{name:'loanPrjlstId',label:'loan${i18n.get('工程清单行')}ID',hidden:true,width:10,sortable:false,align:'center' },
+				{name:'custId',label:'custId',hidden:true,width:10,sortable:false,align:'center' },
+				{name:'proId',label:'proId',hidden:true,width:10,sortable:false,align:'center' },
+				{name:'proErpCategory',label:'proErpCategory',hidden:true,width:10,sortable:false,align:'center' },
+				{name:'veriNo',label:'${i18n.get('核销单编号')}',hidden:true,width:100,sortable:false,align:'center' },
+				{name:'loanId',label:'${i18n.get('借货合同')}ID',hidden:true,width:100,sortable:false,align:'center' },		
+				{name:'loanCode',label:'${i18n.get('借货合同编号')}',hidden:false,width:100,sortable:false,align:'center' },
+				{name:'prdTyp',label:'${i18n.get('产品型号')}',hidden:false,width:100,sortable:false,align:'center' },
+				{name:'proName',label:'${i18n.get('产品名称')}',hidden:false,width:100,sortable:false,align:'center' },
+	    	  	{name:'prdPrc', label : '${i18n.get('单价')}', width : 120 ,sortable:false,align:'center'  },
+				{name:'loanNum',label:'${i18n.get('原数量')}',hidden:false,width:100,sortable:false,align:'center'},
+				{name:'oriNotVerNum',label:'${i18n.get('原未核销数量')}',hidden:false,width:100,sortable:false,align:'center'},
+				{name:'oriVerdNum',label:'${i18n.get('原已核销数量')}',hidden:false,width:100,sortable:false,align:'center'},
+				{name:'curVeriNum',label:'${i18n.get('本次核销数量')}',hidden:false,width:100,sortable:false,align:'center',editable : true  },
+				{name:'notVeriedNum',label:'${i18n.get('未核销数量')}',hidden:false,width:100,sortable:false,align:'center' },
+				{name:'veriedNum',label:'${i18n.get('已核销数量')}',hidden:false,width:100,sortable:false,align:'center'}
+				]"
+		
+				onSelectRow= "function(selectedData){
+				}"
+				
+				ondblClickRow = "function(id){
+					var rowData = $('#loanVeriDetlLst').jqGrid('getRowData',id);
+					var oriPrjPrc = '${oriPrjPrdPrc!0}';
+					var loanPrc = rowData.prdPrc==''?0:rowData.prdPrc
+					if(oriPrjPrc != loanPrc){
+						alert('${i18n.get('合同单价与借货单价不一致')}，${i18n.get('请做借货变更申请')}，${i18n.get('变更单价')}！');
+						$('#loanVeriDetlLst').trigger('blur');
+						return ; 
+					} 
+					var old_curNum = $('#loanVeriDetlLst input[id='+id+'_curVeriNum]').val();
+					old_curNum=(old_curNum==''||old_curNum=='undefined')?'0':old_curNum;
+					$('#loanVeriDetlLst input[id='+id+'_curVeriNum]').bind('input',function(event){
+						
+						var curval=$(this).val();
+						if(isNaN(curval)){
+							alert('${i18n.get('核销数量必须为数字')}');
+							$(this).val(old_curNum);
+						}
+						
+						if(parseFloat(curval) > parseFloat(rowData.oriNotVerNum==''?0:rowData.oriNotVerNum)){
+							$(this).val(rowData.oriNotVerNum==''?0:rowData.oriNotVerNum);
+							curval = rowData.oriNotVerNum==''?0:rowData.oriNotVerNum;
+						}
+						var curNum=parseFloat(curval==''?0:curval);
+						var notNum=parseFloat((rowData.oriNotVerNum=='' || rowData.oriNotVerNum=='undefined')?0:rowData.oriNotVerNum)-curNum;
+						var vdNum= parseFloat((rowData.oriVerdNum=='' || rowData.oriVerdNum=='undefined')?0:rowData.oriVerdNum) + curNum;
+						curNum==isNaN(curNum)?0:curNum;
+						notNum==isNaN(notNum)?0:notNum;
+						vdNum==isNaN(vdNum)?0:vdNum;
+						$('#loanVeriDetlLst').jqGrid('setRowData',id, {  notVeriedNum : notNum , veriedNum : vdNum });
+				 	});
+				}"
+				
+				onLineEditAfter = "function(id,rowData){
+					var rowData = $('#loanVeriDetlLst').jqGrid('getRowData',id);
+					var amt = '${amt!0}';
+					debugger;
+					if(parseFloat(rowData.curVeriNum)>parseFloat(amt)){
+						alert('${i18n.get('核销数量必须小于等于工程清单所选行数量!')}');
+						$('#loanVeriDetlLst').jqGrid('setRowData',id, {  curVeriNum : 0 });
+					}
+				}"
+				
+				buttons = "[  ]" 
+				search="false"
+				> 
+				
+		</@form.table>
+	</td>
+	</tr>
+	<tr style="display:none">
+    <td>
+		<@form.table id="loanPrjlst"
+			class="col-xs-12"
+			shrinkToFit = 'true' 
+			checkbox = "true"
+			title="${i18n.get('待核销借货合同列表')}"
+			url = "${ctx}/loan/prjlst/veriPrjLstPage.html?contrId=${contrId}&oriPrjlstId=${oriPrjlstId}&createDt=${createDt?datetime}"
+			rowNum = "200"
+			colModel = "[
+			  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:false,align:'center' }, 
+			  {	name : 'proId',label:'proId',hidden:true,width:10,sortable:false,align:'center' },
+			  {	name : 'proErpCategory',label:'proErpCategory',hidden:true,width:10,sortable:false,align:'center' },
+			  { name : 'quotCode', label : '${i18n.get('借货合同')}ID',hidden:true, width : 100 ,sortable:false },
+			  { name : 'buzCode', label : '${i18n.get('借货合同号')}',hidden:false, width : 100 ,sortable:false },
+			  { name : 'prdNm', label : '${i18n.get('产品名称')}',hidden:false, width : 200 ,sortable:false },
+			  { name : 'prdCtg', label : '${i18n.get('产品分类')}',hidden:false, width : 80 ,sortable:false ,editable : false },
+			  { name : 'prdTyp', label : '${i18n.get('产品型号')}',hidden:false, width : 80 ,sortable:false ,editable : false },
+	    	  {	name : 'prdPrc', label : '${i18n.get('单价')}', width : 120 ,sortable:false  },
+			  { name : 'amt', label : '${i18n.get('数量')}', hidden : true, width : 50 ,sortable:false,editable : false },
+			  { name : 'veriedNum', label : '${i18n.get('已核销数量')}',hidden : true, width : 50 ,sortable:false ,editable : false},
+			  { name : 'notVeriNum', label : '${i18n.get('未核销数量')}',hidden:false, width : 50 ,sortable:false ,editable : false}
+			  ]"							  
+			onSelectRow= "function(selectedData){ }"
+			onComplete="function(){ getSelPrjlst(); }"
+			buttons = "[]"
+			search="false"
+		>
+	
+		</@form.table>
+    </td>
+	</tr>
+	<tr>
+	<td colspan="3" >
+	<@form.form id="contrVeriDetlf" 
+			action="${ctx}/standard/verification/add.html?contrId=${contrId}&oriPrjlstId=${oriPrjlstId}"
+			success="function(){
+				alert('${i18n.get('保存成功')}！'); 
+				parent.currentParent2.reload_contrVeriDetlLst();  
+				parent.currentParent2.reload_prjlst(); 
+			}" 
+		 	class="form-horizontal"
+		 	before="function(){
+		 		var ids = $('#loanVeriDetlLst').jqGrid('getGridParam','selarrrow'); 
+				debugger;
+				if(ids.length<=0){
+					alert('${i18n.get('请勾选要提交的数据')}');
+					return false; 
+				}
+				var datas = [];
+		 		$.each(ids,function(i,id){
+		 			var data = $('#loanVeriDetlLst').jqGrid('getRowData',id);
+		 			if(data.curVeriNum!=null && data.curVeriNum!='undefined' && data.curVeriNum!='' && data.curVeriNum!=0 ){
+		 				datas.push(data);
+		 			}
+		 		}); 
+		 		if(datas.length <= 0){
+		 			alert('${i18n.get('请填写本次核销数量')}，${i18n.get('数量不能等于')}0');
+					return false; 
+		 		}
+		 	}"
+			postData="function(){
+		 		var obj ={};
+				var ids = $('#loanVeriDetlLst').jqGrid('getGridParam','selarrrow'); 
+				var datas = [];
+		 		$.each(ids,function(i,id){
+		 			var data = $('#loanVeriDetlLst').jqGrid('getRowData',id);
+		 			if(data.curVeriNum!=null && data.curVeriNum!='undefined' && data.curVeriNum!='' && data.curVeriNum!=0 ){
+		 				datas.push(data);
+		 			}
+		 		}); 
+		 		obj.loanVeriDtlList=datas; 
+		 		return obj;
+			}"
+	 >
+		<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button" onclick="submitVer()">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+			
+		</@form.form>
+		</td></tr>
+  </tbody>
+</table>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#loanPrjlst').jqGrid('setGridParam', {multiselect: 'true'});
+});
+
+var loanVRidx=1;
+function getSelPrjlst(){
+	//var ids = $('#loanPrjlst').jqGrid('getGridParam','selarrrow'); 
+	var ids = $('#loanPrjlst').jqGrid('getRowData'); 
+	if(ids.length<=0){
+		return ; 
+	}
+	var datas = [];
+	$.each(ids,function(i,id){
+		var data = ids[i]; //$('#loanPrjlst').jqGrid('getRowData',id);
+		$('#loanVeriDetlLst').jqGrid('addRowData',loanVRidx, {id:loanVRidx,loanPrjlstId:data.id,proId:data.proId,proErpCategory:data.proErpCategory,loanId:data.quotCode, loanCode:data.buzCode, prdTyp:data.prdTyp,proName: data.prdNm, notVeriedNum:data.notVeriNum,veriedNum:data.veriedNum, prdPrc:data.prdPrc, loanNum:data.amt, oriNotVerNum:data.notVeriNum, oriVerdNum: data.veriedNum});
+		loanVRidx++; 
+	}); 
+}
+
+function submitVer(){
+	$('#loanVeriDetlLst').trigger('blur');
+}
+</script>
+				
+   </@form.panel>
+</@pui.body>

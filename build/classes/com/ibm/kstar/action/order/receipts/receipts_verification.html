@@ -1,0 +1,440 @@
+<@pui.body>
+<style type="text/css">
+	table td {
+		padding:1px;
+		border: solid #ededed;
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	select {
+		width: 180px;
+	}
+</style>
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		$("#ui-id-2").bind("click",function(event){
+			reload_verificationListForm();
+		});
+
+	});
+
+	$(window).resize(function(){
+		$("#receiptsListFrom").setGridWidth($(window).width()-30);
+	});
+
+	function verification_receipts(){
+		var b = true;
+
+		var receid = $('#receiptsListFrom').jqGrid('getGridParam','selrow');
+		if(!receid || receid.length <= 0 ){
+			alert('${i18n.get('请至少选择一行收款单')}');
+			b = false;
+			return b;
+		}else{
+			var receiptsData = $('#receiptsListFrom').jqGrid('getRowData',receid);
+			if(receiptsData.status != '20' && receiptsData.status != '30'){
+				alert('${i18n.get('核销失败，收款单状态不支持核销！')}');
+				b = false;
+				return b;
+			}
+		}
+
+		var ids = $('#contractReceiptListForm').jqGrid('getGridParam','selarrrow');
+		if(!ids || ids.length <= 0 ){
+			b = confirm("${i18n.get('您没有选择合同计划收款明细，系统将根据回款到期时间自动核销，请确认是否继续核销？')}");
+		}else{
+			$.each(ids,function(i,id){
+				var data = $('#contractReceiptListForm').jqGrid('getRowData',id);
+				if(!data.amount || data.amount.length == 0 || data.amount <= 0 ){
+					alert('${i18n.get('合同收款计划行【')}'+data.receiptsPlan+'${i18n.get('】的核销金额不能为空，且必须大于零')}');
+					b = false;
+					return b;
+				}
+	 		});
+		}
+		if(b){
+			$("#contractReceiptListForm").trigger('blur');
+			$("#save").click();
+		}
+	}
+
+	function changeValue(checkbox_id,id){
+		var checked = $("#"+checkbox_id).is(':checked')
+		if(checked){
+			$("#"+id).val(1);
+		}else{
+			$("#"+id).val(0);
+		}
+
+	}
+
+	//删除核销明细
+	function deleteVerification(e,isBusiness){
+		var ids = $('#verificationListForm').jqGrid('getGridParam','selarrrow');
+	     if(!ids || ids.length <= 0 ){
+	      　　	exalert(e,'${i18n.get('请选择要删除的行')}');
+	      　　	return;
+	     }else{
+             //收款核销界面核销明细只有借货合同才能由商务进行删除操作
+             var rows = ids.map(function (id,i) {
+                  return $('#verificationListForm').jqGrid('getRowData',id);
+             });
+
+	         var jhRows = [];
+             $.each(rows, function (i, row) {
+                 if (row.contractCode && (row.contractCode.indexOf('KSTAR-JH') == 0)) {
+                     jhRows.push(row);
+                 }
+             });
+
+             if (!isBusiness) {
+                 if (jhRows.length > 0) {
+                     exalert(e, '${i18n.get('你不是商务，不能删除选择的行中第')}' + jhRows.map(function (e,i) { return i+1 + '${i18n.get('个')}'; }).join(',') + '${i18n.get('是借货合同的核销明细')}');
+                     return;
+                 }
+             }
+
+             bootbox.confirm('${i18n.get('是否删除选择的行')}', function (result) {
+                 if (result) {
+                     $.ajax({
+                         type: "POST",
+                         url: "${ctx}/receipts/deleteVerification.html",
+                         async: true,
+                         data: "id=" + ids,
+                         dataType: 'json',
+                         success: function (data) {
+                             reload_receiptsListFrom();
+                             reload_contractReceiptListForm();
+                             reload_verificationListForm();
+                         },
+                         error: function (e) {
+                             var msg = eval("(" + e.responseText + ")");
+                             if (msg != '' && msg != null && msg != 'undefined' && msg.message) {
+                                 alert(msg.message);
+                             } else {
+                                 alert("${i18n.get('操作失败，请联系管理员')}");
+                             }
+
+                         }
+                     });
+                 }
+             });
+	     }
+	}
+
+	//退回收款
+	function returnReceipt(rowData){
+		if(!rowData){
+			alert('${i18n.get('请选择需要退回商务的收款行')}');
+		}
+		if(confirm('${i18n.get('是否将收款单退回至商务')}')){
+			if(rowData.veriAmount > 0 || rowData.status != '20'){
+				alert('${i18n.get('收款已存在核销，不允许退回！')}');
+			}else{
+				$.ajax({
+	 				type : "POST",
+	 				url : "${ctx}/receipts/returnReceipt.html",
+	 				async: true,
+	 				data : "id="+ rowData.id ,
+	 				dataType : 'json',
+	 				success:function(data){
+	 					$('#receiptsListFrom').jqGrid('delRowData', rowData.id);
+	 				},
+	 				error: function(e) {
+	 					 var msg = eval("("+e.responseText+")");
+	 					 if(msg !='' && msg != null && msg != 'undefined' && msg.message){
+	 						 alert(msg.message);
+	 					 }else{
+	 						alert("${i18n.get('操作失败，请联系管理员')}");
+	 					 }
+	 				}
+	 			});
+			}
+		}
+	}
+
+	function splitReceipts(id){
+		if(!id){
+			alert('${i18n.get('请选择一行收款单进行拆分！')}');
+		}else{
+			parent.dialog2('${i18n.get('订单拆分')}','${ctx}/receipts/splitReceipts.html?id='+id,'',window,600,400);
+		}
+	}
+
+	var canVerification = false;
+
+</script>
+	<#if permission["P06ReceiptsListFromSplit"]?? >
+		<#assign splitReceipts= "true"   />
+	</#if>
+
+	<div class="col-xs-12" >
+		<@form.form id="recriptsVerificationForm"
+			action="${ctx}/receipts/verificationReceipts.html?"
+			success="function(){
+				alert('${i18n.get('核销成功！')}'); 
+				reload_receiptsListFrom(); 
+				reload_contractReceiptListForm(); 
+			}"
+		 	class="form-horizontal"
+			postData="function(){
+				var ids = $('#contractReceiptListForm').jqGrid('getGridParam','selarrrow'); 
+				var datas = [];
+		 		$.each(ids,function(i,id){
+		 			var data = $('#contractReceiptListForm').jqGrid('getRowData',id);
+		 			datas.push(data);
+		 		});
+		 		var obj = {'contractReceiptsList':datas};
+		 		return obj;
+			}"
+		 >
+
+		<input type="hidden" id="receiptsId" name="receiptsId" />
+		<button id="save" style="display: none" class="btn btn-info submit" type="button" ></button>
+		</@form.form>
+		<@form.table id="receiptsListFrom"
+			class="col-xs-12"
+			title="${i18n.get('收款记录')}"
+			url = "${ctx}/receipts/page.html?op=verification"
+			rowNum = "10"
+			rowNumList = "[10,100,200,300,400,500,1000]"
+			editURL= "'${ctx}/receipts/edit.html?op=verification'"
+			colModel = "[
+				{name:'id',label:'',hidden:true,width:100,sortable:false,align:'center' }, 
+				{name:'businessName',label:'${i18n.get('业务实体名称')}',hidden:false,width:230,sortable:true,align:'center' },
+				{name:'businessCode',label:'${i18n.get('业务实体编号')}',hidden:true,width:50,sortable:true,align:'center' },
+				{name:'receiptsCode',label:'${i18n.get('收款单号')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'receiptsDate',label:' ${i18n.get('收款日期')}',hidden:false,width:90,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+				{name:'veriAmount',label:'${i18n.get('已核销金额')}',hidden:false,width:100,sortable:true,align:'center'},
+				{name:'notVeriAmount',label:'${i18n.get('未核销金额')}',hidden:false,width:100,sortable:false,align:'center'},
+				{name:'paymentCustomerName',label:'${i18n.get('付款客户')}',hidden:false,width:260	,sortable:true,align:'center' },
+				{name:'paymentCustomerId',label:'${i18n.get('付款客户ID')}',hidden:true,width:100,sortable:false,align:'center' },
+				{name:'erpCust',label:'${i18n.get('是否ERP客户')}',hidden:false,width:80,sortable:true,align:'center' },
+				{name:'correctCustName',label:'${i18n.get('更正客户名称')}',hidden:false,width:260,sortable:true,align:'center'},
+				{name:'correctCustId',label:'${i18n.get('更正客户ID')}',hidden:true,width:150,sortable:true,align:'center'},
+				{name:'salesCenter',label:'${i18n.get('营销中心ID')}',hidden:true,width:100,sortable:false,align:'center' },
+				{name:'salesCenterLable',label:'${i18n.get('营销中心')}',hidden:false,width:100,sortable:false,align:'center' },
+				{name:'bizDept',label:'${i18n.get('业务部门ID')}',hidden:true,width:100,sortable:false,align:'center' },
+				{name:'bizDeptLable',label:'${i18n.get('业务部门')}',hidden:false,width:100,sortable:false,align:'center' },
+				{name:'salesmanId',label:'${i18n.get('销售人员ID')}',hidden:true,width:100,sortable:false,align:'center' },
+				{name:'salesmanName',label:'${i18n.get('销售人员')}',hidden:false,width:100,sortable:true,align:'center' },
+				{name:'salesmanPostLabel',label:'${i18n.get('销售人员岗位')}',hidden:false,width:100,sortable:true,align:'center' },
+				{name:'arrivalAmount',label:'${i18n.get('到账金额')}',hidden:false,width:100,sortable:true,align:'center' },
+				{name:'currency',label:'${i18n.get('币种')}',hidden:false,width:50,sortable:true,align:'center' },
+				{name:'isAdvancesReceived',label:'${i18n.get('是否预收款')}',hidden:false,width:80,sortable:true,align:'center'},
+				{name:'amount',label:'${i18n.get('合计')}',hidden:false,width:100,sortable:true,align:'center' },
+				{name:'poundage',label:'${i18n.get('手续费')}',hidden:false,width:80,sortable:true,align:'center' },
+				{name:'freight',label:'${i18n.get('代垫运费收款')}',hidden:false,width:100,sortable:true,align:'center' },
+				{name:'contractCode',label:'${i18n.get('合同编号')}',hidden:false,width:150,sortable:true,align:'center'},
+				{name:'remarks',label:'${i18n.get('备注')}',hidden:false,width:100,sortable:false,align:'center' },
+				{name:'receiptsCode',label:'${i18n.get('收款单号')}',hidden:false,width:150,sortable:true,align:'center' },
+				{name:'pic',label:'${i18n.get('负责人')}',hidden:false,width:100,sortable:true,align:'center' },
+				{name:'picSaleCenter',label:'${i18n.get('负责人营销中心ID')}',hidden:true,width:100,align:'center' },
+				{name:'picSaleCenterLable',label:'${i18n.get('负责人营销中心')}',hidden:false,width:100,sortable:true,align:'center' },
+				{name:'respDeptLable',label:'${i18n.get('负责部门')}',hidden:false,width:100,sortable:true,align:'center' },
+				{name:'erpImpLable',label:'${i18n.get('ERP已导入')}',hidden:false,width:70,sortable:true,align:'center' },
+				{name:'receiptsTypeLable',label:'${i18n.get('收款分类')}',hidden:false,width:90,sortable:false,align:'center' },
+				{name:'receiptsBank',label:'${i18n.get('收款银行')}',hidden:false,width:200,sortable:true,align:'center' },
+				{name:'bankAccount',label:'${i18n.get('银行账号')}',hidden:false,width:150,sortable:true,align:'center' },
+				{name:'status',label:'${i18n.get('状态')}',hidden:true,width:100,sortable:false,align:'center' },
+				{name:'statusLable',label:'${i18n.get('状态')}',hidden:false,width:100,sortable:false,align:'center' },
+				{name:'creator',label:'${i18n.get('创建人')}',hidden:false,width:100,sortable:false,align:'center' },
+				{name : 'createdPositionName', label:'${i18n.get('创建人岗位')}', width : 100, editable:false, align:'center',sortable:false}, 
+				{name:'createdAt',label:'${i18n.get('创建时间')}',hidden:false,width:80,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }
+			]"
+
+			onSelectRow = "function(data,status){
+                    if(status){
+                        $('#paymentCustId').val(data.paymentCustomerId);
+                        $('#correctCustId').val(data.correctCustId);
+                        $('#receiptsId').val(data.id);
+                        $('#receId').val(data.id);
+                        $('#contractCode').val(data.contractCode);
+                        reload_contractReceiptListForm();
+                        reload_verificationListForm();
+
+                        canVerification = (data.salesmanId == '${(userObject.employee.id)!}')
+                        if(canVerification) {
+                            $('#veriReceipts').show()
+                            $('#contractReceipts').show()
+                        } else {
+                            {
+                            $('#veriReceipts').hide()
+                            $('#contractReceipts').hide()
+                        }
+                    }
+		 		}
+			 }"
+			 onComplete = "function() {
+				$('#receiptsListFrom').setGridWidth($(window).width()-60);
+			}"
+
+			buttons = "[
+				{
+					id:'returnrReceipts',
+					label : '${i18n.get('退回商务')}',
+					icon : 'icon-save',
+					own : true,
+					handler : function(e,rowData){
+						returnReceipt(rowData);
+					}
+				},{
+					id:'splitReceipts',
+					label : '${i18n.get('拆分收款')}',
+					icon : 'icon-save',
+					own : true,
+					handler : function(e,rowData){
+						if(rowData){
+							splitReceipts(rowData.id);
+						}else{
+							alert('${i18n.get('请选择需要拆分的收款单')}');
+						}
+						
+					}
+				}
+			
+			]" >
+			<input id="picSaleCenter" name="picSaleCenter" type="hidden"  value="${(picSaleCenter)!}"/>
+			<div class="main" id="main" style="padding-top: 10px; float: Left; width: 100%;" >
+				<table border="0" cellpadding="0" cellspacing="0" >
+					<tr align="left">
+						<td align="right" width="80px">${i18n.get('业务实体：')}</td>
+						<td align="left" width="250px">
+							<@form.select id="businessCode"  name="businessCode"  code="CONTRACEBUSINESSOBJECT" idKey='code'   />
+						</td>
+						<td align="right" width="80px">${i18n.get('币种：')}</td>
+						<td align="left" width="220px">
+							<@form.select id="currency"  name="currency"  code="CURRENCY" idKey='code'  />
+						</td>
+						<td align="right" width="80px">${i18n.get('付款客户：')}</td>
+						<td align="left" width="250px">
+					  	<!--	<@form.autocomplete  id="paymentCustomerId" name="paymentCustomerId"
+				            	idKey='id'
+				            	formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+								url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html'; }"
+		            		/>-->
+		            		<@form.input id="paymentCustomerName" name="paymentCustomerName"
+		            			placeholder=""
+								tip=""
+								value=""
+								/>
+						</td>
+					</tr>
+					<tr>
+						<td align="right">${i18n.get('收款日从：')}</td>
+						<td align="left">
+							<@form.date
+								id="receiptsDate_start"  name="receiptsDate_start"
+								placeholder=""
+								tip=""
+								value=""
+								/>
+						</td>
+						<td align="right">${i18n.get('销售员：')}</td>
+						<td align="left">
+							<@form.input
+								id="salesmanName"  name="salesmanName"
+								readonly="readonly"
+								placeholder=""
+								tip=""
+								value="${(salesmanName)!}"
+							/>
+
+						</td>
+						<td align="right" ></td>
+						<td align="left">
+							<input id="checkbox_notVerification" name="checkbox_notVerification"  checked="checked"
+								type="checkbox"  value="1" style="width:10px;" onclick="changeValue('checkbox_notVerification','notVerification')"/>仅未核销记录
+							<input id="notVerification" name="notVerification" type="hidden"  value="1" style="width:10px;"/>
+						</td>
+					</tr>
+					<tr>
+						<td align="right" >${i18n.get('收款日至：')}</td>
+						<td align="left">
+							<@form.date
+								id="receiptsDate_end"  name="receiptsDate_end"
+								placeholder=""
+								tip=""
+								value=""
+								/>
+						</td>
+						<td align="right">${i18n.get('核销状态：')}</td>
+						<td align="left" >
+							<@form.select id="status"  name="status"
+								code="RECEIPT_STATUS"
+								idKey='code'
+								onChange="function(){
+			            			var data = JSON.parse($('#status option:selected').attr('data')); 
+			            			if(data.code =='10'){
+			            				reload_status('20');
+			            			}
+			            		}"
+							/>
+						</td>
+						<td align="right"></td>
+						<td align="left">
+							<input id="checkbox_erpCust"  name="checkbox_erpCust"
+								type="checkbox"  value = "1"  style="width:10px;" onclick="changeValue('checkbox_erpCust','erpCust')" />${i18n.get('非ERP客户')}
+							<input id="erpCust"  name="erpCust" type="hidden"  value = "0"  style="width:10px;" onclick="" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" >${i18n.get('创建时间从：')}</td>
+						<td align="left">
+							<@form.date
+								id="createdAt_start"  name="createdAt_start"
+								placeholder=""
+								tip=""
+								value=""
+								/>
+						</td>
+						<td align="right" >${i18n.get('创建时间至：')}</td>
+						<td align="left">
+							<@form.date
+								id="createdAt_end"  name="createdAt_end"
+								placeholder=""
+								tip=""
+								value=""
+								/>
+						</td>
+						<td align="right"></td>
+						<td align="left">
+							<@form.select
+								id="erpImp"  name="erpImp"
+								code="YesOrNo"
+								idKey='code'
+								placeholder="${i18n.get('请选择')}"
+								/>
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="120px">${i18n.get('收款单编号')}：
+			            </td>
+			            <td align="left"  >
+				  			<@form.input id="receiptsCode"  name="receiptsCode" placeholder="" tip="" />
+			            </td>
+						<td align="right">${i18n.get('营销中心 :')}</td>
+						<td><@form.select id="salesCenter" name="salesCenter" url="function(){return '${ctx}/lov/member/getSaleCenters.html';}"/>
+						</td>
+						<td align="right">${i18n.get('业务部门 :')}</td>
+						<td><@form.select id="bizDept" name="bizDept" url="function(){return '${ctx}/lov/member/getBizDeptList.html';}"/></td>
+					</tr>
+					<tr>
+					<!--
+					<td align="right" width="80px">${i18n.get('更正客户名称：')}</td>
+						<td align="left" width="250px">
+							<@form.input id="correctCustName" name="correctCustName" placeholder="" tip="" value="" />
+						</td>
+					</tr>
+					 -->
+				</table>
+			</div>
+		</@form.table>
+		<br>
+		<div id="info">
+			<@plug.tabs tabMain=tabMain></@plug.tabs>
+		</div>
+	</div>
+</@pui.body>

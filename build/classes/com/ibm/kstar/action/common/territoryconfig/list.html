@@ -1,0 +1,35 @@
+<#escape x as x?html>
+<@cui.body>
+
+<div class="col-xs-12">
+<@form.table id="tableTerritoryinfo" 
+class="col-xs-12"
+height="131px"
+title="${i18n.get('销售区域分配')}" 
+url = "${ctx}/common/territoryconfig/page.html" 
+rowNum = "20" 
+addURL = "'${ctx}/common/territoryconfig/add.html'"
+editURL = "'${ctx}/common/territoryconfig/edit.html'"
+deleteURL= "'${ctx}/common/territoryconfig/delete.html'"
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'orgIdName',label:'${i18n.get('办事处')}',hidden:false,width:500,sortable:true,align:'center' },
+	{name:'territoryName',label:'${i18n.get('销售区域')}',hidden:false,width:300,sortable:true,align:'center' },
+	{name:'comment',label:'${i18n.get('备注')}',hidden:false,width:300,sortable:true,align:'center' }
+	]" 
+	> 
+	<div class="col-xs-12" style="padding-top: 20px;">
+		<div class="form-group col-xs-3">
+		<input type="text" id="searchKey" name="searchKey" placeholder='查询关键字' size="30" />
+		</div>	
+		<div class="form-group col-xs-2">
+			<button type="submit" class="btn btn-info" > 
+				<i class="icon-search bigger-110"></i>
+				${i18n.get('查询')}
+			</button>
+		</div>
+	</div>
+</@form.table> 
+</div>
+</@cui.body>
+</#escape>

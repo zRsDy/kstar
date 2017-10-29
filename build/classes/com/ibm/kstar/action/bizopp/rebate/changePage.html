@@ -1,0 +1,49 @@
+<#escape x as x?html>
+    <@cui.body>
+    <div class="col-xs-12">
+
+        <@form.table id="rebateChange"
+        class="col-xs-12"
+        title="${i18n.get('特价变更')}"
+        url = "${ctx}/rebate/change/page.html?rebateId=${rebateId}"
+        rowNum = "10"
+        shrinkToFit = "false"
+        search = "false"
+        colModel = "[
+        {name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+        {name:'no',label:'${i18n.get('申请单号')}',hidden:false,width:200,sortable:false,align:'center' },
+        {name:'name',label:'${i18n.get('申请名称')}',hidden:false,width:200,sortable:false,align:'left' },
+        {name:'type',label:'${i18n.get('申请类型')}',hidden:false,width:80,sortable:false,align:'center' },
+        {name:'createdByIdName',label:'${i18n.get('申请人')}',hidden:false,width:230,sortable:false,align:'center' },
+        {name:'applyAgent',label:'${i18n.get('申请代理商')}',hidden:true,width:220,sortable:false,align:'center' },
+        {name:'applyAgentName',label:'${i18n.get('申请代理商')}',hidden:false,width:220,sortable:false,align:'center' },
+        {name:'rebateAmount',label:'${i18n.get('价目表总金额')}',hidden:false,width:100,sortable:false,align:'right', formatoptions:{decimalPlaces : 2,defaultValue:''} },
+        {name:'statusName',label:'${i18n.get('审核状态')}',hidden:false,width:100,sortable:false,align:'center' },
+        {name:'startDate',label:'${i18n.get('特价生效日期')}',hidden:false,width:100,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+        {name:'endDate',label:'${i18n.get('特价失效日期')}',hidden:false,width:100,sortable:false,align:'center'  ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+        {name : 'version', label:'${i18n.get('特价变更版本')}', width : 100, editable:false, align:'center'}
+        ]"
+        ondblClickRow= "function(rowid){
+			parent.dialog('${i18n.get('流程表单')}','${ctx}/rebate/change/view.html?id='+selected_rebateChange.id,window);	
+		}"
+        buttons = "[
+			  		{
+			  			id:'viewForm',
+			  			label : '${i18n.get('流程表单')}',
+			  			icon : 'icon-trash',
+						own : 'true',
+			  			handler : function(e,rowData){
+			  				if(!selected_rebateChange){
+								alert('${i18n.get('没有选中任何数据!')}');
+								return;
+							}
+							parent.dialog('${i18n.get('流程表单')}', '${ctx}/rebate/change/view.html?id='+selected_rebateChange.id, window);
+			  			}
+			  		}
+			]" >
+        </@form.table>
+        <br/>
+    </div>
+</@cui.body>
+<script src="${ctx}/anne/js/util.js"></script>
+</#escape>

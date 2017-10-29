@@ -1,0 +1,55 @@
+<@pui.body>
+<div class="row col-xs-12" style="width: 1000px;margin-right: 0px; margin-left: 0px;" >
+	<@form.table id="select" 
+		class="col-xs-12"
+		title="${i18n.get('资料与礼品库')}"
+		url = "${ctx}/gift/page.html"
+		rowNum = "20" 
+		colModel = "[
+			{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+			{name:'giftCode',label:'${i18n.get('编号')}',hidden:false,width:150,sortable:true,align:'center' }, 
+			{name:'giftDesc',label:'${i18n.get('描述')}',hidden:false,width:150,sortable:true,align:'center' }, 
+			{name:'giftType',label:'${i18n.get('类型')}',hidden:true,width:150,sortable:true,align:'center' }, 
+			{name:'giftTypeName',label:'${i18n.get('类型')}',hidden:false,width:150,sortable:true,align:'center' }, 
+			{name:'inventoryQuantity',label:'${i18n.get('可用库存')}',hidden:false,width:150,sortable:true,align:'center' }, 
+			{name:'giftUnit',label:'${i18n.get('单位')}',hidden:true,width:150,sortable:true,align:'center' }, 
+			{name:'giftUnitName',label:'${i18n.get('单位')}',hidden:false,width:150,sortable:true,align:'center' }, 
+			{name:'currency',label:'${i18n.get('货币')}',hidden:true,width:150,sortable:true,align:'center'}, 
+			{name:'currencyName',label:'${i18n.get('货币')}',hidden:false,width:150,sortable:true,align:'center'}, 
+			{name:'giftPrice',label:'${i18n.get('单价')}',hidden:false,width:150,sortable:true,align:'center' }, 
+			{name:'startDate',label:'${i18n.get('生效日期')}',hidden:false,width:150,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+			{name:'endDate',label:'${i18n.get('失效日期')}',hidden:false,width:150,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+			{name:'manager',label:'${i18n.get('管理人员')}',hidden:false,width:150,sortable:true,align:'center' }
+		]" 
+		ondblClickRow = "function(){
+			parent.currentParent.${pickerId}_callback(selected_select);
+			frameElement.api.close();
+		}"
+		> 
+	</@form.table> 
+	<div class="clearfix form-actions">
+		<div class="col-md-offset-5 col-md-7">
+			<button class="btn btn-info" id="selectOK" type="button" onclick="$('#price').trigger('blur')" >
+				<i class="icon-ok bigger-110"></i>
+				${i18n.get('选择')}
+			</button>
+			&nbsp; &nbsp; &nbsp;
+			<button class="btn" type="button" onclick="javascript:frameElement.api.close()">
+				<i class="icon-undo bigger-110"></i>
+				${i18n.get('关闭')}
+			</button>
+		</div>
+	</div>
+</div>
+</@pui.body>
+<script type="text/javascript">
+	$('#selectOK').click(function(){
+		if(!selected_select || selected_select == ''){
+			exalert(e,'${i18n.get('请选择数据')}');
+			return;
+		}else{
+			parent.currentParent.${pickerId}_callback(selected_select);
+			frameElement.api.close();
+		}
+	})
+</script>

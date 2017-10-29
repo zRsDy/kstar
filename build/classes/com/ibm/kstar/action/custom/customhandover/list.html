@@ -1,0 +1,148 @@
+<#escape x as x?html>
+<@pui.body>
+<#if permission["P02HandoverListAdd"]?? >
+	<#assign addHandoverURL = "'${ctx}/custom/handover/add.html'"  />
+</#if>
+
+<#if permission["P02HandoverListEdit"]??>
+	<#assign editHandoverURL= "'${ctx}/custom/handover/edit.html'" />
+</#if>
+
+<#if permission["P02HandoverListDelete"]??>
+	<#assign deleteHandoverURL = "'${ctx}/custom/handover/delete.html'"   />
+</#if>
+
+<@form.table id="tableHandoverList" 
+class="col-xs-12"
+height="131px"
+title="${i18n.get('客户交接一览')}" 
+url = "${ctx}/custom/handover/page.html" 
+rowNum = "5" 
+addURL = "${addHandoverURL!}"
+editURL = "${editHandoverURL!}"
+deleteURL= "${deleteHandoverURL!}" 
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'handoverCode',label:'${i18n.get('申请编号')}',hidden:false,width:160,sortable:true,align:'center' },
+	{name:'handoverFromName',label:'${i18n.get('交接人')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'handoverToName',label:'${i18n.get('交接至')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'handoverReasonGrid.name',label:'${i18n.get('交接原因')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'handoverDate',label:'${i18n.get('申请日期')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'handoverStatusName',label:'${i18n.get('状态')}',hidden:false,width:100,sortable:true,align:'center' }
+	]" 
+	> 
+	<div class="col-xs-12" style="padding-top: 20px;">
+		<table border="0" cellpadding="0" cellspacing="0" >
+			<tr align="left">
+				<td align="right" width="120px">
+					<label class="no-padding-right" >${i18n.get('交接编号')}  :</label>
+				</td>
+				<td align="left"  >
+					<@form.input 
+						id="handoverCode"  name="handoverCode" 
+						placeholder="" 
+						tip="" 
+					/>
+				</td>
+				<td align="right" width="120px">
+					<label class="no-padding-right" >${i18n.get('创建日期(FROM)')}  :</label>
+				</td>
+				<td align="left"  >
+					<@form.date id="dateFrom"  name="dateFrom" 
+						placeholder="" 
+						tip="" 
+						/>
+				</td>
+				 <td align="right" width="120px">
+					<label class="no-padding-right" >${i18n.get('创建日期(TO)')}  :</label>
+				</td>
+				<td >
+					<@form.date id="dateTo"  name="dateTo" 
+						placeholder="" 
+						tip="" 
+						/>
+				</td>
+			</tr>
+			<tr align="left">
+				<td align="right" width="120px">
+					<label class="no-padding-right" > ${i18n.get('交接人')} :</label>
+				</td>
+				<td align="left"  >
+					<input id="handoverFrom" name="handoverFrom" type="hidden"  >
+					<@form.autocomplete  id="handoverFromName" name="handoverFromName" 
+						idKey='employeeId'
+						style='width:161px'
+						required="${i18n.get('请选择')}"
+						multiple="false"
+						formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+						url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+						
+						onSelect="function(data){
+							if( data.id != null && data.id !='' && data.id != 'undefined'){
+								$('#handoverFrom').val(data.employeeId);
+							}
+						}" 
+					/>
+				</td>
+				<td align="right" width="120px">
+					<label class="no-padding-right" > ${i18n.get('交接至')} :</label>
+				</td>
+				<td align="left"  >
+					<input id="handoverTo" name="handoverTo" type="hidden"  >
+					<@form.autocomplete  id="handoverToName" name="handoverToName" 
+						idKey='employeeId'
+						style='width:161px'
+						required="${i18n.get('请选择')}"
+						multiple="false"
+						formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+						url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+						
+						onSelect="function(data){
+							if( data.id != null && data.id !='' && data.id != 'undefined'){
+								$('#handoverTo').val(data.employeeId);
+							}
+						}" 
+					/>
+				</td>
+				 <td align="right" width="120px">
+				</td>
+				<td >
+				</td>
+			</tr>
+			<tr align="left">
+				<td align="right" width="120px">
+					<label class="no-padding-right" > ${i18n.get('原因')} :</label>
+				</td>
+				<td align="left"  >
+					<input id="applier" name="applier" type="hidden"  >
+					<@form.select 
+						code="HANDOVERREASON"
+						style="width: 161px;"
+						id="handoverReason" name="handoverReason" 
+						placeholder="" 
+						tip="" 
+						/>
+				</td>
+				<td align="right" width="120px">
+					<label class="no-padding-right" > ${i18n.get('状态')} :</label>
+				</td>
+				<td align="left"  >
+					<@form.select 
+						code="CUSTOM_NORMAL_STATUS"
+						style="width: 161px;"
+						id="handoverStatus" name="handoverStatus" 
+						placeholder="" 
+						tip="" 
+						/>
+				</td>
+				 <td align="right" width="120px">
+				</td>
+				<td >
+				</td>
+			</tr>
+		</table>	
+	</div>
+</@form.table> 
+
+</@pui.body>
+</#escape>

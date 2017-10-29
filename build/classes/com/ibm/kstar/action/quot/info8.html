@@ -1,0 +1,170 @@
+<@pui.body nav1="${i18n.get('用户管理')}" nav2="${i18n.get('新增')}/${i18n.get('编辑')}" type="popup">
+<div class="row col-lg-12"> 
+<@form.table id="t8" class="col-xs-12" shrinkToFit="true"  title="${i18n.get('需求单')}" 
+	url ="${ctx}/product/demandList.html?id=${id}" 
+	rowNum = "10" 
+	colModel = "[ 
+		{name:'id',label:'',hidden:true,width:60,sortable:false,align:'center' },
+ 		{name:'demandCode',label:'${i18n.get('需求单编号')}',hidden:false,width:60,sortable:false,align:'center' }, 
+ 		{name:'demandName',label:'${i18n.get('需求单名称')}',hidden:false,width:60,sortable:false,align:'center' },
+  		{name:'clientCode',label:'${i18n.get('客户名称')}',hidden:true,width:60,sortable:false,align:'center' }, 
+  		{name:'clientName',label:'${i18n.get('客户名称')}',hidden:false,width:60,sortable:false,align:'center' }, 
+  		{name:'clientAddress',label:'${i18n.get('客户所在地')}',hidden:true,width:60,sortable:false,align:'center' },
+  		{name:'clientAddressName',label:'${i18n.get('客户所在地')}',hidden:false,width:60,sortable:false,align:'center' },
+	   	{name:'clientContract',label:'${i18n.get('客户')}PO/${i18n.get('合同')}',hidden:false,width:60,sortable:false,align:'center' }, 
+	   	{name:'hopeDeliverDate',label:'${i18n.get('期望交货日期')}',hidden:false,width:60,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+	   	{name:'demantCategory',label:'${i18n.get('需求种类')}',hidden:true,width:60,sortable:false,align:'center' }, 
+	   	{name:'demantCategoryName',label:'${i18n.get('需求种类')}',hidden:false,width:60,sortable:false,align:'center' }, 
+	   	{name:'demandNumber',label:'${i18n.get('需求数量')}',hidden:false,width:60,sortable:false,align:'center' }, 
+	   	{name:'prepareBefore',label:'${i18n.get('需要提前备料')}',hidden:false,width:60,sortable:false,align:'center'}, 
+	   	{name:'demandDepartment',label:'${i18n.get('需求部门')}',hidden:true,width:60,sortable:false,align:'center' }, 
+	   	{name:'demandDepartmentName',label:'${i18n.get('需求部门')}',hidden:false,width:60,sortable:false,align:'center' }, 
+	   	{name:'demandPerson',label:'${i18n.get('需求人员')}',hidden:true,width:60,sortable:false,align:'center' }, 
+	   	{name:'demandPersonName',label:'${i18n.get('需求人员')}',hidden:false,width:60,sortable:false,align:'center' }, 
+	   	{name:'contractNumber',label:'${i18n.get('联系电话')}',hidden:false,width:60,sortable:false,align:'center' },
+    	{name:'demandStatus',label:'${i18n.get('需求状态')}',hidden:true,width:60,sortable:false,align:'center' }, 
+    	{name:'demandStatusName',label:'${i18n.get('需求状态')}',hidden:false,width:60,sortable:false,align:'center' }, 
+    	{name:'productID',label:'',hidden:true,width:60,sortable:false,align:'center' }
+	]" 
+	onSelectRow="function(){
+		$('#productDemandId').val(selected_t8.id);
+		$('.businessId').val(selected_t8.id);//${i18n.get('外部附件文件需要')}
+		if($('#attachmentId_t8').css('display') == 'none'){
+			$('#attachmentId_t8').show();
+		}
+		reload_attachment_productDemand_1();
+		reload_attachment_productDemand_2();
+	}"
+	onComplete="function(){
+		$('#attachmentId_t8').hide();
+	}"
+	buttons = "[
+		{
+			id:'add_t8',
+			label : '${i18n.get('新增')}',
+			icon : 'icon-trash',
+			own : true,
+			handler : function(e,rowData){
+				var requestPath = '${ctx}/product/demandAdd.html?productID=${id}&ableEdit=true';
+				parent.dialog('${i18n.get('需求单')}', requestPath, window);
+			}
+		},
+		{
+			id:'edit_t8',
+			label : '${i18n.get('修改')}',
+			icon : 'icon-trash',
+			own : true,
+			handler : function(e,rowData){
+				if(!selected_t8){
+					exalert(e,'${i18n.get('请选择要修改数据')}！');
+					return;
+				}else{
+					var ableEdit = !canEdit(selected_t8.demandStatusName);
+					var requestPath = '${ctx}/product/demandAdd.html?id='+selected_t8.id+'&ableEdit='+ableEdit;
+					parent.dialog('${i18n.get('需求单')}', requestPath, window);
+				}
+			}
+		},
+		{
+			id:'delete_t8',
+			label : '${i18n.get('删除')}',
+			icon : 'icon-trash',
+			own : true,
+			handler : function(e,rowData){
+				if(!selected_t8){
+					exalert(e,'${i18n.get('请选择需要删除的数据')}！');
+					return;
+				}else if(canEdit(selected_t8.demandStatusName)){
+					myAlert(e,'${i18n.get('删除')}');
+					return;
+				}else{
+					bootbox.confirm('${i18n.get('您确定要删除吗')}？' , function(result) {		
+						if(result) {
+							ajax({
+								url: '${ctx}/product/demandDelete.html',
+								type: 'POST',
+								data: {id:selected_t8.id},
+								success : function(result) {
+									reload_t8();
+									exalert(e,'${i18n.get('删除成功')}！');
+								}
+							});
+						}
+					});	
+				}
+			}
+		},
+		{
+			id:'submit_t8',
+			label : '${i18n.get('提交')}',
+			icon : 'icon-trash',
+			own : true,
+			handler : function(e,rowData){
+				var demanddata = $('#attachment_demand').jqGrid('getRowData');
+				if(!selected_t8){
+					exalert(e,'${i18n.get('请选择需要提交的数据')！');
+					return;
+				}else if(canEdit(selected_t8.demandStatusName)){
+					myAlert(e,'${i18n.get('提交')');
+					return;
+				}else if(demanddata.length == 0){
+					exalert(e,'${i18n.get('没有上传附件，不能提交')！');
+					return;
+				}else{
+					bootbox.confirm('${i18n.get('您确定要提交吗')？' , function(result) {		
+						if(result) {
+							ajax({
+								url: '${ctx}/product/demandSubmit.html',
+								type: 'POST',
+								data: {id:selected_t8.id},
+								success : function(result) {
+									reload_t8();
+									exalert(e,'${i18n.get('提交成功')！');
+								}
+							});
+						}
+					});	
+				}
+			}
+		}
+	]" > 
+</@form.table>
+<input type="hidden" id="productDemandId" />
+<div id="attachmentId_t8">
+<div id="attachmentId_t8_1"></div>
+<div id="attachmentId_t8_2"></div>
+</div>
+<script type="text/javascript">
+	$(document).ready(function() {
+		showAttachmentPage("attachmentId_t8_1","${ctx}/common/attachment/attachment.html?businessType=productDemand_1&title=${i18n.get('特殊产品规格需求单')");
+		showAttachmentPage("attachmentId_t8_2","${ctx}/common/attachment/attachment.html?businessType=productDemand_2&title=${i18n.get('客户资料')");
+	});
+	function showAttachmentPage(tabId, url){
+		url = url + "&businessId=" + $('#productDemandId').val();
+		$('#applytab a[href="#'+tabId+'"]').tab('show');
+		$('#'+tabId).load(url,function(response,status,xhr){
+			if(status === 'error'){
+				$('#'+tabId).html(url+'<br> ${i18n.get('页面加载失败')');
+			}
+		});
+	}
+	function canEdit(status){
+		return status != '${i18n.get('新建')' && status != '${i18n.get('已驳回')';
+	}
+	function myAlert(e,type){
+		exalert(e,'${i18n.get('只有新建或已驳回的数据可')'+type+'!');
+	}
+</script>
+
+
+		<div class="clearfix form-actions" id = "submitPanel">
+			<div class="col-md-offset-5 col-md-7">
+			<button class="btn" type="button" onclick="javascript:api.close();" align="center">
+				<i class="icon-ok bigger-110"></i> ${i18n.get('关闭')
+			</button>
+			&nbsp; &nbsp; &nbsp;
+		</div>
+	</div>
+	
+</div>
+</@pui.body>

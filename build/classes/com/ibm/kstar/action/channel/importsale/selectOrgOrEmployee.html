@@ -1,0 +1,99 @@
+<@pui.body>
+
+<script>
+    function isLeaf(data) {
+        return !data.leafFlag && data.type && data.type == 'E'
+    }
+
+    function ok(e,dom) {
+        var selectId = $('#selectId').val();
+        var selectType = $('#selectType').val();
+
+        if (!selectId) {
+            exalert(e, '${i18n.get('请选择部门或员工!')}');
+            return;
+        }
+        if (selectType == 'E') {
+            var employeeId = $('#employeeId').val();
+            var employeeName = $('#employeeName').val();
+            var positionId = $('#positionId').val();
+            var positionName = $('#positionName').val();
+
+            if (!(employeeId && positionId)) {
+                exalert(e, '${i18n.get('未选择员工!')}')
+                return;
+            }
+            parent.currentParent.selectDepartmentCallBack({
+                'type': 'E',
+                'employeeId': employeeId,
+                'employeeName': employeeName,
+                'positionId': positionId,
+                'positionName': positionName
+            });
+        } else {
+            var orgId = $('#orgId').val();
+            var orgName = $('#orgName').val();
+
+            if (!orgId) {
+                exalert(e, '${i18n.get('未选择组织!')}')
+                return;
+            }
+            parent.currentParent.selectDepartmentCallBack({'type': 'ORG', 'orgId': orgId, 'orgName': orgName});
+        }
+
+        api.close()
+    }
+</script>
+<div class="col-xs-12">
+<input type="hidden" id="selectId" />
+<input type="hidden" id="selectType" />
+<input type="hidden" id="employeeId" />
+<input type="hidden" id="employeeName" />
+<input type="hidden" id="positionId" />
+<input type="hidden" id="positionName" />
+<input type="hidden" id="orgId" />
+<input type="hidden" id="orgName" />
+    <@form.panel title="${i18n.get('请选择')}">
+        <@form.form action="" class="form-horizontal" >
+        <div>
+            <@plug.tree checkbox="false" id="tree1" asyncUrl='${ctx}/importSale/orgOrEmployeeTree.html?opType=2&groupId=ORG'
+            isParent="function(data){return !(isLeaf(data));}"
+            dataFilter="function(data){
+                                    if(isLeaf(data)){
+                                        data.icon = '${ctx}/assets/css/zTreeStyle/img/diy/5.png'
+                                    }
+							  		return data;
+							  	}"
+            onClick=" function(event, treeId, treeNode){
+                        $('#selectId').val(treeNode.id);
+                        if(isLeaf(treeNode)){
+                            $('#selectType').val('E');
+                            $('#employeeId').val(treeNode.employeeId);
+                            $('#employeeName').val(treeNode.employeeName);
+                            $('#positionId').val(treeNode.positionId);
+                            $('#positionName').val(treeNode.positionName);
+                        }else {
+                            $('#selectType').val('ORG');
+                            $('#orgId').val(treeNode.id);
+                            $('#orgName').val(treeNode.name);
+                        }
+					  }"/>
+        </div>
+        </@form.form>
+
+    <div class="clearfix form-actions">
+        <div class="col-md-offset-5 col-md-7">
+            <button class="btn btn-info submit" type="button" onclick="ok(event,this)">
+                <i class="icon-ok bigger-110"></i>
+            ${i18n.get('确定')}
+            </button>
+            &nbsp; &nbsp; &nbsp;
+            <button class="btn" type="button" onclick="javascript:api.close()">
+                <i class="icon-undo bigger-110"></i>
+            ${i18n.get('关闭')}
+            </button>
+        </div>
+    </div>
+
+    </@form.panel>
+</@pui.body>

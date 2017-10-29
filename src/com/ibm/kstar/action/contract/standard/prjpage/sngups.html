@@ -1,0 +1,112 @@
+<div>
+	<@form.form id="sngups" action="${ctx}/standard/prjpage/sngups.html" success="function(){
+	alert('${i18n.get('保存成功')}！');opener.reload_sngups(); }" class="form-horizontal">
+	<@form.input id="id" name="id" placeholder="" tip="" type="hidden"
+	value="${(sngupsInf.id)!}" />
+
+	<h5 style="background-color: #E9E9E9;">IT${i18n.get('设备信息')}</h5>
+	<table>
+		<tr>
+			<td width="100px">${i18n.get('配电系统图纸')}:</td>
+			<td width="180px">
+				<div>
+					<button class="btn btn-info"
+						onclick="javascript:parent.dialog('${i18n.get('配电系统图纸')}','${ctx}/kstarDoc/add.html?systemId=${contrId}&systemCode=SNGUPSDRFATTM',window)"
+						type="button">${i18n.get('上传附件')}</button>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('项目技术要求')}:</td>
+			<td width="180px">
+				<div>
+					<button class="btn btn-info"
+						onclick="javascript:parent.dialog('${i18n.get('项目技术要求')}','${ctx}/kstarDoc/add.html?systemId=${contrId}&systemCode=SNGUPSPRJATTM',window)"
+						type="button">${i18n.get('上传附件')}</button>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('进出线方式')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="intlnTyp" value="ud"
+							selectValue="${(sngupsInf.intlnTyp)!'N'}" /> <span class="lbl">${i18n.get('上进下出')}</span>
+						</label> 
+						<label><@form.radio name="intlnTyp" value="uu"
+							selectValue="${(sngupsInf.intlnTyp)!'N'}" /> <span class="lbl">${i18n.get('上进上出')}</span>
+						</label>
+						<label><@form.radio name="intlnTyp" value="dd"
+							selectValue="${(sngupsInf.intlnTyp)!'N'}" /> <span class="lbl">${i18n.get('下进下出（默认）')}</span>
+						</label>
+						<label><@form.radio name="intlnTyp" value="du"
+							selectValue="${(sngupsInf.intlnTyp)!'N'}" /> <span class="lbl">${i18n.get('下进上出')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">UPS${i18n.get('系统组成')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="upsCnst" value="a"
+							selectValue="${(sngupsInf.upsCnst)!'N'}" /> <span class="lbl">${i18n.get('单机')}</span>
+						</label> 
+						<label><@form.radio name="upsCnst" value="b"
+							selectValue="${(sngupsInf.upsCnst)!'N'}" /> <span class="lbl">${i18n.get('并机')}</span>
+						</label>
+						<label><@form.radio name="upsCnst" value="c"
+							selectValue="${(sngupsInf.upsCnst)!'N'}" /> <span class="lbl">2N</span>
+						</label>
+						<label><@form.radio name="upsCnst" value="d"
+							selectValue="${(sngupsInf.upsCnst)!'N'}" /> <span class="lbl">2（N+1）</span>
+						</label>
+						<label><@form.radio name="upsCnst" value="e"
+							selectValue="${(sngupsInf.upsCnst)!'N'}" /> <span class="lbl">${i18n.get('双总线')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('后备时间')}:</td>
+			<td width="180px"><@form.input id="bckupTm" name="bckupTm"
+				placeholder="" tip="" value="${(sngupsInf.bckupTm)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('监控要求、协议要求')}:</td>
+			<td width="180px"><@form.input id="mntRq" name="mntRq"
+				placeholder="" tip="" value="${(sngupsInf.mntRq)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">IP${i18n.get('等级')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="ipLvl" value="a"
+							selectValue="${(sngupsInf.ipLvl)!'N'}" /> <span class="lbl">IP20(${i18n.get('默认')})</span>
+						</label> 
+						<label><@form.radio name="ipLvl" value="b"
+							selectValue="${(sngupsInf.ipLvl)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="ipLvlRq" name="ipLvlRq" placeholder="" tip=""
+							value="${(sngupsInf.ipLvlRq)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('其他特殊需求')}:</td>
+			<td width="180px"><@form.input id="otrsRq" name="otrsRq"
+				placeholder="" tip="" value="${(sngupsInf.otrsRq)!}" /></td>
+		</tr>
+	</table>
+
+	<div class="clearfix form-actions">
+		<div class="col-md-offset-5 col-md-7">
+			<button class="btn btn-info submit" type="button" align="left">
+				<i class="icon-ok bigger-110"></i> ${i18n.get('修订')}
+			</button>
+			&nbsp; &nbsp; &nbsp;
+		</div>
+	</div>
+	</@form.form>
+
+</div>

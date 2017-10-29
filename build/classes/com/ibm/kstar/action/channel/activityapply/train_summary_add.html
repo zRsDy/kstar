@@ -1,0 +1,44 @@
+<@cui.body2>
+	<@form.form id="t1" success="function(){ parent.currentParent.reload_apply(); }" class="form-horizontal">	
+		<@form.panel title="${i18n.get('执行情况')}">
+			<div align="center">
+				<table>
+					<tr>
+						<td  align="right" width="110px"><strong style="color: red;">*</strong>${i18n.get('培训开始时间 :')}</td>
+						<td width="270px">
+							<@form.date id="startDate" name="startDate" format="yyyy-mm-dd" required="${i18n.get('不能为空')}" tip="${i18n.get('培训实际开始时间')}" value="${(summaryInfo.startDate?date)!}" />
+						</td>
+						<td  align="right" width="110px"><strong style="color: red;">*</strong>${i18n.get('培训结束时间 :')}</td>
+						<td width="270px">
+							<@form.date id="endDate" name="endDate" format="yyyy-mm-dd" required="${i18n.get('不能为空')}" tip="${i18n.get('培训实际结束时间')}" value="${(summaryInfo.endDate?date)!}" />
+						</td>
+						<td  align="right" width="110px"><strong style="color: red;">*</strong>${i18n.get('培训效果评估 :')}</td>
+						<td width="270px">
+							<@form.select id="resultAssess" name="resultAssess" required="${i18n.get('不能为空')}" tip="${i18n.get('培训执行效果评估结果')}" style="width:163px;" code="RESULTEVAL" idKey='id' value="${(summaryInfo.resultAssess)!}" /> 
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="110px"><strong style="color: red;">*</strong>${i18n.get('培训效果说明 :')}</td>
+						<td colspan="5">
+							<@form.textArea id="resultExplain" name="resultExplain" required="${i18n.get('不能为空')}" style="width:914px;" tip="${i18n.get('培训执行效果详细说明')}" value="${(summaryInfo.resultExplain)!}" />
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:frameElement.api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.panel>
+	</@form.form>
+</@cui.body2>

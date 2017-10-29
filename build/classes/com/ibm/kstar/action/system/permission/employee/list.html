@@ -1,0 +1,35 @@
+<@pui.body> 
+<div>
+		<div class="col-xs-12" id="bbb">
+						<@form.table id="employeeList"
+							class="col-xs-12"
+							title="${i18n.get('员工')}"
+							shrinkToFit = 'true'
+							url = "${ctx}/employee/page.html"
+							addURL = "'${ctx}/employee/add.html'"
+							editURL = "'${ctx}/employee/edit.html'"
+							rowNum = "20"
+							colModel = "[
+							  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:false,align:'center' }, 
+							  { name : 'no', label : '${i18n.get('员工号')}', width : 90 ,sortable:false}, 
+							  { name : 'flag', label : '${i18n.get('类型')}', width : 90 ,sortable:false,formatter:function(cellvalue, options){ return  getValuesByCell(cellvalue,'employeeType')}}, 
+							  { name : 'name', label : '${i18n.get('姓名')}' ,sortable:false },
+							  { name : 'userFlag', label : '${i18n.get('拥有账号')}' ,sortable:false ,formatter:function(cellvalue, options){ return  getValuesByCell(cellvalue,'COMMONYN')}}
+							  ]"
+							>
+						<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">
+							<input type="hidden" id="parentId" name="parentId" />
+							<div class="form-group col-xs-3">
+								<input type="text" id="search" name="search" placeholder="${i18n.get('查询关键字')}" />
+							</div>	
+							<div class="form-group col-xs-2">
+								<button type="submit" class="btn btn-info" > 
+									<i class="icon-search bigger-110"></i>
+									${i18n.get('查询')}
+								</button>
+							</div>
+						</div>
+						</@form.table>
+		</div>
+		</div>
+</@pui.body>

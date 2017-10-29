@@ -1,0 +1,112 @@
+ <#if (permission["P02HandoverT2CusHandover"]?? && ("${(customHandoverList.handoverStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customHandoverList.handoverStatus)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign cusHandoverURL="${(checkDisplay)!}" />
+</#if>
+
+<@form.table id="hoCustomList" 
+class="col-xs-12"
+height="141px"
+search="false"
+title="${i18n.get('客户一览')}" 
+url = "${ctx}/custom/handover/customPage.html?id=${(customHandoverList.id)!}" 
+rowNum = "5" 
+checkbox="true"
+search="false"
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'checkStatusName',label:'${i18n.get('交接选择')}',hidden:false,width:80,sortable:true,align:'center' },
+	{name:'businessStatus',label:'${i18n.get('交接状态')}',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'businessStatusName',label:'${i18n.get('交接状态')}',hidden:false,width:80,sortable:true,align:'center' },
+	{name:'customCode',label:'${i18n.get('客户编号')}',hidden:false,width:150,sortable:true,align:'center' },
+	{name:'customFullName',label:'${i18n.get('客户全称')}',hidden:false,width:200,sortable:true,align:'center' },
+	{name:'customWebAddress',label:'${i18n.get('公司网址')}',hidden:false,width:200,sortable:true,align:'center' },
+	{name:'customClassGrid.name',label:'${i18n.get('客户类别')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'customAreaName',label:'${i18n.get('所属区域')}',hidden:false,width:200,sortable:true,align:'center' },
+	{name:'customGradeName',label:'${i18n.get('客户等级')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'customSourceName',label:'${i18n.get('客户来源')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'customCategoryName',label:'${i18n.get('客户行业')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'customStatusName',label:'${i18n.get('客户状态')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'customReportedFlgName',label:'${i18n.get('已报备')}',hidden:false,width:100,sortable:true,align:'center' }
+	]" 
+	
+	buttons = "[
+		{
+			id:'publish_checkCustomList',
+			label : '${i18n.get('准备交接')}',
+			icon : 'icon-exchange',
+			own : ${cusHandoverURL!'false'},
+			handler : function(e,rowData){
+				var selectedIds = [];
+				if(selectedList_hoCustomList.length == 0){
+					exalert(e,'${i18n.get('没有选中任何数据!')}');
+					return;
+				}
+				$.each(selectedList_hoCustomList,function(i,item){
+						selectedIds.push(item.id);
+				});
+				bootbox.confirm('${i18n.get('确认交接选中的数据吗？')}' , function(result) {
+					if(result) {
+						$.ajax({
+							url: '${ctx}/custom/handover/customHandoverCheck.html',
+							type: 'POST',
+							data: {ids:selectedIds},
+							success : function(msg) {
+								alert(msg.message);
+								reload_hoCustomList();
+							},
+							error: function(e) {
+								alert(e.responseJSON.message);
+								reload_hoCustomList();
+							}
+						});
+					}
+				});
+			}
+		},
+		{
+			id:'publish_unCheckCustomList',
+			label : '${i18n.get('交接取消')}',
+			icon : 'icon-exchange',
+			own : ${cusHandoverURL!'false'},
+			handler : function(e,rowData){
+				var selectedIds = [];
+				if(selectedList_hoCustomList.length == 0){
+					exalert(e,'${i18n.get('没有选中任何数据!')}');
+					return;
+				}
+				$.each(selectedList_hoCustomList,function(i,item){
+						selectedIds.push(item.id);
+				});
+				bootbox.confirm('${i18n.get('确认交接选中的数据吗？')}' , function(result) {
+					if(result) {
+						$.ajax({
+							url: '${ctx}/custom/handover/customHandoverUncheck.html',
+							type: 'POST',
+							data: {ids:selectedIds},
+							success : function(msg) {
+								alert(msg.message);
+								reload_hoCustomList();
+							},
+							error: function(e) {
+								alert(e.responseJSON.message);
+								reload_hoCustomList();
+							}
+						});
+					}
+				});
+			}
+		}
+	]"
+	> 
+	
+	<div class="col-xs-12" style="padding-top: 20px;">
+		<div class="form-group col-xs-3">
+		<input type="text" id="searchKey" name="searchKey" placeholder="${i18n.get('查询关键字')}" size="30" />
+		</div>	
+		<div class="form-group col-xs-2">
+			<button type="submit" class="btn btn-info" > 
+				<i class="icon-search bigger-110"></i>
+				${i18n.get('查询')}
+			</button>
+		</div>
+	</div>
+</@form.table> 

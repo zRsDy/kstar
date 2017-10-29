@@ -1,0 +1,270 @@
+<@pui.body>
+	<style type="text/css">
+	
+	table {
+	border-collapse: collapse;
+	border-color: #ff0000;
+	}
+	
+	
+	table td {
+		padding:2px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		height: 24px;
+		border-width: 0px 0px 0px 0px;
+	}
+	input {
+		width: 180px;
+	}
+	select {
+		width: 180px;
+	}
+	</style>
+    <div class="col-xs-12">
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="weeklyAdd"
+			success="function(){ parent.currentParent.reload_t1(); }" 
+			class="form-horizontal">
+			
+			<div style="height: 15px;" >
+				<div style="padding-right: 20px; float: right;padding-top: 3px;" >
+		<#-- 国际业务周报-保存 --><#-- /weekly/add.html -->
+			<#if permission["P03WeekReportSave"]??>
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+			</#if>
+		<#-- 国际业务周报-提交 --><#-- /weekly/submitData.html -->
+			<#if permission["P03WeekReportSubmit"]??>
+					<button class="btn btn-info" type="button" onclick="submitData();">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+			</#if>
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+		    </div>
+			
+			
+			<p style="padding-left:20px; ">${i18n.get('国际周报题头')}</p>
+			<div class="main" id="main" style="padding-left: 1px; border-top: 2px solid #e9e9e9 ;" >
+	 			<table border="0" cellpadding="0" cellspacing="0" >
+		 			<input  type="hidden" name="pid" id="pid" value="${(entity.id)!}"/>
+		 			<input  type="hidden" name="salesid" id ="salesid" value="${(entity.salesid)!}" />
+						<tr align="left">
+							<td align="right" width="5%">
+								${i18n.get('销售人员:')}
+							</td>
+							<td align="left" width="20%" >
+								<@form.input name="salesman" type="text"
+									id="salesman" value="${(entity.salesman)!}" 
+									readonly="readonly"
+								/>
+							</td>
+							<td align="right" width="5%">
+								${i18n.get('所属部门:')}
+							</td>
+							<td align="left" width="20%" >
+								<@form.input name="department" type="text"
+									id="department" value="${(entity.department)!}" 
+									readonly="readonly"
+									/>
+							</td>
+							<td align="right"  width="170px">
+								${i18n.get('本月新联系（个）:')}
+							</td>
+							<td>
+							    <@form.number name="newClient"
+									id="newClient" value="${(entity.newClient)!}" />
+							</td>
+						</tr>
+						<tr>
+							<td align="right">
+								${i18n.get('年度:')}
+							</td>
+							<td align="left">
+								<@form.select  
+				             		id="year" name="year" 
+				             		code="ANNUAL" 
+				             		value ="${(entity.year)!}"
+				             	/>
+							</td>
+							
+							<td align="right">
+								${i18n.get('创建日期:')}
+							</td>
+							<td align="left">
+							    <@form.date name="createdAt"
+								id="createdAt" value="${(entity.createdAt?date)!}"
+								readonly ="readonly"
+								/>
+							</td>
+							<td align="right">
+							${i18n.get('新客户拓展计划
+								预计成交（个）:')}
+								
+							</td>
+							<td align="left">
+							    <@form.number name="planDeal"
+									id="planDeal" value="${(entity.planDeal)!}" />
+							</td>
+						</tr>
+						<tr>
+							<td align="right">
+							      ${i18n.get('周数:')}
+							</td>
+							<td align="left">
+								<@form.select  
+					             		id="weeks" name="weeks" 
+					             		code="WEEK" 
+					             		value ="${(entity.weeks)!}"
+					             />
+							</td>
+							<td align="right">
+							 	${i18n.get('状态:')}
+							</td>
+							<td align="left">
+								<@form.select
+								id="status" name="status"
+								code="DATA_SUBMIT_STATUS"
+								idKey='code'
+								value ="${(entity.status)!}"
+								/>
+							</td>
+							<td align="right">
+							${i18n.get('已批量成交
+								客户数量(个):')}
+								
+							</td>
+							<td align="left">
+								<@form.number name="clientCount"
+									id="clientCount" value="${(entity.clientCount)!}" />
+							</td>
+						</tr>
+						<tr>
+							<td width="110px"></td>
+							<td width="170px"></td>
+							<td width="110px"></td>
+							<td width="170px"></td>
+							<td align="right">
+								${i18n.get('本周下单客户（个）:')}
+							</td>
+							<td align="left">
+								<@form.number name="placeOrderC"
+									id="placeOrderC" value="${(entity.placeOrderC)!}" />
+							</td>
+						</tr>
+					</table>
+	</@form.form>
+	</div>	
+	<div id="processReport">
+	    <p style="width: 1440px; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('进展汇报')}</p>
+	<#-- 国际业务周报-修改 --> <#if permission["P03WeekReportEdit"]?? > <#assign editURL = "'${ctx}/weekly/edit.html'" /></#if>
+
+	<#-- 国际业务周报-删除 --> <#if permission["P03WeekReportDelete"]?? > <#assign deleteURL = "'${ctx}/weekly/delete.html'" /></#if>
+		<@form.table id="weeklyReport" 
+			class="col-xs-12"
+			title="" 
+			url = "${ctx}/process/page.html?fkWeeklyId=${(entity.id)!}"
+			lineEditURL = "${ctx}/process/line.html"
+			rowNum = "10" 
+			editURL= "${editURL!}"
+			deleteURL = "${deleteURL!}"
+			colModel = "[
+				{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+				{name:'clientName',label:'${i18n.get('客户名称')}',hidden:false,width:200,sortable:true,align:'center' },
+				{name:'clientType',label:'${i18n.get('客户类别')}',hidden:false,width:100,sortable:true,align:'center' },
+				{name:'productNeed',label:'${i18n.get('产品需求')}',hidden:false,width:350,sortable:true,align:'center' },
+				{name:'notShippedThisMonth',label:'${i18n.get('未出本月')}',hidden:false,width:70,sortable:true,align:'center' },
+				{name:'notShippedNextMonth',label:'${i18n.get('未出下月')}',hidden:false,width:70,sortable:true,align:'center' },
+				{name:'notShippedNNMonth',label:'${i18n.get('未出下下月')}',hidden:false,width:70,sortable:true,align:'center' },
+				{name:'shippedThisMonth',label:'${i18n.get('出货本月')}',hidden:false,width:70,sortable:true,align:'center', editable:true },
+				{name:'shippedNextMonth',label:'${i18n.get('出货下月')}',hidden:false,width:70,sortable:true,align:'center', editable:true},
+				{name:'shippedNNMonth',label:'${i18n.get('出货下下月')}',hidden:false,width:70,sortable:true,align:'center',editable:true},
+				{name:'contactWay',label:'${i18n.get('客户沟通维护方式')}',hidden:false,width:150,sortable:true,align:'center'},
+				{name:'problemMethod',label:'${i18n.get('存在问题和处理方式')}',hidden:false,width:150,sortable:true,align:'center' },
+				{name:'remark',label:'${i18n.get('备注')}',hidden:false,width:100,sortable:true,align:'center' }
+				]" 
+				> 
+		</@form.table>
+			<@form.table id="contractpi" 
+				class="col-xs-12"
+				title="${i18n.get('PI信息')}" 
+				url = "${ctx}/weekly/pipage.html?weeklyId=${(entity.id)!}" 
+				rowNum = "15" 
+				search = "false"
+				colModel = "[
+					{name:'id',label:'${i18n.get('合同ID')}',hidden:true,width:60,sortable:true,align:'center' },
+					{name:'contrNo',label:'${i18n.get('PI编号')}',hidden:false,width:100,sortable:true,align:'center' },
+					{name:'contrName',label:'${i18n.get('PI名称')}',hidden:false,width:200,sortable:true,align:'center' },
+					{name:'bussEnity',label:'${i18n.get('业务实体')}',hidden:true,width:150,sortable:true,align:'center' },
+					{name:'bussEnityName',label:'${i18n.get('业务实体')}',hidden:false,width:150,sortable:true,align:'center' },		
+					{name:'custName',label:'${i18n.get('客户名称')}',hidden:false,width:150,sortable:true,align:'center' },
+					{name:'createdAt',label:'${i18n.get('创建时间')}',hidden:false,width:150,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+					{name:'delivDate',label:'${i18n.get('交货日期')}',hidden:false,width:100,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+					{name:'totalAmt',label:'${i18n.get('合同总金额')}',hidden:false,width:100,sortable:true,align:'center' },		
+					{name:'contrStat',label:'${i18n.get('合同状态')}',hidden:true,width:60,sortable:true,align:'center' },
+					{name:'contrStatName',label:'${i18n.get('合同状态')}',hidden:false,width:60,sortable:true,align:'center' },
+					{name:'contrVer',label:'${i18n.get('合同版本')}',hidden:false,width:60,sortable:true,align:'center' }
+					
+					]" 
+					buttons = "[]" > 
+			</@form.table> 
+		
+	</div>
+	</div>
+		</@form.panel>
+</@pui.body>
+<script type="text/javascript">
+    $(window).resize(function () {
+        $("#weeklyReport").setGridWidth($(window).width() - 90);
+    });
+
+    $(window).resize(function () {
+        $("#contractpi").setGridWidth($(window).width() - 90);
+    });
+    $(document).ready(function () {
+        if (!'${(entity.id)!}') {
+            $("#processReport").hide();
+        } else {
+            $("#processReport").show();
+        }
+        $("#status").attr("disabled", "disabled");
+    });
+
+    function submitData() {
+        var entityId = "${entity.id?default('')}";
+        if(''===entityId){
+        	alert('${i18n.get('数据未保存，请先保存再提交。')}'); 
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url: "${ctx}/weekly/submitData.html",
+            async: true,
+            data: "id=" + entityId,
+            dataType: 'json',
+            success: function (msg) {
+            	alert('${i18n.get('提交成功')}'); 
+                parent.currentParent2.reload_t1();
+                api.close();
+            },
+            error: function (e) {
+                var msg = eval("(" + e.responseText + ")");
+                if (msg) {
+                    alert(msg.message);
+                } else {
+                	alert('${i18n.get('操作失败，请联系管理员')}'); 
+                }
+            }
+        });
+
+    }
+
+</script>

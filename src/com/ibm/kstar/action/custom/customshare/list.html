@@ -1,0 +1,134 @@
+<#escape x as x?html>
+<@pui.body>
+<#if permission["P02CusShareListAdd"]?? >
+	<#assign addShareURL = "'${ctx}/custom/share/add.html'"  />
+</#if>
+
+<#if permission["P02CusShareListEdit"]??>
+	<#assign editShareURL= "'${ctx}/custom/share/edit.html'"  />
+</#if>
+
+<#if permission["P02CusShareListDelete"]??>
+	<#assign deleteShareURL = "'${ctx}/custom/share/delete.html'"   />
+</#if>
+
+<@form.table id="tableShareList" 
+class="col-xs-12"
+height="131px"
+title="${i18n.get('共享一览')}" 
+url = "${ctx}/custom/share/page.html" 
+rowNum = "5" 
+addURL = "${addShareURL!}"
+editURL = "${editShareURL!}"
+deleteURL= "${deleteShareURL!}" 
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+	{name:'shareCode',label:'${i18n.get('申请编号')}',hidden:false,width:160,sortable:false,align:'center' },
+	{name:'applierName',label:'${i18n.get('申请人')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'customName',label:'${i18n.get('申请授权客户名称')}',hidden:false,width:300,sortable:false,align:'center' },
+	{name:'shareDeptName',label:'${i18n.get('归属部门')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'shareSaleName',label:'${i18n.get('归属销售员')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'shareCreateReasonGrid.name',label:'${i18n.get('申请原因')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'shareStatusName',label:'${i18n.get('状态')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'shareCreateTime',label:'${i18n.get('申请时间')}',hidden:false,width:100,sortable:false,align:'center'  }
+	]" 
+	> 
+	<div class="col-xs-12" style="padding-top: 20px;">
+		<table border="0" cellpadding="0" cellspacing="0" >
+			<tr align="left">
+				<td align="right" width="120px">
+					<label class="no-padding-right" >${i18n.get(' 申请编号')} :</label>
+				</td>
+				<td align="left"  >
+					<@form.input 
+						id="shareCode"  name="shareCode" 
+						placeholder="" 
+						tip="" 
+					/>
+				</td>
+				<td align="right" width="120px">
+					<label class="no-padding-right" >${i18n.get(' 创建日期(FROM)')} :</label>
+				</td>
+				<td align="left"  >
+					<@form.date id="dateFrom"  name="dateFrom" 
+						placeholder="" 
+						tip="" 
+						/>
+				</td>
+				 <td align="right" width="120px">
+					<label class="no-padding-right" > ${i18n.get('创建日期(TO)')} :</label>
+				</td>
+				<td >
+					<@form.date id="dateTo"  name="dateTo" 
+						placeholder="" 
+						tip="" 
+						/>
+				</td>
+			</tr>
+			<tr align="left">
+				<td align="right" width="120px">
+					<label class="no-padding-right" > ${i18n.get('申请人')} :</label>
+				</td>
+				<td align="left"  >
+					<input id="applier" name="applier" type="hidden"  >
+					<@form.autocomplete  id="handoverFromName" name="handoverFromName" 
+						idKey='employeeId'
+						style='width:161px'
+						required="${i18n.get('请选择')}"
+						multiple="false"
+						formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+						url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+						
+						onSelect="function(data){
+							if( data.id != null && data.id !='' && data.id != 'undefined'){
+								$('#applier').val(data.employeeId);
+							}
+						}" 
+					/>
+				</td>
+				<td align="right" width="120px">
+				</td>
+				<td align="left"  >
+				</td>
+				<td align="right" width="120px">
+				</td>
+				<td >
+				</td>
+			</tr>
+			<tr align="left">
+				<td align="right" width="120px">
+					<label class="no-padding-right" > ${i18n.get('原因')} :</label>
+				</td>
+				<td align="left"  >
+					<input id="applier" name="applier" type="hidden"  >
+					<@form.select 
+						code="CREATEREASON"
+						style="width: 161px;"
+						id="shareCreateReason" name="shareCreateReason" 
+						placeholder="" 
+						tip="" 
+						/>
+				</td>
+				<td align="right" width="120px">
+					<label class="no-padding-right" >${i18n.get('状态')}  :</label>
+				</td>
+				<td align="left"  >
+					<@form.select 
+						code="CUSTOM_NORMAL_STATUS"
+						style="width: 161px;"
+						id="shareStatus" name="shareStatus" 
+						placeholder="" 
+						tip="" 
+						/>
+				</td>
+				 <td align="right" width="120px">
+				</td>
+				<td >
+				</td>
+			</tr>
+		</table>	
+	</div>
+</@form.table> 
+
+</@pui.body>
+</#escape>

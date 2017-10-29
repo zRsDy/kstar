@@ -1,0 +1,150 @@
+<@cui.body>
+<#if (permission["P09RebateProductAdd"])??>
+	<#assign addURL="'${ctx}/rebateProduct/addOrEdit.html'" />
+</#if>
+<#if (permission["P09RebateProductEdit"])??>
+	<#assign editURL="'${ctx}/rebateProduct/addOrEdit.html'" />
+</#if>
+<#if (permission["P09RebateProductDelete"])??>
+	<#assign deleteURL="true" />
+</#if>
+
+	<div class="col-xs-12">
+		<@form.table id="product"
+			class="col-xs-12"
+			title="${i18n.get('产品组')}"
+			url = "${ctx}/rebateProduct/page.html"
+			rowNum = "10"
+			addURL = "${addURL!}"
+			editURL = "${editURL!}"
+			colModel = "[
+				{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+				{name:'groupName',label:'${i18n.get('产品组名称')}',hidden:false,width:250,sortable:true,align:'left' }, 
+				{name:'organization',label:'${i18n.get('组织')}',hidden:true,width:240,sortable:true,align:'left' }, 
+				{name:'organizationName',label:'${i18n.get('组织')}',hidden:false,width:250,sortable:true,align:'left' }, 
+				{name:'startDate',label:'${i18n.get('生效日期')}',hidden:false,width:90,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+				{name:'endDate',label:'${i18n.get('失效日期')}',hidden:false,width:90,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+				{name:'createDate',label:'${i18n.get('创建日期')}',hidden:false,width:90,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+				{name:'createrName',label:'${i18n.get('创建人')}',hidden:false,width:80,sortable:true,align:'center' }, 
+				{name:'explain',label:'${i18n.get('说明')}',hidden:false,width:450,sortable:true,align:'left' }
+			]" 
+			onSelectRow="function(){
+				$('#productGroupId').val(selected_product.id);
+				reload_detail();
+			}"
+			onComplete="function(){
+				$('#productGroupId').val('');
+			}"
+			buttons = "[
+				{
+		  			id:'delete_policy',
+		  			label : '${i18n.get('删除')}',
+		  			icon : 'icon-trash',
+		  			own : ${deleteURL!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_product){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}else{
+							ajax({
+								url: '${ctx}/rebateProduct/delete.html',
+								type: 'POST',
+								data: {id:selected_product.id},
+								success : function(result) {
+									reload_product();
+									reload_detail();
+									exalert(e,'${i18n.get('删除成功！')}');
+								}
+							});
+						}
+		  			}
+		  		},
+			]" > 
+			
+			<div class="col-xs-12">	
+				<div class="form-group col-xs-2" align="right">${i18n.get('产品组名称 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="groupName" size="30" />
+				</div>
+			</div> 
+		</@form.table>
+		
+		<#if (permission["P09RebateProductDetailAdd"])??>
+			<#assign addURL_detail="true" />
+		</#if>
+		<#if (permission["P09RebateProductDetailEdit"])??>
+			<#assign editURL_detail="'${ctx}/rebateProduct/addOrEditDetail.html'" />
+		</#if>
+		<#if (permission["P09RebateProductDetailDelete"])??>
+			<#assign deleteURL_detail="'${ctx}/rebateProduct/deleteDetail.html'" />
+		</#if>
+		<div id="detailDiv">
+		<@form.table id="detail" 
+			class="col-xs-12"
+			title="${i18n.get('明细信息')}"
+			url = "${ctx}/rebateProduct/pageDetail.html"
+			rowNum = "10"
+			editURL = "${editURL_detail!}"
+			deleteURL = "${deleteURL_detail!}"
+			colModel = "[
+				{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+				{name:'rowNumber',label:'${i18n.get('行号')}',hidden:false,width:40,sortable:true,align:'center' }, 
+				{name:'productSeries',label:'${i18n.get('产品系列')}',hidden:false,width:400,sortable:true,align:'center' }, 
+				{name:'endDate',label:'${i18n.get('失效日期')}',hidden:false,width:150,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }
+			]" 
+			searchClick="function(){
+				var productGroupId = $('#productGroupId').val();
+				if(!productGroupId || productGroupId == ''){
+					exalert(e,'${i18n.get('请选择产品组数据')}');
+					return;
+				}
+			}"
+			buttons = "[
+				{
+		  			id:'addDetail',
+		  			label : '${i18n.get('新增')}',
+		  			icon : 'icon-pencil',
+		  			own : ${addURL_detail!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_product){
+							exalert(e,'${i18n.get('请选择产品组数据！')}');
+							return;
+						}
+						var requestPath = '${ctx}/rebateProduct/addOrEditDetail.html?productGroupId='+selected_product.id
+						parent.dialog('${i18n.get('明细信息')}', requestPath, window);
+		  			}
+		  		}
+			]" > 
+			
+			<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">	
+				<input type="hidden" id="productGroupId" name="productGroupId" />
+				<div class="form-group col-xs-2" align="right">${i18n.get('产品系列 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="productSeries" size="30" />
+				</div>
+			</div> 
+		</@form.table>
+		</div>
+		<input type="hidden" id="detailId" />
+	</div>
+</@cui.body>
+<script type="text/javascript">
+function reload_product_2(productGroupId){
+	$("#productGroupId").val(productGroupId);
+	$("#detailId").val('');
+	reload_product();
+}
+function onComplete_product(){
+	var productGroupId = $("#productGroupId").val();
+	$('#'+productGroupId).trigger('click');
+}
+
+function reload_detail_2(detailId){
+	$("#detailId").val(detailId);
+	reload_detail();
+}
+function onComplete_detail(){
+	var detailId = $("#detailId").val();
+	$('#'+detailId).trigger('click');
+}
+</script>

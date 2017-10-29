@@ -1,0 +1,49 @@
+
+<#-- 样机申请-申请-申请事项-新增 --> <#if permission["P03SampleT1AppealItemQuery"]?? > <#assign addURL = "'${ctx}/bizPrototype/add.html?systemId=${(systemPid)!}'" /></#if>
+
+<#-- 样机申请-申请-申请事项-修改 --> <#if permission["P03SampleT1AppealItemSave"]?? > <#assign editURL = "'${ctx}/bizPrototype/edit.html'" /></#if>
+
+<#-- 样机申请-申请-申请事项-删除 --> <#if permission["P03SampleT1AppealItemDelete"]?? > <#assign deleteURL = "'${ctx}/bizPrototype/delete.html'" /></#if>
+
+<@form.table id="prototypeTable" 
+	class="col-xs-12"
+	title="${i18n.get('申请事项')}" 
+	url = "${ctx}/bizPrototype/page.html?systemId=${(systemPid)!}" 
+	rowNum = "10" 
+	addURL = "${addURL!}"
+	editURL= "${editURL!}"
+	deleteURL = "${deleteURL!}"
+	colModel = "[
+		{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'productModel',label:'${i18n.get('产品型号')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'materialNumber',label:'${i18n.get('产品料号')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'productDesc',label:'${i18n.get('产品描述')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'applyCount',label:'${i18n.get('申请数量')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'productPrice',label:'${i18n.get('申请单价')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'applyAmount',label:'${i18n.get('申请金额')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'typeName',label:'${i18n.get('类型')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'remark',label:'${i18n.get('备注')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'isStandard',label:'${i18n.get('标准产品')}',hidden:false,width:100,sortable:true,align:'center' }
+		]" 
+		buttons = "[]" > 
+</@form.table>
+
+<script type="text/javascript">
+	
+$(function() {
+	showPage();
+});
+
+function showPage(){
+	
+	_url = '${ctx}/common/attachment/attachment.html?businessId=${(systemPid)!}&businessType=ACCOUNT_FILE&docGroupCode=APPLYINFOATTM';
+
+	$('#attmDiv').load(_url, function(response,status,xhr){
+		if(status === 'error'){
+			$('#attmDiv').html(_url +'<br>'+ ${i18n.get('页面加载失败')});
+		}
+	});
+	
+	}
+</script>
+

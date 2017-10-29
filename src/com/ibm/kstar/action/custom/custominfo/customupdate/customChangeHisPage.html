@@ -1,0 +1,42 @@
+<#escape x as x?html>
+    <@cui.body>
+    <div class="col-xs-12">
+
+        <@form.table id="customChangeHis"
+        class="col-xs-12"
+        title="${i18n.get('客户变更')}"
+        url = "${ctx}/custom/change/customChangeHisList.html?customInfoId=${customInfoId}"
+        rowNum = "10"
+        shrinkToFit = "false"
+        search = "false"
+        colModel = "[
+			 	{name : 'id', label:'id', width : 20, editable : false, hidden : true},  
+			 	{name : 'customFullName', label:'${i18n.get('客户全称')}', width : 250, sortable:false, editable:false, align:'center'}, 
+			  	{name : 'applierName', label:'${i18n.get('申请人')}', width : 150, sortable:false, editable:false, align:'center'},
+			    {name : 'createDate', label:'${i18n.get('申请日期')}', width : 150, editable : false}, 
+				{name : 'statusName', label:'${i18n.get('申请状态')}', width : 150, editable : false},
+			]"
+        ondblClickRow= "function(rowid){
+			parent.dialog('${i18n.get('流程表单')}','${ctx}/custom/change/changeHis.html?id='+selected_customChangeHis.id,window);	
+		}"
+        buttons = "[
+			  		{
+			  			id:'viewForm',
+			  			label : '${i18n.get('流程表单')}',
+			  			icon : 'icon-trash',
+						own : 'true',
+			  			handler : function(e,rowData){
+			  				if(!selected_customChangeHis){
+								alert('${i18n.get('没有选中任何数据!')}');
+								return;
+							}
+							javascript:parent.dialog('${i18n.get('流程表单')}', '${ctx}/custom/change/changeHis.html?id='+selected_customChangeHis.id, window);
+			  			}
+			  		}
+			]" >
+        </@form.table>
+        <br/>
+    </div>
+</@cui.body>
+<script src="${ctx}/anne/js/util.js"></script>
+</#escape>

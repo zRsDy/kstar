@@ -1,0 +1,247 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="customMerge" success="function(){ parent.currentParent.reload_tableMergeList(); }" class="form-horizontal" >
+		
+		<div class="form-group">	
+			<div style="padding-right: 20px; float: right;padding-top: 3px;">
+				<#if permission["P02CusMergeSave"]?? >
+					<button class="btn btn-info submit" id="save" type="button">
+						<i class="bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+				</#if>
+				<#if permission["P02CusMergeSubmit"]?? >
+					<button class="btn btn-info" id="apply" type="button" onclick="applyCustom('submit','20')">
+						<i class="bigger-110"></i>
+						${i18n.get('启动合并')}
+					</button>
+				</#if>
+				
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+				
+			</div>
+		</div>
+		<div class="form-group" >
+			<table>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('重复客户名称')} : </label>
+					</td>
+					<td >
+						<@form.autocomplete  id="customNameFrm" name="customNameFrm" 
+							idKey='customFullName'
+							style="width: 157px;"
+							required="${i18n.get('请选择客户编号')}"
+							formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+							url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html'; }"
+							value="{customFullName:'${(customMerge.customNameFrm)!}', 
+							customCode: '${(customMerge.customCodeFrm)!}'}"
+							
+							onSelect="function(data){
+								if( data.customCode != null && data.customCode !='' && data.customCode != 'undefined'){
+									$('#customCodeFrm').val(data.customCode);
+								}
+							}" 
+						/>
+							
+					</td>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('合并至客户名称')} : </label>
+					</td>
+					<td >
+					
+						<@form.autocomplete  id="customNameTo" name="customNameTo" 
+							idKey='customFullName'
+							style="width: 157px;"
+							required="${i18n.get('请选择客户编号')}"
+							formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+							url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html'; }"
+							value="{customFullName:'${(customMerge.customNameTo)!}', 
+							customCode: '${(customMerge.customCodeTo)!}'}"
+							
+							onSelect="function(data){
+								if( data.customCode != null && data.customCode !='' && data.customCode != 'undefined'){
+									$('#customCodeTo').val(data.customCode);
+								}
+							}" 
+						/>
+							
+					</td>
+
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('重复客户编号 ')} : </label>
+					</td>
+					<td >
+						<@form.input
+							id="customCodeFrm"  
+							name="customCodeFrm" 
+							placeholder="" 
+							required="${i18n.get('不能为空')}"
+							tip="" 
+							value="${(customMerge.customCodeFrm)!}" 
+							readonly ="readonly"
+							/>
+					</td>
+					
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('合并至客户编号')}:</label>
+					</td>
+					<td >
+						<@form.input
+							id="customCodeTo"  
+							name="customCodeTo" 
+							placeholder="" 
+							required="${i18n.get('不能为空')}"
+							tip="" 
+							value="${(customMerge.customCodeTo)!}" 
+							readonly ="readonly"
+							/>
+					</td>
+					
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('合并编码')} : </label>
+					</td>
+					<td >
+						<@form.input
+							id="mergeCode"  
+							name="mergeCode" 
+							placeholder="" 
+							required="${i18n.get('不能为空')}"
+							tip="" 
+							value="${(customMerge.mergeCode)!}" 
+							readonly ="readonly"
+							/>
+					</td>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('合并原因')}  : </label>
+					</td>
+					<td >
+						<@form.select  
+							style="width: 157px;"
+							id="mergeReason" name="mergeReason" 
+							code="MERGEREASON" 
+							required="${i18n.get('不能为空')}"
+							value ="${(customMerge.mergeReason)!}"
+						/>
+					</td>
+				</tr>
+				
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get(' 用户 ')}: </label>
+					</td>
+					<td >
+						<input id="applier" name="applier" type="hidden" value="${(customMerge.applier)!}" >
+						<input id="applierPos" name="applierPos" type="hidden" value="${(customMerge.applierPos)!}" >
+						<input id="applierOrg" name="applierOrg" type="hidden" value="${(customMerge.applierOrg)!}" >
+						<@form.input
+						id="applierName"  
+						name="applierName" 
+						placeholder="" 
+						required="${i18n.get('不能为空')}"
+						readonly="readonly"
+						tip="" 
+						value="${(customMerge.applierName)!}" 
+						/>
+						
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('状态')}  : </label>
+					</td>
+					<td >
+						<input id="mergeStatus" name="mergeStatus" type="hidden" value="${(customMerge.mergeStatus)!}" >
+						
+						<@form.input
+							id="mergeStatusName"  
+							name="mergeStatusName" 
+							placeholder="" 
+							required="${i18n.get('不能为空')}"
+							readonly="readonly"
+							tip="" 
+							value="${(customMerge.mergeStatusName)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('合并日期')} : </label>
+					</td>
+					<td >
+						<@form.input
+							id="mergeDate"  
+							name="mergeDate" 
+							placeholder="" 
+							readonly="readonly"
+							tip="" 
+							value="${(customMerge.mergeDate)!}" 
+							/>
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('ERP已合并')} : </label>
+					</td>
+					<td >
+						<@form.select  
+							style="width: 157px;"
+							id="mergeErpFlg" name="mergeErpFlg" 
+							code="COMMONYN" 
+							value ="${(customMerge.mergeErpFlg)!}"
+						/>
+					</td>
+				</tr>
+			</table>
+		</div>	
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+		
+	</@form.form>
+	</@form.panel>
+</@pui.body>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		if ('${(customMerge.mergeStatus)!}' === 'CUSTOM_NORMAL_STATUS_20'
+			|| '${(customMerge.mergeStatus)!}' === 'CUSTOM_NORMAL_STATUS_40'){
+			$("#save").attr("disabled","true");
+			$("#apply").attr("disabled","true");
+		}
+	});
+	
+	function applyCustom(operate,status){
+		var msg= "${i18n.get('确定启动合并流程吗？')} ";
+		
+		var formDatas = $('#form_customMerge').serialize();
+		formDatas = "id=${(customMerge.id)!}&"+formDatas;
+		
+		bootbox.confirm(msg, function(result) {
+			if(result) {
+				$.ajax({
+					type : "POST",
+					url : "${ctx}/custom/mergeApply.html",
+					async: true,
+					data : formDatas,
+					dataType : 'json',
+					success : function(msg) {
+						alert(msg.message);
+						parent.currentParent2.reload_tableMergeList(); 
+						javascript:api.close();
+					},
+					error: function(e) {
+						alert(e.responseJSON.message);
+					} 
+				});
+			}
+		});
+	}
+</script>
+</#escape>

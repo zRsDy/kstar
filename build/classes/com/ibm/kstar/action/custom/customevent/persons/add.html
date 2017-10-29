@@ -1,0 +1,87 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="t1" success="function(){ parent.currentParent.reload_person(); }" class="form-horizontal" >
+		<input id="eventPid" name="eventPid" type="hidden"  value="${(customEventContact.eventPid)!}">
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>${i18n.get('姓名')} : 
+			</label>
+			<@form.input
+			id="name"  
+			name="name" 
+			placeholder="" 
+			required="${i18n.get('不能为空！')}"
+			tip="" 
+			value="${(customEventContact.name)!}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<str  ong style="color: red;">*</strong>${i18n.get('性别 ')}: 
+			</label>
+			
+			<@form.select style="width: 147px;"
+				id="sex" name="sex" 
+				required="${i18n.get('不能为空！')}"
+				code="SEX" 
+				value ="${(customEventContact.sex)!}"
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>${i18n.get('职务')} : 
+			</label>
+			<@form.input
+			id="post"  
+			name="post" 
+			required="${i18n.get('不能为空！')}"
+			placeholder="" 
+			tip="" 
+			value="${(customEventContact.post)!}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>${i18n.get('联系电话')} : 
+			</label>
+			<@form.input
+			id="tel"  
+			name="tel" 
+			placeholder="" 
+			required="${i18n.get('不能为空！')}"
+			tip="" 
+			value="${(customEventContact.tel)!}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				${i18n.get('备注')} : 
+			</label>
+			<@form.input
+			id="comment"  
+			name="comment" 
+			placeholder="" 
+			tip="" 
+			value="${(customEventContact.comment)!}" 
+			/>
+		</div>
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+		<div class="clearfix form-actions">
+			<div class="col-md-offset-5 col-md-7">
+				<button class="btn btn-info submit" type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				&nbsp; &nbsp; &nbsp;
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+	</@form.form>
+	</@form.panel>
+</@pui.body>
+</#escape>

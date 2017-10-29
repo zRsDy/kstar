@@ -1,0 +1,276 @@
+<@pui.body>
+<style type="text/css">
+
+
+table td {
+	padding:1px;
+	vertical-align: middle;
+	word-break: keep-all;
+	border: solid #ededed;
+	
+	border-width: 0px 0px 0px 0px;
+}
+
+input[type="text"] { width: 180px;}
+input[type="search"] {width: 180px;}
+select {
+	width: 180px;
+}
+</style>
+
+<#if permission["P06ReceiptPlanListAdd"]?? >
+	<#assign addURL = "'${ctx}/receipts/plan/add.html'"  />
+</#if>
+<#if permission["P06ReceiptPlanListEdit"]??>
+	<#assign editURL = "'${ctx}/receipts/plan/edit.html'"  />
+</#if>
+<#if permission["P06ReceiptPlanListDelete"]??>
+	<#assign deleteURL = "'${ctx}/receipts/plan/delete.html'"   />
+</#if>
+<#if permission["P06ReceiptPlanListImport"]??>
+	<#assign importURL = "'${ctx}/receipts/plan/importReceiptsPlan.html'"   />
+</#if>
+
+<#if permission["P06ReceiptPlanListExport"]??>
+	<#assign exportButtons="true"/>
+</#if>
+
+	<@form.table id="receiptsPlanList" 
+		class="col-xs-12" 
+		height="550"
+		title="${i18n.get('回款列表')}"
+		url = "page.html" 
+		rowNum = "20" 
+		rownumbers = "true"
+		addURL = "${addURL!}"
+		editURL = "${editURL!}"
+		deleteURL= "${deleteURL!}"
+		importURL = "${importURL!}" 
+		importTempletURL="importTemplet.html"
+		colModel = "[ 
+			{name:'id',label:'',hidden:true,width:60,sortable:false,align:'center' },  
+			{name:'businessEntityLable',label:'${i18n.get('业务实体')}',hidden:false,width:230,sortable:false,align:'center' ,hidden:false},
+			{name:'custCode',label:'${i18n.get('客户编号')}',hidden:false,width:150,sortable:false,align:'center' },
+			{name:'custName',label:'${i18n.get('客户名称')}',hidden:false,width:250,sortable:false,align:'center' },
+			{name:'salesCenter',label:'${i18n.get('营销中心ID')}',hidden:true,width:150,sortable:false,align:'center' },
+			{name:'salesCenterName',label:'${i18n.get('营销中心')}',hidden:false,width:100,sortable:false,align:'center' },
+			{name:'bizDept',label:'${i18n.get('业务部门ID')}',hidden:true,width:100,sortable:false,align:'center' },
+			{name:'bizDeptLable',label:'${i18n.get('业务部门')}',hidden:false,width:100,sortable:false,align:'center' },
+			{name:'contractCode',label:'${i18n.get('合同编号')}',hidden:false,width:150,sortable:false,align:'center' },
+			{name:'receiptsPlanLable',label:'${i18n.get('合同收款计划行')}',hidden:false,width:80,sortable:false,align:'center' },
+			{name:'receiptsStageLable',label:'${i18n.get('收款阶段')}',hidden:false,width:80,sortable:false,align:'center' },
+			{name:'deliveryCode',label:'${i18n.get('出货申请编号')}',hidden:false,width:150,sortable:false,align:'center' },
+			{name:'planAmount',label:'${i18n.get('计划金额')}',hidden:false,width:100,sortable:false,align:'right' },
+			{name:'veriAmount',label:'${i18n.get('核销金额')}',hidden:false,width:100,sortable:false,align:'right' },
+			{name:'gridBalance',label:'${i18n.get('未核销金额')}',hidden:false,width:100,sortable:false,align:'right' },
+			{name:'receiptsTypeLable',label:'${i18n.get('币种')}',hidden:false,width:60,sortable:false,align:'center' },
+			{name:'paymentDate',label:'${i18n.get('到期日')}',hidden:false, width:120,sortable:false,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+			{name:'gatheringDate',label:'${i18n.get('收款日期')}',hidden:false, width:120,sortable:false,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+			{name:'checkDate',label:'${i18n.get('核销日期')}',hidden:false, width:120,sortable:false,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+			{name:'salesmanCode',label:'${i18n.get('销售人员编号')}',hidden:false,width:80,sortable:false,align:'center' },
+			{name:'salesmanName',label:'${i18n.get('销售人员名称')}',hidden:false,width:150,sortable:false,align:'center' },
+			{name:'salesmanPosName',label:'${i18n.get('销售人员岗位')}',hidden:false,width:150,sortable:false,align:'center' },
+			{name : 'createdPositionName', label:'${i18n.get('创建人岗位')}', width : 100, editable:false, align:'center',sortable:false}, 
+			{name:'remarks',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:false,align:'center' }
+		]" 
+		checkbox='true'
+		
+		buttons = "[{
+					id:'receiptePlanListExcel',
+					label : '${i18n.get('导出Excel')}',
+					icon : 'icon-save',
+					own : ${exportButtons!'false'},
+					hide:true,
+					hidden:true,
+					handler : function(e,rowData){
+						var da={} ; 
+				  			var prjrows= $('#receiptsPlanList').jqGrid('getGridParam','selarrrow');  
+				  			var ids=[];
+				  			var idsStr = '';	
+					 		$.each(prjrows,function(i,id){
+	 							var item = $('#receiptsPlanList').jqGrid('getRowData',id);
+					 			ids.push(item.id);
+					 			idsStr +=   item.id +',';
+					 		});	
+					 		idsStr = idsStr.substring(0,idsStr.length-1);
+		  					bootbox.confirm('${i18n.get('您确定要导出选中的数据吗？')}' , function(result) {
+							if(result) {
+								window.location.href = '${ctx}/receipts/plan/receiptePlanListExcel.html?typ=CONTRACT_RECEIPT_DETAIL&idsStr='+idsStr;
+								}
+							});
+					}
+		},{
+							id:'config',
+							label : '${i18n.get('销售人员设置')}',
+							icon : 'icon-save',
+							own : true,
+							handler : function(e,rowData){
+								var rowDatas = $('#receiptsPlanList').jqGrid('getGridParam','selarrrow');
+								var rowData = $('#receiptsPlanList').jqGrid('getGridParam','selrow');
+								if(rowDatas.length>1){
+									alert('${i18n.get('请选择一行数据查看!')}');
+									return;
+								}
+								debugger;
+								parent.dialog('${i18n.get('团队设置')}','${ctx}/team/config.html?layerId=${layerId!}&orgId=${orgId!}&businessType=CONTRACT_RECEIPT_DETAIL&businessId='+rowData+'&businessId1='+$('#businessId1').val(),window);
+							}
+		}
+		]"
+		 >
+		<div class="col-xs-12" style="padding-top: 20px;">
+			<table>
+				<tr>
+					<td align="right" width="120px">
+					${i18n.get('客户 :')}
+					</td>
+					<td align="left" width="200px">
+						<@form.autocomplete  id="custId" name="custId" 
+		            		placeholder="${i18n.get('请选择客户')}"
+			            	idKey='id'
+			            	formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+							url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html'; }"
+			            	
+		            	/>
+					</td>
+					<td align="right" width="120px">
+					${i18n.get('合同编号 :')}
+					 </td>
+					<td>
+						<@form.input
+							id="contractCode"  name="contractCode" 
+							placeholder="" 
+							tip="" 
+							value="${(contractReceiptDetail.contractCode)!}" 
+							/>
+					</td>
+					<td align="right" width="120px">
+						${i18n.get('合同收款计划行 :')}
+					</td>
+					<td>
+						<@form.select
+							id="receiptsPlan" name="receiptsPlan" 
+		             		code="CONTRACTPAYSEQ"
+		             		value ="${(contractReceiptDetail.receiptsPlan)!}"
+		             		/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						${i18n.get('收款阶段 :')}
+					</td>
+					<td>  
+						<@form.select
+							id="receiptsStage" name="receiptsStage" 
+		             		code="CONTRACTPAYMENTPLAN"
+		             		/>	
+					</td>
+					<td align="right">
+					${i18n.get('出货申请编号 :')}
+					</td>
+					<td>
+						<@form.input
+							id="deliveryCode"  name="deliveryCode" 
+							placeholder="" 
+							tip="" 
+							/>
+					</td>
+					<td align="right">
+					${i18n.get('销售人员 :')}
+					</td>
+					<td>
+						<@form.autocomplete  id="salesmanId" name="salesmanId" 
+							placeholder="${i18n.get('请选择销售人员')}"
+							idKey='employeeId'
+							required="${i18n.get('请选择销售人员')}"
+							multiple="false"
+							formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+							url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+						
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						${i18n.get('收款分类 :')}
+					</td>
+					<td>
+						<@form.select 
+							id="receiptsType" name="receiptsType" 
+							idKey="code"
+		             		code="RECEIPT_TYPE"
+		             		/>	
+					</td>
+					<td align="right">
+					${i18n.get('业务部门 :')}
+					</td>
+					<td>
+						<@form.select 
+							id="bizDept" name="bizDept" 
+		             		code="ORG"
+		             		/>	
+					</td>
+					<td align="right">
+					${i18n.get('营销中心 :')}
+					</td>
+					<td>
+						<@form.select 
+							id="salesCenter" name="salesCenter" 
+		             		url="function(){return '${ctx}/lov/member/getSaleCenters.html';}"
+		             		/>	
+					</td>
+				</tr>
+				<tr>
+				 	<td align="right">
+						${i18n.get('业务实体 :')}
+                    </td>
+                    <td>
+						<@form.select 
+							id="businessEntity" 
+							name="businessEntity"
+							code="OPERATION_UNIT"
+							level = "1" />
+                    </td>
+                  </tr>
+				<tr>
+					<td align="right">
+					${i18n.get('已核销金额 :')}
+					</td>
+					<td colspan="5">	  
+						<@form.number id="veriAmountMin"  name="veriAmountMin" 
+							style="width: 100px;" 
+							placeholder="" 
+							tip="" 
+							/>
+						~
+						<@form.number id="veriAmountMax"  name="veriAmountMax" 
+							style="width: 100px;" 
+							placeholder="" 
+							tip="" 
+							/>(${i18n.get('元')})
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						${i18n.get('计划金额 :')}
+					</td>
+					<td colspan="5">
+						<@form.number id="planAmountMin"  name="planAmountMin" 
+							style="width: 100px;" 
+							placeholder="" 
+							tip=""  
+							/>
+						~
+						<@form.number id="planAmountMax"  name="planAmountMax" 
+							style="width: 100px;" 
+							placeholder="" 
+							tip=""  
+							/>(${i18n.get('元')})
+					</td>
+				</tr>
+				
+				
+			</table>
+			</div>	
+		</div> 
+	</@form.table>
+</@pui.body>

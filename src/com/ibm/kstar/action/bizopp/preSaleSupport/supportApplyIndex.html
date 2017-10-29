@@ -1,0 +1,67 @@
+
+<#-- 技术支持申请列表页面-新增 --> <#if permission["P03PresSupportListAdd"]?? > <#assign addURL = "'${ctx}/supportApply/add.html'" /></#if>
+
+<#-- 技术支持申请列表页面-修改 --> <#if permission["P03PresSupportListSave"]?? > <#assign editURL = "'${ctx}/supportApply/edit.html'" /></#if>
+
+<#-- 技术支持申请列表页面-删除 --> <#if permission["P03PresSupportListDelete"]?? > <#assign deleteURL = "'${ctx}/supportApply/delete.html'" /></#if>
+
+
+<@cui.body>
+	<div class="col-xs-12">
+	<@form.table id="t_support_apply"
+		class="col-xs-12"
+		title="${i18n.get('售前技术支持申请基本信息列表')}"
+		url = "${ctx}/supportApply/page.html" 
+		rowNum = "10" 
+		addURL = "${addURL!}"
+		editURL= "${editURL!}"
+		deleteURL = "${deleteURL!}"
+		colModel = "[
+			{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+			{name:'number',label:'${i18n.get('申请编号')}',hidden:false,width:200,sortable:true,align:'center' },
+			{name:'applicant',label:'${i18n.get('申请人')}',hidden:false,width:100,sortable:true,align:'center' },
+			{name:'applyEnterprise',label:'${i18n.get('申请单位')}',hidden:false,width:200,sortable:true,align:'center' },
+			<!--{name:'department',label:'申请部门',hidden:false,width:100,sortable:true,align:'center' },-->
+			{name:'reportPrice',label:'${i18n.get('报备金额')}',hidden:false,width:100,sortable:true,align:'center' },
+			{name:'clientName',label:'${i18n.get('客户名称')}',hidden:false,width:100,sortable:true,align:'center' },
+			{name:'bizOppName',label:'${i18n.get('商机名称')}',hidden:false,width:200,sortable:true,align:'center'},
+			{name:'bizOppProgressName',label:'${i18n.get('商机进度')}',hidden:false,width:200,sortable:true,align:'center' },
+			{name:'competitor',label:'${i18n.get('竞争对手')}',hidden:false,width:200,sortable:true,align:'center' },
+			{name:'createdAt',label:'${i18n.get('创建日期')}',hidden:false,width:200,sortable:true,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+			{name:'statusName',label:'${i18n.get('状态')}',hidden:false,width:200,sortable:true,align:'center' }
+			]"
+			buttons = "[]" >
+
+		<div class="col-xs-12" style="padding-top: 20px;">
+
+			<tr align="left">
+				<td align="right" width="120px">
+					${i18n.get('商机编号:')}
+				</td>
+				<td align="left" width="180px">
+					<@form.input name="pageSearch_number_like" type="text"
+					id="pageSearch_number_like"
+					/>
+				</td>
+				<td align="right" width="120px">
+					${i18n.get('客户名称:')}
+				</td>
+				<td align="left" width="180px">
+					<@form.input name="pageSearch_clientName_like" type="text"
+					id="pageSearch_clientName_like"
+					/>
+				</td>
+				<td align="right" width="120px">
+					${i18n.get('商机名称:')}
+				</td>
+				<td align="left" width="180px">
+					<@form.input name="pageSearch_bizOppName_like" type="text"
+					id="pageSearch_opportunityName_like"
+					required="${i18n.get('不能为空！')}"/>
+				</td>
+			</tr>
+		</div>
+	</@form.table>
+	<br/>
+	</div>
+</@cui.body>

@@ -1,0 +1,132 @@
+<@pui.body> 
+		<div class="col-xs-12"   style="padding-left: 0px;">
+			<table style="width: 100%" >
+				<tr>
+					<#if lovGroup?? && lovGroup.treeFlag?? && lovGroup.treeFlag == 'Y'>
+						<td id="treeTd" style="width: 300px" valign="top" rowspan="2">
+							<@form.panel title="${i18n.get('维度树')}" style='height:100'>
+								<@plug.tree 
+								checkbox="false" 
+								id="tree1" 
+								asyncUrl='${ctx}/role/tree.html?groupId=${lovGroup.id}'
+								onClick=" function(event, treeId, treeNode){
+							  		$('#parentId').val(treeNode.id);
+							  		reload_t1();
+							  	}"
+							  	
+							  	onRightClick="function(event, treeId, treeNode) {
+								   	var treeObj = $.fn.zTree.getZTreeObj(treeId);
+									var nodes = treeObj.getNodes();
+									if (nodes.length>0) {
+										treeObj.cancelSelectedNode();
+									}
+									$('#parentId').val('');
+									reload_t1();
+								}"
+								/>
+							</@form.panel>
+						</td>
+					</#if>
+					<td valign="top">
+					
+					<@form.table id="t1"
+						class="col-xs-12"
+						shrinkToFit = 'true'
+						title="${i18n.get('角色')}"
+						url = "${ctx}/role/page.html?groupId=${lovGroup.id}&role=Y"
+						rowNum = "20"
+						addURL = "'${ctx}/role/add.html?groupId=${lovGroup.id}&parentId=' + $('#parentId').val()"
+						editURL = "'${ctx}/role/edit.html'"
+						deleteURL = "'${ctx}/role/delete.html'"
+						colModel = "[
+						  { name : 'id',    label : 'id', hidden : true , width : 0,sortable:false,align:'center' }, 
+						  { name : 'code', label : '${i18n.get('编码')}', width : 20 ,sortable:false}, 
+						  { name : 'name', label : '${i18n.get('名称')}', width : 20 ,sortable:false },
+						  { name : 'namePath', label : '${i18n.get('路径')}', hidden : false, width : 150 ,sortable:false },
+						  { name : 'memo', label : '${i18n.get('备注')}', hidden : true , width : 0,sortable:false }
+						  ]"
+						onSelectRow = "function(){
+							$('#roleId').val(selected_t1.id);
+							reload_employeeList();
+						}"
+						   
+						buttons = "[
+						 		{
+						 			id:'config',
+						 			label : '${i18n.get('配置权限')}',
+						 			icon : 'icon-trash',
+						 			own : true,
+						 			handler : function(e,rowData){
+										if(!selected_t1){
+											alert('${i18n.get('没有选中任何数据!')}');
+											return;
+										}
+										parent.dialog('${i18n.get('配置权限')}','${ctx}/role/config.html?groupId=PERMISSION&id='+selected_t1.id,window);
+						 			}
+						 		},{
+						 			id:'config2',
+						 			label : '${i18n.get('配置人员')}',
+						 			icon : 'icon-trash',
+						 			own : true,
+						 			handler : function(e,rowData){
+										if(!selected_t1){
+											alert('${i18n.get('没有选中任何数据!')}');
+											return;
+										}
+										parent.dialog('${i18n.get('配置权限')}','${ctx}/role/config2.html?id='+selected_t1.id,window);
+						 			}
+						 		},{
+						 			id:'config3',
+						 			label : '${i18n.get('配置岗位')}',
+						 			icon : 'icon-trash',
+						 			own : true,
+						 			handler : function(e,rowData){
+										if(!selected_t1){
+											alert('${i18n.get('没有选中任何数据!')}');
+											return;
+										}
+										parent.dialog('${i18n.get('配置权限')}','${ctx}/role/config3.html?id='+selected_t1.id,window);
+						 			}
+						 		}
+						 	]"
+						>
+						<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">
+							<input type="hidden" id="parentId" name="parentId" />
+							<div class="form-group col-xs-3">
+								<input type="text" id="searchKey" name="searchKey" placeholder="${i18n.get('查询关键字')}" />
+							</div>	
+							<div class="form-group col-xs-2">
+								<button type="submit" class="btn btn-info" > 
+									<i class="icon-search bigger-110"></i>
+									${i18n.get('查询')}
+								</button>
+							</div>
+						</div>
+						</@form.table>
+					</td>
+				</tr>
+				
+				<tr>
+					<td>
+						<@form.table id="employeeList"
+							class="col-xs-12"
+							title="${i18n.get('员工')}"
+							shrinkToFit = 'true'
+							url = "${ctx}/role/employeePage.html"
+							rowNum = "20"
+							colModel = "[
+							  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:false,align:'center' }, 
+							  { name : 'no', label : '${i18n.get('员工号')}', width : 90 ,sortable:false}, 
+							  { name : 'flag', label : '${i18n.get('类型')}', width : 90 ,sortable:false}, 
+							  { name : 'name', label : '${i18n.get('姓名')}' ,sortable:false }
+							  ]"
+							>
+							<input type="hidden" id="roleId" name="roleId" />
+						</@form.table>
+					</td>
+				</tr>
+				
+			</table>	
+		</div>
+		
+</@pui.body>

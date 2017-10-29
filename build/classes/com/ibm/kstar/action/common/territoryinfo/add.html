@@ -1,0 +1,142 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+	<@form.form id="t1" success="function(){ parent.currentParent.reload_tableTerritoryinfo(); }" class="form-horizontal" >
+		
+		<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" > 
+			<strong style="color: red;">*</strong>
+			<label class="no-padding-right" > ${i18n.get('销售区域 :')} </label>
+		</label>
+			<@form.select 
+			code="TERRITORY"
+			level="1"
+			id="code"  name="code" 
+			style="width: 300px"
+			placeholder="" 
+			tip="" 
+			value="${(territoryInfo.code)!}"
+			required="${i18n.get('不能为空')}"
+			/>
+		</div>
+		<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" > 
+			<strong style="color: red;">*</strong>${i18n.get('国家 :')}
+		</label>
+			<@form.select 
+			code="ADDRESSREGION"
+			level="1"
+			childId="lev2"
+			id="lev1"  name="lev1" 
+			style="width: 300px"
+			placeholder="" 
+			tip="" 
+			value="${(territoryInfo.lev1)!}"
+			required="${i18n.get('不能为空')}"
+			onChange="function(){
+				$('#lev2').val('');
+				$('#lev3').val('');
+				$('#lev4').val('');
+				reload_lev2();
+				reload_lev3();
+				reload_lev4();
+			}"
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" >
+				${i18n.get('省 :')}
+			</label>
+			<@form.select 
+			code="ADDRESSREGION"
+			level="2"
+			parentId="lev1"
+			childId="lev3"
+			style="width: 300px"
+			id="lev2" name="lev2" 
+			placeholder="" 
+			tip="" 
+			value="${(territoryInfo.lev2)!}"
+			onChange="function(){
+				$('#lev3').val('');
+				$('#lev4').val('');
+				reload_lev3();
+				reload_lev4();
+			}"
+			/>
+		</div>
+		
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				${i18n.get('市 :')}
+			</label>
+			<@form.select 
+			code="ADDRESSREGION"
+			level="3"
+			parentId="lev2"
+			childId="lev4"
+			style="width: 300px"
+			id="lev3" name="lev3" 
+			placeholder="" 
+			tip="" 
+			value="${(territoryInfo.lev3)!}"
+			onChange="function(){
+				$('#lev4').val('');
+				reload_lev4();
+			}"
+			/>
+		</div>
+		
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				${i18n.get('县区 :')}
+			</label>
+			<@form.select 
+			code="ADDRESSREGION"
+			level="4"
+			parentId="lev3"
+			style="width: 300px"
+			id="lev4" name="lev4" 
+			placeholder="" 
+			tip="" 
+			value="${(territoryInfo.lev3)!}"
+			/>
+		</div>
+		
+		<div class="form-group" >
+			
+			<label class="col-sm-3 control-label no-padding-right" > ${i18n.get('备注 :')} </label>
+			<@form.input
+			id="comment"  
+			name="comment" 
+			style="width:350px"
+			placeholder="" 
+			tip="" 
+			value="${(territoryInfo.comment)!}" 
+			/>
+		</div>
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+		<div class="clearfix form-actions">
+			<div class="col-md-offset-5 col-md-7">
+				<button class="btn btn-info submit" type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')} 
+				</button>
+				&nbsp; &nbsp; &nbsp;
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')} 
+				</button>
+			</div>
+		</div>
+	</@form.form>
+	</@form.panel>
+	<script type="text/javascript">
+	
+	
+	
+</script>
+</@pui.body>
+
+</#escape>

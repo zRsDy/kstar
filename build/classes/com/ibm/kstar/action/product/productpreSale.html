@@ -1,0 +1,192 @@
+<#if (permission["P01-1ProductPresaleSubmit"])??>
+	<#assign submitURL="true" />
+</#if>
+
+<@pui.body>
+	<@form.table 
+	class="col-xs-12"
+	title="${i18n.get('产品列表')}" 
+	id="product_preSale"
+	url = "${ctx}/product/convertSaleList.html"
+	rowNum = "20"
+	search='true'
+	checkbox = 'true'
+	colModel = "[
+		{name:'id',label:'${i18n.get('产品ID')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'productCode',label:'${i18n.get('产品编码')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'productName',label:'${i18n.get('产品名称')}',hidden:false,width:100,sortable:false,align:'left' },
+		{name:'proEName',label:'${i18n.get('英文名')}',hidden:false,width:80,sortable:false,align:'center' },
+		{name:'proDesc',label:'${i18n.get('产品描述')}',hidden:false,width:160,sortable:false,align:'center' },
+		{name:'materCode',label:'${i18n.get('物料号')}',hidden:false,width:80,sortable:false,align:'center' },
+		{name:'vmaterCode',label:'${i18n.get('预定义物料号')}',hidden:false,width:100,sortable:false,align:'center'},
+		{name:'proModel',label:'${i18n.get('产品型号')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'fatherProCode',label:'${i18n.get('父产品')}',hidden:false,width:60,sortable:false,align:'center' },
+		{name:'publishStatusName',label:'${i18n.get('发布状态')}',hidden:false,width:60,sortable:false,align:'center' },
+		{name:'priceStatus',label:'${i18n.get('订价状态')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'priceStatusName',label:'${i18n.get('订价状态')}',hidden:false,width:60,sortable:false,align:'center' },
+		{name:'saleStatusName',label:'${i18n.get('转销状态')}',hidden:false,width:60,sortable:false,align:'center' },
+		{name:'rohStatus',label:'${i18n.get('是否RoHS')}',hidden:false,width:60,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatRohs(cellvalue) } },
+		{name:'proOrgId',label:'${i18n.get('组织')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'unit',label:'${i18n.get('单位')}',hidden:true,width:50,sortable:false,align:'center' },
+		{name:'unitName',label:'${i18n.get('单位')}',hidden:false,width:50,sortable:false,align:'center' },
+		
+		{name:'crossWeight',label:'${i18n.get('毛重')}',hidden:false,width:80,sortable:false,align:'center' },
+		{name:'netWeight',label:'${i18n.get('净重')}',hidden:false,width:80,sortable:false,align:'center' },
+		{name:'customsCode',label:'${i18n.get('海关料号')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'proLength',label:'${i18n.get('产品长(cm)')}',hidden:false,width:80,sortable:false,align:'center' },
+		{name:'proWidth',label:'${i18n.get('产品宽(cm)')}',hidden:false,width:80,sortable:false,align:'center' },
+		{name:'proHight',label:'${i18n.get('产品高(cm)')}',hidden:false,width:80,sortable:false,align:'center' },
+		{name:'proWrapLength',label:'${i18n.get('包装长(cm)')}',hidden:false,width:80,sortable:false,align:'center'},
+		{name:'proWrapWidth',label:'${i18n.get('包装宽(cm)')}',hidden:false,width:80,sortable:false,align:'center' },
+		{name:'proWrapHight',label:'${i18n.get('包装高(cm)')}',hidden:false,width:80,sortable:false,align:'center' },
+		{name:'cabinet20Flat',label:'${i18n.get('装柜数量(20尺平柜)')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'cabinet20Weight',label:'${i18n.get('装柜数量(20尺超重柜)')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'cabinet40Flat',label:'${i18n.get('装柜数量(40尺普通柜)')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'cabinet40Hight',label:'${i18n.get('装柜数量(40尺高柜)')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'erpCategory',label:'${i18n.get('ERP产品类别')}',hidden:true,width:80,sortable:false,align:'center' },
+		{name:'erpCategoryName',label:'${i18n.get('ERP产品类别')}',hidden:false,width:80,sortable:false,align:'center' },
+		
+		{name:'crmCategoryName',label:'${i18n.get('CRM产品类别')}',hidden:false,width:80,sortable:false,align:'center' },
+		{name:'proBrand',label:'${i18n.get('品牌')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'saleType',label:'${i18n.get('销售类型')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'saleTypeName',label:'${i18n.get('销售类型')}',hidden:false,width:80,sortable:false,align:'center' },
+		
+		{name:'lineBean.cproCategory',label:'${i18n.get('产品分类')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'lineBean.cproType',label:'${i18n.get('产品类别')}',hidden:false,width:120,sortable:false,align:'center' },
+		{name:'lineBean.proSeries',label:'${i18n.get('产品系列')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'clientCategory',label:'${i18n.get('客户型号')}',hidden:false,width:80,sortable:false,align:'center' },
+		{name:'clientCode',label:'${i18n.get('供应商CODE')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'isSpecialUse',label:'${i18n.get('是否专用料')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'csaleStatus',label:'${i18n.get('销售状态')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'csaleStatusName',label:'${i18n.get('销售状态')}',hidden:false,width:80,sortable:false,align:'center' },
+		
+		{name:'lineBean.cproPowcap',label:'${i18n.get('功率或容量')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'demandCode',label:'${i18n.get('需求单编号')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'supplyChainID',label:'${i18n.get('供应链')}',hidden:false,width:100,sortable:false,align:'center' }
+		]" 
+		buttons = "[
+		  		{
+		  			id:'publish',
+		  			label : '${i18n.get('预转销')}',
+		  			icon : 'icon-save',
+		  			own : ${submitURL!'false'},
+		  			handler : function(e,rowData){
+		  				var selectedIds = [];
+		  				if(selectedList_product_preSale.length > 0){
+		  					$.each(selectedList_product_preSale,function(i,item){
+				 				selectedIds.push(item.id);
+					 		});
+		  					parent.confirm('${i18n.get('你确定要开启预转销审批流程？')}' , function(result) {
+								if(result) {
+									ajax({
+										type:'post',
+										url : '${ctx}/productprocess/startPreSaleProcess.html',
+										data: {ids:selectedIds},
+										success : function(result) {
+											exalert(e,'${i18n.get('转销审批流程已开启')}');
+											reload_product_preSale();
+										}
+									});
+								}
+							});
+		  				}else{
+		  					exalert(e,'${i18n.get('请选择预转销数据！')}');
+		  				}
+						
+		  			}
+		  		}
+		  	]"
+			ondblClickRow= "function(rowData){
+				parent.dialog('${i18n.get('审批历史')}','${ctx}/standard/history.html?contrId='+selected_product_preSale.id);
+			}"
+		>
+		<div class="col-xs-12">
+			<div class="form-group col-xs-2" align="right">${i18n.get('产品编码 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="productCode" size="30" />
+			</div>	
+			<div class="form-group col-xs-2" align="right">${i18n.get('产品名称 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="productName" size="30" />
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('产品型号 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="proModel" size="30" />
+			</div>	
+			<div class="form-group col-xs-2" align="right">${i18n.get('品牌 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="proBrand" size="30" />
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('CRM产品类别 ：')}</div>
+			<div class="form-group col-xs-4">
+				<select name="crmCategory">
+					<option value="">${i18n.get('全部')}</option>
+					<#list crmCategoryLst as element>
+						<option value="${element.code}">${element.name}</option>
+					</#list>
+				</select>
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('ERP产品类别 ：')}</div>
+			<div class="form-group col-xs-4">
+				<select name="erpCategory">
+					<option value="">${i18n.get('全部')}</option>
+					<#list erpCategoryLst as element>
+						<option value="${element.code}">${element.name}</option>
+					</#list>
+				</select>
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('发布状态 ：')}</div>
+			<div class="form-group col-xs-4">
+				<select name="publishStatus">
+					<option value="">${i18n.get('全部')}</option>
+					<#list publishStatus as element>
+						<option value="${element.id}">${element.name}</option>
+					</#list>
+				</select>
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('订价状态 ：')}</div>
+			<div class="form-group col-xs-4">
+				<select name="priceStatus">
+					<option value="">${i18n.get('全部')}</option>
+					<#list priceStatus as element>
+						<option value="${element.id}">${element.name}</option>
+					</#list>
+				</select>
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('转销状态 ：')}</div>
+			<div class="form-group col-xs-4">
+				<select name="saleStatus">
+					<option value="">${i18n.get('全部')}</option>
+					<#list saleStatus as element>
+						<option value="${element.id}">${element.name}</option>
+					</#list>
+				</select>
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('客户型号 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="clientCategory" size="30" />
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('产品分类 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="cproCategory" size="30" />
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('产品类别 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="cproType" size="30" />
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('产品系列 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="proSeries" size="30" />
+			</div>
+		</div>  
+	</@form.table> 
+</@pui.body>
+<script type="text/javascript">
+	var customTypeArr = {
+		"0" : "${i18n.get('否')}",
+		"1" : "${i18n.get('是')}"
+	};
+	function formatRohs(value){
+	    return customTypeArr[value];
+	}
+</script>

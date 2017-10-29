@@ -1,0 +1,167 @@
+<#if (permission["P01-1ProductAutestAdd"])??>
+	<#assign addURL_t10="'${ctx}/product/auTestAdd.html?productID=${id}'" />
+</#if>
+<#if (permission["P01-1ProductAutestEdit"])??>
+	<#assign editURL_t10="true" />
+</#if>
+<#if (permission["P01-1ProductAutestDelete"])??>
+	<#assign deleteURL_t10="true" />
+</#if>
+<#if (permission["P01-1ProductAutestSubmit"])??>
+	<#assign submitURL_t10="true" />
+</#if>
+<#if (permission["P01-1ProductAutestUpload"])??>
+	<#assign uploadURL_t10="true" />
+</#if>
+
+<@form.table id="t10" shrinkToFit="true" 
+    class="col-xs-12"
+    title="${i18n.get('认证与测试')}" 
+    url = "${ctx}/product/proAuTestList.html?productID=${id}" 
+    rowNum = "5" 
+    search='true'
+    addURL = "${addURL_t10!}"
+    colModel = "[
+        {name:'id',label:'',hidden:true,width:60,sortable:false,align:'center' },
+        {name:'createdById',label:'${i18n.get('创建人id')}',hidden:true,width:60,sortable:false,align:'center' },
+        {name:'auTestName',label:'${i18n.get('认证测试名称')}',hidden:false,width:100,sortable:false,align:'center' },
+        {name:'auTestDesc',label:'${i18n.get('认证测试事项或需求说明')}',hidden:false,width:120,sortable:false,align:'center' }, 
+        {name:'auTestType',label:'${i18n.get('认证类型')}',hidden:true,width:40,sortable:false,align:'center' },
+        {name:'auTestTypeName',label:'${i18n.get('认证类型')}',hidden:false,width:40,sortable:false,align:'center' },         
+        {name:'proModel',label:'${i18n.get('产品型号')}',hidden:false,width:60,sortable:false,align:'center' }, 
+        {name:'submitTime',label:'${i18n.get('提交时间')}',hidden:false,width:60,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+        {name:'completeTime',label:'${i18n.get('需求完成时间')}',hidden:false,width:60,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+        {name:'statusName',label:'${i18n.get('状态')}',hidden:false,width:60,sortable:false,align:'center' },
+        {name:'applyDepartment',label:'${i18n.get('申请部门')}',hidden:true,width:60,sortable:false,align:'center' },
+        {name:'applyDepartmentName',label:'${i18n.get('申请部门')}',hidden:false,width:60,sortable:false,align:'center' },
+        {name:'applyPersion',label:'${i18n.get('申请人')}',hidden:true,width:40,sortable:false,align:'center' },
+        {name:'applyPersionBean.name',label:'${i18n.get('申请人')}',hidden:false,width:40,sortable:false,align:'center' },
+        {name:'authCode',label:'${i18n.get('认证编号')}',hidden:false,width:60,sortable:false,align:'center' }, 
+        {name:'productID',label:'',hidden:true,width:60,sortable:false,align:'center' },
+    ]"
+    onSelectRow="function(){
+    	var userId = '${LOGIN_USER_ID}';
+		$('#productAuTestId').val(selected_t10.id);
+		$('.businessId').val(selected_t10.id);//${i18n.get('外部附件文件需要')}
+		if(selected_t10.statusName == '${i18n.get('新建')}' && userId == selected_t10.createdById){
+			$('#buttons_add_attachment_productAuTest_request').show();
+		}else{
+			$('#buttons_add_attachment_productAuTest_request').hide();
+		}
+		if(selected_t10.statusName == '${i18n.get('审批通过')}' && ${uploadURL_t10!'false'}){
+			$('#buttons_add_attachment_productAuTest_result').show();
+		}else{
+			$('#buttons_add_attachment_productAuTest_result').hide();
+		}
+	}"
+	onComplete="function(){
+		$('.businessId').val('xx');//${i18n.get('外部附件文件需要')}
+	}"
+    buttons = "[
+        {
+            id:'submit_t10',
+            label : '${i18n.get('提交')}',
+            icon : 'icon-ok',
+            own : ${submitURL_t10!'false'},
+            handler : function(e,rowData){
+                if(typeof(rowData) != 'undefined'){
+                    if(!canEdit(rowData.statusName)){
+                        bootbox.confirm('${i18n.get('你确定要提交申请？')}' , function(result) {
+                        	if(result) {
+		                        ajax({
+									type:'post',
+									url : '${ctx}/productprocess/startAuTestProcess.html',
+									data: {id:rowData.id},
+									success : function(result) {
+										exalert(e,'${i18n.get('提交成功!')}');
+										reload_t10();
+									}
+								});
+							}
+                        });
+                    }else{
+                        myAlert(e,'${i18n.get('提交')}');
+                    }
+                }else{
+                    exalert(e,'${i18n.get('请选择要提交申请的数据！')}');
+                }
+            }
+        },
+        {
+            id:'delete_t10',
+            label : '${i18n.get('删除')}',
+            icon : 'icon-remove',
+            own : ${deleteURL_t10!'false'},
+            handler : function(e,rowData){
+                if(typeof(rowData) != 'undefined'){
+                    if(!canEdit(rowData.statusName)){
+                        bootbox.confirm('${i18n.get('你确定要删除申请？')}' , function(result) {
+                            if(result){
+		                        ajax({
+									type:'post',
+									url : '${ctx}/product/auTestDel.html',
+									data: {id:rowData.id},
+									success : function(result) {
+										exalert(e,'${i18n.get('删除成功！')}');
+										reload_t10();
+									}
+								});
+							}
+                        });
+                    }else{
+                        myAlert(e,'${i18n.get('删除')}');
+                    }
+                }else{
+                    exalert(e,'${i18n.get('请选择要删除的申请！')}');
+                }
+            }
+        },
+        {
+            id:'edit_t10',
+            label : '${i18n.get('修改')}',
+            icon : 'icon-edit',
+            own : ${editURL_t10!'false'},
+            handler : function(e,rowData){
+                if(typeof(rowData) != 'undefined'){
+                   	var statusEdit = !canEdit(rowData.statusName);
+                    parent.dialog('${i18n.get('修改申请')}','${ctx}/product/auTestAdd.html?productID=${id}&id='+rowData.id+'&statusEdit='+statusEdit,window);
+                }else{
+                    exalert(e,'${i18n.get('请选择要修改的申请！')}');
+                }
+            }
+        }
+    ]"
+    >
+<div class="col-xs-12">
+	<div class="form-group col-xs-2" align="right">${i18n.get('认证测试名称 ：')}</div>
+	<div class="form-group col-xs-4">
+		<input type="text" name="auTestName" size="30" />
+	</div>	
+</div>
+</@form.table> 
+<input type="hidden" id="productAuTestId" />
+<div id="attachmentId_t10">
+<div id="attachmentId_t10_1"></div>
+<div id="attachmentId_t10_2"></div>
+</div>
+<script type="text/javascript">
+$(document).ready(function() {
+	showAttachmentPage("attachmentId_t10_1","${ctx}/common/attachment/attachment.html?docGroupCode=AuTestReqDocType&businessType=productAuTest_request&title=${i18n.get('认证要求')}&unableAdd=true&unableDelete=true");
+	showAttachmentPage("attachmentId_t10_2","${ctx}/common/attachment/attachment.html?docGroupCode=AuTestResultDocType&businessType=productAuTest_result&title=${i18n.get('认证结果')}&unableAdd=true&unableDelete=true");
+});
+function showAttachmentPage(tabId, url){
+	url = url + "&businessId=xx";
+	$('#applytab a[href="#'+tabId+'"]').tab('show');
+	$('#'+tabId).load(url,function(response,status,xhr){
+		if(status === 'error'){
+			$('#'+tabId).html(url+'<br> ${i18n.get('页面加载失败')}');
+		}
+	});
+}
+function canEdit(status){
+	return status != '${i18n.get('新建')}' && status != '${i18n.get('已驳回')}';
+}
+function myAlert(e,type){
+	exalert(e,'${i18n.get('只有新建或已驳回的数据可')}'+type+'!');
+}
+</script>

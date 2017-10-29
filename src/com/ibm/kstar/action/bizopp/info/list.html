@@ -1,0 +1,212 @@
+<@cui.body>
+
+<#-- 商机列表-新增 --><#if permission["P03BizOppoListAdd"]?? > <#assign addURL = "'${ctx}/bizopp/add.html'" /></#if>
+
+<#-- 商机列表-修改 --><#if permission["P03BizOppoListEdit"]?? > <#assign editURL = "'${ctx}/bizopp/edit.html'" /></#if>
+
+<#-- 商机列表-删除 --><#if permission["P03BizOppoListDelete"]?? > <#assign deleteURL = "'${ctx}/bizopp/delete.html'" /></#if>
+
+
+	<div class="col-xs-12">
+	<@form.table id="t1" 
+	class="col-xs-12"
+	title="${i18n.get('商机基本信息列表')}" 
+	url = "${ctx}/bizopp/page.html" 
+	rowNum = "10" 
+	search = "true"
+	addURL= "${addURL!}"
+	editURL= "${editURL!}"
+	deleteURL = "${deleteURL!}"
+	colModel = "[
+		{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'number',label:'${i18n.get('商机编号')}',hidden:true,width:200,sortable:true,align:'center' },
+		{name:'opportunityName',label:'${i18n.get('商机名称')}',hidden:false,width:300,sortable:true,align:'center' },
+		{name:'bizOppAddressName',label:'${i18n.get('项目所在地')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'clientName',label:'${i18n.get('终端用户')}',hidden:false,width:180,sortable:true,align:'center' },
+		{name:'createdByIdName',label:'${i18n.get('报备人')}',hidden:false,width:120,sortable:true,align:'center' },
+		{name:'enterpriseName',label:'${i18n.get('所属组织')}',hidden:false,width:110,sortable:true,align:'center' },
+		{name:'createdAt',label:'${i18n.get('报备时间')}',hidden:false,width:150,sortable:true,align:'center', formatter:function(cellvalue, options){ return formatDate(cellvalue) }},
+		{name:'conflictStatusName',label:'${i18n.get('商机状态')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'saleStageName',label:'${i18n.get('商机阶段')}',hidden:false,width:150,sortable:true,align:'center' },
+		{name:'successDate',label:'${i18n.get('生效日期')}',hidden:false,width:150,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+		{name:'endDate',label:'${i18n.get('失效日期')}',hidden:false,width:150,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+		]"
+		buttons = "[]" >
+
+
+		<div class="col-xs-12" style="padding-top: 20px;">
+
+            <tr align="left">
+                <td align="right" width="120px">
+        ${i18n.get('商机编号:')} 
+                </td>
+                <td align="left" width="180px">
+					<@form.input name="pageSearch_number_like" type="text"
+					id="pageSearch_number_like"
+							/>
+                </td>
+                <td align="right" width="120px">
+        ${i18n.get('报备单位:')}   
+                </td>
+                <td align="left" width="180px">
+
+					<@form.autocomplete  id="pageSearch_enterprise" name="pageSearch_enterprise"
+						idKey='id'
+						style="width: 158px;"
+						required="${i18n.get('请选择组织')}"
+						formatResult="function(data) {return '<div >' +data.name + '</div>';}"
+						url="function(){ return '${ctx}/lovcontract/autocompleteOrg.html'; }"
+					/>
+
+				</td>
+                <td align="right" width="120px">
+       ${i18n.get('报备人:')}  
+                </td>
+                <td align="left" width="180px">
+					<@form.autocomplete  id="pageSearch_createdById" name="pageSearch_createdById"
+					idKey='employeeId'
+					style='width:147px'
+					style="width: 158px;"
+					multiple="false"
+					formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+					url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+
+						/>
+                </td>
+            </tr>
+            <tr align="left">
+                <td align="right" width="120px">
+        ${i18n.get('客户名称:')}  
+                </td>
+                <td align="left" width="180px">
+					<@form.autocomplete  id="pageSearch_clientId" name="pageSearch_clientId"
+					idKey='id'
+					required=" ${i18n.get('请选择客户')}  "
+					style="width: 158px;"
+					formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+					url="function(){ return '${ctx}/lovcustom/autocomplete_customAuth.html'; }"
+
+					onSelect="function(data){
+					            	        $('#clientName').val(data.customFullName);
+						            		if (data.customCategoryName) {
+						            		}
+						            	}"
+				            	    />
+                </td>
+                <td align="right" width="120px">
+       ${i18n.get('商机名称:')}  
+                </td>
+                <td align="left" width="180px">
+					<@form.input name="pageSearch_opportunityName_like" type="text"
+					id="pageSearch_opportunityName_like"
+					required="不能为空！"/>
+                </td>
+                <td align="right" width="120px">
+				${i18n.get('销售阶段')}
+                </td>
+                <td align="left" width="180px">
+					<@form.select
+					id="pageSearch_saleStage" name="pageSearch_saleStage"
+					style="width: 158px;"
+					code="SALES_METHODS"
+					idKey="id"
+					required="${i18n.get('不能为空！')}"
+					level="2"
+					parentId="saleMethod"
+									/>
+                </td>
+            </tr>
+            <tr align="left">
+                <td align="right" width="120px">
+      ${i18n.get('报备日期起:')}  
+                </td>
+                <td align="left" width="180px">
+					<@form.date name="pageSearch_createdAt_begin"
+					id="pageSearch_createdAt_begin"
+					/>
+                </td>
+                <td align="right" width="120px">
+      ${i18n.get('报备日期至:')}  
+                </td>
+                <td align="left" width="180px">
+					<@form.date name="pageSearch_createdAt_end"
+					id="pageSearch_createdAt_end"
+						/>
+                </td>
+                <td align="right" width="120px">
+
+                </td>
+                <td align="left" width="180px">
+
+                </td>
+            </tr>
+            <tr>
+                <td align="right" width="120px">
+      ${i18n.get('所在地（省）:')}  
+                </td>
+                <td align="left" width="180px">
+
+					<@form.select
+					code="ADDRESSREGION"
+					level="2"
+					childId="pageSearch_layer3"
+					id="pageSearch_layer2"
+					name="pageSearch_layer2"
+					style="width: 158px;"
+					placeholder="${i18n.get('省')}"
+					tip=""
+					/>
+
+                </td>
+                <td align="right" class="sub_flag_2">
+      ${i18n.get('所在地（市）:')} 
+                </td>
+                <td align="left" width="180px">
+					<@form.select
+					code="ADDRESSREGION"
+					level="3"
+					parentId="pageSearch_layer2"
+					id="pageSearch_layer3" name="pageSearch_layer3"
+					style="width: 158px;"
+					placeholder="${i18n.get('市')}"
+					tip=""
+									/>
+                </td>
+                <td align="right" width="120px">
+       ${i18n.get('所在地（区/县）:')}  
+                </td>
+                <td align="left" width="180px">
+					<@form.select
+					code="ADDRESSREGION"
+					style="width: 158px;"
+					level="4"
+					parentId="pageSearch_layer3"
+					id="pageSearch_layer4" name="pageSearch_layer4"
+					placeholder="${i18n.get('区/县')}"
+					tip=""
+									/>
+                </td>
+
+            </tr>
+			<tr>
+				<td align="right" width="120px">
+		 ${i18n.get('客户名称:')} 
+				</td>
+				<td align="left" width="180px">
+					<@form.input name="pageSearch_clientName_like" type="text"
+					id="pageSearch_clientName_like"
+					/>
+				</td>
+                <td align="right" width="120px">${i18n.get('商机状态')}</td>
+                <td align="left" width="180px">
+					<@form.select id="pageSearch_conflictStatus" name="pageSearch_conflictStatus" style="width: 158px;" code="CONFLICT_STATUS" idKey="code"  />
+                </td>
+			</tr>
+
+            </td>
+		</div>
+
+	</@form.table> 
+	<br/>
+	</div>
+</@cui.body>

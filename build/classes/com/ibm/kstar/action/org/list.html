@@ -1,0 +1,38 @@
+<@pui.body>
+<input type="hidden" name="businessId" id="businessId" value="${(businessId)!}">
+<input type="hidden" name="businessType" id="businessType" value="${(businessType)!}">
+
+			<@form.table id="t2"
+			class="col-xs-12"
+			shrinkToFit = 'true'
+			title="${i18n.get('组织列表')}"
+			url = "${ctx}/orgTeam/page.html?businessId=${(businessId)!}&businessType=${(businessType)!}"
+			rowNum = "20"
+			search="false"
+			colModel = "[
+			  { name : 'id', label : 'id', hidden : true , width : 60,sortable:false,align:'center' }, 
+			  { name : 'optTxt1',    label : '${i18n.get('创建者部门')}', hidden : false , width : 60,sortable:false,align:'center',formatter:function(cellvalue, options){ return 'Y'== cellvalue ? 'Y':'' } }, 
+			  { name : 'code', label : '${i18n.get('部门编码')}', width : 150 ,sortable:false },
+			  { name : 'namePath', label : '${i18n.get('部门名称')}', width : 150 ,sortable:false },
+			  { name : 'memo', label : '${i18n.get('说明')}', width : 150 ,sortable:false }
+			  ]"
+			 buttons = "[{
+			  			id:'config',
+			  			label : '${i18n.get('设置组织')}',
+			  			icon : 'icon-trash',
+			  			own : true,
+			  			handler : function(e,rowData){
+			  				var s = $('#businessId').val();
+							if(!s || s==''){
+								exalert(e,'${i18n.get('没有选中任何数据!')}');
+								return;
+							}
+							parent.dialog('${i18n.get('设置组织')}','${ctx}/orgTeam/config.html?businessId='+$('#businessId').val() + '&businessType=' +$('#businessType').val(),window);
+			  			}
+			  		}]"
+			>
+			
+			</@form.table>
+
+</@pui.body>
+

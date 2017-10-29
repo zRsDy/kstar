@@ -1,0 +1,165 @@
+<#-- 商机界面-主要信息-删除 --> <#if permission["P03BizOppoT1ConfigDelete"]?? > <#assign deleteURL = "'${ctx}/productDetail/delete.html'" /></#if>
+<@form.table id="productDetailId"
+class="col-xs-12"
+title="${i18n.get('商机配置')}"
+url = "${ctx}/productDetail/page.html?bizOppId=${(bizOppId)!}"
+rowNum = "5"
+height="100"
+deleteURL = "${deleteURL!}"
+colModel = "[
+					{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+					{name:'productId',label:'productId',hidden:true,width:100,sortable:true,align:'center' },
+					{name:'bizOppId',label:'${i18n.get('商机id')}',hidden:true,width:100},
+					{name:'productName',label:'${i18n.get('产品名称')}',hidden:false,width:100,sortable:true,align:'center' },
+					{name:'productModel',label:'${i18n.get('产品型号')}',hidden:false,width:100,sortable:true,align:'center' },
+					{name:'productType',label:'${i18n.get('产品类别')}',hidden:false,width:100,sortable:true,align:'center' },
+					{name:'planCount',label:'${i18n.get('预计数量')}',hidden:false,width:100,sortable:true,align:'center',editable:true,editrules:{number:true} },
+					{name:'planPrice',label:'${i18n.get('目录价')}',hidden:false,width:100,sortable:true,align:'center' },
+					{name:'planTotal',label:'${i18n.get('预计金额')}',hidden:false,width:100,sortable:true,align:'center' }
+					]"
+					buttons = "[
+						{
+							id:'productDetailId_addRow',
+							label : '${i18n.get('增加产品')}',
+							icon : 'icon-save',
+							own : true,
+							handler : function(e,rowData){
+								$('#selectProductMulti').click();
+							}
+						},
+						{
+							id:'productDetailId_saveGridAll',
+							label : '${i18n.get('保存')}',
+							icon : 'icon-save',
+							own : true,
+							handler : function(e,rowData){
+								saveGridAll_maininfo('${ctx}/productDetail/edit2.html');
+							}
+						}
+				
+					]"
+					
+					onComplete = "function() {
+        				var rows = $('#productDetailId').jqGrid('getRowData');
+        				var sum = 0;
+        				$.each(rows, function (index, row) {
+            				sum = parseFloat(sum) + parseFloat(row.planTotal);
+        				});
+        				$('#sumAmount').val(sum);
+						var planCount  = $('#productDetailId').getCol('planCount',false,'sum');
+						var planTotal = $('#productDetailId').getCol('planTotal',false,'sum');
+						$('#productDetailId').footerData('set',{name:'${i18n.get('合计')}',productName:'${i18n.get('合计')}',planCount:planCount,planTotal:planTotal});
+					}"
+					
+					ondblClickRow = "function(id){
+        				var rowData = $('#productDetailId').jqGrid('getRowData',id);
+        				$('#productDetailId input[id='+id+'_planCount]').bind('input',function(event){
+            				var planCount = $(this).val();
+            				var _planTotal = 0;
+				            var sumAmount = 0;
+			            	if(planCount){
+               					if(rowData.planPrice != null && rowData.planPrice !=''){
+                       				_planTotal = parseFloat(rowData.planPrice)*parseFloat(planCount);
+                   				}
+                   				$('#productDetailId').jqGrid('setRowData', id, {planTotal:_planTotal});
+                   				var rows = $('#productDetailId').jqGrid('getRowData');
+                   				var _total = 0;
+                   				$.each(rows, function (index, row) {
+                       				if(row.planTotal){
+                            				_total = row.planTotal;
+                       				}else{
+                            				_total = 0;
+                       				}
+                       				sumAmount = parseFloat(sumAmount) + parseFloat(_total);
+                   				});
+                   				$('#sumAmount').val(sumAmount.toFixed(2));
+               				}
+        				});
+    				}"
+    				
+    				footerrow = "true"
+					gridComplete = "function() {
+						$('#productDetailId').footerData('set',{name:'${i18n.get('合计')}',productName:'${i18n.get('合计')}'});
+						var rowNum = parseInt($('#10').getGridParam('records'),10);
+						if(rowNum > 0){
+							$('.ui-jqgrid-sdiv').show();
+							var planCount  = $('#productDetailId').getCol('planCount',false,'sum');
+							var planTotal = $('#productDetailId').getCol('planTotal',false,'sum');
+							$('#productDetailId').footerData('set',{name:'${i18n.get('合计')}',productName:'${i18n.get('合计')}',planCount:planCount,planTotal:planTotal});
+						}
+					}"
+					
+					onLineEditAfter = "function(id,rowData){
+						$('#productDetailId').trigger('blur')
+						var planCount  = $('#productDetailId').getCol('planCount',false,'sum');
+						var planTotal = $('#productDetailId').getCol('planTotal',false,'sum');
+						$('#productDetailId').footerData('set',{name:'${i18n.get('合计')}',productName:'${i18n.get('合计')}',planCount:planCount,planTotal:planTotal});
+					}"
+>
+<input type='hidden' id='bizOppIdProduct'  name='bizOppIdProduct'  value='${(bizOppId)!}' />
+</@form.table>
+
+
+	<div  style="display: none;" >
+		<#if P_GNORG_B1_0001?? && P_GNORG_B1_0001==true>
+    		<#assign _isReport='isReport=1&'>
+		</#if>
+			<@biz.picker_product
+				id="selectProductMulti"
+				urlFunction="function(){
+					return '${ctx}/common/product/multiSelectList.html?${_isReport!''}priceTableId='+$('#priceTableId').val();
+				}"
+				button="${i18n.get('批量选择产品')}"
+				callback="function(datas){
+				if(datas){
+					addRowBatch(datas);
+				}
+			}"
+			/>
+	</div>
+<script type="text/javascript">
+
+	var maininforowid=0;
+	function addRowBatch(datas) {
+	    $.each(datas,function(i,data2){
+	        var data = {};
+	        maininforowid = maininforowid+1;
+	        data.bizOppId = "${(bizOppId)!}";
+	        data.productName = data2.productName;
+	       
+	        data.productId = data2.proId;
+	        data.productModel = data2.proModel;
+	        data.productType = data2.crmCategoryLable;
+	        data.planCount = 0;
+	        if(!data2.catalogPriceShow) {
+	            data.planPrice = 0;
+	        }else{
+	            data.planPrice = data2.catalogPriceShow;
+	        }
+	        data.planTotal = 0;
+	        $("#productDetailId").jqGrid("addRowData", maininforowid, data, "first");
+	    });
+	}
+	
+	function saveGridAll_maininfo(urlstr){
+        $('#tproductDetailId').trigger('blur')
+        var gridVo = {};
+        var arr = $('#productDetailId').jqGrid('getRowData');
+        gridVo.jsonStr = JSON.stringify(arr);
+        $.ajax({
+            type: "POST",
+            url: urlstr,
+            async: true,
+            data: gridVo,
+            dataType: 'json',
+            success: function (msg) {
+                reload_productDetailId();
+                alert('${i18n.get('保存成功！')}'); 
+            },
+            error: function (e) {
+            	alert('${i18n.get('操作失败，请联系管理员')}'); 
+            }
+        });
+    }
+	
+</script>

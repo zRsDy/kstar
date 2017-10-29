@@ -1,0 +1,30 @@
+<#escape x as x?html>
+<@form.table id="deliveryList" 
+		class="col-xs-12"
+		height="131px"
+		title="${i18n.get('应收列表')}"
+		url = "${ctx}/custom/baseinfo/info360/receive360Show.html?customCode=${(customInfo.customCode)!}"
+		rowNum = "5"
+
+		colModel = "[
+			{name:'id',label:'id',hidden:true,width:150,sortable:false,align:'center' }, 
+			{name:'deliveryCode',label:'${i18n.get('申请编号')}',hidden:false,width:150,sortable:false,align:'center' }, 
+			{name:'applyDate',label:'${i18n.get('申请日期')} ',hidden:false,width:150,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+			{name:'statusLable.name',label:'${i18n.get('状态')}',hidden:false,width:150,sortable:false,align:'center' }, 
+			{name:'businessEntityLable',label:'${i18n.get('业务实体')}',hidden:false,width:150,sortable:false,align:'center' }, 
+			{name:'proposerName',label:'${i18n.get('申请人')}',hidden:false,width:150,sortable:false,align:'center' }, 
+			{name:'receCustomerName',label:'${i18n.get('收货客户')}',hidden:false,width:150,sortable:false,align:'center' }, 
+			{name:'deliveryAddress',label:'${i18n.get('收货地点')}',hidden:false,width:150,sortable:false,align:'center' }, 
+			{name:'consignee',label:'${i18n.get('保存')}收货人',hidden:false,width:150,sortable:false,align:'center' }, 
+			{name:'consigneeTel',label:'${i18n.get('收货人电话')}',hidden:false,width:150,sortable:false,align:'center' }, 
+			{name:'billCustomerName',label:'${i18n.get('收单客户')}',hidden:false,width:150,sortable:false,align:'center' }, 
+			{name:'deliveryAmount',label:'${i18n.get('发货金额')}',hidden:false,width:150,sortable:false,align:'center', formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''} }, 
+			{name:'receiveAmount',label:'${i18n.get('已收款金额')}',hidden:false,width:150,sortable:false,align:'center', formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''} }, 
+			{name:'balance',label:'${i18n.get('收款余额')}',hidden:false,width:150,sortable:false,align:'center', formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''} }, 
+			{name:'remarks',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:false,align:'center' }
+			]" 
+			buttons = "[]" > 
+			
+			
+	</@form.table>
+</#escape>

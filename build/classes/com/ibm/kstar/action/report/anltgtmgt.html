@@ -1,0 +1,61 @@
+<@pui.body>
+	<@form.table id="anltgt1" 
+	class="col-xs-12"
+	title="${i18n.get('年度目标')}" 
+	url = "${ctx}/report/page.html" 
+	rowNum = "9" 
+	addURL = "'${ctx}/report/add.html'" 
+	editURL= "'${ctx}/report/edit.html'" 
+	deleteURL = "'${ctx}/report/delete.html'" 
+	colModel = "[
+		{name:'id',label:'${i18n.get('年度目标')}ID',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'ctype',label:'${i18n.get('类型')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'ctypeName',label:'${i18n.get('类型')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'dep',label:'${i18n.get('部门')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'emp',label:'${i18n.get('销售员')}',hidden:false,width:80,sortable:false,align:'center'  },
+		{name:'empNm',label:'${i18n.get('工号')}',hidden:false,width:80,sortable:false,align:'center' },
+		{name:'posNm',label:'${i18n.get('岗位名称')}',hidden:false,width:150,sortable:false,align:'center' },
+		{name:'currency',label:'${i18n.get('币种')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'currencyName',label:'${i18n.get('币种')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'annual',label:'${i18n.get('年度')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'anlTrg',label:'${i18n.get('年度目标')}',hidden:false,width:150,sortable:false,align:'center'},
+		{name:'janTrg',label:'${i18n.get('1月')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'febTrg',label:'${i18n.get('2月')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'mrcTrg',label:'${i18n.get('3月')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'aprTrg',label:'${i18n.get('4月')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'mayTrg',label:'${i18n.get('5月')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'junTrg',label:'${i18n.get('6月')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'julTrg',label:'${i18n.get('7月')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'agtTrg',label:'${i18n.get('8月')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'sepTrg',label:'${i18n.get('9月')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'octTrg',label:'${i18n.get('10月')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'novTrg',label:'${i18n.get('11月')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'decTrg',label:'${i18n.get('12月')}',hidden:false,width:100,sortable:false,align:'center' }
+
+		]" 
+		ondblClickRow= "function(selectedData){
+
+		}" buttons = "[]" >
+
+<br>
+<div class="col-xs-9">
+	<input type="hidden" id="parentId" name="parentId" />
+	<div class="form-group col-xs-3">
+		<input type="text" id="searchKey" name="searchKey" placeholder="${i18n.get('查询关键字')}" />
+	</div>
+	<div class="form-group col-xs-2">
+		<button type="submit" class="btn btn-info">
+			<i class="icon-search bigger-110"></i> ${i18n.get('查询')}
+		</button>
+	</div>
+</div>
+
+</@form.table> 
+	<br/>
+</@pui.body>
+
+<script type="text/javascript">
+
+
+	
+</script>

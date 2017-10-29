@@ -1,0 +1,654 @@
+<#escape x as x?html>
+<@cui.body2>
+<@form.panel title="${i18n.get('新增/编辑')}">
+<@form.form id="t_bidform"
+	success="function(){ 
+		try{
+			parent.currentParent2.reload_bidTable();
+		}catch(e){
+
+		}
+	}" 
+	class="form-horizontal">
+	<div style="height: 50px;" >
+		<div style="padding-right: 20px; float: right;" >
+<#-- 投标授权申请-保存 --><#-- /bid/add.html -->
+	<#if permission["P03BidAuthSave"]??>
+			<button <#if entity.status?default('') != 'Rejected' && entity.status?default('') != 'Pending' > disabled="disabled" </#if> class="btn btn-info submit" type="button">
+				<i class="icon-ok bigger-110"></i>
+				${i18n.get('保存')}
+			</button>
+	</#if>
+<#-- 投标授权申请-提交 --><#-- /bid/startProcess -->
+	<#if permission["P03BidAuthSubmit"]??>
+			<button <#if entity.status?default('') != 'Rejected' && entity.status?default('') != 'Pending' > disabled="disabled" </#if> class="btn btn-info" type="button" onclick="startAuthProcess();">
+				<i class="icon-ok bigger-110"></i>
+				${i18n.get('提交')}
+			</button>
+	</#if>
+			<button class="btn" type="button" onclick="javascript:api.close()">
+				<i class="icon-undo bigger-110"></i>
+				${i18n.get('关闭')}
+			</button>
+		</div>
+	</div>
+			
+	<div class="form-group">
+		<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('基本信息')}</p>
+		<table>
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right"><strong style="color: red;">*</strong>${i18n.get('授权名称:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input name="authorizationName" 
+					type="text"
+					required="${i18n.get('不能为空')}"
+					id="authorizationName" 
+					value="${(entity.authorizationName)!}" />
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('招标单位:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input name="bidEnterprise" 
+					type="text"
+					id="bidEnterprise" 
+					value="${(entity.bidEnterprise)!}"
+					/>
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('投标授权编号:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input name="bidNumber" 
+					type="text"
+					id="bidNumber" 
+					value="${(entity.bidNumber)!}" 
+					readonly ="readonly"
+					/>
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="200px">
+					<#if entity.bizOppId??>
+						<strong style="color: red;">*</strong>
+					</#if>
+					<label class="no-padding-right">${i18n.get('商机名称:')}</label>
+				</td>
+				<td align="left">
+					<#if entity.bizOppId??>
+						<@form.autocomplete  id="bizOppId" name="bizOppId"
+						idKey='id'
+						required="${i18n.get('不能为空')}"
+						formatResult="function(data) {return '<div>' +data.opportunityName + '</div>';}"
+						url="function(){ return '${ctx}/lovBizopp/autocomplete_bizopp.html'; }"
+						value="{id: '${(entity.bizOppId)!}',opportunityName:'${(entity.bizOppName)!}'}"
+						onSelect="function(data){
+						$('#bizOppName').val(data.opportunityName);
+						}"
+						/>
+					<#else>
+						<@form.autocomplete  id="bizOppId" name="bizOppId"
+						idKey='id'
+						formatResult="function(data) {return '<div>' +data.opportunityName + '</div>';}"
+						url="function(){ return '${ctx}/lovBizopp/autocomplete_bizopp.html'; }"
+						value="{id: '${(entity.bizOppId)!}',opportunityName:'${(entity.bizOppName)!}'}"
+						onSelect="function(data){
+						$('#bizOppName').val(data.opportunityName);
+						}"
+						/>
+					</#if>
+					<input id="bizOppName"  name="bizOppName" type ="hidden" value="${(entity.bizOppName)!}" />
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('招标编号:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input name="bidAuthNumber" 
+					type="text"
+					id="bidAuthNumber" 
+					value="${(entity.bidAuthNumber)!}" />
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('创建日期:')}</label>
+				</td>
+				<td width="200px">
+					<@form.date name="createdAt"
+						id="createdAt"
+						value="${(entity.createdAt?date)!}"
+					/>
+				</td>
+			</tr>
+			<tr>
+				<td width="200px" align="right">
+					<label class="no-padding-right"><strong style="color: red;">*</strong>${i18n.get('创建日期:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input name="projectName"
+					type="text"
+					required="${i18n.get('不能为空')}"
+					id="projectName"
+					value="${(entity.projectName)!}"
+					/>
+				</td>
+
+				<td align="right" width="200px">
+					<label class="no-padding-right"><strong style="color: red;">*</strong>${i18n.get('开标时间:')}</label>
+				</td>
+				<td width="200px">
+					<@form.date name="bidStartDate"
+						required="${i18n.get('不能为空')}"
+						id="bidStartDate"
+						value="${(entity.bidStartDate)!}" 
+					/>
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('创建用户:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input name="createdByIdName"
+					type="text"
+					id="createdByIdName"
+					value="${(entity.createdByIdName)!}"
+					readonly ="readonly"
+					/>
+					<input type="hidden" id="creator" name="creator" value="${(entity.creator)!}" />
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('代理商:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input name="agencyName"
+					type="text"
+					id="agencyName"
+					value="${(entity.agencyName)!}"
+					/>
+					<@form.input name="agency"
+					type="text"
+					id="agency"
+					type="hidden"
+					value="${(entity.agency)!}"
+					/>
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right"><strong style="color: red;">*</strong>${i18n.get('是否集成包:')}</label>
+				</td>
+				<td width="200px">
+					<@form.select name="isIntegrated"
+					code="COMMONYN"
+					required="${i18n.get('不能为空')}"
+					idKey="code"
+					style="width: 158px;"
+					id="isIntegrated"
+					value="${(entity.isIntegrated)!}" />
+
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('状态:')}</label>
+				</td>
+				<td width="200px">
+					<@form.select
+					id="status" name="status"
+					code="PROCESS_STATUS"
+					idKey='code'
+					value ="${(entity.status)!}"
+					style="width: 158px;"
+					/>
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right"><strong style="color: red;">*</strong>${i18n.get('终端用户:')}</label>
+				</td>
+				<td width="200px">
+					<@form.autocomplete
+					id="terminalClient"
+					name="terminalClient"
+					idKey='id'
+					required="${i18n.get('不能为空')}"
+					placeholder="${i18n.get('请选择客户')}"
+					style="width:158px;"
+					url="function(){ return '${ctx}/lovcustom/autocomplete_custom.html'; }"
+					formatResult="function(data) {return '<div >' +data.customFullName + ' | ' +data.customCode +' </div>';}"
+					value="${customInfo!'{}'}"
+                    onSelect="function(data){
+                        $('#industryName').val(data.customCategoryName +'/'+data.customCategorySubName);
+                        $('#industry').val(data.customCategory);
+                    }"
+                    />
+
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right"><strong style="color: red;">*</strong>${i18n.get('行业:')}</label>
+				</td>
+				<td width="200px">
+                    <input type="hidden" id="industry" name="industry" value="${(entity.industry)!}">
+					<@form.input name="industryName"
+					type="text"
+					required="${i18n.get('不能为空')}"
+					id="industryName"
+					value="${(entity.industryName)!}"
+					readonly ="readonly"
+					/>
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('项目所在地:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input name="ProjectAddressName"
+					type="text"
+					id="projectAddressName"
+					value="${(entity.projectAddressName)!}"
+					/>
+					<input type="hidden" id="projectAddress" name="projectAddress" value="${(entity.projectAddress)!}" />
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="200px">
+					<strong style="color: red;">*</strong>
+					${i18n.get('所在地（省）:')}
+				</td>
+				<td align="left" width="200px"  >
+					<input id="bizOppAddress" name="bizOppAddress" type="hidden" value="${(entity.bizOppAddress)!}" >
+
+					<@form.select
+					code="ADDRESSREGION"
+					level="2"
+					childId="layer3"
+					id="layer2" name="layer2"
+					style="width: 158px;"
+					placeholder="${i18n.get('省')}"
+					tip=""
+					value="${(entity.layer2)!}"
+					onChange="function(){
+					$('#projectAddressName').val($('#layer2 option:selected').html()+'/');
+					reload_layer3();
+					reload_layer4();
+					}"
+					onLoadSuccess="function(){
+
+					reload_layer3();
+					reload_layer4();
+					}"
+					/>
+
+				</td>
+				<td align="right" width="200px"  >
+					<strong style="color: red;">*</strong>${i18n.get('所在地（市）:')}
+				</td>
+				<td align="left"  width="200px" >
+
+					<@form.select
+					code="ADDRESSREGION"
+					level="3"
+					parentId="layer2"
+					style="width: 158px;"
+					id="layer3" name="layer3"
+					placeholder="${i18n.get('市')}"
+					tip=""
+					value="${(entity.layer3)!}"
+					onChange="function(){
+					$('#projectAddressName').val($('#layer2 option:selected').html()+'/' + $('#layer3 option:selected').html());
+					reload_layer4();
+					}"
+					onLoadSuccess="function(){
+
+						reload_layer4();
+					}"
+					/>
+
+				</td>
+				<td align="right"  width="200px" >
+					<strong style="color: red;">*</strong>${i18n.get('所在地（区/县）:')}
+				</td>
+				<td align="left" width="200px" >
+					<@form.select
+					code="ADDRESSREGION"
+					style="width: 158px;"
+					level="4"
+					parentId="layer3"
+					id="layer4" name="layer4"
+					placeholder="${i18n.get('区/县')}"
+					tip=""
+					value="${(entity.layer4)!}"
+					onChange="function(){
+					$('#projectAddressName').val($('#layer2 option:selected').html()+'/' + $('#layer3 option:selected').html()+'/' + $('#layer4 option:selected').html());
+					}"
+					/>
+
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('设备/型号/数量:')}</label>
+				</td>
+				<td colspan="5">
+					<@form.input name="authorizationDisc"
+					type="text"
+					style="width: 96.5%;"
+					id="authorizationDisc"
+					value="${(entity.authorizationDisc)!}" />
+				</td>
+			</tr>
+
+		</table>
+	</div>
+	<#if permission["P03BidAuthManageZone"]??>
+	<div class="form-group" >
+		<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('管理信息')}</p>
+		<table>
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right"><strong style="color: red;">*</strong>${i18n.get('是否跨区:')}</label>
+				</td>
+				<td width="200px">
+                    <@form.select name="isCrossDistrict"
+                    code="COMMONYN"
+                    required="${i18n.get('不能为空')}"
+                    placeholder="${i18n.get('请选择是否跨区')}"
+                    idKey="code"
+                    style="width: 158px;"
+                    id="isCrossDistrict"
+                    value="${(entity.isCrossDistrict)!}" />
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('跨区部门:')}</label>
+				</td>
+				<td width="200px">
+                    <@form.autocomplete
+                    id="crossDepartment"
+                    name="crossDepartment"
+                    placeholder="${i18n.get('请选择跨区部门')}"
+                    idKey='id'
+                    style="width:158px;"
+                    url="function(){ return '${ctx}/lov/member/autocompleteDept.html?optTxt3=C&type=eq'; }"
+                    formatResult="function(data) {return '<div >' +data.name + ' </div>';}"
+                    value="${lovMemberk!'{}'}"
+                    />
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('涉及行业部:')}</label>
+				</td>
+				<td width="200px">
+                    <@form.autocomplete
+                    id="involveIndustry"
+                    name="involveIndustry"
+                    placeholder="${i18n.get('请选择涉及行业部')}"
+                    idKey='id'
+                    style="width:158px;"
+                    url="function(){ return '${ctx}/lov/member/autocompleteDept.html?optTxt3=B&type=eq'; }"
+                    formatResult="function(data) { return '<div >' +data.name + ' </div>';}"
+                    value="${lovMembers!'{}'}"
+                    />
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right"><strong style="color: red;">*</strong>${i18n.get('负责人:')}</label>
+				</td>
+				<td width="200px">
+					<@form.autocomplete  id="personInCharge" name="personInCharge"
+						idKey='id'
+						style='width:158px'
+						required="${i18n.get('请选择')}"
+                        placeholder="${i18n.get('请选择负责人')}"
+						formatResult="function(data) {return '<div >' +data.name +' | '+ data.no + '</div>';}"
+						url="function(){ return '${ctx}/selector/employeeSelector.html?type=Inner'; }"
+						value="${personInCharge!'{}'}"
+						onSelect="function(data){
+							$('#personInChargeId').val(data.id);
+							reload_responsibleDep();
+						}"
+					/>
+					<input type="hidden" id="personInChargeId" name="personInChargeId">
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right"><strong style="color: red;">*</strong>${i18n.get('负责部门:')}</label>
+				</td>
+				<td width="200px">
+
+					<@form.select
+					id="responsibleDep"
+					name="responsibleDep"
+					style="width:158px;"
+					required="${i18n.get('不能为空')}"
+					viewKey="name"
+					idKey='id'
+					url="function(){return '${ctx}/selector/selectDepartmentByEmployeeId.html?employeeId=' + $('#personInChargeId').val();}"
+					value="${(entity.responsibleDep)!}" />
+
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right"><strong style="color: red;">*</strong>${i18n.get('联系方式:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input name="connectMethod" 
+					type="text"
+					required="${i18n.get('不能为空')}"
+					style="width: 158px;"
+					id="connectMethod" 
+					value="${(entity.connectMethod)!}" />
+				</td>
+
+			</tr>
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('已授权未投标说明:')}</label>
+				</td>
+				<td width="200px">
+					<@form.textArea id="authNobidDisc"
+						name="authNobidDisc"
+						placeholder="${i18n.get('已授权未投标说明')}"
+						style="width: 158px;"
+						height="5"
+						value="${(entity.authNobidDisc)!}" />
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('备注:')}</label>
+				</td>
+				<td width="200px">
+					<@form.textArea id="remark"
+					name="remark"
+					style="width: 158px;"
+					placeholder="${i18n.get('备注')}"
+					height="5"
+					value="${(entity.remark)!}" />
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('附件文件说明:')}</label>
+				</td>
+				<td width="200px">
+					<@form.textArea id="docDesc"
+					name="docDesc"
+					style="width: 158px;"
+					placeholder="${i18n.get('附件文件说明')}"
+					height="5"
+					value="${(entity.docDesc)!}" />
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('开始时间:')}</label>
+				</td>
+				<td width="200px">
+					<@form.date name="startTime"
+						id="startTime"
+						style="width: 158px;"
+						value="${(entity.startTime)!}"
+					/>
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('结束时间:')}</label>
+				</td>
+				<td width="200px">
+					<@form.date name="endTime"
+						id="endTime"
+						style="width: 158px;"
+						value="${(entity.endTime)!}"
+					/>
+				</td>
+				<td width="200px" align="right">
+					<label class="no-padding-right"><strong style="color: red;">*</strong>${i18n.get('打印样式:')}</label>
+				</td>
+				<td width="200px">
+					<@form.select name="printStyle"
+					code="BIDPRINTMODE"
+					required="${i18n.get('不能为空')}"
+					idKey="code"
+					style="width: 158px;"
+					id="printStyle"
+					value="${(entity.printStyle)!}" />
+
+                </td>
+			</tr>
+			<tr>
+
+			</tr>
+		</table>
+	</div>
+	</#if>
+	<div id="resultDiv" class="form-group" >
+		<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('投标结果')}</p>
+		<table >
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('投标结果:')}</label>
+				</td>
+				<td width="200px">
+					<@form.select style="width: 158px;"
+							id="bidResult"
+							name="bidResult"
+                            idKey="code"
+							code="BID_RESULTS"
+							value ="${(entity.bidResult)!}"
+						/>
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('分项报价:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input name="itemQuote"
+					type="text"
+					id="itemQuote"
+					value="${(entity.itemQuote)!}" />
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('总报价:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input name="allQuote"
+					type="text"
+					id="allQuote"
+					value="${(entity.allQuote)!}" />
+				</td>
+
+			</tr>
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('结果备注:')}</label>
+				</td>
+				<td colspan="5">
+					<@form.input id="bidRemark"
+					name="bidRemark"
+                    style="width: 95%;"
+					placeholder="${i18n.get('结果备注')}"
+					value="${(entity.bidRemark)!}" />
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<div id="info" style="padding-top: 20px;" class="row">
+		<div class="col-xs-12">
+			<input type="hidden" id="selectedId"  />
+			<@plug.tabs tabMain=tabMainInfo>
+		</@plug.tabs>
+	</div>
+<script type="text/javascript">
+	
+$(function() {
+	showPage();
+});
+
+function showPage(){
+	
+	_url = '${ctx}/common/attachment/attachment.html?businessId=${(entity.id)!}&businessType=ACCOUNT_FILE&docGroupCode=BIDATTM';
+
+	$('#attmDiv').load(_url, function(response,status,xhr){
+		if(status === 'error'){
+			$('#attmDiv').html(_url +'<br>'+ ${i18n.get('页面加载失败')});
+		}
+	});
+	
+	}
+</script>
+
+</@form.form>
+</@form.panel>
+</@cui.body2>
+<script src="${ctx}/anne/js/util.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		
+		iniDomCheck("isIntegrated");
+		iniDomCheck("isCrossDistrict");
+		
+		if ('${(entity.id)!}' === undefined || '${(entity.id)!}' === ''){
+			$("#attmDiv").hide();
+			$("#resultDiv").hide();
+		}
+	});
+	
+	function iniDomCheck(domId){
+		var checkedValue= $("#" + domId).val();
+		if(checkedValue == 'Y'){
+			
+			$("#" + domId).attr("checked","true"); 
+		}else {
+			$("#" + domId).removeAttr("checked"); 
+		}
+	}
+	
+	function changeDomCheckValue(domId){
+		var checked =  $("#" + domId).is(':checked');
+		if(checked == true){
+			$("#" + domId).val('Y');
+			$("#" + domId).attr("checked","true"); 
+		}else {
+			$("#" + domId).val('N');
+			$("#" + domId).removeAttr("checked"); 
+		}
+	}
+	
+	function startAuthProcess() {
+        var entityId = "${entity.id?default('')}";
+        if(''===entityId){
+        	alert('${i18n.get('数据未保存，请先保存再提交流程申请。')}'); 
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url: "${ctx}/bid/startProcess.html",
+            async: true,
+            data: "id=" + entityId+"&bidNumber=${(entity.bidNumber)!}",
+            dataType: 'json',
+            success: function (msg) {
+            	alert('${i18n.get('审核流程提交成功')}'); 
+                parent.currentParent2.reload_bidTable();
+                api.close();
+            },
+            error: function (e) {
+                var msg = eval("(" + e.responseText + ")");
+                if (msg) {
+                    alert(msg.message);
+                } else {
+                	alert('${i18n.get('操作失败，请联系管理员')}'); 
+                }
+            }
+        });
+    }
+</script>
+</#escape>

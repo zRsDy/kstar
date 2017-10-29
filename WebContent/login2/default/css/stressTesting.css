@@ -1,0 +1,63 @@
+@charset "utf-8";
+/*content*/
+.detailcontent{background:#fff;margin-left:155px;word-wrap:break-word;padding:2px;}
+.testing_list{padding:4px;}
+.testing_table{table-layou:fixed;width:100%;word-wrap:break-word;word-break:keep-all;}
+.testing_table tr td{padding:0;vertical-align:top;}
+.testing_table p{display:block;text-align:center;padding:4px 5px;margin:1px;border:1px solid #5d8ecc;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff',endColorstr='#b5cff0');background:-moz-linear-gradient(top,#ffffff,#b5cff0);background:-webkit-gradient(linear,left top,left bottom,from(#ffffff),to(#cce3f9));border-radius:3px;-moz-border-radius:3px;-webkit-border-radius:3px;color:#0e3b80;white-space:nowrap;}
+.testing_table p.title_h{padding:10px 5px;}
+.testing_table b{display:block;font-weight:normal;text-align:right;padding:0 5px;height:24px;line-height:24px;white-space:nowrap;}
+.upfile_button{position:absolute;top:7px;right:238px;height:32px;filter:alpha(opacity:0);opacity:0;width:179px;cursor:pointer;}
+.upfile_button2{position:absolute;top:7px;right:238px;height:32px;filter:alpha(opacity:0);opacity:0;width:179px;cursor:pointer;}
+.macroTableDiv{border:1px solid #5d8ecc;margin:1px;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff',endColorstr='#f1f6fd');background :-moz-linear-gradient(top,#ffffff,#f1f6fd);background:-webkit-gradient(linear,left top,left bottom, from(#ffffff),to(#f1f6fd));border-radius:3px;}
+.testingset_left{width:300px;min-height:440px;border:1px solid #e8eef9;margin:2px;background:#f4f7fd;float:left;}
+.testingset_right{min-height:440px;border:1px solid #e8eef9;margin:2px 2px 2px 306px;background:#f4f7fd;overflow:hidden;}
+
+.testing_menu{width:122px;min-height:440px;background:#000;float:left;}
+.testing_content{margin-left:121px;}
+
+.testing_contentbg{padding:4px!important;background:#fff!important;border-radius:0!important;}
+table.inputside{width:100%;}
+table.inputside th{text-align:center;}
+table.inputside td{text-align:left;padding:2px;}
+.message_title{display:block;background:#d3e3f7;padding:2px;margin:3px;border-radius:3px;text-align:center;color:#1466a4;}
+table.testgrid{width:100%;word-wrap:break-word;word-break:keep-all;border:1px solid #5bacf1;}
+table.testgrid th,table.testgrid td{padding:0 2px;white-space:nowrap;background:#fff;text-align:center;}
+table.testgrid th{background:#f6f8fc url(../images/mulation_bg.png) repeat-x 0 100%;border:1px solid #5bacf1;color:#0e3b80;height:26px;line-height:26px;}
+table.testgrid td{border:1px solid #5bacf1;text-align:right;height:23px;line-height:23px;}
+table.leftgrid{width:100%;background:#fff;}
+table.leftgrid th,table.leftgrid td{border-style:solid;border:1px solid #5bacf1;color:#434347;min-width:116px;padding:0 2px;background:#d6e8ff;color:#0F6DB4;}
+table.leftgrid th{height:71px;line-height:71px;text-align:center;color:#0F6DB4;}
+table.leftgrid tr{text-align:center}
+table.leftgrid td{height:23px;line-height:23px;font-weight:bold;}
+table.leftgrid td.fbg{height:26px;background:#fff;}
+
+.blue_remind{background:#3e7ad8;}
+.yellow_remind{background:#ffa03d;}
+.red_remind{background:#dc4b3b;}
+.blue_remind,.yellow_remind,.red_remind{padding:3px 10px;margin:1px;border-radius:3px;white-space:nowrap;color:#fff;}
+
+.bluetestingbar span{background:#3e7ad8;}
+.yellowtestingbar span{background:#ffa03d;}
+.redtestingbar span{background:#dc4b3b;}
+.bluetestingbar span,.yellowtestingbar span,.redtestingbar span{display:block；width:10px;min-height:100%;font-weight:bold;text-align:center;margin:1px;padding:10px 4px;border-radius:3px;white-space:nowrap;color:#ffffff}
+
+.scrnarioSimulationTableDiv{margin:1px;border:1px solid #5d8ecc;}
+.scrnarioSimulationTableDiv table{width:100%;}
+.scrnarioSimulationTableDiv table th{text-align:center;height:52px;line-height:14px;text-align:center;background:#dbe6f4 url(../images/mulation_bg.png) repeat-x;border:1px solid #fff;padding:0 5px;color:#0e3b80}
+.scrnarioSimulationTableDiv table td{text-align:right;height:22px;line-height:22px;padding:0 7px;}
+.scrnarioSimulationTitle{;background:#9fc8fb;border-bottom:1px solid #d0e5ff;}
+.scrnarioSimulationData{background:#fff;border-bottom:1px solid #cddef1;}
+
+.macroDataTd{text-align:center;vertical-align:middle;cursor:pointer;}
+.changedMacroDataTd{text-align:center;vertical-align:middle;cursor:pointer;background-color:#4f76b5;color:#fff;}
+.dataDiv{width:100px;height:30px;background-color:blue;opacity:0.50;dispaly:none;}
+.paramSettingTd{text-align:center;vertical-align:middle;cursor:pointer;}
+
+.stressTestData{text-align:center;vertical-align:middle;height:20px;}
+
+.testing_canshushezhi table tr{height:30px;}
+.macro_selectedcolor{background-color:#72a9d3;color:#fff;text-align:center;cursor:pointer;}
+.macro_selectedline{background-color:#e2e4ff;text-align:center;}
+.macro_selectedcenter{text-align:center;}
+.testing_tablemargin{background:#fff;margin:5px 0 0 5px;width:auto;}

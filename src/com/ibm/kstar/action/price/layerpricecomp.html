@@ -1,0 +1,163 @@
+	
+<@pui.body>
+<#if (permission["P01-2PriceLayerAdd"])??>
+	<#assign addURL="'${ctx}/proprice/lpcEdit.html'" />
+</#if>
+<#if (permission["P01-2PriceLayerEdit"])??>
+	<#assign editURL="'${ctx}/proprice/lpcEdit.html'" />
+</#if>
+<#if (permission["P01-2PriceLayerDelete"])??>
+	<#assign deleteURL="'${ctx}/proprice/lpcDelete.html'" />
+</#if>
+
+	<div class="col-xs-12">
+		<@form.table id="t81" 
+			class="col-xs-12"
+			title="${i18n.get('层级对照表')}" 
+			url = "${ctx}/proprice/layerpricecompList.html" 
+			rowNum = "10" 
+			search="true"
+			shrinkToFit="true" 
+			addURL = "${addURL!}"
+			editURL = "${editURL!}" 
+			deleteURL = "${deleteURL!}" 
+			colModel = "[
+				{name:'id',label:'${i18n.get('层级对照')}ID',hidden:true,width:100,sortable:false,align:'center' },
+				{name:'layCompName',label:'${i18n.get('层级对照表名称')}',hidden:false,width:100,sortable:false,align:'center' },
+				{name:'startDate',label:'${i18n.get('有效期开始时间')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+				{name:'endDate',label:'${i18n.get('有效期结束时间')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+				{name:'organization',label:'${i18n.get('组织')}',hidden:true,width:140,sortable:false,align:'center' },
+				{name:'organizationName',label:'${i18n.get('组织')}',hidden:false,width:140,sortable:false,align:'center' },
+				{name:'createOrgName',label:'${i18n.get('创建组织')}',hidden:false,width:140,sortable:false,align:'center' },
+				{name:'createrName',label:'${i18n.get('创建人')}',hidden:false,width:140,sortable:false,align:'center' },
+				{name:'createDate',label:'${i18n.get('创建日期')}',hidden:false,width:140,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+				{name:'priceCompDesc',label:'${i18n.get('说明')}',hidden:false,width:100,sortable:false,align:'center' }
+			]" 
+			 onSelectRow = "function(data,status){
+			 	if($('#layCompLine').css('display') == 'none'){
+		 			$('#layCompLine').show();
+		 		}
+		 		$('#headerId').val(data.id);
+		 		$('#organization').val(data.organization);
+		 		reload_t811();
+		 		$('#hrDiv').hide();
+				$('#roleIdDiv').hide();
+			 }"
+			 onComplete = "function(){
+			 	$('#layCompLine').hide();
+			 }"
+			 > 
+			<div class="col-xs-12">
+				<div class="form-group col-xs-2" align="right">${i18n.get('层级对照表名称 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="layCompName" size="30" />
+				</div>	
+				<div class="form-group col-xs-2" align="right">${i18n.get('组织 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="organization" size="30" />
+				</div>
+				<div class="form-group col-xs-2" align="right">${i18n.get('有效开始日期 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="startDate" class="date-picker" data-date-format="yyyy-mm-dd" />
+				</div>	
+				<div class="form-group col-xs-2" align="right">${i18n.get('有效结束日期 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="endDate" class="date-picker" data-date-format="yyyy-mm-dd" />
+				</div>
+			</div>
+		</@form.table> 
+		
+		<#if (permission["P01-2PriceLayerLineAdd"])??>
+			<#assign addURL_line="true" />
+		</#if>
+		<#if (permission["P01-2PriceLayerLineEdit"])??>
+			<#assign editURL_line="'${ctx}/proprice/lpcLineEdit.html?headerId='+$('#headerId').val()+ '&organization='+$('#organization').val()" />
+		</#if>
+		<#if (permission["P01-2PriceLayerLineDelete"])??>
+			<#assign deleteURL_line="'${ctx}/proprice/lpcLineDelete.html'" />
+		</#if>
+		<div id="layCompLine">
+			<hr/>
+			<@form.table id="t811" 
+				class="col-xs-12"
+				title="${i18n.get('价格层级与岗位对照关系')}" 
+				url = "${ctx}/proprice/lpcLineList.html" 
+				rowNum = "10" 
+				search="false"
+				shrinkToFit="true" 
+				editURL = "${editURL_line!}"
+				deleteURL = "${deleteURL_line!}" 
+				colModel = "[
+					{name:'id',label:'${i18n.get('层级')}ID',hidden:true,width:100,sortable:false,align:'center' },
+					{name:'layLineName',label:'${i18n.get('层级名称')}',hidden:true,width:100,sortable:false,align:'center' },
+					{name:'layLineNameName',label:'${i18n.get('层级名称')}',hidden:false,width:100,sortable:false,align:'center' },
+					{name:'discountRate',label:'${i18n.get('默认折扣率')}',hidden:false,width:100,sortable:false,align:'center' },
+					{name:'approveLayLine',label:'${i18n.get('审批层级')}',hidden:false,width:100,sortable:false,align:'center' },
+					{name:'startDate',label:'${i18n.get('有效期开始时间')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+					{name:'endDate',label:'${i18n.get('有效期结束时间')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }}
+				]"
+				 onSelectRow = "function(data,status){
+				 	if($('#roleIdDiv').css('display') == 'none'){
+					 	$('#hrDiv').show();
+				 		if(selected_t811.approveLayLine == undefined || selected_t811.approveLayLine == ''){				 		
+					 		$('#roleIdDiv').show();
+							showActivityPage('roleIdDiv','${ctx}/team/list.html?businessType=layerpricecomp&businessId='+selected_t811.id+'&orgId='+selected_t81.organization+'&layerId='+selected_t81.id);
+						}
+					}else{
+						$('#businessId1').val(selected_t811.id);
+						$('#positionId').val('');
+						if(selected_t811.approveLayLine == undefined || selected_t811.approveLayLine == ''){				 		
+			 				reload_teamPositionTable();
+							reload_teamMemberTable();
+						}else{
+							$('#roleIdDiv').hide();
+						}
+						
+					}
+				 }"
+				 buttons = "[
+				 	{
+			  			id:'add_t811',
+			  			label : '${i18n.get('新增')}',
+			  			icon : 'icon-plus',
+			  			own : ${addURL_line!'false'},
+			  			handler : function(e,rowData){
+			  				if($('#t811').jqGrid('getRowData').length == 6){
+			  					exalert(e,'${i18n.get('最多6层，不能在新增！')}');
+			  					return;
+							}else if(!selected_t81){
+								exalert(e,'${i18n.get('请选择层级对照表！')}');
+								return;
+							}else{
+								var requestPath = '${ctx}/proprice/lpcLineEdit.html?headerId='+$('#headerId').val() + '&organization='+$('#organization').val();
+								parent.dialog('${i18n.get('价格层级与岗位对照关系')}', requestPath, window);
+							}
+			  			}
+			  		}
+				 ]"> 
+				 
+				<input type="hidden" name="headerId" id ="headerId" />
+				<input type="hidden" name="organization" id ="organization" />
+			</@form.table> 
+		</div>
+		<div id="hrDiv"><hr/></div>
+		<div id="roleIdDiv"></div>
+	</div>
+</@pui.body>
+<script type="text/javascript">
+	var activityloadimg="<img src ='${ctx}/assets/img/loading.gif' /> ";
+	$(function(){
+		$('#layCompLine').hide();
+		$('#hrDiv').hide();
+		$('#roleIdDiv').hide();
+	});
+	function showActivityPage(tabId, url){
+		$('#applytab a[href="#'+tabId+'"]').tab('show');
+		$('#'+tabId).html(url +'<br>'+ activityloadimg +' ${i18n.get('页面加载中，请稍后...')}');
+		$('#'+tabId).load(url,function(response,status,xhr){
+			if(status === 'error'){
+				$('#'+tabId).html(url+'<br> ${i18n.get('页面加载失败')}');
+			}
+		});
+	}
+</script>

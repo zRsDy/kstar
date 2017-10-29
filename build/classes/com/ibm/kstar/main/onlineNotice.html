@@ -1,0 +1,33 @@
+<@pui.body> 
+				
+	<div class="col-xs-12" >
+		<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+		<@form.form id="t1"
+			class="form-horizontal"
+			>
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('通知内容')}: </label>
+					<@form.textArea 
+						id="notice" 
+						name="notice" 
+						placeholder="${i18n.get('请输入通知内容')}" 
+						value=""
+						/>
+				</div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('发送')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+	</div>
+</@pui.body>

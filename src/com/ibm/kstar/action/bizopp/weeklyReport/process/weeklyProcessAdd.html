@@ -1,0 +1,145 @@
+<@pui.body>
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1"
+			success="function(){ parent.currentParent.reload_weeklyReport(); }" 
+			class="form-horizontal">
+			
+			<p style="width: 1440px; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('周报题头')}</p>
+ 			<table style="width: 1050px; height: 118px;">
+			<@form.input name="pid" type="hidden" id="pid" value="${(entity.pid)!}"/>
+					<tr>
+						<td width="110px">${i18n.get('客户名称:')}</td>
+						<td width="170px"><@form.input name="clientName" type="text"
+							id="clientName" value="${(entity.clientName)!}" readonly="readonly" /></td>
+					</tr>
+					<tr>
+					    <td width="110px">${i18n.get('存在的问题和处理方式:')}</td>
+						<td width="170px"><@form.input name="problemMethod" type="text"
+							id="problemMethod" value="${(entity.problemMethod)!}" /></td>
+					</tr>
+					<tr>
+					    <td width="130px">${i18n.get('备注:')}</td>
+						<td><@form.input name="remark" type="text"
+							id="remark" value="${(entity.remark)!}" /></td>
+					</tr>
+				</table>
+				<div class = "biz_integrator_info" id = "top06">
+					<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('客户名称')}</p>
+					<table>
+						<tr>
+							<td align="left">
+				  				<input name="isNewClient" type="checkbox" id="isNewClient" value="${(entity.isNewClient)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>${i18n.get('新客户')}
+				  			</td><td width="110px"></td>
+				  			<td align="left">
+				  				<input name="isOldClient" type="checkbox" id="isOldClient" value="${(entity.isOldClient)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>${i18n.get('老客户')}
+				  			</td><td width="110px"></td>
+						</tr>
+					</table>
+				</div>
+				<div class = "biz_integrator_info" id = "top06">
+					<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('产品需求')}</p>
+					<table>
+						<tr>
+							<td align="left">
+				  				<input name="isBackupMachine" type="checkbox" id="isBackupMachine" value="${(entity.isBackupMachine)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>${i18n.get('后备机')}
+				  			</td><td width="110px"></td>
+				  			<td align="left">
+				  				<input name="isHomeInverter" type="checkbox" id="isHomeInverter" value="${(entity.isHomeInverter)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>${i18n.get('家用逆变器')}
+				  			</td><td width="110px"></td>
+				  			<td align="left">
+				  				<input name="isPowerFrequencyMachine" type="checkbox" id="isPowerFrequencyMachine" value="${(entity.isPowerFrequencyMachine)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>${i18n.get('工频机')}
+				  			</td><td width="110px"></td>
+						</tr>
+						<tr>
+							<td align="left">
+				  				<input name="isBattery" type="checkbox" id="isBattery" value="${(entity.isBattery)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>${i18n.get('电池')}
+				  			</td><td width="110px"></td>
+				  			<td align="left">
+				  				<input name="isHighFrequency" type="checkbox" id="isHighFrequency" value="${(entity.isHighFrequency)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>${i18n.get('20K高频')}
+				  			</td><td width="110px"></td>
+				  			<td align="left">
+				  				<input name="isIduIdm" type="checkbox" id="isIduIdm" value="${(entity.isIduIdm)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>${i18n.get('IDU')}
+				  			</td><td width="110px"></td>
+						</tr>
+						<tr>
+							<td align="left">
+				  				<input name="isSinglePhaseInverter" type="checkbox" id="isSinglePhaseInverter" value="${(entity.isSinglePhaseInverter)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>${i18n.get('单向光伏逆变器')}
+				  			</td><td width="110px"></td>
+				  			<td align="left">
+				  				<input name="isThreePhaseInverter" type="checkbox" id="isThreePhaseInverter" value="${(entity.isThreePhaseInverter)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>${i18n.get('三相光伏逆变器')}
+				  			</td><td width="110px"></td>
+				  			<td align="left">
+				  				<input name="isMwHouse" type="checkbox" id="isMwHouse" value="${(entity.isMwHouse)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>${i18n.get('NW房')}
+				  			</td><td width="110px"></td>
+						</tr>
+						<tr>
+							<td align="left">
+				  				<input name="isStoredEnergy" type="checkbox" id="isStoredEnergy" value="${(entity.isStoredEnergy)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>${i18n.get('储能')}
+				  			</td><td width="110px"></td>
+				  			<td align="left">
+				  				<input name="isAirCondition" type="checkbox" id="isAirCondition" value="${(entity.isAirCondition)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>${i18n.get('空调')}
+				  			</td><td width="110px"></td>
+				  			<td align="left">
+				  				
+				  			</td><td width="110px"></td>
+						</tr>
+					</table>
+				</div>
+				<div class = "biz_integrator_info" id = "top06">
+					<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('客户沟通维护方式')}</p>
+					<table>
+						<tr>
+							<td align="left">
+				  				<input name="isContactMethodMail" type="checkbox" id="isContactMethodMail" value="${(entity.isContactMethodMail)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>${i18n.get('邮件')}
+				  			</td><td width="110px"></td>
+				  			<td align="left">
+				  				<input name="isContactMethodPhone" type="checkbox" id="isContactMethodPhone" value="${(entity.isContactMethodPhone)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>${i18n.get('电话')}
+				  			</td><td width="110px"></td>
+						</tr>
+						<tr>
+							<td align="left">
+				  				<input name="isContactMethodVisit" type="checkbox" id="isContactMethodVisit" value="${(entity.isContactMethodVisit)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>${i18n.get('拜访')}
+				  			</td><td width="110px"></td>
+				  			<td align="left">
+				  				<input name="isContactComeVisit" type="checkbox" id="isContactComeVisit" value="${(entity.isContactComeVisit)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>${i18n.get('来访')}
+				  			</td><td width="110px"></td>
+						</tr>
+					</table>
+				</div>
+			<input type="hidden" name="fkWeeklyId" id="fkWeeklyId" value="${(entity.fkWeeklyId)!}" />	
+			
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+</@pui.body>
+ <script type="text/javascript">
+				$(document).ready(function() {
+					$("input[type=checkbox][name^='cl']").each(function(i, val) {
+						iniCheck(val.id);
+						});
+				});
+				$(document).ready(function() {
+					$("input[type=checkbox][name^='is']").each(function(i, val) {
+						iniCheck(val.id);
+						});
+				});
+				$(document).ready(function() {
+					$("input[type=checkbox][name^='ca']").each(function(i, val) {
+						iniCheck(val.id);
+						});
+				});
+				
+			</script>
+<script src="${ctx}/anne/js/util.js"></script>

@@ -1,0 +1,295 @@
+<@pui.body>
+<style type="text/css">
+	table {
+	border-collapse: collapse;
+	border-color: #ff0000;
+	}
+	
+	
+	table td {
+		padding:1px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	select {
+		width: 200px;
+	}
+</style>
+<script type="text/javascript">
+ 	$(document).ready(function(){
+ 		$("#salesCenterS").attr("disabled","disabled");
+ 		$("#bizDeptS").attr("disabled","disabled"); 			
+ 		
+ 	}); 
+	function salesmanChange(orgId){
+		 $.ajax({
+			type : "POST",
+			url : "${ctx}/order/salesmanChangeG.html",
+			async: true,
+			data : "orgId="+orgId, 
+			dataType : 'json',
+			success : function(data) {
+				var salesmanCenter = data.message['salesmanCenter'];
+				var bizDept = data.message['salesmanDep'];
+				if(salesmanCenter){
+					reload_salesCenterS(salesmanCenter);
+					reload_bizDeptS(bizDept);
+					$('#salesCenter').val(salesmanCenter);
+					$('#bizDept').val(bizDept);
+				}else{
+					$('#salesCenterS').select2("val", "");
+					$('#bizDeptS').select2("val", "");
+				}
+			},
+			error: function(e) {
+				 var msg = eval("("+e.responseText+")");
+				 if(msg !='' && msg != null && msg != 'undefined' && msg.message){
+					 alert(msg.message);
+				 }else{
+					alert("${i18n.get('获取联系人销售中心/部门失败')}");
+				 }
+				
+			} 
+		});
+	}
+</script>
+
+	<div class="col-xs-12" >
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="reload_receiptsPlanForm"
+			success="function(){ 
+				parent.currentParent2.reload_receiptsPlanList(); 
+			}" 
+			
+			class="form-horizontal"
+			>
+			<div align="center" class="form-group">
+			<table>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong> ${i18n.get('客户编号 :')} 
+					</td>
+					<td align="left" width="250px">
+						<@form.autocomplete  id="custId" name="custId" 
+		            		placeholder="${i18n.get('请选择客户')}"
+			            	idKey='id'
+			            	required="${i18n.get('请选择客户')}"
+			            	formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+							url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html'; }"
+			            	value="{id: '${(contractReceiptDetail.custId)!}',customFullName:'${(contractReceiptDetail.custName)!}', customCode: '${(contractReceiptDetail.custCode)!}'}"
+			            	
+			            	onSelect="function(data){
+			            		if( data.id != null && data.id !='' && data.id != 'undefined'){
+			            			$('#custCode').val(data.customCode);
+			            			$('#custName').val(data.customFullName);
+			            			reload_contractCode('${(contractReceiptDetail.contractCode)!}');
+			            		}
+			            	}" 
+		            	/>
+		            	<input id="custCode"  name="custCode"  type="hidden"  value="${(contractReceiptDetail.custCode)!}"  />
+		            	<input id="custName"  name="custName"  type="hidden"  value="${(contractReceiptDetail.custName)!}"  />
+		          
+					</td>
+					<td align="right" width="200px">
+						 ${i18n.get('合同编号 :')} 
+					 </td>
+					<td>
+		            	<@form.select  id="contractCode" name="contractCode" 
+			             	viewKey='contrNo'
+			             	idKey='contrNo'
+			             	placeholder="${i18n.get('请选择合同')}" 
+			                url="function(){ 
+		                		var customerId = $('#custId').val();
+		                		return '${ctx}/lovcontract/autocompContract.html?customerId='+customerId;
+			                }"
+			              	value ="${(contractReceiptDetail.contractCode)!}"
+			              />
+					</td>
+					<td align="right" width="200px">
+						 ${i18n.get('合同收款计划行 :')} 
+					</td>
+					<td>
+						<@form.select style="width: 200px;" 
+							id="receiptsPlan" name="receiptsPlan" 
+		             		code="CONTRACTPAYSEQ"
+		             		value ="${(contractReceiptDetail.receiptsPlan)!}"
+		             		/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						 ${i18n.get('收款阶段 :')}
+					</td>
+					<td>  
+						<@form.select style="width: 200px;" 
+							id="receiptsStage" name="receiptsStage" 
+		             		code="CONTRACTPAYMENTPLAN"
+		             		value="${(contractReceiptDetail.receiptsStage)!}" 
+		             		/>	
+					</td>
+					<td align="right">
+						<strong style="color: red;">*</strong> ${i18n.get('出货申请编号 :')} 
+					</td>
+					<td>
+						<@form.input
+							id="deliveryCode"  name="deliveryCode" 
+							placeholder="" 
+							required="${i18n.get('出货申请编号不能为空')}"
+							tip="" 
+							value="${(contractReceiptDetail.deliveryCode)!}" 
+							/>
+					</td>
+					<td align="right">
+						${i18n.get('销售人员 : ')}
+					</td>
+					<td>
+						<input id="salesmanId"  name="salesmanId" type ="hidden" value="${(contractReceiptDetail.salesmanId)!}" />
+		                <input id="salesmanCode"  name="salesmanCode" type ="hidden" value="${(contractReceiptDetail.salesmanCode)!}" />
+		                <input id="salesmanPos"  name="salesmanPos" type ="hidden" value="${(contractReceiptDetail.salesmanPos)!''}" />
+		                <input id="salesmanPosName"  name="salesmanPosName" type ="hidden" value="${(contractReceiptDetail.salesmanPosName)!}" />
+		                <@form.autocomplete  id="salesmanName" name="salesmanName" 
+							placeholder="${i18n.get('请选择销售人员')}"
+							idKey='employeeName'
+							required="${i18n.get('请选择销售人员')}"
+							multiple="false"
+							formatResult="function(data) {return ' <div > <li> <i class=icon-bullhorn></i> '+data.orgName +' | '+ data.positionName +' | '+ data.employeeName +' | '+ data.employeeNo +'</li></div>';}"
+				            formatSelection="function(data) { return '<div >' + data.employeeName +' | ' + data.employeeNo +' | ' + data.positionName + ' </div>';}"
+							url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+							value="{
+								 employeeName:'${(contractReceiptDetail.salesmanName)!}',
+								 employeeNo:'${(contractReceiptDetail.salesmanCode)!}',
+								 employeeId:'${(contractReceiptDetail.salesmanId)!}',
+								 positionName:'${(contractReceiptDetail.salesmanPosName)!}'
+							}"
+							
+							onSelect="function(data){
+								if( data.id != null && data.id !='' && data.id != 'undefined'){
+									$('#salesmanId').val(data.employeeId);
+									$('#salesmanCode').val(data.employeeNo);
+									$('#salesmanPos').val(data.positionId);
+									salesmanChange(data.orgId);
+								}
+							}" 
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						${i18n.get('币种 :')} 
+					</td>
+					<td>
+						<@form.select style="width: 200px;" 
+							id="receiptsType" name="receiptsType" 
+							idKey="code"
+		             		code="CURRENCY"
+		             		value="${(contractReceiptDetail.receiptsType)!}" 
+		             		/>	
+					</td>
+					<td align="right">
+						<strong style="color: red;">*</strong> ${i18n.get('计划金额 :')}
+					</td>
+					<td>
+						<@form.number id="planAmount"  name="planAmount" 
+							placeholder="" 
+							required="${i18n.get('计划金额不能为空')}"
+							tip="" 
+							value="${(contractReceiptDetail.planAmount)!}" 
+							/>
+					</td>
+					<td align="right">
+						 ${i18n.get('业务部门 : ')}
+					</td>
+					<td>
+	             		 <input id="bizDept"  name="bizDept" type ="hidden" value="${(contractReceiptDetail.bizDept)!''}" /> 
+						 <@form.select style="width: 200px;" 
+							id="bizDeptS" name="bizDeptS" 
+		             		code="ORG"
+		             		value="${(contractReceiptDetail.bizDept)!}" />	 
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						 ${i18n.get('已核销金额 :')} 
+					</td>
+					<td>	  
+						<@form.number id="veriAmount"  name="veriAmount" 
+							readonly="readonly"
+							placeholder="" 
+							tip="" 
+							value="${(contractReceiptDetail.veriAmount)!}" 
+							/>
+					</td>
+					<td align="right">
+						<strong style="color: red;">*</strong> ${i18n.get('到期日 : ')}
+					</td>
+					<td>		  
+						<@form.date  
+							id="paymentDate"  name="paymentDate" 
+							placeholder="" 
+							required="${i18n.get('到期日不能为空')}"
+							tip="" 
+							value="${(contractReceiptDetail.paymentDate?date)!}" 
+							/>
+					</td>
+					<td align="right">
+						 ${i18n.get('备注 : ')}
+					</td>
+					<td>		  
+						<@form.input
+							id="remarks"  name="remarks" 
+							placeholder="" 
+							tip="" 
+							value="${(contractReceiptDetail.remarks)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+                    <td align="right">
+                        ${i18n.get('业务实体 :')}
+                    </td>
+                    <td>
+						<@form.select id="businessEntity" name="businessEntity"
+						placeholder="${i18n.get('请选择业务实体')}"
+						required="${i18n.get('请选择业务实体')}"
+						code="OPERATION_UNIT"
+						value="${(contractReceiptDetail.businessEntity)!}"  />
+                    </td>
+                    <td align="right">
+		  				${i18n.get('营销中心：')}
+		            </td>
+		            <td align="left">
+						<input id="salesCenter"  name="salesCenter" type ="hidden" value="${(contractReceiptDetail.salesCenter)!''}" /> 
+						<@form.select 
+							id="salesCenterS"  name="salesCenterS" 
+							placeholder="${i18n.get('请选择营销中心')}" 
+							code="ORG" 
+							value="${(contractReceiptDetail.salesCenter)!}"  /> 
+		            </td>
+				</tr>
+			</table>
+			</div>	
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<#if permission["P06ReceiptPlanSave"]??>
+						<button class="btn btn-info submit" type="button">
+							<i class="icon-ok bigger-110"></i>
+							${i18n.get('保存')}
+						</button>
+					</#if>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+	</div>
+</@pui.body>

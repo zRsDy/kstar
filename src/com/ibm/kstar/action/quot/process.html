@@ -1,0 +1,90 @@
+ <@pui.body>
+ 
+<style>
+.clientWidth{
+	width:1500px;
+}
+</style>
+ 
+ <@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+ <label> ${title!} </label>
+ 
+ <@form.table id="quotprocessed" 
+	class="col-xs-12"
+	title="${i18n.get('报价单基本信息列表')}" 
+	url = "${ctx}/quot/processpage.html?processID=${processID!}" 
+	rowNum = "5" 
+	addURL = "'${ctx}/quot/add.html'" 
+	editURL= "'${ctx}/quot/edit.html'" 
+	deleteURL = "'${ctx}/quot/delete.html'" 
+	colModel = "[
+		{name:'id',label:'${i18n.get('报价单')}ID',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'quotCode',label:'${i18n.get('报价单编码')}',hidden:false,width:150,sortable:false,align:'center' },
+		{name:'quotName',label:'${i18n.get('报价单名称')}',hidden:false,width:200,sortable:false,align:'center' },
+		{name:'status',label:'${i18n.get('状态')}',hidden:false,width:80,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatstatusArr(cellvalue) } },
+		{name:'quotVersion',label:'${i18n.get('版本')}',hidden:false,width:50,sortable:false,align:'center' },
+		{name:'customerName',label:'${i18n.get('客户')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'salesRep',label:'${i18n.get('销售代表')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'boName',label:'${i18n.get('商机名称')}',hidden:false,width:200,sortable:false,align:'center'},
+		{name:'priceList',label:'${i18n.get('价格表')}',hidden:false,width:200,sortable:false,align:'center' },
+		{name:'amount',label:'${i18n.get('总额')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'creator',label:'${i18n.get('创建人')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'createTime',label:'${i18n.get('创建日期')}',hidden:false,width:100,sortable:false,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) },align:'center' },
+		{name:'bidResults',label:'${i18n.get('投标结果')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatbidResultsArr(cellvalue) } },
+		{name:'bidResReason',label:'${i18n.get('丢标/赢标原因')}',hidden:false,width:100,sortable:false,align:'center' }
+		]" 
+		ondblClickRow= "function(selectedData){
+				debugger;
+				parent.addTab('${i18n.get('报价详细信息管理')}-'+selected_quotprocessed.quotCode,'${ctx}/quot/tabs.html?qid='+selected_quotprocessed.id+'&qnm='+selected_quotprocessed.id+'&typ=0003');
+				<!-- parent.addTab('${i18n.get('合同')}','${ctx}/quot/contract.html?qid='+selected_t1.quotCode); -->
+				<!-- parent.addTab('${i18n.get('合同')}','${ctx}/quot/contract.html?qid='+selectedData); -->
+		}" buttons = "[]" >
+	</@form.table> 
+		
+ 
+ 
+ 
+ 
+ 
+ </@form.panel>
+ 
+
+
+<div class="col-xs-12">
+	<#list historyList as history>
+	<p>${history.activityName},${history.startTime?datetime} 
+	<#if
+		(history.endTime)??>, ${history.endTime?datetime} 
+	</#if>,
+		${(history.operatorName)!} , ${(history.comment)!}</p>
+	</#list>
+</div>
+
+
+</@pui.body>
+
+<script type="text/javascript">
+
+	var bidResultsArr = {
+			"R01" : "${i18n.get('赢标')}",
+			"R02" : "${i18n.get('丢标')}",
+			"R03" : "${i18n.get('无需投标')}"	
+	};
+
+	
+	var statusArr = {
+			"S01" : "${i18n.get('新建')}",
+			"S02" : "${i18n.get('赢标')}",
+			"S03" : "${i18n.get('丢标')}",
+			"S04" : "${i18n.get('关闭')}"	
+	};
+
+	function formatbidResultsArr(value){
+		 return bidResultsArr[value];
+	}
+	
+	function formatstatusArr(value){
+		 return statusArr[value];
+	}
+	
+</script>

@@ -1,0 +1,111 @@
+<#escape x as x?html>
+<@pui.body>
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1"
+			success="function(){ 
+			try{
+				parent.currentParent2.reload_prototypeTable(); 
+			}catch(e){
+				parent.currentParent.reload_prototypeTable(); 
+			}
+		}" 
+		class="form-horizontal">
+			<input id="systemPid" name="systemPid" type="hidden"  value="${systemPid!}">
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" > VCode: </label>
+				<@form.input
+				id="code"  name="code" 
+				placeholder="" 
+				tip="VCode" 
+				required="${i18n.get('不能为空！')}"
+				value="${(entity.code)!}" 
+				/>
+			</div>	
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" >${i18n.get('产品型号 :')}  </label>
+				  
+				<@form.input
+				id="productModel"  name="productModel" 
+				placeholder="" 
+				tip="${i18n.get('产品型号')}" 
+				required="${i18n.get('不能为空！')}"
+				value="${(entity.productModel)!}" 
+				/>
+			</div>
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" > ${i18n.get('产品料号:')} </label>
+				  
+				<@form.input
+				id="materialNumber"  name="materialNumber" 
+				placeholder="" 
+				tip="${i18n.get('产品料号')}" 
+				value="${(entity.materialNumber)!}" 
+				/>
+			</div>		
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" > ${i18n.get('产品描述 : ')}</label>
+				  
+				<@form.input
+				id="productDesc"  name="productDesc" 
+				placeholder="" 
+				tip="${i18n.get('产品描述 ')}" 
+				value="${(entity.productDesc)!}" 
+				/>
+			</div>	
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" > ${i18n.get('申请数量 : ')} </label>
+				  
+				<@form.input
+				id="applyCount"  name="applyCount" 
+				placeholder="" 
+				tip="${i18n.get('申请数量 ')}" 
+				value="${(entity.applyCount)!}" 
+				/>
+			</div>
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" > ${i18n.get('类型 :')} </label>
+				  
+				<@form.input
+				id="type"  name="type" 
+				placeholder="" 
+				tip="${i18n.get('类型 ')}" 
+				value="${(entity.type)!}" 
+				/>
+			</div>
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" > ${i18n.get('备注 :')}</label>
+				  
+				<@form.input
+				id="remark"  name="remark" 
+				placeholder="" 
+				tip="${i18n.get('备注 ')}" 
+				value="${(entity.remark)!}" 
+				/>
+			</div>
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" for="is_standard"> ${i18n.get('标准产品:')} </label>
+				<input name="isStandard" type="checkbox" id="isStandard" onclick="changeDomCheckValue('isStandard')" value="${(entity.isStandard)!}" />
+			</div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+</@pui.body>
+<script src="${ctx}/anne/js/util.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		iniDomCheck("isStandard");
+	});
+</script>
+</#escape>

@@ -1,0 +1,249 @@
+<@pui.body> 
+			
+				
+	<div class="col-xs-12" >
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t10" 
+			success="function(){  
+			 parent.currentParent2.location.reload();
+			}" 
+			class="form-horizontal"
+			>
+			
+
+				<div id="inputArea">
+<input  id="proId" name="proId" type="hidden"  tip="${i18n.get('产品')}ID" value="${(prjLst.proId)!}" />
+						<@form.input  id="lovId" name="lovId" type="hidden" value="${(lovMember.id)!}" />
+
+					<@form.input  id="prjLstid"  name="prjLstid" type="hidden" value="${(prjLst.id)!}"/>
+					<@form.input 
+						id="code"
+						name="code"
+						type="hidden"
+						value="${(lovMember.code)!}"
+						/>
+
+						<@form.input 
+						id="name" 
+						name="name" 
+						type="hidden"
+						value="${(lovMember.name)!}"
+						/>
+
+						<@form.input 
+							id="quotCode" 
+							name="quotCode" 
+							type="hidden"
+							value="${contrId}"
+							/>
+			
+						<@form.input 
+							id="prdCtgid" 
+							name="prdCtgid" 
+							type="hidden"
+							value="${(prjLst.prdCtgid)!}"
+							/>
+			
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right">
+							 ${i18n.get('请选择产品')}：
+						</label>
+						<input type = "button" value = "${i18n.get('选择产品')}" onclick="$('#selectProduct').click();"/>
+					</div>
+					
+					
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('产品名称')}: </label>
+						<#if ((lovMember.leafFlag)?? && (lovMember.leafFlag == 'N') ) >
+							<@form.input 
+							id="prdNm" 
+							name="prdNm" 
+							tip="${i18n.get('产品名称')}"
+							value="${(prjLst.prdNm)!}"
+							/>
+						<#elseif ((prjLst.prdCtg)?? && (prjLst.prdCtg == '${i18n.get('标准产品')}'))>
+							<@form.input 
+							id="prdNm" 
+							name="prdNm" 
+							tip="${i18n.get('产品名称')}"
+							readonly="readonly" 
+							value="${(prjLst.prdNm)!}"
+							/>
+						<#else>	
+							<@form.input 
+							id="prdNm" 
+							name="prdNm" 
+							tip="${i18n.get('产品名称')}"
+							readonly="readonly" 
+							value="${(prjLst.prdNm)!}"
+							/>
+						</#if>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('产品分类')}: </label>
+						<@form.input 
+							id="prdCtg" 
+							name="prdCtg" 
+							tip="${i18n.get('产品分类')}"
+							readonly="readonly" 
+							value="${(prjLst.prdCtg)!}"
+							/>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('定价')}: </label>
+						<#if ((prjLst.prdCtg)?? && prjLst.prdCtg == '${i18n.get('标准产品')}' ) >
+							<@form.number 
+							id="prdSprc" 
+							name="prdSprc"
+							readonly="readonly" 
+							value="${(prjLst.prdSprc)!}"
+							/>
+						<#else>
+							<@form.number 
+							id="prdSprc" 
+							name="prdSprc" 
+							value="${(prjLst.prdSprc)!}"
+							/>
+						</#if>
+					</div><div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('产品描述')}: </label>
+						<@form.input  id="proDesc"  name="proDesc" readonly ="readonly"   tip="${i18n.get('产品描述')}" value="${(prjLst.proDesc)!}"
+							/>
+					</div>	
+
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('报价')}: </label>
+						<@form.number 
+							id="prdPrc" 
+							name="prdPrc"  
+							tip="${i18n.get('报价')}"
+							value="${(prjLst.prdPrc)!}"
+							/>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('数量')}: </label>
+						<@form.number 
+							id="amt" 
+							name="amt" 
+							tip="${i18n.get('数量')}"
+							value="${(prjLst.amt)!}"
+							/>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('备注')}: </label>
+						<@form.input 
+							id="notes" 
+							name="notes" 
+							tip="${i18n.get('备注')}"
+							value="${(prjLst.notes)!}"
+							/>
+					</div>	
+
+						<@form.input 
+							id="materCode" 
+							name="materCode" 
+							type="hidden" 
+							value="${(prjLst.materCode)!}"
+							/>
+
+	
+						<@form.input 
+							id="prdcd" 
+							name="prdcd" 
+							type="hidden" 
+							value="${(prjLst.prdcd)!}"
+							/>
+							
+						<@form.input 
+							id="prdTyp" 
+							name="prdTyp" 
+							type="hidden" 
+							value="${(prjLst.prdTyp)!}"
+							/>
+
+						<@form.input 
+							id="prdUnt" 
+							name="prdUnt" 
+							type="hidden" 
+							value="${(prjLst.prdUnt)!}"
+							/>
+
+					
+						<@form.input 
+							id="ttlUnt" 
+							name="ttlUnt" 
+							type="hidden" 
+							value="${(prjLst.ttlUnt)!}"
+							/>
+
+
+						<@form.input 
+							id="hhTtl" 
+							name="hhTtl" 
+							type="hidden"
+							value="${(prjLst.hhTtl)!}"
+							/>
+
+
+						<@form.input 
+							id="avgTtl" 
+							name="avgTtl" 
+							type="hidden"
+							value="${(prjLst.avgTtl)!}"
+							/>
+
+
+						<@form.input 
+							id="nstRq" 
+							name="nstRq"
+							type="hidden" 
+							value="${(prjLst.nstRq)!}"
+							/>
+
+			
+				</div>
+			
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+		
+		<div style="visibility: hidden;" >
+			<@biz.picker_product id="selectProduct" urlFunction="function(){return '${ctx}/common/product/selectList.html?priceTableId=${pricetableid}'}" 
+					button="${i18n.get('选择产品')}"
+					callback="function(data){
+						if(data){
+							$('#name').val(data.productName);
+							$('#prdNm').val(data.productName);
+							$('#prdUnt').val(data.unitName);
+							$('#prdSprc').val(data.catalogPrice);
+							$('#prdTyp').val(data.proModel);
+							$('#prdcd').val(data.productCode);
+							$('#materCode').val(data.materielCode);
+							$('#prdCtg').val(data.crmCategoryLable);
+							$('#prdCtgid').val(data.crmCategory);
+							$('#proId').val(data.proId);
+							$('#proDesc').val(data.proDesc);
+						 }
+					}"
+			/>
+		</div>
+		
+		<div class="col-xs-12" >
+	</div>
+</@pui.body>

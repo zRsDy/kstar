@@ -1,0 +1,1036 @@
+<#escape x as x?html>
+<@cui.body2>
+<style type="text/css">
+	table {
+		border-collapse: collapse;
+		border-color: #ff0000;
+	}
+	
+	table td {
+		padding:1px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	select {
+		width: 180px;
+	}
+</style>
+	
+<script type="text/javascript">
+	
+	$(document).ready(function(){
+		$("#sourceType").attr("disabled","disabled");
+		$("#executeStatus").attr("disabled","disabled");
+		$("#controlStatus").attr("disabled","disabled");
+		if("${(orderHeader.isAbnormalPrice)!}" == 1){
+			$("#isAbnormalPrice").attr("checked","checked");
+		}
+		if("${(orderHeader.isAbnormalCredit)!}" == 1){
+			$("#isAbnormalCredit").attr("checked","checked");
+		}
+		
+		$("#order_submit").hide();
+		$("#order_register").hide();
+		$("#order_save").hide();
+		//已录入
+		if("${(orderHeader.executeStatus)!}" == "ENTERED"){
+			
+			if("${(orderHeader.controlStatus)!}" == "10" || "${(orderHeader.controlStatus)!}" == "40"){
+				$("#order_save").show();
+				if("${(orderHeader.id)!}" !="" && "${(orderHeader.id)!}" != null){
+					$("#order_submit").show();
+				}
+			}else if("${(orderHeader.controlStatus)!}" == "30"){
+				$("#order_register").show();
+			}
+		}
+		
+		if("${(orderHeader.orderTypeLable.optTxt1)!}" == "D"){
+				$("#internal_div").removeAttr("hidden");
+				$("#external_div").attr("hidden","hidden");
+		}else if("${(orderHeader.orderTypeLable.optTxt1)!}" == "O"){
+			$("#external_div").removeAttr("hidden");
+			$("#internal_div").attr("hidden","hidden");
+		}
+	});
+	
+	function submit_before(){
+		$('#orderLinesForm').trigger('blur')
+		$("#sourceType").removeAttr("disabled");
+		$("#executeStatus").removeAttr("disabled");
+		$("#controlStatus").removeAttr("disabled");
+		calculateAmount();
+	}
+	
+	function updateOrderStatus(operate,status){
+		 $.ajax({
+			type : "POST",
+			url : "${ctx}/order/updateStatus.html",
+			async: true,
+			data : "id=${(orderHeader.id)!}&status="+status+"&operate="+operate, 
+			dataType : 'json',
+			success : function(msg) {
+				alert(msg.message);
+				parent.currentParent2.reload_orderListForm(); 
+				api.close();
+			},
+			error: function(e) {
+				 var msg = eval("("+e.responseText+")");
+				 if(msg !='' && msg != null && msg != 'undefined' && msg.message){
+					 alert(msg.message);
+				 }else{
+					alert("操作失败，请联系管理员");
+				 }
+				
+			} 
+		});
+	}
+	
+	function salesmanChange(orgId){
+		 $.ajax({
+			type : "POST",
+			url : "${ctx}/order/salesmanChange.html",
+			async: true,
+			data : "orgId="+orgId, 
+			dataType : 'json',
+			success : function(data) {
+				var salesmanCenter = data.message['salesmanCenter'];
+				var salesmanDep = data.message['salesmanDep'];
+				if(salesmanCenter){
+					reload_salesmanCenter(salesmanCenter,function(){
+						reload_salesmanDep(salesmanDep);
+					});
+				}else{
+					$('#salesmanCenter').select2("val", "");
+					$('#salesmanDep').select2("val", "");
+				}
+			},
+			error: function(e) {
+				 var msg = eval("("+e.responseText+")");
+				 if(msg !='' && msg != null && msg != 'undefined' && msg.message){
+					 alert(msg.message);
+				 }else{
+					alert("获取联系人销售中心/部门失败");
+				 }
+				
+			} 
+		});
+	}
+	
+	var selectId = "";
+	var selectedProModel = "";
+	function proSelect(rowid){
+		selectId = rowid ;
+		var rowData = $('#orderLinesForm').jqGrid('getRowData',selectId);
+		selectedProModel = rowData.proModel;
+		var priceTableId =  $('#priceTableId').val();
+		 if(priceTableId){
+			 $('#selectProduct').click();
+		 }else{
+			 alert("请先选择价目表");
+		 }
+	}
+	
+	var newrowid = 0;  
+	function addRow()  
+	{   
+	    //获得新添加行的行号（数据编号）  
+	    newrowid = newrowid+1; 
+	    var dataRow = {    
+	        id: newrowid
+	    };      
+	    //将新添加的行插入到第一列  
+	    $("#orderLinesForm").jqGrid("addRowData", newrowid, dataRow, "first");  
+	    //设置grid单元格不可编辑  
+	    $("#orderLinesForm").setGridParam({cellEdit:false});  
+	    //设置grid单元格可编辑  
+	    //$("#orderLinesForm").jqGrid('editRow', newrowid, false);
+	    //初始化订单行
+	    
+	    initLine(newrowid,null);
+	}
+	
+	//批量增加行
+	function addRowBatch(datas){
+		$.each(datas,function(i,data){
+			
+			data['unitLable'] =data.unitLable;
+			data['price'] =data.catalogPrice;
+			data['proQty'] = 1;
+			data['amount'] = data.catalogPrice;
+			data['itemDescription'] = data.productName;
+				
+			newrowid = newrowid+1;  
+		    //将新添加的行插入到第一列  
+		    $("#orderLinesForm").jqGrid("addRowData", newrowid, data, "first");  
+		    //设置grid单元格不可编辑  
+		    $("#orderLinesForm").setGridParam({cellEdit:false});  
+		    //设置grid单元格可编辑  
+		    //$("#orderLinesForm").jqGrid('editRow', newrowid, false);  
+		    //初始化订单行
+		    data['id'] = newrowid ;
+		    initLine(newrowid,data);
+		});
+	}
+		
+	//初始化订单行
+	function initLine(newrowid,data){
+		//给添加的列加选择按钮  
+		var lable = '选择产品';
+		if(data && data.materielCode){
+			lable =  data.materielCode;
+		}
+		var ps = '<a href="#" onclick="proSelect(\''+newrowid+'\');" >'+lable+'</a>';
+		$('#orderLinesForm').jqGrid('setRowData', newrowid, { act : ps});
+		
+		var shipOrg =  $('#shipOrg').val();
+		if(shipOrg != '' && shipOrg !=null){
+			var data = JSON.parse($('#shipOrg option:selected').attr('data')); 
+			$('#orderLinesForm').jqGrid('setRowData', newrowid, { shipOrgLable : data.name});
+			$('#orderLinesForm').jqGrid('setRowData', newrowid, { shipOrg : shipOrg});
+		}
+		
+		var requestDate =  $('#requestDate').val();
+		if(requestDate != '' && requestDate !=null){
+			$('#orderLinesForm').jqGrid('setRowData', newrowid, { requestDate : requestDate});
+			$('#orderLinesForm').jqGrid('setRowData', newrowid, { promiseDate : requestDate});
+		}
+		$('#orderLinesForm').jqGrid('setRowData', newrowid, { confirmDeliveryDate : 'Yes'});
+	}
+	//计算总金额
+	function calculateAmount(){
+		$('#orderLinesForm').trigger('blur');
+		var amount = 0;
+		var ids = $('#orderLinesForm').jqGrid('getDataIDs');
+			$.each(ids,function(i,id){
+				var rowData = $("#orderLinesForm").jqGrid("getRowData",id);
+				if(rowData.amount){
+					amount = amount +  parseFloat(rowData.amount);
+				}
+			});
+		$("#amount").val(amount);
+	}
+	
+	function cancelLine(id){
+		if("${(orderHeader.executeStatus)!}" == "BOOKED"){
+			$.ajax({
+				type : "POST",
+				url : "${ctx}/order/cancelLine.html",
+				async: true,
+				data : "id="+id,
+				dataType : 'json',
+				success : function(msg) {
+					alert(msg.message);
+					reload_orderLinesForm(); 
+				},
+				error: function(e) {
+					 var msg = eval("("+e.responseText+")");
+					 if(msg !='' && msg != null && msg != 'undefined' && msg.message){
+						 alert(msg.message);
+					 }else{
+						alert("操作失败，请联系管理员");
+					 }
+					
+				} 
+			});
+		}else{
+			alert("取消失败，您只能取消已登记状态的订单行");
+		}
+		
+	}
+</script>
+	<div class="col-xs-12" >
+		<@form.panel title="新增/编辑">
+		<@form.form id="orderForm" 
+			success="function(){
+				alert('保存成功！'); 
+				if('${(orderHeader.sourceType)!}' == '30'){
+					parent.currentParent2.reload_orderListForm(); 
+				}
+				
+				
+			}" 
+			class="form-horizontal" 
+			
+			postData="function(){
+				var ids = $('#orderLinesForm').jqGrid('getDataIDs');
+				var datas = [];
+		 		$.each(ids,function(i,id){
+		 			var data = $('#orderLinesForm').jqGrid('getRowData',id);
+		 			delete data.act ;
+		 			datas.push(data);
+		 		})
+		 		var obj = {'linesList':datas};
+		 		return obj;
+			}"
+			
+			>
+		<div style="height: 15px;" >
+			<div style="padding-right: 20px; float: right;padding-top: 3px;" >
+			
+				<#if permission["P06OrderSave"]??>
+					<button id="order_save" class="btn btn-info submit" type="button" onclick="submit_before()" >
+						<i class="icon-ok bigger-110"></i>
+						保存
+					</button>
+				</#if>
+				<#if permission["P06OrderSubmit"]??>
+					<button id="order_submit" class="btn btn-info" type="button" onclick="updateOrderStatus('submit','20')" >
+						<i class="icon-ok bigger-110"></i>
+						提交
+					</button>
+				</#if>
+				<#if permission["P06OrderBook"]??>
+					<button id="order_register" class="btn btn-info" type="button" onclick="updateOrderStatus('register','BOOKED')" >
+						<i class="icon-ok bigger-110"></i>
+						登记
+					</button>
+				</#if>
+				<button class="btn" type="button" onclick="javascript:api.close()" >
+					<i class="icon-undo bigger-110"></i>
+					关闭
+				</button>
+			</div>
+		</div>
+	 	<p style="padding-left:20px; ">订单题头</p>
+		<div class="main" id="main" style="padding-left: 1px; border-top: 2px solid #e9e9e9 ;" >
+			<table border="0" cellpadding="0" cellspacing="0" >
+		    	<tr align="left">
+		  			<td align="right" width="10%">
+		  				 <strong style="color: red;">*</strong> 客户：
+		            </td>
+		            <td align="left" width="15%" >
+		            	<@form.autocomplete  id="customerId" name="customerId" 
+		            		placeholder="请选择客户"
+			            	idKey='id'
+			            	required="请选择客户"
+			            	formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+							url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html'; }"
+			            	value="{id: '${(orderHeader.customerId)!}',customFullName:'${(orderHeader.customerName)!}', customCode: '${(orderHeader.customerCode)!}'}"
+			            	
+			            	onSelect="function(data){
+			            		if( data.id != null && data.id !='' && data.id != 'undefined'){
+			            			$('#customerCode').val(data.customCode);
+			            			$('#customerName').val(data.customFullName);
+			            			reload_custAttnCode('${(orderHeader.custAttnCode)!}');
+			            			reload_deliveryAddressId('${(orderHeader.deliveryAddressId)!}');
+			            			reload_billAddressId('${(orderHeader.billAddressId)!}');
+			            		}
+			            	}" 
+		            	/>
+		            	<input id="customerName"  name="customerName"  type="hidden"  value="${(orderHeader.customerName)!}"  />
+		            </td>
+		            <td align="right"  width="10%">
+		  				<strong style="color: red;">*</strong> 订单编号：
+		            </td>
+		            <td align="left"  width="15%">
+			  			<@form.input 
+							id="orderCode"  name="orderCode" 
+							placeholder="" 
+							tip="" 
+							value="${(orderHeader.orderCode)!}" 
+							readonly ="readonly"
+							required="订单编号不能为空"
+						/>
+		            </td>
+		            <td align="right"  width="10%">
+		  				销售人员：
+		            </td>
+		             <td align="left"  width="15%">
+		                <input id="salesmanId"  name="salesmanId" type ="hidden" value="${(orderHeader.salesmanId)!}" />
+		                <input id="salesmanCode"  name="salesmanCode" type ="hidden" value="${(orderHeader.salesmanCode)!}" />
+		                
+						<@form.autocomplete  id="salesmanName" name="salesmanName" 
+							placeholder="请选择销售人员"
+							idKey='employeeName'
+							required="请选择销售人员"
+							multiple="false"
+							formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+							url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+							value="{
+								 employeeName:'${(orderHeader.salesmanName)!}',
+								 employeeNo:'${(orderHeader.salesmanCode)!}',
+								 employeeId:'${(orderHeader.salesmanId)!}'
+							}"
+							
+							onSelect="function(data){
+								if( data.id != null && data.id !='' && data.id != 'undefined'){
+									$('#salesmanId').val(data.employeeId);
+									$('#salesmanCode').val(data.employeeNo);
+									salesmanChange(data.orgId);
+								}
+							}" 
+						/>
+		            </td>
+		           <td align="right" width="10%">
+		  				订单状态：
+		            </td>
+		            <td align="left" width="15%">
+						<@form.select id="executeStatus" name="executeStatus"  
+							code="ORDERSTATUS" 
+							idKey='code' 
+							value="${(orderHeader.executeStatus)!}"   /> 
+					</td>
+		            
+		  		</tr>
+		  		<tr>
+		  			<td align="right">
+		  				<strong style="color: red;">*</strong> 客户编号：
+		            </td>
+		            <td align="left">
+		  				<@form.input
+							id="customerCode"  name="customerCode" 
+							placeholder="" 
+							tip="" 
+							value="${(orderHeader.customerCode)!}" 
+							readonly ="readonly"
+							/>
+					</td>
+					 <td align="right">
+		  				<strong style="color: red;">*</strong> 出货组织：
+		            </td>
+		            <td align="left">
+		  				<@form.select id="shipOrg"  name="shipOrg"
+		  					placeholder="请选择出货组织"
+			  				code="INVENTORY"
+			  				required="请选择出货组织"
+							placeholder="" 
+							tip="" 
+							value="${(orderHeader.shipOrg)!}" 
+							/>
+		            </td>
+		            <td align="right">
+		  				所属营销中心：
+		            </td>
+		            <td align="left">
+						<@form.select 
+							id="salesmanCenter"  name="salesmanCenter" 
+							placeholder="请选择所属营销中心" 
+							code="SALES_DEPARTMENT" idKey='id' 
+							childId = "salesmanDep"
+							level = "1"
+							value="${(orderHeader.salesmanCenter)!}"  />
+		            </td>
+		            <td align="right">
+		  				控制状态：
+		            </td>
+		            <td align="left">
+						<@form.select id="controlStatus" name="controlStatus"  
+							code="ORDER_CONTROL_STATUS" 
+							idKey='code' 
+							value="${(orderHeader.controlStatus)!}"  /> 
+		            </td>
+		  		</tr>
+		  		<tr>
+		  			<td align="right">
+		  				客户联系人：
+		            </td>
+		            <td align="left" >
+		             <@form.select  
+		             	id="custAttnCode" name="custAttnCode" 
+		             	placeholder="请选择客户联系" 
+		             	idKey="id"
+		             	viewKey='contactName'
+		                url="function(){ 
+	                		var customerId = $('#customerId').val();
+	                		return '${ctx}/lovcustom/select_contact.html?customId='+customerId; 
+		                }"
+		                value ="${(orderHeader.custAttnCode)!}"
+		                
+		                onChange="function(){
+		             		var data = JSON.parse($('#custAttnCode option:selected').attr('data')); 
+		            		$('#custAttnName').val(data.contactName);
+			            }" 
+		              	
+		              />
+		    		  <input id="custAttnName" name ="custAttnName" type="hidden" value="${(orderHeader.custAttnName)!}"> 
+		            </td>
+		            <td align="right">
+		  			    <strong style="color: red;">*</strong>  业务实体：
+		            </td>
+		            <td align="left">
+						<@form.select id="businessEntity" name="businessEntity"  
+							placeholder="请选择业务实体" 
+							required="请选择业务实体"
+							code="OPERATION_UNIT"
+							childId = "orderType"
+							level = "1"
+							value="${(orderHeader.businessEntity)!}"  /> 
+					</td>
+		            <td align="right">
+		  				所属部门：
+		            </td>
+		            <td align="left">
+						<@form.select
+							id="salesmanDep"  name="salesmanDep"  code="SALES_DEPARTMENT" 
+							placeholder="请选择所属部门" 
+							idKey='id' 
+							parentId="salesmanCenter" 
+							value="${(orderHeader.salesmanDep)!}"  />
+		            </td>
+		            <td align="right">
+		  				付款客户：
+		            </td>
+		            <td align="left">
+						<@form.autocomplete  id="paymentCustId" name="paymentCustId" 
+			            	idKey='id'
+			            	placeholder="请选择付款客户" 
+			            	formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+							url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html'; }"
+			            	value="{id:'${(orderHeader.paymentCustId)!}',customFullName:'${(orderHeader.paymentCustName)!}'}"
+			            	
+			            	onSelect="function(data){
+			            		if( data.id != null && data.id !='' && data.id != 'undefined'){
+			            			$('#paymentCustName').val(data.customFullName);
+			            		}
+			            	}" 
+		            	/>
+		            	<input id="paymentCustName"  name="paymentCustName" type="hidden" value="${(orderHeader.paymentCustName)!}" />
+		            </td>
+		  		</tr>
+		  		<tr>
+		  			<td align="right">
+		  				客户PO：
+		            </td>
+		            <td align="left">
+		  				<@form.input 
+							id="customerPo"  name="customerPo" 
+							placeholder="" 
+							tip="" 
+							value="${(orderHeader.customerPo)!}" 
+							/>
+		            </td>
+		             <td align="right">
+		  				<strong style="color: red;">*</strong> 订单类型：
+		            </td>
+		             <td align="left">
+		             	<@form.select  
+		             		id="orderType" name="orderType" 
+		             		placeholder="请选择订单类型" 
+		             		idKey='code'
+		             		parentId="businessEntity" 
+		             		required="请选择订单类型"
+		             		code="OPERATION_UNIT"
+		             		level = "2"
+		             		onChange="function(){
+		             		var data = JSON.parse($('#orderType option:selected').attr('data')); 
+		            			if(data.optTxt1 =='D'){
+		            				$('#internal_div').removeAttr('hidden');
+		            				$('#external_div').attr('hidden','hidden');
+		            			}else{
+		            				$('#external_div').removeAttr('hidden');
+		            				$('#internal_div').attr('hidden','hidden');
+		            			}
+			            	}" 
+		             		value ="${(orderHeader.orderType)!}"
+		             	/>
+		            </td>
+		            <td align="right">
+		  				销售区域：
+		            </td>
+		            <td align="left">
+						<@form.select id="salesTerritory"  
+							placeholder="请选择销售区域" 
+							name="salesTerritory"  
+							code="TERRITORY" idKey='code' 
+							value="${(orderHeader.salesTerritory)!}"  />
+					
+		            </td>
+		           <td align="right">
+		  				<strong style="color: red;">*</strong> 付款条款：
+		            </td>
+		            <td align="left">
+						<@form.select 
+		             		id="termPayment" name="termPayment"
+		             		placeholder="请选择付款条款" 
+		             		required="请选择付款条款" 
+		             		code="TERM" 
+		             		idKey='code' 
+		             		value ="${(orderHeader.termPayment)!}"
+		             	/>
+		            </td>
+		  		</tr>
+		  		<tr>
+		  			<td align="right">
+		  				<strong style="color: red;">*</strong> 收货地址：
+		            </td>
+		            <td align="left">
+			             <@form.select  id="deliveryAddressId" name="deliveryAddressId" 
+			             	viewKey='fullCustomAddress'
+			             	placeholder="请选择收货地址" 
+			             	required="请选择收货地址"
+			                url="function(){ 
+			                		var customerId = $('#customerId').val();
+			                		return '${ctx}/lovcustom/select_addr.html?customId='+customerId; 
+			                }"
+			              	value ="${(orderHeader.deliveryAddressId)!}"
+			              	
+			              	onChange="function(){
+			            			var data = JSON.parse($('#deliveryAddressId option:selected').attr('data')); 
+			            			$('#deliveryAddress').val(data.fullCustomAddress);
+			            		}"
+			              />
+			              <input  id="deliveryAddress" name="deliveryAddress"  type="hidden" value="${(orderHeader.deliveryAddress)!}" />
+			             
+		            </td>
+		             <td align="right">
+		  				订购日期：
+		            </td>
+		             <td align="left">
+		  				<@form.date  
+							id="orderDate"  name="orderDate" 
+							placeholder="" 
+							tip="" 
+							value="${(orderHeader.orderDate?date)!}" 
+							/>
+		            </td>
+		            <td align="right">
+		  				<strong style="color: red;">*</strong> 币种：
+		            </td>
+		             <td align="left">
+						<@form.select id="currency" name="currency"  
+							placeholder="请选择币种" 
+							required="请选择币种"
+							code="CURRENCY" 
+							idKey='code' 
+							value="${(orderHeader.currency)!}"  /> 
+		            </td>
+		          	<td align="right">
+		  				<strong style="color: red;">*</strong> 价目表：
+		            </td>
+		            <td align="left">
+						<@form.autocomplete  id="priceTableId" name="priceTableId"  
+							idKey='id'
+							placeholder="请选择价目表" 
+							required="请选择价目表"
+			            	formatResult="function(data) {return '<div >' +data.priceTableName + '</div>';}"
+							url="function(){ return '${ctx}/lovcontract/autocompletePriceTable.html'; }"
+			            	value="{id: '${(orderHeader.priceTableId)!}',priceTableName:'${(orderHeader.priceTableName)!}'}"
+			            	onSelect="function(data){ 
+			            		if( data.id != null && data.id !='' && data.id != 'undefined'){
+			            			$('#priceTableName').val(data.priceTableName); 
+			            		}
+			            	}"  
+		           		/>
+		           		<input  id="priceTableName" name="priceTableName"  type="hidden" value="${(orderHeader.priceTableName)!}" />
+		            </td>
+		  		</tr>
+		  		<tr>
+		  			<td align="right">
+		  				收单地点：
+		            </td>
+		            <td align="left">
+		              
+		              <@form.select  id="billAddressId" name="billAddressId"
+		              	placeholder="请选择收单地点"  
+		             	viewKey='fullCustomAddress'
+		                url="function(){ 
+		                		var customerId = $('#customerId').val();
+		                		return '${ctx}/lovcustom/select_addr.html?customId='+customerId; 
+		                }"
+		              	value ="${(orderHeader.billAddressId)!}"
+		              	
+		              	onChange="function(){
+	            			var data = JSON.parse($('#billAddressId option:selected').attr('data')); 
+	            			$('#billAddress').val(data.fullCustomAddress);
+			            }"
+			            
+		              />
+			           <input  id="billAddress" name="billAddress"  type="hidden" value="${(orderHeader.billAddress)!}" />
+		              
+		            </td>
+		            <input  id="convertType" name="convertType"  type="hidden" value="${(orderHeader.convertType)!}" />
+		            <input  id="convertDate" name="convertDate"  type="hidden" value="${(orderHeader.convertDate?date)!}"  />
+		            <!--  
+		            <td align="right">
+		  				<strong style="color: red;">*</strong> 折换类型：
+		            </td>
+		             <td align="left">
+						<@form.select id="convertType" name="convertType"  
+							required="请选择折换类型"
+							code="EXCHANGE_RATE" 
+							idKey='code' 
+							value="${(orderHeader.convertType)!}"   /> 
+		            </td>
+		            <td align="right">
+		  				折换日期：
+		            </td>
+		             <td align="left">
+			  			<@form.date    
+							id="convertDate"  name="convertDate" 
+							placeholder="" 
+							tip="" 
+							value="${(orderHeader.convertDate?date)!}" 
+							/>
+		            </td>
+		            -->
+		            <td align="right">
+		  				<strong style="color: red;">*</strong> 请求日期：
+		            </td>
+		             <td align="left">
+		  				<@form.date    
+							id="requestDate"  name="requestDate" 
+							required="请求日期不能为空"
+							placeholder="" 
+							tip="" 
+							value="${(orderHeader.requestDate?date)!}" 
+							/>
+		            </td>
+		             <td align="right">
+		  				ERP订单编号：
+		            </td>
+		            <td>
+		  				<@form.input  
+						id="erpOrderCode"  name="erpOrderCode" 
+						readonly="readonly"
+						placeholder="" 
+						tip="" 
+						value="${(orderHeader.erpOrderCode)!}" 
+						/>
+		            </td>
+		            <td align="right">
+		  				合计：
+		            </td>
+		             <td align="left">
+		  				<@form.input   
+						id="amount"  name="amount" 
+						placeholder="" 
+						tip="" 
+						readonly="readonly"
+						value="${(orderHeader.amount)!}" 
+						/>
+		            </td>
+		  		</tr>
+		  		<tr>
+		  			<td align="right">
+		  				来源类型：
+		            </td>
+		            <td align="left">
+						<@form.select 
+		             		id="sourceType" name="sourceType" 
+		             		placeholder="请选择来源类型" 
+		             		idKey='code'
+		             		code="ORDERSOURCE" 
+		             		value ="${(orderHeader.sourceType)!}"
+		             	/>
+		            </td>
+		            <td align="right">
+		  				来源编号：
+		            </td>
+		            <td align="left">
+		  				<@form.input  
+						id="sourceCode"  name="sourceCode"
+						readonly="readonly" 
+						placeholder="" 
+						tip="" 
+						value="${(orderHeader.sourceCode)!}" 
+						/>
+						<input id="sourceName"  name="sourceName" type="hidden" value="${(orderHeader.sourceName)!}" />
+		            </td>
+		            <td align="right">
+		  				题头备注：
+		            </td>
+		             <td align="left">
+		  				<@form.input 
+						id="remark"  name="remark" 
+						placeholder="" 
+						tip="" 
+						value="${(orderHeader.remark)!}" 
+						/>
+		            </td>
+		            <td align="right">
+		  				备件参考订单：
+		            </td>
+		             <td align="left">
+		  				<@form.input   
+						id="spareOrderNo"  name="spareOrderNo" 
+						placeholder="" 
+						tip="" 
+						value="${(orderHeader.spareOrderNo)!}" 
+						/>
+		            </td>
+		  		</tr>
+		  	</table>
+		  </div>
+		  <div id="internal_div" hidden="hidden" >
+		  	<table border="0" cellpadding="0" cellspacing="0" >
+			  <tr>
+			  	 <td align="right"  width="10%">
+	  				最终用户：
+	            </td>
+	             <td align="left"  width="15%">
+					<@form.autocomplete  id="finalCustId" name="finalCustId" 
+		            	idKey='id'
+		            	placeholder="请选择最终用户" 
+		            	formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+						url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html'; }"
+		            	value="{id:'${(orderHeader.finalCustId)!}',customFullName:'${(orderHeader.finalCustName)!}'}"
+		            	
+		            	onSelect="function(data){
+		            		if( data.id != null && data.id !='' && data.id != 'undefined'){
+		            			$('#finalCustName').val(data.customFullName);
+		            		}
+		            	}" 
+	            	/>
+	            	<input id="finalCustName"  name="finalCustName" type="hidden" value="${(orderHeader.finalCustName)!}" />
+	           
+	            </td>
+			  	 <td align="right"  width="10%">
+	  				<strong style="color: red;">*</strong> 安装所需辅材：
+	            </td>
+	               <td align="left"  width="15%">
+					<@form.select 
+	             		id="isAm" name="isAm" 
+	             		placeholder="请选择安装所需辅材" 
+	             		required="请选择安装所需辅材"
+	             		code="NY" 
+	             		idKey='code' 
+	             		value ="${(orderHeader.isAm)!}"
+	             	/>
+	            </td>
+		  		 <td align="right"  width="10%">
+	  				<strong style="color: red;">*</strong> 上门安装：
+	            </td>
+	            <td align="left"  width="15%">
+					<@form.select 
+	             		id="isInstall" name="isInstall" 
+	             		placeholder="请选择是否上门安装" 
+	             		required="上门安装不能为空"
+	             		code="NY" 
+	             		idKey='code' 
+	             		value ="${(orderHeader.isInstall)!}"
+	             	/>
+	            </td>
+	             <td align="right"  width="10%">
+	  				<strong style="color: red;">*</strong> 送货上门：
+	            </td>
+	             <td align="left"  width="15%">
+					<@form.select 
+	             		id="isHomeDelivery" name="isHomeDelivery" 
+	             		placeholder="请选择是否送货上门" 
+	             		code="NY" 
+	             		idKey='code' 
+	             		required="送货上门不能为空"
+	             		value ="${(orderHeader.isHomeDelivery)!}"
+	             	/>
+	            </td>
+			 </tr>
+		  	 <tr>
+		  	  	<td align="right">
+		  				行业大类：
+	            </td>
+	             <td align="left">
+					<@form.select id="finalCustTradeB"  name="finalCustTradeB"  code="CUSTOMCATEGORY" level="1"
+						childId="finalCustTradeS"
+						placeholder="请选择行业大类"
+						placeholder="" 
+						tip="" 
+						value="${(orderHeader.finalCustTradeB)!}"
+					/>
+	            </td>
+	            <td align="right">
+	  				巡检周期：
+	            </td>
+	             <td align="left">
+	  				<@form.input 
+					id="inspectionCycle"  name="inspectionCycle" 
+					placeholder="" 
+					tip="" 
+					value="${(orderHeader.inspectionCycle)!}" 
+					/>
+	            </td>
+	            <td align="right">
+	  				保修年限：
+	            </td>
+	             <td align="left">
+	  				<@form.input 
+					id="warrantyPeriod"  name="warrantyPeriod" 
+					placeholder="" 
+					tip="" 
+					value="${(orderHeader.warrantyPeriod)!}" 
+					/>
+		        </td>
+		         <td align="right">
+		  				<strong style="color: red;">*</strong> 运输方式：
+		            </td>
+		             <td align="left">
+		  				<@form.select id="shipType"  name="shipType" 
+		  					idKey="id"
+		  					code="TRANSPORT_METHOD"
+		  					required="请选择运费方式"
+							value="${(orderHeader.shipType)!}" 
+						/>
+		         </td>
+		  	 </tr>
+		  	 <tr>
+		  	 	<td align="right">
+		  				行业小类：
+	            </td>
+	            <td>
+	            	<@form.select id="finalCustTradeS"  name="finalCustTradeS"  code="CUSTOMCATEGORY" level="2"
+						parentId="finalCustTradeB" 
+						placeholder="请选择行业小类"
+						placeholder="" 
+						tip="" 
+						value="${(orderHeader.finalCustTradeS)!}"
+					/>
+	            </td>
+              	<td align="right">
+	  				卸货到安装地点：
+	            </td>
+	             <td align="left">
+	  				<@form.select 
+					id="isDestinationDelivery"  name="isDestinationDelivery" 
+					placeholder="请选择是否卸货到安装地点"
+					code="NY"
+					idKey="code"
+					value="${(orderHeader.isDestinationDelivery)!}" 
+					/>
+	            </td>
+	             <td align="right">
+	  				售后服务条款：
+	             </td>
+	             <td align="left" colspan="3">
+	  				<@form.input 
+					id="serviceClause"  name="serviceClause" 
+					placeholder="" 
+					tip="" 
+					value="${(orderHeader.serviceClause)!}" 
+					/>
+	            </td>
+		  	 </tr>
+		  	</table>
+		 </div>
+		<div id="external_div" hidden="hidden">
+			<table border="0" cellpadding="0" cellspacing="0" >
+				<tr>
+					<td align="right"  width="10%">
+		  				代收运费：
+		            </td>
+		            <td align="left" width="15%">
+		  				 <@form.input 
+						id="collectionFreight"  name="collectionFreight" 
+						placeholder="" 
+						tip="" 
+						value="${(orderHeader.collectionFreight)!}" 
+						/>
+		            </td>
+		        	<td align="right"  width="10%">
+		  				模具费：
+		            </td>
+		            <td align="left" width="15%">
+		  				<@form.input 
+						id="dieCost"  name="dieCost" 
+						placeholder="" 
+						tip="" 
+						value="${(orderHeader.dieCost)!}" 
+						/>
+		            </td>
+		            <td align="right"  width="10%">
+		  				开发费：
+		            </td>
+		            <td align="left" width="15%">
+		  				<@form.input 
+							id="developmentCosts"  name="developmentCosts" 
+							placeholder="" 
+							tip="" 
+							value="${(orderHeader.developmentCosts)!}" 
+						/>
+		            </td>
+		  			<td align="right"  width="10%">
+		  				客户品牌分类：
+		            </td>
+		            <td align="left" width="15%">
+						<@form.select id="custBrandClass" name="custBrandClass"  
+							code="CUSTOMER_BRAND" 
+							placeholder="请选择客户品牌分类"
+							idKey='code' 
+							value="${(orderHeader.custBrandClass)!}"   /> 
+		            </td>
+				</tr>
+				<tr>
+		  			<td align="right">
+		  				备件额度：
+		            </td>
+		             <td align="left">
+		  				<@form.input   
+						id="spareAmount"  name="spareAmount" 
+						placeholder="" 
+						tip="" 
+						value="${(orderHeader.spareAmount)!}" 
+						/>
+		            </td>
+		  			 <td align="right">
+		  				备件剩余额度：
+		            </td>
+		             <td align="left">
+		  				<@form.input 
+						id="spareBalance"  name="spareBalance" 
+						placeholder="" 
+						tip="" 
+						value="${(orderHeader.spareBalance)!}" 
+						/>
+		            </td>
+		             <td align="right">
+		  				备件额度使用情况：
+		            </td>
+		             <td align="left">
+		  				<@form.input 
+						id="spareAmountSituation"  name="spareAmountSituation" 
+						placeholder="" 
+						tip="" 
+						value="${(orderHeader.spareAmountSituation)!}" 
+						/>
+		            </td>
+		            <td align="right">
+		  				免费赠送备件：
+		            </td>
+		             <td align="left">
+						<@form.select 
+		             		id="isFreeSpare" name="isFreeSpare"
+		             		placeholder="请选是否免费赠送备件" 
+		             		code="NY" 
+		             		idKey='code' 
+		             		value ="${(orderHeader.isFreeSpare)!}"
+		             	/>
+		            </td>
+		  		</tr>
+				<tr>
+		            <td align="right">
+		  				随机发赠送备件：
+		            </td>
+		             <td align="left">
+		  				<@form.select id="isRandomSpare"  name="isRandomSpare" 
+							code="NY"
+							placeholder="请选是否随机发赠送备件" 
+							idKey='code' 
+							value="${(orderHeader.isRandomSpare)!}" 
+						/>
+		            </td>
+		            <td align="right">
+		  				详细付款条款：
+		            </td>
+		            <td align="left  colspan="5"">
+		  					<@form.input 
+							id="termPaymentDetail"  name="termPaymentDetail" 
+							placeholder="" 
+							tip="" 
+							value="${(orderHeader.termPaymentDetail)!}" 
+							/>
+		            </td>
+				</tr>
+			</table>
+		</div>
+		</@form.form>
+		<div id="info" style="padding-top: 20px;">
+			<@plug.tabs tabMain=tabMain></@plug.tabs>
+		</div>
+	</@form.panel>
+	</div>
+</@cui.body2>
+</#escape>

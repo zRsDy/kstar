@@ -1,0 +1,51 @@
+<@pui.body>
+
+
+
+
+
+
+
+
+<script>
+    function ok() {
+        var selectId = $('#selectId').val();
+        var selectName = $('#selectName').val();
+        if (!selectId) {
+            exalert(e, '${i18n.get('请选择部门!')}');
+            return;
+        }
+        parent.currentParent.selectDepartmentCallBack(selectId,selectName);
+        api.close()
+    }
+</script>
+<div class="col-xs-12">
+<input type="hidden" id="selectId" />
+<input type="hidden" id="selectName" />
+    <@form.panel title="${i18n.get('目录移动')}">
+        <@form.form action="" class="form-horizontal" >
+        <div>
+            <@plug.tree checkbox="false" id="tree1" asyncUrl='${ctx}/lov/member/tree.html?groupId=ORG&leafFlag=N'
+            onClick=" function(event, treeId, treeNode){
+						$('#selectId').val(treeNode.id);
+						$('#selectName').val(treeNode.name);
+					  }"/>
+        </div>
+        </@form.form>
+
+    <div class="clearfix form-actions">
+        <div class="col-md-offset-5 col-md-7">
+            <button class="btn btn-info submit" type="button" onclick="ok()">
+                <i class="icon-ok bigger-110"></i>
+            ${i18n.get('确定')}
+            </button>
+            &nbsp; &nbsp; &nbsp;
+            <button class="btn" type="button" onclick="javascript:api.close()">
+                <i class="icon-undo bigger-110"></i>
+            ${i18n.get('关闭')}
+            </button>
+        </div>
+    </div>
+
+    </@form.panel>
+</@pui.body>

@@ -1,0 +1,155 @@
+<#escape x as x?html>
+    <@pui.body>
+        <#if permission["P02-ECRChangeLineAdd"]??>
+            <#assign addLine='true'>
+        </#if>
+        <#if permission["P02-ECRChangeLineDelete"]??>
+            <#assign deleteLine='true'>
+        </#if>
+        <#if permission["P02-ECRChangeLineSave"]??>
+            <#assign saveLine='true'>
+        </#if>
+
+        <@form.table id="productLines"
+        class="col-xs-12"
+        title="${i18n.get('产品列表')}"
+        url = "${ctx}/product/ecrchange/productLinePage.html?changeId=${(changeId)!''}"
+        rowNum = "20"
+        search='false'
+        checkbox="true"
+        colModel = "[
+		{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'productId',label:'productId',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'productCode',label:'${i18n.get('产品编码')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'vmaterCode',label:'${i18n.get('预定义物料号')}',hidden:false,width:100,sortable:false,align:'center'},
+		{name:'productName',label:'${i18n.get('产品名称')}',hidden:false,width:100,sortable:false,align:'left' },
+		{name:'proModel',label:'${i18n.get('产品型号')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'publishStatusName',label:'${i18n.get('发布状态')}',hidden:false,width:60,sortable:false,align:'center' },
+		{name:'priceStatusName',label:'${i18n.get('订价状态')}',hidden:false,width:60,sortable:false,align:'center' },
+		{name:'saleStatusName',label:'${i18n.get('转销状态')}',hidden:false,width:60,sortable:false,align:'center' },
+
+		{name:'erpCategoryName',label:'${i18n.get('ERP产品类别')}',hidden:false,width:80,sortable:false,align:'center' },
+		{name:'crmCategoryName',label:'${i18n.get('CRM产品类别')}',hidden:false,width:80,sortable:false,align:'center' },
+		{name:'crmCategory',label:'${i18n.get('CRM产品类别')}',hidden:true,width:80,sortable:false,align:'center' },
+		{name:'proBrand',label:'${i18n.get('品牌')}',hidden:false,width:100,sortable:false,align:'center' },
+
+		{name:'cproCategory',label:'${i18n.get('产品分类')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'cproType',label:'${i18n.get('产品类别')}',hidden:false,width:120,sortable:false,align:'center' },
+		{name:'proSeries',label:'${i18n.get('产品系列')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'clientCategory',label:'${i18n.get('客户型号')}',hidden:false,width:80,sortable:false,align:'center' },
+
+		{name:'modifyHardware',label:'${i18n.get('修改硬件')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'addFunction',label:'${i18n.get('增加功能')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'modifyParamter',label:'${i18n.get('更改参数')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'chassisSize',label:'${i18n.get('机箱尺寸/外观变更')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'commercialData',label:'${i18n.get('商品化资料')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'randomAttach',label:'${i18n.get('增加随机附件')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'other',label:'${i18n.get('其他')}',hidden:false,width:100,sortable:false,align:'center' }
+	]"
+        buttons = "[
+  		{
+  			id:'deleteLine',
+  			label : '${i18n.get('删除')}',
+  			icon : 'icon-trash',
+  			own : ${deleteLine!'false'},
+  			handler : function(e,rowData){
+  				var ids = $('#productLines').jqGrid('getGridParam','selarrrow');
+				var _ids = [];
+				 $.each(ids,function(i,id){
+					 _ids.push(id);
+				 });
+			     if(!ids || ids.length <= 0 ){
+			      　　	alert('${i18n.get('请选择要删除的行')}');
+			      　　	return;
+			     }else{
+			     	if(confirm('${i18n.get('是否删除选择的行')}')){
+				    	 $.each(_ids,function(i,id){
+				    	 	 $('#productLines').jqGrid('delRowData', id);
+				    	 });
+			    	 }
+			     }
+  			}
+  		},{
+			id:'addLine',
+			label : '${i18n.get('增加产品')}',
+			icon : 'icon-plus',
+			own : ${addLine!'false'},
+			handler : function(e,rowData){
+				var priceTableId =  '$(priceTableId)'
+				 if(priceTableId){
+					$('#selectProductMulti').click();
+				 }else{
+				 	 alert('${i18n.get('请先选择价目表')}');
+				 }
+			}
+		} , {
+			id:'saveLine',
+			label : '${i18n.get('保存')}',
+			icon : 'icon-save',
+			own : ${saveLine!'false'},
+			handler : function(e,rowData){
+
+			}
+		}
+	]" />
+    <div style="display: none;">
+        <@biz.picker_product id="selectProductMulti" urlFunction="function(){return '${ctx}/common/product/multiSelectList.html?priceTableId='+$('#priceTableId').val()}"
+        button="${i18n.get('批量选择产品')}"
+        callback="function(datas){
+					if(datas){
+                 		addLines(datas);
+					 }
+				}"
+		/>
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+
+    var rowId = 0;
+
+    //${i18n.get('批量增加行')}
+    function addLines(datas){
+        if (!datas || datas.length == 0) {
+            return;
+        }
+        var productIds = $(datas).map(function (i, e) {
+            return e.proId;
+        });
+        ajax({
+            url: '${ctx}/product/ecrchange/products.html',
+            type: 'POST',
+            data: {productIds:$.makeArray(productIds)},
+            success : function(result) {
+                if (result == null) {
+                    return;
+                }
+                $(result).each(function (i, e) {
+                    rowId += 1;
+                    $("#productLines").jqGrid("addRowData", rowId, e, "first");
+                    //${i18n.get('设置grid单元格不可编辑')}
+                    $("#productLines").setGridParam({cellEdit:false});
+                });
+            }
+        });
+    }
+
+    function getRequestDate() {
+        var ids = $('#productLines').jqGrid('getDataIDs');
+        if(ids.length == 0) {
+            return null;
+        }
+        var products = [];
+        $.each(ids,function(i,id){
+            var rowData = $('#productLines').jqGrid('getRowData',id);
+            var product = {};
+            product.id = rowData.id;
+            product.productId = rowData.productId;
+            products.push(product);
+        });
+        return products;
+    }
+    </script>
+    </@pui.body>
+</#escape>

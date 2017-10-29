@@ -1,0 +1,33 @@
+
+<@form.table id="kstarDocBACKINFOATTM" class="col-xs-12" shrinkToFit="true"  
+	title="${i18n.get('实物退还附件信息')}" 
+	url ="${ctx}/kstarDoc/page.html?systemId=${systemPid!}&systemCode=BACKINFOATTM" 
+	rowNum = "5" 
+	addURL = "'${ctx}/kstarDoc/add.html?systemId=${systemPid!}&systemCode=BACKINFOATTM'"
+	editURL = "" 
+	
+	colModel = "[ 
+	{name:'id',label:'',hidden:true,width:60,sortable:true,align:'center' }, 
+	{name:'docName',label:'${i18n.get('文档名称')}',hidden:false,width:100,sortable:true,align:'center' }, 
+	{name:'docNote',label:'${i18n.get('文档说明')}',hidden:false,width:160,sortable:true,align:'center' }, 
+	{name:'applyPerson',label:'${i18n.get('申请人')}',hidden:false,width:120,sortable:true,align:'center' },
+	{name:'applyTime',label:'${i18n.get('申请时间')}',hidden:false,width:140,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate(cellvalue) } }, 
+	{name:'applyStatus',label:'${i18n.get('申请状态')}',hidden:false,width:120,sortable:true,align:'center' }, 
+	{name:'uploadPerson',label:'${i18n.get('上传人')}',hidden:false,width:100,sortable:true,align:'center' }, 
+	{name:'uploadTime',label:'${i18n.get('上传时间')}',hidden:false,width:140,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate(cellvalue) } },
+	{name:'docUrl',label:'${i18n.get('文档')}',hidden:false,width:100,sortable:true,align:'center',
+	formatter:function(cellvalue, options, rowObject){ return att(cellvalue)} },
+	{name:'accessGroup',label:'${i18n.get('访问组')}',hidden:false,width:100,sortable:true,align:'center'}, 
+	{name:'productID',label:'${i18n.get('产品ID')}',hidden:true,width:160,sortable:true,align:'center' }]" 
+	buttons = "[]" > 
+	<script type="text/javascript">
+	function att(){
+		var html="<a onclick=\"viewInfo()\"><img src=\"${ctx}/assets/img/attach.png\" border=\"0\"></a>";
+		return html;
+	}
+	
+	function viewInfo(){
+		alert("ddd");
+	}
+	</script>
+</@form.table>

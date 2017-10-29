@@ -1,0 +1,156 @@
+<@pui.body> 
+
+		<div class="col-xs-12">
+			<table style="width: 100%" >
+				<tr>
+					<#if lovGroup?? && lovGroup.treeFlag?? && lovGroup.treeFlag == 'Y'>
+						<td id="treeTd" style="width: 500px" valign="top" rowspan="2">
+							<@form.panel title="${i18n.get('维度树')}" style='height:100'>
+								<@plug.tree 
+								checkbox="false" 
+								id="tree1" 
+								moveEdit = 'true'
+								onMove = "function(dragNode,newParentNode,moveType){
+									var data = {
+										dragNodeId : dragNode[0].id,
+										newParentNodeId : newParentNode != null ? newParentNode.id : null
+									}
+									if(moveType == 'inner'){
+										var dialog = bootbox.dialog({
+										    message: '${i18n.get('岗位调整中......')}',
+										    closeButton: false
+										});
+										ajax({
+											type:'post',
+											url : '${ctx}/org/move.html',
+											data: data,
+											success : function(result) {
+												dialog.modal('hide');
+											},
+											error : function(result) {
+												alert('${i18n.get('移动失败')}');
+												reload_tree1();
+												dialog.modal('hide');
+											}
+										});
+									}else{
+										reload_tree1();
+									}
+								}"
+								asyncUrl='${ctx}/lov/member/tree.html?groupId=${lovGroup.id}'
+								
+								onClick=" function(event, treeId, treeNode){
+							  		$('#parentId').val(treeNode.id);
+							  		reload_t1();
+							  	}"
+							  	
+							  	onRightClick="function(event, treeId, treeNode) {
+								   	var treeObj = $.fn.zTree.getZTreeObj(treeId);
+									var nodes = treeObj.getNodes();
+									if (nodes.length>0) {
+										treeObj.cancelSelectedNode();
+										$('#parentId').val('');
+										reload_t1();
+									}
+								}"
+							  	
+								/>
+							</@form.panel>
+						</td>
+						
+						<td valign="top">
+						<@form.table id="t1"
+						
+						shrinkToFit = 'true'
+						title="${i18n.get('岗位层级')}"
+						url = "${ctx}/position/approvePage.html"
+						rowNum = "20"
+						colModel = "[
+						  { name : 'id',    label : 'id', hidden : true , sortable:false,align:'center' }, 
+						  { name : 'position.id', hidden : true,label : '' ,sortable:false}, 
+						  { name : 'position.code', hidden : true,label : '${i18n.get('编码')}', width : 90 ,sortable:false}, 
+						  { name : 'position.name', label : '${i18n.get('名称')}', width : 50 ,sortable:false },
+						  { name : 'position.parentId', label : '', hidden : true, width : 150 ,sortable:false },
+						  { name : 'approve.namePath', label : '${i18n.get('审批层级')}', sortable:false },
+						  { name : 'orgType', label : '${i18n.get('组织类型')}', width : 20 ,sortable:false },
+						  { name : 'approve.optTxt5', label : '${i18n.get('审批层级')}', width : 20 ,sortable:false ,editable : true},
+						  { name : 'org.name', label : '${i18n.get('组织')}'  ,sortable:false ,
+						  formatter:function(cellvalue, options , obj){ 
+							  if(cellvalue){
+								  if(obj.org.optTxt3 == 'E'){
+									  return '<font color=red>'+cellvalue+'</font>'
+								  }else{
+								  	return cellvalue;
+								  }
+							  }else{
+							  	return ''
+							  }
+						  }},
+						  { name : 'approve.id', label : '', width : 150 ,hidden : true , sortable:false ,editable : false}
+						  ]"
+						 buttons = "[ ]"
+						 
+						  onSelectRow = "function(){
+						  	$('#positionId').val(selected_t1['position.id']);
+						  	reload_employeeList();
+						  }"
+						  
+						  lineEditURL="${ctx}/position/updateApprove.html"
+						  
+						  onLineEditBefore = "function(){
+				  				dialog_t1 = parent.bootbox.dialog({
+								    message: '${i18n.get('正在保存......')}',
+								    closeButton: false
+								});
+						  }"
+						  
+						  onLineEditAfter = "function(){
+						  	 dialog_t1.modal('hide');
+						  }"
+						  
+						>
+						
+						<div class="col-xs-12" style="padding-left: 12px;margin-top: 5px;height: 35px;">
+							<input type="hidden" id="parentId" name="parentId" />
+							<div class="form-group col-xs-3">
+								<input type="text" id="searchKey" name="searchKey" placeholder="${i18n.get('查询关键字')}" />
+							</div>	
+							<div class="form-group col-xs-2">
+								<button type="submit" class="btn btn-info" > 
+									<i class="icon-search bigger-110"></i>
+									${i18n.get('查询')}
+								</button>
+							</div>
+						</div>
+						
+						
+						</@form.table>
+					</td>
+						
+					</#if>
+				</tr>
+				
+				<tr>
+					<td>
+						<@form.table id="employeeList"
+							class="col-xs-12"
+							title="${i18n.get('员工')}"
+							shrinkToFit = 'true'
+							url = "${ctx}/position/employeePage.html"
+							rowNum = "20"
+							colModel = "[
+							  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:false,align:'center' }, 
+							  { name : 'no', label : '${i18n.get('员工号')}', width : 90 ,sortable:false}, 
+							  { name : 'flag', label : '${i18n.get('类型')}', width : 90 ,sortable:false}, 
+							  { name : 'name', label : '${i18n.get('姓名')}' ,sortable:false }
+							  ]"
+							>
+							<input type="hidden" id="positionId" name="positionId" />
+						</@form.table>
+					</td>
+				</tr>
+				
+			</table>	
+		</div>
+		
+</@pui.body>

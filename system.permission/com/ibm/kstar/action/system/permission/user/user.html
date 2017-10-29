@@ -1,0 +1,120 @@
+<@pui.body> 
+	<script type="text/javascript">
+		parent.currentDatas = ${roles!'[]'};
+	</script>
+	<div class="col-xs-12" >
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1"
+			success="function(){ 
+				parent.currentParent2.reload_t1();
+			}" 
+			class="form-horizontal"
+			
+			before="function(){
+				var roles='';
+			 	var selectedIds = $('#selected_table').jqGrid('getDataIDs');
+		 		$.each(selectedIds,function(i,id){
+		 			roles = roles + id;
+			 		if(i< selectedIds.length-1){
+			 			roles = roles + ',';
+			 		}
+			 		$('#roles').val(roles);
+		 		})
+			}"
+			
+			>
+			
+			<div class="form-group">
+				<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('员工:')} </label>
+				<#if employee??>
+					<label> ${employee.name} </label>
+				<#else>
+					<@form.autocomplete 
+					id="employeeId"
+					url="function(){
+						return '${ctx}/employee/findList.html?userFlag=N';
+					}"
+					formatResult="function(data) {
+						return '<div>[' +data.no +']'+data.name+'</div>';
+					}"
+					name="employeeId"
+					style="width:300px"
+					placeholder="${i18n.get('员工号')}" 
+					required="${i18n.get('不能为空！')}" 
+					/>
+				</#if>
+			</div>
+			
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" for="desc"> ${i18n.get('角色路径:')} </label>
+				<div class="col-sm-9" id="rolesHTML"></div>
+			</div>
+			
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" for="desc"> ${i18n.get('角色: ')}</label>
+				<input type="hidden" id="roles" name="roles" />
+				<@biz.picker_lov id="picker_role" groupId="ROLE" button="${i18n.get('选择角色')}" leafFlag="Y" defaultSelect="parent.currentDatas" callback="function(datas){
+				 	if(datas){
+				 		parent.currentDatas = datas;
+				 		$('#selected_table').jqGrid('clearGridData');
+					 	$('#selected_table').jqGrid('setGridParam',{data:datas}).trigger('reloadGrid');
+					 	var html ='';
+						$.each(parent.currentDatas,function(i,data){
+					 		html = html + '<p><label> '+data.namePath+' </label></p>';
+					 		$('#rolesHTML').html(html);
+						})
+				 	}
+				}" />
+			</div>
+	
+			
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+		<div class="col-xs-12" >
+
+<@form.panel title="${i18n.get('新增/编辑')}">
+<@form.table 
+		id="selected_table"
+		shrinkToFit = 'true'
+		title="${i18n.get('已选数据')}"
+		class="col-xs-12"
+		rowNum = "20"
+		search='false' 
+		data = "parent.currentDatas"
+		datatype = "local"
+		colModel = "[
+		  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:false,align:'center' }, 
+		  { name : 'code', label : '${i18n.get('编码')}', width : 90 ,sortable:false}, 
+		  { name : 'name', label : '${i18n.get('名称')}', width : 150 ,sortable:false },
+		  { name : 'namePath', label : '${i18n.get('路径')}', hidden : true, width : 150 ,sortable:false }
+		  ]"
+		 buttons = "[]"
+		/>		
+</@form.panel>
+
+</div>
+		
+	</div>
+	
+	<script type="text/javascript">
+		var html = "";
+		$.each(parent.currentDatas,function(i,data){
+	 		html = html + '<p><label> '+data.namePath+' </label></p>';
+	 		$('#rolesHTML').html(html);
+		})
+	</script>
+
+</@pui.body>

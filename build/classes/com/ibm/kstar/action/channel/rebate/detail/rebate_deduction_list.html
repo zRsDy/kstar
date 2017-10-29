@@ -1,0 +1,27 @@
+<@cui.body2>
+	<div class="row col-xs-12" style="width:1575px;margin-right: 0px; margin-left: 0px;" >
+		<@form.table id="deduction" 
+			class="col-xs-12"
+			title="${i18n.get('抵扣明细')}"
+			shrinkToFit = 'true'
+			url = "${ctx}/rebateDetail/pageDeduction.html?rebateDetailId=${(rebateDetailId)!}"
+			rowNum = "20"
+			colModel = "[
+				{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+				{name:'deductionCode',label:'${i18n.get('抵扣单号')}',hidden:false,width:150,sortable:true,align:'center' }, 
+				{name:'deductionDate',label:'${i18n.get('抵扣日期')}',hidden:false,width:150,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+				{name:'deductionMoney',label:'${i18n.get('抵扣金额')}',hidden:false,width:150,sortable:true,align:'left' }, 
+				{name:'billApplyCode',label:'${i18n.get('开票申请单号')}',hidden:false,width:150,sortable:true,align:'center' }, 
+				{name:'billApplyDate',label:'${i18n.get('开票申请日期')}',hidden:false,width:150,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }}
+			]" 
+			buttons = "[]" > 
+			
+			<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">	
+				<div class="form-group col-xs-3">
+					<input type="text" id="searchKey1" name="searchKey" placeholder='请输入抵扣单号' size="30" />
+				</div>	
+			</div> 
+		</@form.table>
+	</div>
+</@cui.body2>
+

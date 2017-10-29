@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 定义一个工程，默认任务为warFile。 -->
+<project name="crm" default="warFile" basedir=".">
+    <property file="crm.properties" />
+
+    <!-- 定义属性，打成war包的名称。 -->
+    <property name="warFileName" value="crm.war"></property>
+
+    <!-- 定义路径，编译java文件时用到的jar包。 -->
+    <path id="project.lib">
+        <fileset dir="${basedir}/WebContent/WEB-INF/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <!-- 定义任务，清空任务：清空原有的class文件，创建新的build路径。 -->
+    <target name="clean">
+        <delete dir="${basedir}/build" />
+        <delete dir="${basedir}/war" />
+        <mkdir dir="${basedir}/build" />
+        <mkdir dir="${basedir}/war" />
+    </target>
+
+    <!-- 定义任务，编译src文件夹中的java文件，编译后的class文件放到创建的文件夹下。 -->
+    <target name="compile" depends="clean">
+        <javac debug="true" target="1.7" destdir="${basedir}/build" includeantruntime="false">
+            <!--某些输入文件使用了未经检查或不安全的操作-->
+            <compilerarg value="-Xlint:unchecked"/>
+            <classpath refid="project.lib">
+            </classpath>
+            <!-- java源代码目录 -->
+            <src path="src" />
+            <src path="conf" />
+            <src path="system.lov" />
+            <src path="system.permission" />
+            <src path="common" />
+        	<src path="mobile" />
+            <src path="flow.design" />
+            <src path="report" />
+        </javac>
+    </target>
+    <target name="cpFile" depends="compile">
+        <copy todir="${basedir}/build">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy todir="${basedir}/build">
+            <fileset dir="conf">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy todir="${basedir}/build">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy todir="${basedir}/build">
+            <fileset dir="system.lov">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy todir="${basedir}/build">
+            <fileset dir="system.permission">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy todir="${basedir}/build">
+            <fileset dir="common">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy todir="${basedir}/build">
+            <fileset dir="flow.design">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy todir="${basedir}/build">
+            <fileset dir="report">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    	<copy todir="${basedir}/build">
+    	    <fileset dir="report">
+    	    	<exclude name="**/*.java"/>
+    	    </fileset>
+    	</copy>
+    	<copy todir="${basedir}/build">
+    	    <fileset dir="mobile">
+    	    	<exclude name="**/*.java"/>
+    	    </fileset>
+    	</copy>
+    </target>
+    <!-- 定义默认任务，将class文件集合成jar包。 -->
+    <target name="warFile" depends="cpFile">
+        <!-- 删除原有war包。 -->
+        <delete file="${tomcat.home}/webapps/${warFileName}" />
+        <!-- 建立新war包。 -->
+        <war destfile="${tomcat.home}/webapps/${warFileName}" webxml="${basedir}/WebContent/WEB-INF/web.xml">
+            <!-- 将非jar和非class文件拷贝到war包的对应路径下。 -->
+            <fileset dir="${basedir}/WebContent">
+                <include name="**/**.*" />
+                <exclude name="**/*.jar"/>
+                <exclude name="**/*.class"/>
+            </fileset>
+            <!-- 将jar和class文件拷贝到war包的对应路径下。 -->
+            <lib dir="${basedir}/WebContent/WEB-INF/lib" />
+            <classes dir="${basedir}/build" />
+        </war>
+    </target>
+
+</project>

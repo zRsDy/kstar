@@ -1,0 +1,527 @@
+<#escape x as x?html>
+<@cui.body2>
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="customInfo" success="function(){ 
+		try{
+			parent.currentParent2.reload_tableCustomListPrm(); 
+		}catch(e){
+			parent.currentParent.reload_tableCustomListPrm(); 
+		}
+	}" class="form-horizontal">
+		<div class="form-group">	
+			<div style="padding-right: 20px; float: right;padding-top: 3px;">
+				
+				<#if permission["P09CusParSave"]??>
+					<button class="btn btn-info submit" id= "save" type="button">
+						<i class="bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+				</#if>
+				
+				<#if permission["P09CusParChange"]??>
+					<button class="btn btn-info " id="bizopp" type="button" onclick="javascript:parent.dialog('${i18n.get('客户商机报备')}','${ctx}/bizopp/add.html?customId=${(customInfo.id)!}',window)">
+						<i class="bigger-110"></i>
+						${i18n.get('启动商机报备')}
+					</button>
+				</#if>
+				
+				<#if permission["P09CusParReport"]??>
+					<button class="btn btn-info" id="custom" type="button" onclick="applyCustom('customPrmApply','30')">
+						<i class="bigger-110"></i>
+						${i18n.get('申请客户报备')}
+					</button>
+				</#if>
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+			
+		<div class="form-group">
+			<input id="selectedId" name="selectedId" type="hidden" value="${(customInfo.id)!}">
+			<input id="personCnt" name="personCnt" type="hidden" value="0" >
+			<table>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right">${i18n.get('客户全称')}  :</label>
+						
+					</td>
+					<td>
+						<@form.input id="customFullName" 
+						name="customFullName" 
+						placeholder="${i18n.get('客户全称')}" 
+						required="${i18n.get('不能为空')}" 
+						maxlength="70"
+						style="width:528px"
+						tip="" 
+						value="${(customInfo.customFullName)!}" />
+						
+					</td>
+					
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right"> ${i18n.get('客户编号 ')}:</label>
+					</td>
+					<td>
+						<input id="customCode" name="customCode" type="hidden" value="${(customInfo.customCode)!}" >
+						<@form.input id="erpCode" 
+							name="erpCode" 
+							readonly="readonly" 
+							tip="" 
+							value="${(customInfo.erpCode)!}" />
+					</td>
+					<td align="right" width="200px">
+					</td>
+					<td>
+						
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						<label class="no-padding-right" >${i18n.get('客户别名')}  :</label>
+					</td>
+					<td>
+						<@form.input id="customAliasName" 
+						name="customAliasName" 
+						tip="" value="${(customInfo.customAliasName)!}" />
+					</td>
+					<td align="right">
+					</td>
+					<td>
+					</td>
+					<td align="right">
+						
+					</td>
+					<td>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div class="form-group">
+			<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('联系人信息')}</p>
+			<table>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('联系人')} :</label>
+					</td>
+					<td >
+						<@form.input
+							id="contactName"  
+							name="contactName" 
+							placeholder="" 
+							required="${i18n.get('不能为空')}"
+							tip="" 
+							value="${(customInfo.contactName)!}" 
+							/>
+					</td>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('部门')} :</label> 
+					</td>
+					<td >
+						<@form.input
+							id="contactDept"  
+							name="contactDept" 
+							placeholder="" 
+							required="${i18n.get('不能为空')}"
+							tip="" 
+							value="${(customInfo.contactDept)!}" 
+							/>
+					</td>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('职务')} :</label>
+					</td>
+					<td >
+						<@form.input
+							id="contactBusiness"  
+							name="contactBusiness" 
+							placeholder="" 
+							required="${i18n.get('不能为空')}"
+							tip="" 
+							value="${(customInfo.contactBusiness)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					
+					
+					<td align="right">
+						<label class="no-padding-right" >${i18n.get('电话')} :</label>
+					</td>
+					<td >
+						<@form.input
+							id="contactTel"  
+							name="contactTel" 
+							placeholder="" 
+							tip="" 
+							value="${(customInfo.contactTel)!}" 
+							/>
+					</td>
+					<td align="right">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('角色')} :</label>
+					</td>
+					<td>
+						<@form.select  style="width: 161px;"
+							id="contactRole" name="contactRole" 
+							code="CANTACTROLE" 
+							required="${i18n.get('不能为空')}"
+							value ="${(customInfo.contactRole)!}"
+						/>
+					</td>
+					<td align="right">
+					</td>
+					<td >
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div class="form-group">
+			<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('常规信息')}</p>
+			<table>
+				<tr>
+					<td align="right" width="200px">
+					</td>
+					<td >
+					</td>
+					<td align="right" width="200px">
+					</td>
+					<td >
+					</td>
+					<td align="right" width="200px">
+						
+					</td>
+					<td >
+						
+					</td>
+				</tr>
+				<tr>
+					
+					<td align="right">
+					</td>
+					<td>
+					</td>
+					<td align="right">
+						
+					</td>
+					<td >
+						
+					</td>
+					<td align="right">
+					</td>
+					<td >
+					</td>
+				</tr>
+				<tr>
+					
+					<td align="right">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('省份 ')} :</label>
+					</td>
+					<td >
+						<@form.select 
+							code="ADDRESSREGION"
+							level="2"
+							childId="customAreaSub2"
+							style="width: 161px;"
+							required="${i18n.get('不能为空')}"
+							id="customAreaSub1" name="customAreaSub1" 
+							placeholder="" 
+							tip="" 
+							value="${(customInfo.customAreaSub1)!}" 
+							onChange="function(){
+								$('#customAreaSub2').val('');
+								$('#customAreaSub3').val('');
+								reload_customAreaSub2();
+								reload_customAreaSub1();
+							}"
+							/>
+						
+					</td>
+					<td align="right">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('行业大类')} :</label>
+					</td>
+					<td >
+						<@form.select 
+							code="CUSTOMCATEGORY"
+							level="1"
+							childId="customCategorySub"
+							required="${i18n.get('不能为空')}" 
+							style="width: 161px;"
+							id="customCategory"  name="customCategory" 
+							placeholder="" 
+							value ="${(customInfo.customCategory)!}"
+							tip="" 
+							onChange="function(){
+								$('#customCategorySub').val('');
+								reload_customCategorySub();
+							}"
+							/>
+					</td>
+					<td align="right">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('报备状态')} :</label>
+					</td>
+					<td >
+						<input id="customReportedFlg" name="customReportedFlg" type="hidden" value="${(customInfo.customReportedFlg)!}" >
+						<input id="erpStatus" name="erpStatus" type="hidden" value="${(customInfo.erpStatus)!}" >
+						<@form.input
+							id="statusName"  
+							name="statusName" 
+							placeholder="" 
+							required="${i18n.get('不能为空')}"
+							readonly="readonly"
+							tip="" 
+							value="${(customInfo.customReportedFlgName)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('城市')} :</label>
+					</td>
+					<td >
+						<@form.select 
+							code="ADDRESSREGION"
+							level="3"
+							parentId="customAreaSub1"
+							childId="customAreaSub3"
+							style="width: 161px;"
+							required="${i18n.get('不能为空')}"
+							id="customAreaSub2" name="customAreaSub2" 
+							placeholder="" 
+							tip="" 
+							value="${(customInfo.customAreaSub2)!}" 
+							onChange="function(){
+								$('#customAreaSub3').val('');
+								reload_customAreaSub3();
+							}"
+							/>
+					</td>
+					<td align="right">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('行业小类')}  :</label>
+					</td>
+					<td >
+						<@form.select style="width: 161px;"
+							id="customCategorySub" name="customCategorySub" 
+							code="CUSTOMCATEGORY" 
+							style="width: 161px;"
+							level="2"
+							parentId="customCategory"
+							required="${i18n.get('不能为空')}" 
+							value ="${(customInfo.customCategorySub)!}"
+						/>
+					</td>
+					<td align="right">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('客户状态')} :</label>
+					</td>
+					<td >
+						<input id="customStatus" name="customStatus" type="hidden" value="${(customInfo.customStatus)!}" >
+						<@form.input
+							id="customStatusName"  
+							name="customStatusName" 
+							placeholder="" 
+							required="${i18n.get('不能为空')}"
+							readonly="readonly"
+							tip="" 
+							value="${(customInfo.customStatusName)!}" 
+							/>
+					</td>
+					
+				</tr>
+				<tr>
+					<td align="right">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('区/县')}  :</label>
+					</td>
+					<td >
+						<@form.select 
+							code="ADDRESSREGION"
+							level="4"
+							parentId="customAreaSub2"
+							required="${i18n.get('不能为空')}"
+							style="width: 161px;"
+							id="customAreaSub3" name="customAreaSub3" 
+							placeholder="" 
+							tip="" 
+							value="${(customInfo.customAreaSub3)!}" 
+							/>
+					</td>
+					<td align="right">
+						<label class="no-padding-right" >${i18n.get('行业备注')} :</label>
+					</td>
+					<td >
+						<@form.input id="customCategoryComment" 
+						name="customCategoryComment" 
+						tip="" 
+						value="${(customInfo.customCategoryComment)!}" />
+					</td>
+					<td align="right">
+					</td>
+					<td >
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('注册地址')}  :</label>
+					</td>
+					<td colspan="5">
+						<@form.textArea id="corpRegAddress" 
+						name="corpRegAddress" 
+						placeholder="${i18n.get('注册地址')}" 
+						required="${i18n.get('不能为空')}" 
+						width="125px" 
+						height="1" 
+						value="${(customInfo.corpRegAddress)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						<label class="no-padding-right" >${i18n.get('客户概况 ')} :</label>
+					</td>
+					<td colspan="5">
+						<@form.textArea id="customProfile" 
+						name="customProfile" 
+						width="125px" 
+						height="2" 
+						value="${(customInfo.customProfile)!}" />
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+		
+	</@form.form>
+
+	
+
+	
+	<@plug.tabs  tabMain=tabMain>
+	</@plug.tabs>
+	
+	</@form.panel>
+</@cui.body2>
+
+<script type="text/javascript">
+	
+	$(document).ready(function() {
+		
+		if ('${mode!}' === 'ADD'){
+			$("#customBizPrmApply").attr("disabled","true");
+			$("#customPrmApply").attr("disabled","true");
+		}
+		
+		if ('${mode!}' === 'EDIT'){
+			
+			// ${i18n.get('报备状态 审批完成')}
+			if ('${(customInfo.customReportedFlg)!}' === 'CUSTOM_NORMAL_STATUS_40'){
+				$("#save").attr("disabled","true");
+				$("#customBizPrmApply").attr("disabled","true");
+				$("#customPrmApply").attr("disabled","true");
+				updateDisable();
+			}
+			// ${i18n.get('报备状态 驳回')}
+			if ('${(customInfo.customReportedFlg)!}' === 'CUSTOM_NORMAL_STATUS_30'){
+			}
+			// ${i18n.get('报备状态 审批中')}
+			if ('${(customInfo.customReportedFlg)!}' === 'CUSTOM_NORMAL_STATUS_20'){
+				$("#save").attr("disabled","true");
+				$("#customBizPrmApply").attr("disabled","true");
+				$("#customPrmApply").attr("disabled","true");
+				
+				updateDisable();
+			}
+			// ${i18n.get('报备状态 未启动')}
+			if ('${(customInfo.customReportedFlg)!}' === 'CUSTOM_NORMAL_STATUS_10'){
+				$("#customBizPrmApply").attr("disabled","true");
+				$("#customPrmApply").attr("disabled","true");
+			}
+
+		}
+	});
+	
+	function updateDisable() {
+		// ${i18n.get('以下字段在审批中和审批完成时不可用')}
+		// ${i18n.get('客户全称')}
+		$("#customFullName").attr("readonly","true");
+		//${i18n.get('公司网址')} 
+		$("#customWebAddress").attr("disabled","true");
+		// ${i18n.get('客户别名')}
+		$("#customAliasName").attr("disabled","true");
+		//${i18n.get('客户类别')} 
+		$("#customClass").attr("disabled","true");
+		// ${i18n.get('客户等级')}
+		$("#customGrade").attr("disabled","true");
+		// ${i18n.get('OEM品牌')}
+		$("#customOem").attr("disabled","true");
+		// ${i18n.get('所属区域')}
+		$("#customArea").attr("disabled","true");
+		$("#customAreaSub1").attr("disabled","true");
+		$("#customAreaSub2").attr("disabled","true");
+		$("#customAreaSub3").attr("disabled","true");
+		//${i18n.get('收入规模')} 
+		$("#customIncomeScale").attr("disabled","true");
+		// ${i18n.get('客户行业')}
+		$("#customCategory").attr("disabled","true");
+		$("#customCategorySub").attr("disabled","true");
+		// ${i18n.get('客户概况')}
+		$("#customProfile").attr("disabled","true");
+		// ${i18n.get('注册地址')}
+		$("#corpRegAddress").attr("disabled","true");
+		// ${i18n.get('法定代表人')}
+		$("#corpRepresentative").attr("disabled","true");
+		// ${i18n.get('纳税登记号')}
+		$("#corpTrn").attr("disabled","true");
+		//${i18n.get('开票名称')} 
+		$("#corpInvoiceName").attr("disabled","true");
+		//${i18n.get('开票注意事项')} 
+		$("#corpInvoiceComment").attr("disabled","true");
+	}
+
+
+	
+	function applyCustom(operate,status){
+		var msg ;
+		
+		if('20'===status){
+			msg = "${i18n.get('确定启动商机报备流程吗？')}";
+		} else if('30'===status) {
+			msg = "${i18n.get('确定启动客户报备流程吗')}？";
+		}
+		
+		var formDatas = $('#form_customInfo').serialize();
+		formDatas = "id=${(customInfo.id)!}&"+formDatas;
+		bootbox.confirm(msg, function(result) {
+			if(result) {
+				$.ajax({
+					type : "POST",
+					url : "${ctx}/custom/prm/" + operate + ".html",
+					async: true,
+					data : formDatas, 
+					dataType : 'json',
+					success : function(msg) {
+						alert(msg.message);
+						parent.currentParent2.reload_tableCustomList(); 
+						javascript:api.close();
+					},
+					error: function(e) {
+						alert(e.responseJSON.message);
+					} 
+				});
+			}
+		});
+	}
+	
+</script>
+</#escape>

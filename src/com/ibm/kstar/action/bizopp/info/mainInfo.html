@@ -1,0 +1,306 @@
+
+<#-- 商机界面-主要信息-新增 --> <#if permission["P03BizOppoT1ConfigAdd"]?? > <#assign addURL = "'${ctx}/productDetail/add.html?bizOppId=${(id)!}'" /></#if>
+
+<#-- 商机界面-主要信息-修改 --> <#if permission["P03BizOppoT1ConfigEdit"]?? > <#assign editURL = "'${ctx}/productDetail/edit.html'" /></#if>
+
+<#-- 商机界面-主要信息-删除 --> <#if permission["P03BizOppoT1ConfigDelete"]?? > <#assign deleteURL = "'${ctx}/productDetail/delete.html'" /></#if>
+
+<#-- 商机界面-主要信息-确认配置 --> <#if permission["P03BizOppoT1ComfirmConfig"]?? > <#assign P03BizOppoT1ComfirmConfig='true'></#if>
+
+<#-- 商机界面-主要信息-生成订单 --> <#if permission["P03BizOppoT1CreateOrder"]?? > <#assign P03BizOppoT1CreateOrder = 'true' /></#if>
+<@form.table id="t10"
+class="col-xs-12"
+title="${i18n.get('项目配置明细')}"
+url = "${ctx}/productDetail/page.html?bizOppId=${(id)!}"
+rowNum = "10"
+deleteURL = "${deleteURL!}"
+search="false"
+colModel = "[
+		{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'bizOppId',label:'${i18n.get('商机id')}',hidden:true,width:100},
+		{name:'productId',label:'${i18n.get('产品id')}',hidden:true,width:100},
+		{name:'productType',label:'${i18n.get('产品类型')}',hidden:true,width:100},
+		
+		{name:'crmCategory',label:'${i18n.get('CRM产品类别ID')}',hidden:true,width:120,sortable:true,align:'center' },
+		{name:'crmCategoryLable',label:'${i18n.get('CRM产品类别')}',hidden:true,width:120,sortable:true,align:'center' },
+		{name:'cproCategory',label:'${i18n.get('产品分类')}',hidden:true,width:120,sortable:true,align:'center' },
+		{name:'productSortId',label:'${i18n.get('销售产品分类ID')}',hidden:true,width:150,sortable:true,align:'center' },
+    	{name:'productSortName',label:'${i18n.get('销售产品分类')}',hidden:true,width:150,sortable:true,align:'center' },
+    	{name:'displayCatalogName',label:'${i18n.get('销售产品分类名称')}',hidden:true,width:150,sortable:true,align:'center' },
+		{name:'productName',label:'${i18n.get('产品名称')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'cproPowcap',label:'${i18n.get('产品规格')}',width:120,sortable:true,align:'center' },
+		{name:'productModel',label:'${i18n.get('产品型号')}',hidden:false,width:130,sortable:true,align:'center' },
+		
+		{name:'materCode',label:'${i18n.get('物料号')}',hidden:false,width:100,align:'center'},
+		{name:'publicPrice',label:'${i18n.get('公开价')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'planPrice',label:'金牌价${i18n.get('金牌价')}',hidden:false,width:100,sortable:true,align:'center' },
+
+		{name:'planCount',label:'${i18n.get('数量')}',hidden:false,width:200,sortable:true,align:'center',editable:true,editrules:{number:true} },
+		{name:'planTotal',label:'${i18n.get('小计金额')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'remark',label:'${i18n.get('备注')}',hidden:false,width:300,sortable:true,align:'left',editable:true },
+		{name:'proDesc',label:'${i18n.get('产品描述')}',hidden:false,width:400,sortable:true,align:'left',editable:true }
+		]"
+buttons = "[{
+					id:'confirmConf_button',
+					label : '${i18n.get('确认配置')}',
+					icon : 'icon-save',
+					own : ${P03BizOppoT1ComfirmConfig!'false'},
+					handler : function(e,rowData){
+						var entityId = '${(id)!}';
+						$.ajax({
+							type: 'POST',
+							url: '${ctx}/bizopp/confirmConf.html',
+							async: true,
+							data: 'id=' + entityId,
+							dataType: 'json',
+							success: function (msg) {
+								alert('${i18n.get('确认配置成功！')}'); 
+							},
+							error: function (e) {
+								if (msg) {
+									alert(msg.message);
+								} else {
+									alert('${i18n.get('操作失败，请联系管理员')}'); 
+								}
+							}
+						});
+					}
+				},
+				{
+					id:'t10_addRow',
+					label : '${i18n.get('增加产品')}',
+					icon : 'icon-save',
+					own : true,
+					handler : function(e,rowData){
+						$('#selectProductMulti').click();
+					}
+				},
+				{
+					id:'t10_order',
+					label : '${i18n.get('生成订单')}',
+					icon : 'icon-save',
+					own : ${P03BizOppoT1CreateOrder!'false'},
+					handler : function(e,rowData){
+						bootbox.confirm('${i18n.get('您确定要生成订单吗？')}' , function(result) {
+							if(result) {
+								parent.dialog('${i18n.get('订单信息')}' ,'${ctx}/order/add.html?source=20&sourceId=${(id)!}' );
+							}
+						});
+					}
+				},
+				{
+					id:'t10_reload',
+					label : '${i18n.get('重置')}',
+					icon : 'icon-save',
+					own : true,
+					handler : function(e,rowData){
+						reload_t10();
+					}
+				}
+]"
+onComplete = "function() {
+        var rows = $('#t10').jqGrid('getRowData');
+        var sum = 0;
+        $.each(rows, function (index, row) {
+            sum = parseFloat(sum) + parseFloat(row.planTotal);
+        });
+        $('#sumAmount').val(sum);
+		var planCount  = $('#t10').getCol('planCount',false,'sum');
+		var planTotal = $('#t10').getCol('planTotal',false,'sum');
+		$('#t10').footerData('set',{name:'${i18n.get('合计')}',productName:'${i18n.get('合计')}',planCount:planCount,planTotal:planTotal});
+		var str = $('#conflictStatus').val();
+		if(str != '00' && str != '20') {
+			$('#buttons_tr_t10 :button').each(function () {
+				$('#' + this.id).attr('disabled', 'disabled');
+			});
+		}
+	}"
+ondblClickRow = "function(id){
+        var rowData = $('#t10').jqGrid('getRowData',id);
+        $('#t10 input[id='+id+'_planCount]').bind('input',function(event){
+            var planCount = $(this).val();
+            var _planTotal = 0;
+            var sumAmount = 0;
+            if(planCount){
+                if(rowData.planPrice != null && rowData.planPrice !=''){
+                        _planTotal = parseFloat(rowData.planPrice)*parseFloat(planCount);
+                    }
+                    $('#t10').jqGrid('setRowData', id, {planTotal:_planTotal});
+                    var rows = $('#t10').jqGrid('getRowData');
+                    var _total = 0;
+                    $.each(rows, function (index, row) {
+                        if(row.planTotal){
+                             _total = row.planTotal;
+                        }else{
+                             _total = 0;
+                        }
+                        sumAmount = parseFloat(sumAmount) + parseFloat(_total);
+                    });
+                    $('#sumAmount').val(sumAmount.toFixed(2));
+                }
+        });
+    }"
+footerrow = "true"
+gridComplete = "function() {
+		$('#t10').footerData('set',{name:'${i18n.get('合计')}',productName:'${i18n.get('合计')}'});
+		var rowNum = parseInt($('#10').getGridParam('records'),10);
+		if(rowNum > 0){
+			$('.ui-jqgrid-sdiv').show();
+			var planCount  = $('#t10').getCol('planCount',false,'sum');
+			var planTotal = $('#t10').getCol('planTotal',false,'sum');
+			$('#t10').footerData('set',{name:'${i18n.get('合计')}',productName:'${i18n.get('合计')}',planCount:planCount,planTotal:planTotal});
+		}
+	}"
+onLineEditAfter = "function(id,rowData){
+		$('#t10').trigger('blur')
+		var planCount  = $('#t10').getCol('planCount',false,'sum');
+		var planTotal = $('#t10').getCol('planTotal',false,'sum');
+		$('#t10').footerData('set',{name:'${i18n.get('合计')}',productName:'${i18n.get('合计')}',planCount:planCount,planTotal:planTotal});
+	}"
+>
+</@form.table>
+
+
+
+
+
+
+
+
+<div style="display: none;">
+<#if P_GNORG_B1_0001?? && P_GNORG_B1_0001==true>
+    <#assign _isReport='isReport=1&'>
+</#if>
+<@biz.picker_product
+			id="selectProductMulti"
+urlFunction="function(){
+				return '${ctx}/common/product/multiSelectList.html?${_isReport!''}priceTableId='+$('#priceTableId').val();
+			}"
+button="${i18n.get('批量选择产品')}"
+callback="function(datas){
+			if(datas){
+				addRowBatch(datas);
+				saveGridAll_maininfoWithCallback('${ctx}/productDetail/edit2.html');
+			}
+		}"
+		/>
+</div>
+<script type="text/javascript">
+var reportFlgArr = {
+    "0": '${i18n.get("否")}',
+    "1": '${i18n.get("是")}'
+};
+
+function formatReport(value) {
+    if (!value) {
+        return '';
+    }
+    return reportFlgArr[value];
+}
+
+$(function () {
+    showPage1();
+
+    var sta = '${(status)!}';
+    if (sta == '90') {
+        $("#add_t10").attr("disabled", "disabled");
+        $("#edit_t10").attr("disabled", "disabled");
+        $("#delete_t10").attr("disabled", "disabled");
+        $("#confirmConf_button").attr("disabled", "disabled");
+    }
+
+
+});
+
+function showPage1() {
+
+    _url = '${ctx}/common/attachment/attachment.html?businessId=${id}&businessType=OPP_REPORT_FILE&docGroupCode=ATTACHMENTTYPEGROUP';
+
+    $('#kstarDoc').load(_url, function (response, status, xhr) {
+        if (status === 'error') {
+            $('#kstarDoc').html(_url + '<br>'+ '${i18n.get('页面加载失败')}');
+        }
+    });
+}
+
+var maininforowid = 0;
+
+function addRowBatch(datas) {
+    $.each(datas, function (i, data2) {
+        var data = {};
+        
+
+        maininforowid = maininforowid + 1;
+
+        data.bizOppId = "${(id)!}";
+        data.productId = data2.proId;
+        data.productName = data2.productName;
+        data.productModel = data2.proModel;
+        data.productSeries = data2.proSeries;
+        data.productType = data2.crmCategoryLable;
+        data.productSortId = data2.crmCategory;
+        data.productSortName = data2.crmCategoryLable;
+        data.displayCatalogName = data2.displayCatalogName;
+        data.planCount = 0;
+        if (!data2.catalogPriceShow) {
+            data.planPrice = 0;
+            data.publicPrice = 0;
+        } else {
+            data.planPrice = data2.catalogPriceShow;
+            data.publicPrice = data2.catalogPriceShow1;
+        }
+        data.cproPowcap = data2.cproPowcap;
+        data.crmCategory = data2.crmCategory;
+        data.crmCategoryLable = data2.crmCategoryLable;
+        data.cproCategory = data2.cproCategory;
+        data.materCode = data2.materielCode;
+        data.proDesc = data2.proDesc;
+        data.planTotal = 0;
+
+        $("#t10").jqGrid("addRowData", maininforowid, data, "first");
+    });
+}
+
+function saveGridAll_maininfoWithCallback(urlstr, config) {
+    if (!config) {
+        config = {};
+    }
+    if (typeof config.async === 'undefined') {
+        config.async = true;
+    }
+    $('#t10').trigger('blur')
+    var gridVo = {};
+    var arr = $('#t10').jqGrid('getRowData');
+    gridVo.jsonStr = JSON.stringify(arr);
+    $.ajax({
+        type: "POST",
+        url: urlstr,
+        async: config.async,
+        data: gridVo,
+        dataType: 'json',
+        success: function (msg) {
+            reload_t10();
+            if (config.success) {
+                config.success(msg);
+            }
+        },
+        error: function (e) {
+            if (config.error) {
+                config.error(e);
+            } else {
+            	alert('${i18n.get('操作失败，请联系管理员')}'); 
+            }
+        }
+    });
+}
+
+function saveGridAll_maininfo(urlstr) {
+    saveGridAll_maininfoWithCallback(urlstr, {
+        success: function (msg) {
+        	alert('${i18n.get('保存成功！')}'); 
+        }, error: function (e) {
+        	alert('${i18n.get('操作失败，请联系管理员')}'); 
+        }});
+}
+
+</script>

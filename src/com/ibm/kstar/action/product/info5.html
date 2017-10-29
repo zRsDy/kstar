@@ -1,0 +1,19 @@
+<@form.table id="t5" shrinkToFit="true" class="col-xs-12" title="${i18n.get('价格表')}" 
+url ="${ctx}/product/priceList.html?id=${id}" 
+rowNum = "20" 
+addURL = ""
+editURL = "" 
+search="false"
+colModel = "[ 
+{name:'id',label:'',hidden:true,width:60,sortable:false,align:'center' },
+ {name:'priceTableName',label:'${i18n.get('价格表名称')}',hidden:false,width:160,sortable:false,align:'center' }, 
+  {name:'currencyName',label:'${i18n.get('货币')}',hidden:false,width:100,sortable:false,align:'center' }, 
+ {name:'catalogPrice',label:'${i18n.get('目录价格')}',hidden:false,width:120,sortable:false,align:'center' },
+ 
+    {name:'clientName',label:'${i18n.get('客户')}',hidden:false,width:160,sortable:false,align:'center' },
+   {name:'startDate',label:'${i18n.get('有效期开始时间')}',hidden:false,width:160,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+  {name:'endDate',label:'${i18n.get('有效期结束时间')}',hidden:false,width:160,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+  {name:'organizationName',label:'${i18n.get('组织')}',hidden:false,width:120,sortable:false,align:'center' }]" 
+buttons = "[]" > 
+
+</@form.table>

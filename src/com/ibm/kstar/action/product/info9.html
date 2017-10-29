@@ -1,0 +1,43 @@
+<#if (permission["P01-1ProductSubAdd"])??>
+	<#assign addURL_t9="'${ctx}/product/proSubAdd.html?productID=${id}'" />
+</#if>
+<#if (permission["P01-1ProductSubEdit"])??>
+	<#assign editURL_t9="'${ctx}/product/proSubAdd.html'" />
+</#if>
+<#if (permission["P01-1ProductSubDelete"])??>
+	<#assign deleteURL_t9="'${ctx}/product/proSubDel.html'" />
+</#if>
+
+<@form.table id="t9" shrinkToFit="true" 
+    class="col-xs-12"
+    title="${i18n.get('选配清单')}" 
+    url = "${ctx}/product/proSubList.html?productID=${id}" 
+    rowNum = "5"
+    search='true'
+    addURL = "${addURL_t9!}" 
+    editURL = "${editURL_t9!}"
+    deleteURL = "${deleteURL_t9!}"
+    colModel = "[
+        {name:'id',label:'${i18n.get('产品ID')}',hidden:true,width:100,sortable:false,align:'center' },
+        {name:'productBean.productCode',label:'${i18n.get('产品编码')}',hidden:false,width:100,sortable:false,align:'center' },
+        {name:'productBean.productName',label:'${i18n.get('产品名称')}',hidden:false,width:100,sortable:false,align:'center' },
+        {name:'productBean.proEName',label:'${i18n.get('英文名')}',hidden:false,width:100,sortable:false,align:'center' },
+        {name:'productBean.proDesc',label:'${i18n.get('产品描述')}',hidden:false,width:140,sortable:false,align:'center' },
+        {name:'productBean.saleStatusName',label:'${i18n.get('转销状态')}',hidden:false,width:100,sortable:false,align:'center' },
+        {name:'productBean.erpCategoryName',label:'${i18n.get('ERP产品类别')}',hidden:false,width:60,sortable:false,align:'center' },
+        {name:'productBean.crmCategoryName',label:'${i18n.get('CRM产品类别')}',hidden:false,width:100,sortable:false,align:'center' },
+        {name:'productBean.unitName',label:'${i18n.get('单位')}',hidden:false,width:50,sortable:false,align:'center' },
+        {name:'proSubDesc',label:'${i18n.get('说明')}',hidden:false,width:50,sortable:false,align:'center' },
+        ]"
+        buttons = "[]" > 
+   <div class="col-xs-12">
+			<div class="form-group col-xs-2" align="right">${i18n.get('产品编码 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="productCode" size="30" />
+			</div>	
+			<div class="form-group col-xs-2" align="right">${i18n.get('产品名称 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="productName" size="30" />
+			</div>
+	</div>     
+</@form.table> 

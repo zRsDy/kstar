@@ -1,0 +1,92 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="t1" success="function(){ parent.currentParent.reload_company(); }" class="form-horizontal" >
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > ${i18n.get('相关公司')} : </label>
+			
+			<@form.autocomplete  id="customNameDisp" name="customNameDisp" 
+				idKey='customFullName'
+				style="width: 145px;"
+				required="${i18n.get('请选择客户编号')}"
+				formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+				url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html'; }"
+				value="{cu stomFullName:'${(customRelation.customNameDisp)!}'
+				,customCode: '${(customRelation.customCodeDisp)!}'
+				}"
+				
+				onSelect="function(data){
+					if( data.customCode != null && data.customCode !='' && data.customCode != 'undefined'){
+						$('#customCompCode').val(data.customCode);
+					}
+				}" 
+				/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" >${i18n.get('公司编号 ')} : </label>
+			<@form.input
+			id="customCompCode"  
+			name="customCompCode" 
+			placeholder="" 
+			required="${i18n.get('不能为空！')}"
+			readonly ="readonly"
+			tip="" 
+			value="${(customRelation.customCodeDisp)!}" 
+			/>
+			
+		</div>
+		
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" >${i18n.get('关系(当前客户的)')}  : </label>
+			<@form.select  style="width: 147px;"
+				id="customRelationLvl" name="customRelationLvl" 
+				code="COMPANYRELATION" 
+				value ="${(customRelation.customRelationLvlDisp)!}"
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > ${i18n.get('有效日期从')} : </label>
+			<@form.date id="customRelateValidFrom"  name="customRelateValidFrom" 
+				placeholder="" 
+				tip="" 
+				value="${(customRelation.customRelateValidFrom?date)!}" 
+				/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > ${i18n.get('有效日期至')} : </label>
+			<@form.date id="customRelateValidTo"  name="customRelateValidTo" 
+				placeholder="" 
+				tip="" 
+				value="${(customRelation.customRelateValidTo?date)!}" 
+				/>
+		</div>
+		
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+		<div class="clearfix form-actions">
+			<div class="col-md-offset-5 col-md-7">
+				<button class="btn btn-info submit" type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				&nbsp; &nbsp; &nbsp;
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+	</@form.form>
+	</@form.panel>
+</@pui.body>
+<script type="text/javascript">
+	
+	$(document).ready(function() {
+		if ('${mode!}' === 'EDIT'){
+			$('#customNameDisp').attr("disabled","disabled");
+			$('#customRelationLvl').attr("disabled","disabled");
+		}
+		
+	});
+</script>
+</#escape>

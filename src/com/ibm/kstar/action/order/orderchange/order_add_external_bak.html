@@ -1,0 +1,477 @@
+<#escape x as x?html>
+<@cui.body2>
+<style type="text/css">
+	table {
+		border-collapse: collapse;
+		border-color: #ff0000;
+	}
+	
+	table td {
+		padding:1px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	select {
+		width: 180px;
+	}
+</style>
+	
+<script type="text/javascript">
+var selectId = "";
+var selectedProModel = "";
+function proSelect(rowid){
+	selectId = rowid ;
+	var rowData = $('#orderLinesForm').jqGrid('getRowData',selectId);
+	selectedProModel = rowData.proModel;
+	var priceTableId =  $('#priceTableId').val();
+	 if(priceTableId){
+		 $('#selectProduct').click();
+	 }else{
+		 alert('${i18n.get('请先选择价目表')}');
+	 }
+}
+
+function bizOppSelect(rowid){
+	selectId = rowid ;
+	var rowData = $('#orderLinesForm').jqGrid('getRowData',selectId);
+	var customerId =  $('#customerId').val();
+	 if(customerId){
+		 $('#selectBizOpp').click();
+	 }else{
+		 alert('${i18n.get('请先选择单位')}');
+	 }
+}
+
+function spSelect(rowid){
+	selectId = rowid ;
+	var rowData = $('#orderLinesForm').jqGrid('getRowData',selectId);
+	var customerId =  $('#customerId').val();
+	 if(customerId){
+		 if(rowData.proId != null && rowData.proId != ''){
+			 $('#selectSp').click();
+		 }else{
+			 alert('${i18n.get('请先选择项目')}');
+		 }
+	 }else{
+		 alert('${i18n.get('请先选择单位')}');
+	 }
+}
+
+var newrowid = 0;  
+
+
+
+function getShipOrg(){
+	var str="";
+	$.ajax({
+		type:"post",
+		async:false,
+		url:"${ctx}/lov/member/select.html?code=INVENTORY",
+		success:function(data){
+			if (data != null) {
+				var jsonobj = eval(data.message);
+				var length = jsonobj.length;
+				for(var i=0;i<length;i++){
+					if(i != length-1 ){
+						// 这里是option里面的 value:label
+						str += jsonobj[i].id + ":" + jsonobj[i].name + ";";
+					}else{
+						str += jsonobj[i].id + ":" + jsonobj[i].name;
+					}
+			 	}   
+		 	}
+		}
+	});
+	return str;
+}
+//计算备件价格
+function calculateSparePrice(){
+	var spareOrderNo = $("#spareOrderNo").val();
+	if(!spareOrderNo){
+		alert('${i18n.get('请先填写备件参考订单')}');
+		$("#spareOrderNo").focus();
+		return;
+	}
+	if(confirm('${i18n.get('计算备件价格会立即更新本订单和备件参考订单【')}'+spareOrderNo+'${i18n.get('】中产品的ERP结算价格和金额，是否继续？')}')){
+		var spareAmount = $("#spareAmount").val();
+		if(spareAmount){
+			spareAmount = parseFloat(spareAmount);
+		}else{
+			spareAmount = 0 ;
+		}
+		$.ajax({
+			type : "POST",
+			url : "${ctx}/order/calculateSparePrice.html",
+			async: true,
+			data : "spareOrderNo="+spareOrderNo + "&spareAmount=" +spareAmount ,
+			dataType : 'json',
+			success:function(data){
+				if (data != null) {
+					if(spareAmount == 0 ){
+						spareAmount = parseFloat(data.message);
+						$("#spareAmount").val(data.message);
+					}
+					var ids = $("#orderLinesForm").jqGrid("getDataIDs");
+					var proQtySum = 0 
+					$.each(ids,function(i,id){
+						var rowData = $("#orderLinesForm").jqGrid("getRowData",id);
+						if((!rowData.price || rowData.price == 0) && rowData.proQty && rowData.proQty > 0){
+							proQtySum += parseFloat(rowData.proQty);
+						}
+					});
+					
+					//var proQtySum  = $("#orderLinesForm").getCol('proQty',false,'sum');
+					var sparePrice = 0 ;
+					if(proQtySum > 0){
+						sparePrice = (spareAmount / proQtySum).toFixed(6);
+					}
+					$.each(ids,function(i,id){
+						var rowData = $("#orderLinesForm").jqGrid("getRowData",id);
+						if(rowData.proQty){
+							var proQty = parseFloat(rowData.proQty);
+							var amount = (proQty * sparePrice).toFixed(6);
+							$("#orderLinesForm").jqGrid("setRowData",id,{amount:amount,erpSettPrice:sparePrice});
+						}
+					});
+			 	}
+			},
+			error: function(e) {
+				 var msg = eval("("+e.responseText+")");
+				 if(msg !='' && msg != null && msg != 'undefined' && msg.message){
+					 alert(msg.message);
+				 }else{
+					alert('${i18n.get('操作失败，请联系管理员')}');
+				 }
+				
+			} 
+		});
+	}
+}
+
+function hideColByProEmployeeTypeExt(){
+	$("#orderLinesForm").jqGrid("hideCol",["materielCode"]);
+	$("#orderLinesForm").jqGrid("hideCol",["erpSettPrice"]);
+	$("#orderLinesForm").jqGrid("hideCol",["shipOrgLable"]);
+	$("#orderLinesForm").jqGrid("hideCol",["remark"]);
+	$("#orderLinesForm").jqGrid("hideCol",["returnReason"]);
+	$("#orderLinesForm").jqGrid("hideCol",["returnReference"]);
+	$("#orderLinesForm").jqGrid("hideCol",["confirmDeliveryDate"]);
+	$("#orderLinesForm").jqGrid("hideCol",["isAdvanceBilling"]);
+	$("#orderLinesForm").jqGrid("hideCol",["deliveryQty"]);
+	$("#orderLinesForm").jqGrid("hideCol",["billingQty"]);
+	$("#orderLinesForm").jqGrid("hideCol",["cancelQty"]);
+	$("#orderLinesForm").jqGrid("hideCol",["statusLable"]);
+	$("#orderLinesForm").jqGrid("hideCol",["erpPlanStatus"]);
+	$("#orderLinesForm").jqGrid("hideCol",["isErpDelivery"]);
+	$("#orderLinesForm").jqGrid("hideCol",["isPending"]);
+}
+
+function hideColByProEmployeeTypeIn(){
+	$("#orderLinesForm").jqGrid("hideCol",["spCode"]);
+	$("#orderLinesForm").jqGrid("hideCol",["isSp"]);
+	$("#orderLinesForm").jqGrid("hideCol",["spCodeLable"]);
+	$("#orderLinesForm").jqGrid("hideCol",["sourceCodeLable"]);
+}
+
+function formatSourceCode(value,options){
+	var rowData = $('#orderLinesForm').jqGrid('getRowData',options.rowId);
+	var lable = '${i18n.get('选择商机')}';
+	if(rowData.sourceCode){
+		lable = rowData.sourceCode;
+	}else if(value){
+		lable = value;
+	}
+	var ps = '<a href="#" onclick="bizOppSelect(\''+options.rowId+'\');" >'+lable+'</a>';
+	return ps;
+}
+
+function formatAct(value,options){
+	var rowData = $('#orderLinesForm').jqGrid('getRowData',options.rowId);
+	var lable = '${i18n.get('选择产品')}';
+	if(rowData.itemDescription){
+		lable = rowData.itemDescription;
+	}else if(value){
+		lable = value ;
+	}
+	var ps = '<a href="#" onclick="proSelect(\''+options.rowId+'\');" >'+lable+'</a>';
+	if('${(sourceType)!}' == '10'){
+		ps = lable ;
+	}
+	return ps;
+}
+
+function formatSpCode(value,options){
+	var rowData = $('#orderLinesForm').jqGrid('getRowData',options.rowId);
+	var lable = '${i18n.get('选择特价')}';
+	if(rowData.spCode){
+		lable = rowData.spCode;
+	}else if(value){
+		lable = value ;
+	}
+	var ps = '<a href="#" onclick="spSelect(\''+options.rowId+'\');" >'+lable+'</a>';
+	return ps;
+}
+	$(document).ready(function(){
+		if ('${(entity.eventStatus)!}' === '20'
+			|| '${(entity.eventStatus)!}' === '30'){
+			$("#update").attr("disabled","true");
+		}
+		
+		$("#executeStatus").attr("disabled","disabled");
+		$("#controlStatus").attr("disabled","disabled");
+		if("${(orderHeader.isAbnormalPrice)!}" == 1){
+			$("#isAbnormalPrice").attr("checked","checked");
+		}
+		if("${(orderHeader.isAbnormalCredit)!}" == 1){
+			$("#isAbnormalCredit").attr("checked","checked");
+		}
+		
+		$("#order_submit").hide();
+		$("#order_register").hide();
+		//已录入
+		if("${(orderHeader.executeStatus)!}" == "ENTERED"){
+			
+			if("${(orderHeader.controlStatus)!}" == "10" || "${(orderHeader.controlStatus)!}" == "40"){
+				if("${(orderHeader.id)!}" !="" && "${(orderHeader.id)!}" != null){
+					$("#order_submit").show();
+				}
+			}else if("${(orderHeader.controlStatus)!}" == "30"){
+				$("#order_register").show();
+			}
+		}
+		if("${(orderHeader.orderTypeLable.optTxt1)!}" == "D"){
+				$("#internal_div").removeAttr("hidden");
+				$("#external_div").attr("hidden","hidden");
+		}else if("${(orderHeader.orderTypeLable.optTxt1)!}" == "O"){
+			$("#external_div").removeAttr("hidden");
+			$("#internal_div").attr("hidden","hidden");
+		}
+	});
+	
+	function save_before(){
+		$('#orderLinesForm').trigger('blur')
+		calculateAmount();
+	}
+	
+	//计算总金额
+	function calculateAmount(){
+		$('#orderLinesForm').trigger('blur');
+		var amount = 0;
+		var ids = $('#orderLinesForm').jqGrid('getDataIDs');
+			$.each(ids,function(i,id){
+				var rowData = $("#orderLinesForm").jqGrid("getRowData",id);
+				if(rowData.amount){
+					amount += parseFloat(rowData.amount);
+				}
+			});
+		$("#amount").val(amount.toFixed(6));
+	}
+	
+	function getPostData(){
+		var formDatas = $('#orderForm').serialize();
+		debugger;
+		var ids = $('#orderLinesForm').jqGrid('getDataIDs');
+		var datas = [];
+ 		$.each(ids,function(i,id){
+ 			var data = $('#orderLinesForm').jqGrid('getRowData',id);
+ 			datas.push(data);
+ 		})
+ 		var obj = {'linesList':datas,'eventCreateDate': $('#eventCreateDate').val()
+ 			,'eventStatus': $('#eventStatus').val()
+ 			,'applier': $('#applier').val()
+ 			,'applierPos': $('#applierPos').val()
+ 			,'applierOrg': $('#applierOrg').val()
+ 			,'orderCode': $('#orderCode').val()};
+ 		return obj;
+	}
+	
+	function applyChange(){
+		var msg= "${i18n.get('确定启动变更流程吗？')}";
+		var postData=getPostData();
+		
+		bootbox.confirm(msg, function(result) {
+			if(result) {
+				$.ajax({
+					type : "POST",
+					url : "${ctx}/order/change/apply.html",
+					async: true,
+					data : postData, 
+					dataType : 'json',
+					success : function(msg) {
+						alert(msg.message);
+						javascript:api.close();
+					},
+					error: function(e) {
+						alert(e.responseJSON.message);
+					} 
+				});
+			}
+		});
+	}
+</script>
+	<div class="col-xs-12" >
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="orderForm" 
+			success="function(){
+				alert('${i18n.get('保存成功！')}'); 
+				if('${(orderHeader.sourceType)!}' == '30'){
+					parent.currentParent2.reload_orderListForm(); 
+				}
+			}" 
+			class="form-horizontal" 
+			
+			postData="function(){
+				var ids = $('#orderLinesForm').jqGrid('getDataIDs');
+				var datas = [];
+		 		$.each(ids,function(i,id){
+		 			var data = $('#orderLinesForm').jqGrid('getRowData',id);
+		 			datas.push(data);
+		 		})
+		 		var obj = {'linesList':datas};
+		 		return obj;
+			}"
+			
+			>
+		<div class="form-group" >
+			<div style="padding-right: 20px; float: right;padding-top: 3px;" >
+			
+				<button class="btn btn-info " id="update" type="button" onclick="applyChange();">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存并提交')}
+				</button>
+				<button class="btn" type="button" onclick="javascript:api.close()" >
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+		<input id="applier" name="applier" type="hidden" value="${(entity.applier)!}" >
+		<input id="applierPos" name="applierPos" type="hidden" value="${(entity.applierPos)!}" >
+		<input id="applierOrg" name="applierOrg" type="hidden" value="${(entity.applierOrg)!}" >
+		<input id="eventStatus" name="eventStatus" type="hidden" value="${(entity.eventStatus)!}" >
+		<div class="form-group" >
+			<table border="0" cellpadding="0" cellspacing="0" >
+				<tr align="left">
+					<td align="right" width="120px">
+		 				${i18n.get('订单编号：')}
+					</td>
+					<td align="left" width="200px">
+						<@form.input 
+							id="orderCode"  name="orderCode" 
+							value="${(entity.orderCode)!}" 
+							readonly ="readonly"
+						/>
+					</td>
+					<td align="right" width="120px">
+		 				${i18n.get('状态：')}
+					</td>
+					<td align="left" width="200px">
+						<@form.input 
+							id="eventStatusName"  name="eventStatusName" 
+							value="${(entity.eventStatusName)!}" 
+							readonly ="readonly"
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="120px">
+		 				${i18n.get('申请人：')}
+					</td>
+					<td align="left" width="200px">
+						<@form.input 
+							id="applierName"  name="applierName" 
+							value="${(entity.applierName)!}" 
+							readonly ="readonly"
+						/>
+					</td>
+					<td align="right" width="120px">
+		 				${i18n.get('申请日期：')}
+					</td>
+					<td align="left" width="200px">
+						<@form.input 
+							id="orderCode"  name="eventCreateDate" 
+							value="${(entity.eventCreateDate)!}" 
+							readonly ="readonly"
+						/>
+					</td>
+					<td align="right" width="120px">
+		 				${i18n.get('申请单位：')}
+					</td>
+					<td align="left" width="200px">
+						<@form.input 
+							id="applierOrgName"  name="applierOrgName" 
+							value="${(entity.applierOrgName)!}" 
+							readonly ="readonly"
+						/>
+					</td>
+					
+				</tr>
+			</table>
+		</div>
+		</@form.form>
+		<div id="info" style="padding-top: 20px;">
+<@form.table id="orderLinesForm" 
+	class="col-xs-12"
+	title="${i18n.get('订单行')}" 
+	rowNum = "500" 
+	rowNumList = "[500]"
+	search = "false"
+	url = "${ctx}/order/change/pagelines.html?orderId=${orderHeaderId}&flg=${flg!}"
+	colModel = "[
+		{name : 'id', label:'id', width : 20, editable : false, hidden : true},
+		{name : 'orderId', label:'orderId', width : 20, editable : false, hidden : true},
+		{name : 'lineNo', label:'${i18n.get('行号')}', width : 80, align:'center', editable : false, hidden : false},
+		{name : 'act',label:'${i18n.get('产品名称')}',hidden:false,width:150,sortable:false,align:'center', formatter:function(cellvalue, options){ return formatAct(cellvalue,options) }},
+		{name : 'materielCode', label:'${i18n.get('订购项目')}', width : 100, editable : false, align:'center', hidden : true}, 
+		{name : 'proId', label:'${i18n.get('产品ID')}', width : 60, editable : false, hidden : true},
+		{name : 'itemDescription', label:'${i18n.get('项目说明')}', width : 150, editable : false ,align:'center', hidden : true}, 
+		{name : 'proModel', label:'${i18n.get('产品型号')}', width : 150, editable : false, align:'center', hidden : true},
+		{name : 'proBrand', label:'${i18n.get('品牌')}', width : 120, editable : false, align:'center', hidden : true},
+		{name : 'proQty', label:'${i18n.get('数量')}', width : 100, sortable : false, editable : true, align:'center'}, 
+		{name : 'proQtyTemp', label:'${i18n.get('数量调整为')}', width : 100, sortable : false, editable : true, align:'center'}, 
+		{name : 'unit', label:'${i18n.get('单位')}',width : 60,sortable : false, editable : false, align:'center',hidden : true},  
+		{name : 'unitLable', label:'${i18n.get('单位')}',width : 60,sortable : false, editable : false, align:'center', hidden : true}, 
+		{name : 'price', label:'${i18n.get('销售单价')}',width : 100,sortable : false, editable : false, align:'center', hidden : true},
+		{name : 'erpSettPrice', label:'${i18n.get('单价')}',width : 100,sortable : false, editable : true, align:'center'}, 
+		{name : 'erpSettPriceTemp', label:'${i18n.get('单价调整为')}',width : 100,sortable : false, editable : true, align:'center'}, 
+		{name : 'amount', label:'${i18n.get('金额')}',width : 120,sortable : false, editable : false, align:'center', hidden : true}, 
+		{name : 'requestDate',label:'${i18n.get('要货日期')}',hidden:false, width:100,sortable:false,align:'center', editable : true, formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } , hidden : true},
+		{name : 'promiseDate',label:'${i18n.get('工厂承诺日期')}',hidden:false, width:100,sortable:false,align:'center', editable : false, formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } , hidden : true},
+		{name : 'spCode', label:'${i18n.get('特价编号')}',width : 150,sortable : false, align:'center', editable : false ,hidden : true, hidden : true},
+		{name : 'spCodeLable', label:'${i18n.get('特价编号')}',width : 150,sortable : false, align:'center', editable : false, formatter:function(cellvalue, options){ return formatSpCode(cellvalue,options) }, hidden : true},
+		{name : 'sourceId', label:'${i18n.get('来源')}',hidden : true, width : 80,sortable : false,editable : false,align:'center', hidden : true},
+		{name : 'sourceCode', label:'${i18n.get('来源编号')}',hidden : true, width : 80,sortable : false,editable : false,align:'center', hidden : true},
+		{name : 'sourceCodeLable', label:'${i18n.get('商机编号')}', width : 150, align:'center', editable : false, hidden : false, formatter:function(cellvalue, options){ return formatSourceCode(cellvalue,options) } , hidden : true},
+		{name : 'isSp', label:'${i18n.get('是否特价')}', width : 60,sortable : false, editable : false, align:'center',edittype:'checkbox',editoptions:{value:'Yes:No'} , hidden : true},
+		{name : 'erpStatusLable', label:'${i18n.get('ERP状态')}', width : 80, align:'center', editable : false, hidden : false},
+		{name : 'confirmDeliveryDate', label:'${i18n.get('启动交货确认')}',width : 80, sortable : false, editable : true ,align:'center',edittype:'checkbox',editoptions:{value:'Yes:No'} , hidden : true}, 
+		{name : 'shipOrg', label:'${i18n.get('发货组织ID')}', hidden:true, width : 200,sortable : false, align:'center', editable : false },
+		{name : 'shipOrgLable', label:'${i18n.get('发货组织')}',width : 100,sortable : false, align:'center', editable : true, edittype:'select',editoptions:{value:getShipOrg()}, hidden : true}, 
+		{name : 'isPending', label:'${i18n.get('是否暂挂')}',width : 60,sortable : false, editable : true, align:'center',edittype:'checkbox',editoptions:{value:'Yes:No'} , hidden : true}, 
+		{name : 'isAdvanceBilling', label:'${i18n.get('提前开票')}',width : 60,sortable : false, align:'center', hidden : true},
+		{name : 'cancelQty', label:'${i18n.get('取消数量')}',width : 80, sortable : false , editable : false ,align:'center', hidden : true}, 
+		{name : 'deliveryQty', label:'${i18n.get('发运数量')}',width : 80, sortable : false , editable : false ,align:'center', hidden : true}, 
+		{name : 'billingQty', label:'${i18n.get('开票数量')}',width : 80, sortable : false,editable : false, align:'center', hidden : true}, 
+		{name : 'status', label:'${i18n.get('CRM状态CODE')}', width : 150, sortable : false, editable : false, align:'center', hidden : true}, 
+		{name : 'statusLable', label:'${i18n.get('CRM状态')}', width : 100, sortable : false, editable : false, align:'center'}, 
+		{name : 'erpPlanStatus', label:'${i18n.get('ERP计划状态')}', width : 80, align:'center', editable : false, hidden : false},
+		{name : 'isErpDelivery', label:'${i18n.get('ERP是否发货')}', width : 80, align:'center', editable : false, hidden : false, hidden : true},
+		{name : 'remark', label:'${i18n.get('备注')}',width : 200, sortable : false, editable : true, align:'center', hidden : true}, 
+		{name : 'returnReason', label:'${i18n.get('退货原因')}',width : 200, sortable : false, editable : true, align:'center', hidden : true}, 
+		{name : 'returnReference', label:'${i18n.get('退货参考')}',width : 200, sortable : false,editable : true,align:'center', hidden : true},
+		{name : 'contractProQty', label:'${i18n.get('合同工程清单/特价申请数量')}', width : 100, sortable : false, editable : false, align:'center', hidden : true} 
+	]" 
+	
+	> 
+	
+</@form.table> 
+		</div>
+	</@form.panel>
+	</div>
+</@cui.body2>
+</#escape>

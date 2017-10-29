@@ -1,0 +1,45 @@
+<#escape x as x?html>
+<#if (permission["P02ReceptionT1MemberAdd"]?? && ("${(customEventInfo.eventStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customEventInfo.eventStatus)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign addMemberURL = "'${ctx}/custom/event/person/add.html?id=${(customEventInfo.id)!}'"   />
+</#if>
+
+<#if (permission["P02ReceptionT1MemberEdit"]?? && ("${(customEventInfo.eventStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customEventInfo.eventStatus)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign editMemberURL= "'${ctx}/custom/event/person/edit.html'" />
+</#if>
+
+<#if (permission["P02ReceptionT1MemberDelete"]?? && ("${(customEventInfo.eventStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customEventInfo.eventStatus)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign deleteMemberURL = "'${ctx}/custom/event/person/delete.html'"   />
+</#if>
+
+<@form.table id="person" 
+class="col-xs-12"
+title="${i18n.get('人员名单')}" 
+url = "${ctx}/custom/event/person/page.html?id=${(customEventInfo.id)!}"
+rowNum = "5" 
+height="131px"
+addURL = "${addMemberURL!}"
+editURL = "${editMemberURL!}"
+deleteURL= "${deleteMemberURL!}" 
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'eventPid',label:'${i18n.get('编码')}',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'name',label:'${i18n.get('姓名')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'sexName',label:'${i18n.get('性别')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'post',label:'${i18n.get('职务')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'tel',label:'${i18n.get('联系电话')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'comment',label:'${i18n.get('备注')}',hidden:false,width:100,sortable:true,align:'center' }
+	]" 
+	
+onComplete = "function() { 
+	var ids = $('#person').jqGrid('getDataIDs');
+	if(!!ids&& ids.length !=0){
+		$('#personCnt').val(ids.length);
+	} else {
+		$('#personCnt').val('0');
+	}
+
+}"
+	>
+</@form.table>
+
+</#escape>

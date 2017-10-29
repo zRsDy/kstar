@@ -1,0 +1,121 @@
+<@pui.body> 
+
+<script>
+    var root = [{name: "test1"}]
+</script>
+<div class="col-xs-12">
+    <@form.panel title="${i18n.get('目录移动')}">
+        <@form.form
+        action="${ctx}/product/catalog/catalogmove.html"
+        success="function(){
+				parent.currentParent.reload_t1();
+				try{ parent.currentParent.reload_tree1('${(parentLovMember.id)!}'); }catch(e){ }
+			}"
+        before="function(e){
+            var treeId = $('#parentId').val();
+            if(!treeId){
+                exalert(e,'${i18n.get('请选择目录!')}');
+                return false;
+            }
+            return true;
+        }"
+        postData="function(e){
+            return {
+                dragNodeId : $('#id').val(),
+                newParentNodeId:$('#parentId').val()
+            }
+        }"
+        class="form-horizontal"
+        >
+
+        <input type="hidden" id="parentId" name="parentId" />
+        <input type="hidden" id="ids" name="ids" value="${ids}" />
+
+        <#--<div>-->
+        <#--<label class="col-xs-12"><h4>${i18n.get('旧目录 ：')} ${(lovMember.namePath)!''} </h4></label>-->
+        <#--</div>-->
+        <div>
+            <@plug.tree
+            checkbox="false"
+            id="tree1"
+            moveEdit = 'false'
+            datas="root"
+            onMove = "function(dragNode,newParentNode,moveType){
+									var data = {
+										dragNodeId : dragNode[0].id,
+										newParentNodeId : newParentNode != null ? newParentNode.id : null
+									}
+									if(moveType == 'inner'){
+										ajax({
+											type:'post',
+											url : '${ctx}/lov/member/move.html',
+											data: data,
+											success : function(result) {
+												exalert(e,'${i18n.get('移动成功')}');
+											},
+											error : function(result) {
+												exalert(e,'${i18n.get('移动失败')}');
+												reload_tree1();
+											}
+										});
+									}else{
+										reload_tree1();
+									}
+								}"
+            <#--asyncUrl='${ctx}/common/product/productTree.html' ${i18n.get('有权限')}-->
+            asyncUrl='${ctx}/lov/member/treeWithRoot.html?groupId=procatalog&leafFlag=N'
+            onClick=" function(event, treeId, treeNode){
+							  		$('#parentId').val(treeNode.id);
+							  	}"
+
+            ondblClick=" function(event, treeId, treeNode){
+
+							  		if(treeNode.leafFlag == 'Y'){
+							  			parent.dialog('${i18n.get('产品详情')}','${ctx}/product/edit.html?id='+treeNode.code,window);
+							  		}
+
+							  	}"
+            isParent="function(data){
+                            return data.leafFlag == 'N';
+                       }"
+            onComplete="function(){
+                var root = treeObj.getNodeByParam('id', 'ROOT', null);
+                if(root){
+                    treeObj.expandNode(root,true);
+                }
+                var ids = $('#ids').val();
+                var nodeIds = ids.split(',');
+
+                $(nodeIds).each(function(i,e){
+                   if(e){
+                        var node = treeObj.getNodeByParam('id', e, null);
+                        if(node){
+
+                            treeObj.removeNode(node);
+                            var parentNode = node.getParentNode();
+                            if(parentNode) parentNode.isParent = true;
+                            treeObj.updateNode(parentNode);
+                        }
+
+                   }
+                });
+
+            }"
+            />
+        </div>
+        <div class="clearfix form-actions">
+            <div class="col-md-offset-5 col-md-7">
+                <button class="btn btn-info submit" type="button">
+                    <i class="icon-ok bigger-110"></i>
+                    ${i18n.get('保存')}
+                </button>
+                &nbsp; &nbsp; &nbsp;
+                <button class="btn" type="button" onclick="javascript:api.close()">
+                    <i class="icon-undo bigger-110"></i>
+                    ${i18n.get('关闭')}
+                </button>
+            </div>
+        </div>
+        </@form.form>
+    </@form.panel>
+</@pui.body>

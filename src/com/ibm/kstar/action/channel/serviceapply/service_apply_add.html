@@ -1,0 +1,245 @@
+<@cui.body2>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1" success="function(){ 
+			try{
+				parent.currentParent.reload_apply_2('${(applyInfo.id)!}');
+			}catch(e){
+				parent.currentParent2.reload_apply_2('${(applyInfo.id)!}');
+			}	
+			 }" class="form-horizontal">	
+			<div align="center">
+				<table>
+					<tr>
+						<td align="right" width="100px">${i18n.get('服务单号 :')}</td>
+						<td width="320px">
+							<@form.input id="applyCode" name="applyCode" style="width:163px;" tip="${i18n.get('服务申请单据编号')}" readonly="true" value="${(applyInfo.applyCode)!}" />
+						</td>
+						<td align="right" width="100px">${i18n.get('申请单位 :')}</td>
+						<td width="370px">
+							<input type="hidden" id="applyUnit" name="applyUnit" value="${(applyInfo.applyUnit)!}" />
+							<@form.input id="applyUnitName" name="applyUnitName" style="width:163px;" tip="${i18n.get('服务申请单位名称')}" readonly="true" value="${(applyInfo.applyUnitName)!}" />
+						</td>
+						<td align="right" width="100px">${i18n.get('是否经销商 :')}</td>
+						<td width="320px">
+							<@form.select style="width:163px;" id="uiDealer" name="uiDealer" tip="${i18n.get('创建申请单的用户是否经销商用户')}" code="NY" idKey='id' value="${(applyInfo.dealer)!}" />
+							<input type="hidden" id="dealer" name="dealer" value="${(applyInfo.dealer)!}" />
+						    <script type="text/javascript">
+		    	                $("#uiDealer").attr("disabled","disabled")
+		                    </script>
+						</td>
+					</tr>
+					<tr>	
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('服务类型:')}</td>
+						<td width="320px">
+							<@form.select onChange="showMustCode()" style="width:163px;" id="serviceType" name="serviceType" tip="${i18n.get('服务申请对应的服务类型')}" required="${i18n.get('不能为空')}" code="SERVICETYPE" idKey='id' value="${(applyInfo.serviceType)!}" /> 
+						</td>
+						<td align="right" width="100px">${i18n.get('状态  :')}</td>
+						<td width="320px">
+							<input type="hidden" id="status" name="status" value="${(applyInfo.status)!}" />
+							<@form.select id="uiStatus" name="uiStatus" tip="${i18n.get('单据状态')}" style="width:163px;" code="SERVICE_APPLY_PROC" idKey='id' value="${(applyInfo.status)!}"/>
+							<script type="text/javascript">$("#uiStatus").attr("disabled","disabled");</script>
+							
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('货币 :')}</td>
+						<td width="320px">
+							<@form.select style="width:163px;" id="uicurrency" name="uicurrency" tip="${i18n.get('申请的结算货币')}" required="${i18n.get('不能为空')}" code="CURRENCY" idKey='id' value="${(applyInfo.currency)!}" /> 
+							<input type="hidden" id="currency" name="currency" value="${(applyInfo.currency)!}" />
+						    <script type="text/javascript">
+		    	                $("#uicurrency").attr("disabled","disabled")
+		                    </script>
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">${i18n.get('服务费用  :')}</td>
+						<td width="320px">
+							<@form.number id="serviceExpense" name="serviceExpense" style="width:163px;" tip="${i18n.get('服务应收费用')}" value="${(applyInfo.serviceExpense)!}" />
+						</td>
+						<td align="right" width="100px">${i18n.get('需求完成日期 :')}</td>
+						<td width="320px">
+							<@form.date id="demandFinishDate" name="demandFinishDate" format="yyyy-mm-dd" style="width:163px;" tip="${i18n.get('服务请求需要完成日期')}" value="${(applyInfo.demandFinishDate?date)!}" />
+						</td>
+						<td align="right" width="100px">
+							<strong id="mustcode" style="color: red;">*</strong>${i18n.get('商机编号 :')}
+							<input type="hidden" id="serviceTypeCode" value="${(applyInfo.serviceTypeCode)!}" />
+						</td>
+						<td width="320px">
+							<@form.autocomplete 
+								id="busiChanceCode"
+								name="busiChanceCode"
+								idKey='number'
+								placeholder="${i18n.get('请选择商机')}"
+								tip="${i18n.get('客户商机编号')}"
+								style="width:163px;"
+								onSelect="function(data){$('#busiChanceName').val(data.name);$('#endCustomName').val(data.client);$('#customId').val(data.customId);}"
+								onChange="clearValues()"
+								url="function(){ return '${ctx}/serviceApply/selectBizOpp.html'; }"
+								formatResult="function(data) {return '<div >' + data.number + '</div>';}"
+								value="${bizOpp!'{}'}"
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">${i18n.get('商机名称 :')}</td>
+						<td width="320px">
+							<@form.input id="busiChanceName" name="busiChanceName" style="width:163px;" tip="${i18n.get('商机名称')}" readonly="true" value="${(applyInfo.busiChanceName)!}" />
+						</td>
+						<#if isDealer>
+						<td align="right" width="100px"></td>
+						<td width="320px">
+						</td>
+						<#else>
+						<td align="right" width="100px">${i18n.get('合同编号 :')}</td>
+						<td width="320px">
+							<@form.autocomplete 
+								id="contractCode"
+								name="contractCode"
+								idKey='contrNo'
+								placeholder="${i18n.get('请选择合同编号')}"
+								tip="${i18n.get('客户合同编号')}"
+								style="width:163px;"
+								url="function(){ return '${ctx}/serviceApply/selectContract.html'; }"
+								formatResult="function(data) {return '<div >' + data.contrNo + '</div>';}"
+								value="${contract!'{}'}"
+							/>
+						</td>
+						</#if>
+						<td align="right" width="100px">${i18n.get('终端客户名称:')}</td>
+						<td width="320px">
+							<@form.input id="endCustomName" name="endCustomName" style="width:163px;" tip="${i18n.get('最终服务客户名称')}" readonly="true" value="${(applyInfo.endCustomName)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('客户联系人 :')}</td>
+						<td width="320px">
+							<input type="hidden" id="customId" />
+							 <@form.input id="customContact" name="customContact" style="width:163px;" tip="${i18n.get('客户联系人')}" required="${i18n.get('不能为空')}" value="${(applyInfo.customContact)!}" />
+							 <!-- <@biz.picker_product id="select" urlFunction="function(){return '${ctx}/serviceApply/selectContact.html?customId='+$('#customId').val();}" 
+								callback="function(data){
+									if(data){
+										$('#customContact').val(data.contactName);
+										$('#contactPhone').val(data.contactTel);
+									}
+								}"
+							/> -->
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('客户所在地 :')}</td>
+						<td width="320px">
+							<input id="customPlaceId" name="customPlaceId" type="hidden" value="${(applyInfo.customPlaceId)!}" >
+							<@form.input id="customPlaceName" name="customPlaceName" style="width:163px;" tip="${i18n.get('客户所在的地区')}" required="${i18n.get('不能为空')}" value="${(applyInfo.customPlaceName)!}" />
+							<!-- <@biz.picker_product id="selectArea" urlFunction="function(){ return '${ctx}/popup/customAreaSelect.html?lovId=${(applyInfo.customPlaceId)!}'}" 
+								callback="function(data){
+									if(data){
+										$('#customPlaceId').val(data.id);
+										var names= new Array();
+										names = data.namePath.split('/');
+										var txt='';
+										for (i = 0; i < names.length; i++) {
+											if (i== 0 || i==1 || i==2) {
+												continue;
+											}
+											txt = txt + '/' + names[i];
+										}
+										$('#customPlaceName').val(txt);
+									 }
+								}"
+							/> -->
+							
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('联系地址:')}</td>
+						<td width="320px">
+							<@form.input id="contractAddress" name="contractAddress" style="width:163px;" tip="${i18n.get('客户的详细联系地址')}" required="${i18n.get('不能为空')}" value="${(applyInfo.contractAddress)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('联系电话 :')}</td>
+						<td width="320px">
+							<@form.input id="contactPhone" name="contactPhone" style="width:163px;" tip="${i18n.get('客户联系人电话')}" required="${i18n.get('不能为空')}" value="${(applyInfo.contactPhone)!}" />
+						</td>
+						<td align="right" width="100px">${i18n.get('服务内容 :')}</td>
+						<td width="320px">
+							<@form.input id="serviceContent" name="serviceContent" style="width:163px;" tip="${i18n.get('服务内容详细说明')}" value="${(applyInfo.serviceContent)!}" />
+						</td>
+						<td align="right" width="100px"></td>
+						<td width="320px">
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">${i18n.get('申请人 :')}</td>
+						<td width="320px">
+							<input type="hidden" id="applier" name="applier" value="${(applyInfo.applier)!}" />
+							<@form.input id="applierName" name="applierName" style="width:163px;" tip="${i18n.get('申请人姓名')}" readonly="true" value="${(applyInfo.applierName)!}" />
+						</td>
+						<td align="right" width="100px">${i18n.get('申请日期 :')}</td>
+						<td width="320px">
+							<@form.input id="applyDate" name="applyDate" style="width:163px;" tip="${i18n.get('服务申请日期')}" readonly="true" value="${(applyInfo.applyDate?date)!}" />
+						</td>
+						<td align="right" width="100px">${i18n.get('申请人电话 :')}</td>
+						<td width="320px">
+							<@form.input id="applierPhone" name="applierPhone" style="width:163px;" tip="${i18n.get('申请人电话号码')}" value="${(applyInfo.applierPhone)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">${i18n.get('说明 :')}</td>
+						<td colspan="5">
+							<@form.textArea id="explain" style="width:1053px;" name="explain" tip="${i18n.get('申请单据的说明')}" value="${(applyInfo.explain)!}" />
+						</td>
+					</tr>
+				</table>	
+			</div>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<#if !applyInfo?? || !applyInfo.id?? || statusEdit || ableEdit>
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					</#if>
+					<#if !ableEdit>
+					<button class="btn" type="button" onclick="javascript:frameElement.api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+					</#if>
+				</div>
+			</div>
+		</@form.form>
+<div id="info" style="padding-top: 20px;" class="row">
+	<div class="col-xs-12">
+		<input type="hidden" id="selectedId"  />
+		<@plug.tabs tabMain=tabMainInfo>
+	</@plug.tabs>
+</div>
+	</@form.panel>
+</@cui.body2>
+<script type="text/javascript">
+$(document).ready(function(){
+	var serviceTypeCode = $("#serviceTypeCode").val();
+	if(serviceTypeCode == '01'){
+		$("#mustcode").show()
+	}else{
+		$("#mustcode").hide();
+	}
+});
+function showMustCode(){
+	var data = JSON.parse($('#serviceType option:selected').attr('data'));
+	if(data.code == '01'){
+		$("#mustcode").show();
+	}else{
+		$("#mustcode").hide();
+	}
+}
+function selectContact(){
+	var customId = $("#customId").val();
+	return '${ctx}/serviceApply/selectContact.html?customId='+customId;
+}
+function clearValues(){
+	var busiChanceCode = $('#busiChanceCode').val();
+	if(busiChanceCode == ''){
+		$('#busiChanceName').val('');
+		$('#endCustomName').val('');
+		$('#customId').val('');
+	}
+}
+</script>

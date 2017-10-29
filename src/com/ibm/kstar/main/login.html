@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>${i18n.get('登录页')}</title>
+<link href="${ctx}/login/c/common.css" rel="stylesheet" type="text/css">
+
+<!--[if lte IE 8]>
+		  <script src="${ctx}/assets/js/excanvas.min.js"></script>
+		<![endif]-->
+
+		<!-- inline styles related to this page -->
+
+		<!-- ace settings handler -->
+
+		<script src="${ctx}/assets/js/ace-extra.min.js"></script>
+
+		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+
+		<!--[if lt IE 9]>
+		<script src="${ctx}/assets/js/html5shiv.js"></script>
+		<script src="${ctx}/assets/js/respond.min.js"></script>
+		<![endif]-->
+		
+		<!-- basic scripts -->
+
+		<!--[if !IE]> -->
+
+		<script type="text/javascript">
+			window.jQuery || document.write("<script src='${ctx}/assets/js/jquery-2.0.3.min.js'>"+"<"+"/script>");
+		</script>
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+		<script type="text/javascript">
+		 window.jQuery || document.write("<script src='${ctx}/assets/js/jquery-1.10.2.min.js'>"+"<"+"/script>");
+		</script>
+		<![endif]-->
+
+		<script type="text/javascript">
+			if("ontouchend" in document) document.write("<script src='${ctx}/assets/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
+		</script>
+		<script src="${ctx}/assets/js/bootstrap.min.js"></script>
+		<script src="${ctx}/assets/js/typeahead-bs2.min.js"></script>
+
+		<!-- page specific plugin scripts -->
+		
+		<script src="${ctx}/assets/js/jquery-ui-1.10.3.full.min.js"></script>
+		<script src="${ctx}/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+		<script src="${ctx}/assets/js/jqGrid/jquery.jqGrid.min.js"></script>
+		<script src="${ctx}/assets/js/jqGrid/i18n/grid.locale-en.js"></script>
+
+		<!-- ace scripts -->
+
+		<script src="${ctx}/assets/js/ace-elements.min.js"></script>
+		<script src="${ctx}/assets/js/ace.min.js"></script>
+		
+		<script src="${ctx}/assets/js/dialog/lhgdialog.js"></script>
+		<script src="${ctx}/assets/js/jquery.validate.min.js"></script>
+		<script src="${ctx}/assets/js/jquery-form.min.js"></script>
+		<script src="${ctx}/anne/js/ajax.js"></script>
+		<script src="${ctx}/anne/js/anne.js"></script>
+		
+		<script src="${ctx}/assets/js/jquery.ui.touch-punch.min.js"></script>
+		<script src="${ctx}/assets/js/bootbox.min.js"></script>
+		<script src="${ctx}/assets/js/jquery.easy-pie-chart.min.js"></script>
+		<script src="${ctx}/assets/js/jquery.gritter.min.js"></script>
+		<script src="${ctx}/assets/js/spin.min.js"></script>
+		<script src="${ctx}/assets/js/select2/select2.min.js"></script>
+		<script src="${ctx}/assets/js/jquery.ztree.all.min.js"></script>
+		
+		<!-- ace scripts -->
+		
+		<script src="${ctx}/assets/js/fuelux/fuelux.spinner.min.js"></script>
+
+</head>
+
+<body>
+<div class="post padddingB160" style="
+    background: url(login/i/main_bg.jpg);
+    background-repeat: round;
+">
+	<div class="post-header"><a href="#" class="post-logo"></a></div>
+    <div class="post-login">
+    	
+        <div  class="post-login-right post-login-left">
+        	<div  class="post-login-note">${i18n.get('请注意')}：<br>
+            1．${i18n.get('不得在公共场合保存登录信息')}<br>
+            2．${i18n.get('不得多人使用同一账号')}<br>
+            3．${i18n.get('为保证账号安全，退出系统时请注销')}</div>
+            <div  class="post-login-tishi">${i18n.get('系统版本V1.0.0')}<br>
+		${i18n.get('建议使用')}<a target="_blank" href="http://sw.bos.baidu.com/sw-search-sp/software/7164c4c6bc6e0/ChromeStandalone_58.0.3029.110_Setup.exe">${i18n.get('Google浏览器')}</a>、${i18n.get('IE10及以上使用')}<br>
+			${i18n.get('1280x800分辨率及以上使用')}<br>
+			${i18n.get('版权所有 深圳科士达科技股份有限公司')}
+			</div>
+        </div>
+        
+        <form id="frm" method="post">
+	        <div class="post-login-right">
+	        	<div style="color: red;" id="error"></div>
+	        	<div class="post-input-div">
+	            	<i class="post-account"></i>
+	            	<input name="username" type="text" class="post-input-text">
+	            </div>
+	            <div class="post-input-div ">
+	            	<i class="post-password"></i>
+	            	<input name="password" type="password" class="post-input-text">
+	            </div>
+	            <div class="post-button-div"><input name="" type="submit" class="post-logon" value="${i18n.get('登  录')}"><input name="" type="reset" class="post-reset" value="${i18n.get('重  置')}"></div>
+	      		 <div style="margin-top: 10px">
+	            	<a href="${ctx}/findPassword.html">${i18n.get('忘记密码')}</a>
+	            </div>
+	        </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+	if(parent){
+		if( (window.location.search.indexOf("login=session") > -1) && parent.location.href.indexOf('${ctx}/main.html') > -1){
+			parent.location.href = window.location.href;
+		}
+	}
+
+	$(function() {
+		$("#frm").submitForm({
+			success : function(result) {
+				window.location.href = "main.html";
+			},error : function(result) {
+				$("#error").html(result);
+			}
+		});
+	})
+</script>
+</body>
+</html>

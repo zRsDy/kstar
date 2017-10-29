@@ -1,0 +1,1026 @@
+<#escape x as x?html>
+<@cui.body2>
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="customEventInfo" success="function(){ parent.currentParent.reload_tableEventList(); }" class="form-horizontal" >
+		
+		<div class="form-group">	
+			<div style="padding-right: 20px; float: right;padding-top: 3px;">
+				<#if permission["P02ReceptionSave"]?? >
+					<button class="btn btn-info submit" id="save" type="button">
+						<i class="bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+				</#if>
+				<#if permission["P02ReceptionSubmit"]?? >
+					<button class="btn btn-info" id="apply" type="button" onclick="applyCustom('submit','20')">
+						<i class="bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+				</#if>
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+				
+			</div>
+		</div>
+		<div class="form-group" >
+			<table>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('申请人')} : </label>
+						
+					</td>
+					<td>
+						<input id="applier" name="applier" type="hidden" value="${(customEventInfo.applier)!}" >
+						<input id="applierPos" name="applierPos" type="hidden" value="${(customEventInfo.applierPos)!}" >
+						<input id="applierOrg" name="applierOrg" type="hidden" value="${(customEventInfo.applierOrg)!}" >
+						<@form.input
+						id="applierName"  
+						name="applierName" 
+						placeholder="" 
+						required="${i18n.get('不能为空！')}"
+						readonly="readonly"
+						tip="" 
+						value="${(customEventInfo.applierName)!}" 
+						/>
+						
+					</td>
+					
+					<td align="right" width="245px">
+						<label class="no-padding-right" >${i18n.get('客户已建档 ')} : </label>
+					</td>
+					<td>
+						<@form.select style="width: 162px;"
+							id="isExist" 
+							name="isExist" 
+							code="COMMONYN" 
+							value ="${(isExistValue)!}"
+							onChange="setCustomDisp();"
+						/>
+						
+					</td>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('编号 ')} : </label>
+					</td>
+					<td>
+						<@form.input
+						id="eventCode"  
+						name="eventCode" 
+						placeholder="" 
+						readonly="readonly"
+						required="${i18n.get('不能为空！')}"
+						tip="" 
+						value="${(customEventInfo.eventCode)!}" 
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('申请部门 ')}: </label>
+					</td>
+					<td>
+						<@form.input
+							id="applierOrgName"  
+							name="applierOrgName" 
+							readonly ="readonly"
+							placeholder="" 
+							tip="" 
+							value="${(customEventInfo.applierOrgName)!}" 
+							/>
+					</td>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('客户名称')} : </label>
+					</td>
+					<td>
+						<div id="customSet" >
+							<@form.autocomplete  id="customName" name="customName" 
+								idKey='customFullName'
+								style="width: 160px;"
+								required="${i18n.get('请选择客户编号')}"
+								formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+								url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html'; }"
+								value="{customFullName:'${(customEventInfo.customName)!}'
+								,customCode: '${(customEventInfo.customCode)!}'
+								, customGrade: '${(customEventInfo.customGrade)!}'
+								, customGradeName: '${(customEventInfo.customGradeName)!}'
+								}"
+								
+								onSelect="function(data){
+									if( data.customCode != null && data.customCode !='' && data.customCode != 'undefined'){
+										$('#customCode').val(data.customCode);
+										$('#customGrade').val(data.customGrade);
+										$('#customGradeName').val(data.customGradeName);
+										reload_bizoppName();
+									}
+								}" 
+							/>
+						</div>
+						<div id="customSetNoReport" >
+							<@form.input
+							id="customNameNoRpt"  
+							name="customNameNoRpt" 
+							placeholder="" 
+							required="${i18n.get('不能为空！')}"
+							tip="" 
+							value="${(customEventInfo.customNameNoRpt)!}" 
+							/>
+						</div>
+						<input id="customCode" name="customCode" type="hidden" value="${(customEventInfo.customCode)!}">
+					</td>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('状态')}  : </label>
+					</td>
+					<td>
+						<input id="eventStatus" name="eventStatus" type="hidden" value="${(customEventInfo.eventStatus)!}" >
+						<@form.input
+							id="eventStatusName"  
+							name="eventStatusName" 
+							placeholder="" 
+							required="${i18n.get('不能为空！')}"
+							readonly="readonly"
+							tip="" 
+							value="${(customEventInfo.eventStatusName)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('联系方式')} : </label>
+					</td>
+					<td>
+						<@form.input
+							id="createContact"  
+							name="createContact" 
+							required="${i18n.get('不能为空！')}"
+							placeholder="" 
+							tip="" 
+							value="${(customEventInfo.createContact)!}" 
+							/>
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('商机名称')} : </label>
+					</td>
+					<td>
+						<input id="bizoppCode" name="bizoppCode" type="hidden"  value="${(customEventInfo.bizoppCode)!}">
+						<@form.autocomplete  id="bizoppName" name="bizoppName" 
+							idKey='opportunityName'
+							style="width: 160px;"
+							formatResult="function(data) {return '<div >' +data.opportunityName + '</div>';}"
+							url="function(){ 
+								return '${ctx}/lovcustom/autocompleteBizOpp.html?clientId=' + $('#customCode').val(); 
+							}"
+							value="{opportunityName:'${(customEventInfo.bizoppName)!}'
+								, number:'${(customEventInfo.bizoppCode)!}'
+							}"
+							
+							onSelect="function(data){
+								if( data.number != null && data.number !='' && data.number != 'undefined'){
+									$('#bizoppCode').val(data.number);
+								}
+							}" 
+						/>
+					</td>
+					<td align="right" width="240px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('创建日期')} : </label>
+					</td>
+					<td>
+						
+						<@form.input id="eventCreateDate" 
+						name="eventCreateDate" 
+						placeholder="" 
+						readonly="readonly"
+						tip="" 
+						value="${(customEventInfo.eventCreateDate)!}" />
+					</td>
+				</tr>
+			</table>
+			
+		</div>
+		
+		<div class="form-group" >
+			<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('接待要素')}</p>
+			<table>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('客户启程日期')} : </label>
+					</td>
+					<td>
+						<@form.date id="eventDepartureDate"  name="eventDepartureDate" 
+							placeholder="" 
+							tip="" 
+							required="${i18n.get('不能为空！')}"
+							format="yyyy-mm-dd"
+							value="${(customEventInfo.eventDepartureDate?date)!}" 
+							/>
+					</td>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('启程时间')}  : </label>
+					</td>
+					<td>
+						<@form.input id="eventDepartureTime" 
+						name="eventDepartureTime" 
+						placeholder="" 
+						required="${i18n.get('不能为空！')}"
+						tip="" 
+						value="${(customEventInfo.eventDepartureTime)!}" />
+					</td>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('车（船）次航班')}  : </label>
+					</td>
+					<td>
+						<@form.input id="eventFlight" 
+						name="eventFlight" 
+						placeholder="" 
+						required="${i18n.get('不能为空！')}"
+						tip="" 
+						value="${(customEventInfo.eventFlight)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right" >
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('预计到达日期')} : </label>
+					</td>
+					<td>
+						<@form.date id="eventArrivalDate"  name="eventArrivalDate" 
+							placeholder="" 
+							required="${i18n.get('不能为空！')}"
+							tip="" 
+							value="${(customEventInfo.eventArrivalDate?date)!}" 
+							/>
+					</td>
+					<td align="right" >
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('到达时间')} : </label>
+					</td>
+					<td>
+						<@form.input id="eventArrivalTime" 
+						name="eventArrivalTime" 
+						placeholder="" 
+						required="${i18n.get('不能为空！')}"
+						tip="" 
+						value="${(customEventInfo.eventArrivalTime)!}" />
+					</td>
+					<td align="right" >
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('接车地点')} : </label>
+					</td>
+					<td>
+						<@form.input id="eventArrivalLocation" 
+						name="eventArrivalLocation" 
+						placeholder="" 
+						required="${i18n.get('不能为空！')}"
+						tip="" 
+						value="${(customEventInfo.eventArrivalLocation)!}" />
+						
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('逗留天数（天） ')} : </label>
+					</td>
+					<td>
+						<@form.number
+						id="eventStayDays"  
+						name="eventStayDays" 
+						placeholder="" 
+						required="${i18n.get('不能为空！')}"
+						tip="" 
+						value="${(customEventInfo.eventStayDays)!}" 
+						/>
+					</td>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('餐饮安排 ')}: </label>
+					</td>
+					<td>
+						<@form.input id="eventFoodLabel" 
+						name="eventFoodLabel" 
+						placeholder="" 
+						required="${i18n.get('不能为空！')}"
+						tip="" 
+						value="${(customEventInfo.eventFoodLabel)!}" />
+					</td>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('费用承担方案')} : </label>
+					</td>
+					<td>
+						<@form.select  style="width: 160px;"
+						id="eventBearPlan" name="eventBearPlan" 
+						code="CHARGEPROGRAM" 
+						required="${i18n.get('不能为空！')}"
+						value ="${(customEventInfo.eventBearPlan)!}"
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('来访总人数')}  : </label>
+					</td>
+					<td>
+						<@form.input id="personCnt" 
+						name="personCnt" 
+						readonly="readonly"
+						placeholder="" 
+						tip="" 
+						value="${(personCnt)!}" />
+					</td>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('住宿安排')} : </label>
+					</td>
+					<td>
+						<@form.input id="eventAccoLabel" 
+						name="eventAccoLabel" 
+						placeholder="" 
+						required="${i18n.get('不能为空！')}"
+						tip="" 
+						value="${(customEventInfo.eventAccoLabel)!}" />
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('承担部门')}  : </label>
+					</td>
+					<td>
+						<input id="eventBearDeaprtment" name="eventBearDeaprtment" type="hidden" value="${(customEventInfo.eventBearDeaprtment)!}" >
+						<@form.autocomplete  id="eventBearDeaprtmentName" name="eventBearDeaprtmentName" 
+							idKey='id'
+							style="width: 160px;"
+							formatResult="function(data) {return '<div >' +data.namePath + '</div>';}"
+							url="function(){ return '${ctx}/lovcustom/autocompleteOrg.html'; }"
+							value="{namePath:'${(customEventInfo.eventBearDeaprtmentName)!}'
+							, id: '${(customEventInfo.eventBearDeaprtment)!}'
+							}"
+							
+							onSelect="function(data){
+								if( data.id != null && data.id !='' && data.id != 'undefined'){
+									$('#eventBearDeaprtment').val(data.id);
+								}
+							}" 
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('来访目的 ')}: </label>
+					</td>
+					<td>
+						<@form.input id="eventGoal" 
+						name="eventGoal" 
+						placeholder="" 
+						required="${i18n.get('不能为空！')}"
+						tip="" 
+						value="${(customEventInfo.eventGoal)!}" />
+					</td>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('业务陪同人员')} : </label>
+					</td>
+					<td>
+						<@form.input id="eventLeadIn" 
+						name="eventLeadIn" 
+						placeholder="" 
+						required="${i18n.get('不能为空！')}"
+						tip="" 
+						value="${(customEventInfo.eventLeadIn)!}" />
+					</td>
+					<td align="right" width="200px">
+						
+					</td>
+					<td>
+						
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('客户等级')} : </label>
+					</td>
+					<td>
+						<input id="customGrade" name="customGrade" type="hidden" value="${(customEventInfo.customGrade)!}">
+						<@form.input id="customGradeName" 
+						name="customGradeName" 
+						readonly="readonly"
+						placeholder="" 
+						tip="" 
+						value="${(customEventInfo.customGradeName)!}" />
+					</td>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('客户重要程度详细描述')} : </label>
+					</td>
+					<td>
+						<@form.input id="eventLev" 
+						name="eventLev" 
+						placeholder="" 
+						required="${i18n.get('不能为空！')}"
+						tip="" 
+						value="${(customEventInfo.eventLev)!}" />
+					</td>
+					<td align="right" width="200px">
+						
+					</td>
+					<td>
+						
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('客户关注点 ')}: </label>
+					</td>
+					<td colspan="5" >
+						<input name="is1" type="checkbox" id="is1" value="${(customEventInfo.is1)!}" style="width: 20px;" onclick="changeCheckValue2()"/> 技术 
+						<input name="is2" type="checkbox" id="is2" value="${(customEventInfo.is2)!}" style="width: 20px;" onclick="changeCheckValue2()"/> 规模 
+						<input name="is3" type="checkbox" id="is3" value="${(customEventInfo.is3)!}" style="width: 20px;" onclick="changeCheckValue2()"/> 生产
+						<input name="is4" type="checkbox" id="is4" value="${(customEventInfo.is4)!}" style="width: 20px;" onclick="changeCheckValue2()"/> 体系
+						<input name="is5" type="checkbox" id="is5" value="${(customEventInfo.is5)!}" style="width: 20px;" onclick="changeCheckValue2()"/> 价格
+						<input name="is6" type="checkbox" id="is6" value="${(customEventInfo.is6)!}" style="width: 20px;" onclick="changeCheckValue2()"/> 服务 
+						<input name="is7" type="checkbox" id="is7" value="${(customEventInfo.is7)!}" style="width: 20px;" onclick="changeCheckValue2()"/> 其他
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('关注产品系列/型号')} : </label>
+					</td>
+					<td colspan="5" >
+						<@form.textArea id="eventAim" 
+						name="eventAim" 
+						required="${i18n.get('不能为空！')}"
+						width="143px" 
+						height="1" 
+						value="${(customEventInfo.eventAim)!}" 
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('是否赠送礼品及规格')} : </label>
+					</td>
+					<td colspan="5" >
+						<@form.textArea id="eventGift" 
+						name="eventGift" 
+						width="143px" 
+						required="${i18n.get('不能为空！')}"
+						height="1" 
+						value="${(customEventInfo.eventGift)!}" 
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('制作欢迎辞内容')} : </label>
+					</td>
+					<td colspan="5" >
+						<@form.textArea id="eventProfile" 
+						name="eventProfile" 
+						width="143px" 
+						required="${i18n.get('不能为空！')}"
+						height="1" 
+						value="${(customEventInfo.eventProfile)!}" 
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('行程安排')} : </label>
+					</td>
+					<td colspan="5" >
+						<@form.textArea id="eventPlan" 
+						name="eventPlan" 
+						required="${i18n.get('不能为空！')}"
+						width="143px" 
+						height="3" 
+						value="${(customEventInfo.eventPlan)!}" 
+						/>
+					</td>
+				</tr>
+					<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('协助事项')} : </label>
+					</td>
+					<td colspan="5" >
+						<input name="is17" type="checkbox" id="is17" value="${(customEventInfo.is17)!}" style="width: 20px;" onclick="changeCheckValue2()"/> 制作欢迎牌  
+						<input name="is11" type="checkbox" id="is11" value="${(customEventInfo.is11)!}" style="width: 20px;" onclick="changeCheckValue2()"/> 会议室准备 
+						<input name="is12" type="checkbox" id="is12" value="${(customEventInfo.is12)!}" style="width: 20px;" onclick="changeCheckValue2()"/> 展厅准备 
+						<input name="is13" type="checkbox" id="is13" value="${(customEventInfo.is13)!}" style="width: 20px;" onclick="changeCheckValue2()"/> 公司介绍 
+						<input name="is14" type="checkbox" id="is14" value="${(customEventInfo.is14)!}" style="width: 20px;" onclick="changeCheckValue2()"/> 技术交流
+						<input name="is15" type="checkbox" id="is15" value="${(customEventInfo.is15)!}" style="width: 20px;" onclick="changeCheckValue2()"/> 生产参观
+						<input name="is16" type="checkbox" id="is16" value="${(customEventInfo.is16)!}" style="width: 20px;" onclick="changeCheckValue2()"/> 高层接待
+						<input name="is18" type="checkbox" id="is18" value="${(customEventInfo.is18)!}" style="width: 20px;" onclick="changeCheckValue2()"/> 样板项目参观
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('讲解PPT及技术 ')}: </label>
+					</td>
+					<td colspan="5" >
+						<@form.textArea id="eventTect" 
+						name="eventTect" 
+						width="143px" 
+						required="${i18n.get('不能为空！')}"
+						height="1" 
+						value="${(customEventInfo.eventTect)!}" 
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('其他要求')}  : </label>
+					</td>
+					<td colspan="5" >
+						<@form.textArea id="eventOther" 
+						name="eventOther" 
+						width="143px" 
+						height="2" 
+						value="${(customEventInfo.eventOther)!}" 
+						/>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div class="form-group" >
+			<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('接待中心')}</p>
+			<table>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('负责人')}  : </label>
+					</td>
+					<td>
+						<input id="chargePerson" name="chargePerson" type="hidden" value="${(customEventInfo.chargePerson)!}" >
+						<@form.autocomplete  id="chargePersonName" name="chargePersonName" 
+							idKey='employeeId'
+							style='width:147px'
+							multiple="false"
+							formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+							url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+							value="{
+								employeeName:'${(customEventInfo.chargePersonName)!}'
+								,employeeNo:'${(customEventInfo.chargePersonNo)!}'
+								,employeeId:'${(customEventInfo.chargePerson)!}'
+							}"
+							
+							onSelect="function(data){
+								if( data.id != null && data.id !='' && data.id != 'undefined'){
+									$('#chargePerson').val(data.employeeId);
+								}
+							}" 
+						/>
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('手机')}  : </label>
+					</td>
+					<td>
+						<@form.input id="mobile" 
+						name="mobile" 
+						placeholder="" 
+						tip="" 
+						value="${(customEventInfo.mobile)!}" />
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('提交人反馈意见')}  : </label>
+					</td>
+					<td>
+						<@form.select  style="width: 147px;"
+						id="eventResult" name="eventResult" 
+						code="FEEBACK" 
+						value ="${(customEventInfo.eventResult)!}"
+						/>
+						
+						<#if permission["P02ReceptionSubmit"]?? >
+							<button class="btn btn-info" id="feedBack" type="button" onclick="updateFeedBack()">
+								<i class="bigger-110"></i>
+								${i18n.get('反馈')}
+							</button>
+						</#if>
+					</td>
+				</tr>
+			</table>
+		</div>	
+		<div class="hr hr-18 dotted hr-double"></div>
+		
+	</@form.form>
+	
+	<@plug.tabs  tabMain=tabMain>
+	</@plug.tabs>
+	</@form.panel>
+</@cui.body2>
+<script type="text/javascript">
+	$(document).ready(function() {
+		setCustomDisp();
+		$("#eventResult").attr("disabled","true");
+		$("#feedBack").attr("disabled","true");
+		
+		
+		if ('${mode!}' === 'ADD'){
+			$("#apply").attr("disabled","true");
+		}
+		
+		if ('${(saveDisabled)!}' === 'disabled'){
+			$("#save").attr("disabled","true");
+		}
+		
+
+		if ('${(customEventInfo.eventStatus)!}' === 'CUSTOM_NORMAL_STATUS_40'){
+			$("#apply").attr("disabled","true");
+			$("#eventResult").removeAttr("disabled");
+			$("#feedBack").removeAttr("disabled");
+		}
+		
+
+
+		
+		
+		var is1= $("#is1").val();
+		if(is1 == '0'){
+			  $("#is1").removeAttr("checked"); 
+		}else if (is1 == '1'){
+			  $("#is1").attr("checked","true"); 
+		}else {
+			 $("#is1").removeAttr("checked"); 
+		}
+		
+		var is2= $("#is2").val();
+		if(is2 == '0'){
+			  $("#is2").removeAttr("checked"); 
+		}else if (is2 == '1'){
+			  $("#is2").attr("checked","true"); 
+		} else {
+			 $("#is2").removeAttr("checked"); 
+		}
+		
+		var is3= $("#is3").val();
+		if(is3 == '0'){
+			  $("#is3").removeAttr("checked"); 
+		}else if (is3 == '1'){
+			  $("#is3").attr("checked","true"); 
+		} else {
+			 $("#is3").removeAttr("checked"); 
+		}
+		
+		var is4= $("#is4").val();
+		if(is4 == '0'){
+			  $("#is4").removeAttr("checked"); 
+		}else if (is4 == '1'){
+			  $("#is4").attr("checked","true"); 
+		} else {
+			 $("#is4").removeAttr("checked"); 
+		}
+		
+		var is5= $("#is5").val();
+		if(is5 == '0'){
+			  $("#is5").removeAttr("checked"); 
+		}else if (is5 == '1'){
+			  $("#is5").attr("checked","true"); 
+		} else {
+			 $("#is5").removeAttr("checked"); 
+		}
+		
+		var is6= $("#is6").val();
+		if(is6 == '0'){
+			  $("#is6").removeAttr("checked"); 
+		}else if (is6 == '1'){
+			  $("#is6").attr("checked","true"); 
+		} else {
+			 $("#is6").removeAttr("checked"); 
+		}
+		
+		var is7= $("#is7").val();
+		if(is7 == '0'){
+			  $("#is7").removeAttr("checked"); 
+		}else if (is7 == '1'){
+			  $("#is7").attr("checked","true");
+		} else {
+			 $("#is7").removeAttr("checked");
+		}
+		
+		
+		var is17= $("#is17").val();
+		if(is17 == '0'){
+			  $("#is17").removeAttr("checked"); 
+		}else if (is17 == '1'){
+			  $("#is17").attr("checked","true"); 
+		}else {
+			 $("#is17").removeAttr("checked"); 
+		}
+		
+		var is11= $("#is11").val();
+		if(is11 == '0'){
+			  $("#is11").removeAttr("checked"); 
+		}else if (is11 == '1'){
+			  $("#is11").attr("checked","true"); 
+		}else {
+			 $("#is11").removeAttr("checked"); 
+		}
+		
+		var is12= $("#is12").val();
+		if(is12 == '0'){
+			  $("#is12").removeAttr("checked"); 
+		}else if (is12 == '1'){
+			  $("#is12").attr("checked","true"); 
+		} else {
+			 $("#is12").removeAttr("checked"); 
+		}
+		
+		var is13= $("#is13").val();
+		if(is13 == '0'){
+			  $("#is13").removeAttr("checked"); 
+		}else if (is13 == '1'){
+			  $("#is13").attr("checked","true"); 
+		} else {
+			 $("#is13").removeAttr("checked"); 
+		}
+		
+		var is14= $("#is14").val();
+		if(is14 == '0'){
+			  $("#is14").removeAttr("checked"); 
+		}else if (is14 == '1'){
+			  $("#is14").attr("checked","true"); 
+		} else {
+			 $("#is14").removeAttr("checked"); 
+		}
+		
+		var is15= $("#is15").val();
+		if(is15 == '0'){
+			  $("#is15").removeAttr("checked"); 
+		}else if (is15 == '1'){
+			  $("#is15").attr("checked","true"); 
+		} else {
+			 $("#is15").removeAttr("checked"); 
+		}
+		
+		var is16= $("#is16").val();
+		if(is16 == '0'){
+			  $("#is16").removeAttr("checked"); 
+		}else if (is16 == '1'){
+			  $("#is16").attr("checked","true"); 
+		} else {
+			 $("#is16").removeAttr("checked"); 
+		}
+		
+		var is18= $("#is18").val();
+		if(is18 == '0'){
+			  $("#is18").removeAttr("checked"); 
+		}else if (is18 == '1'){
+			  $("#is18").attr("checked","true"); 
+		}else {
+			 $("#is18").removeAttr("checked"); 
+		}
+		
+		
+		if ('${(customEventInfo.eventStatus)!}' === 'CUSTOM_NORMAL_STATUS_20'){
+			$("#apply").attr("disabled","true");
+			$("#feedBack").removeAttr("disabled");
+			$("#eventResult").removeAttr("disabled");
+		}
+		
+	});
+	
+	
+	function updateFeedBack(){
+		var cid = '${customEventInfo.id!}';
+		var eventResult = $("#eventResult").val();
+		bootbox.confirm('${i18n.get('是否要提交反馈？')}' , function(result) {		
+			if(result) {
+				ajax({
+					type:'post',
+					url : '${ctx}/custom/event/updateFeedBack.html',  
+					data: "cid="+cid+"&eventResult="+eventResult,
+					success : function(result) {
+						alert('${i18n.get('提交反馈成功！')}'); 
+					}
+				});
+			}
+		});	
+	}
+	
+	
+	function changeCheckValue2() {
+		var checkedIs1 = $("#is1").is(':checked')
+		if (checkedIs1 == true) {
+			$("#is1").val('1');
+			$("#is1").attr("checked", "true");
+		} else {
+			$("#is1").val('0');
+			$("#is1").removeAttr("checked");
+		}
+				
+		var checkedIs2 = $("#is2").is(':checked')
+		if (checkedIs2 == true) {
+			$("#is2").val('1');
+			$("#is2").attr("checked", "true");
+		} else {
+			$("#is2").val('0');
+			$("#is2").removeAttr("checked");
+		}
+		
+		var checkedIs3 = $("#is3").is(':checked')
+		if (checkedIs3 == true) {
+			$("#is3").val('1');
+			$("#is3").attr("checked", "true");
+		} else {
+			$("#is3").val('0');
+			$("#is3").removeAttr("checked");
+		}
+		
+		var checkedIs4 = $("#is4").is(':checked')
+		if (checkedIs4 == true) {
+			$("#is4").val('1');
+			$("#is4").attr("checked", "true");
+		} else {
+			$("#is4").val('0');
+			$("#is4").removeAttr("checked");
+		}
+		
+		var checkedIs5 = $("#is5").is(':checked')
+		if (checkedIs5 == true) {
+			$("#is5").val('1');
+			$("#is5").attr("checked", "true");
+		} else {
+			$("#is5").val('0');
+			$("#is5").removeAttr("checked");
+		}
+		
+		var checkedIs6 = $("#is6").is(':checked')
+		if (checkedIs6 == true) {
+			$("#is6").val('1');
+			$("#is6").attr("checked", "true");
+		} else {
+			$("#is6").val('0');
+			$("#is6").removeAttr("checked");
+		}
+		
+		var checkedIs7 = $("#is7").is(':checked')
+		if (checkedIs7 == true) {
+			$("#is7").val('1');
+			$("#is7").attr("checked", "true");
+		} else {
+			$("#is7").val('0');
+			$("#is7").removeAttr("checked");
+		}
+		
+		var checkedIs17 = $("#is17").is(':checked')
+		if (checkedIs17 == true) {
+			$("#is17").val('1');
+			$("#is17").attr("checked", "true");
+		} else {
+			$("#is17").val('0');
+			$("#is17").removeAttr("checked");
+		}
+		
+		var checkedIs11 = $("#is11").is(':checked')
+		if (checkedIs11 == true) {
+			$("#is11").val('1');
+			$("#is11").attr("checked", "true");
+		} else {
+			$("#is11").val('0');
+			$("#is11").removeAttr("checked");
+		}
+		
+		var checkedIs12 = $("#is12").is(':checked')
+		if (checkedIs12 == true) {
+			$("#is12").val('1');
+			$("#is12").attr("checked", "true");
+		} else {
+			$("#is12").val('0');
+			$("#is12").removeAttr("checked");
+		}
+		
+		var checkedIs13 = $("#is13").is(':checked')
+		if (checkedIs13 == true) {
+			$("#is13").val('1');
+			$("#is13").attr("checked", "true");
+		} else {
+			$("#is13").val('0');
+			$("#is13").removeAttr("checked");
+		}
+		
+		var checkedIs14 = $("#is14").is(':checked')
+		if (checkedIs14 == true) {
+			$("#is14").val('1');
+			$("#is14").attr("checked", "true");
+		} else {
+			$("#is14").val('0');
+			$("#is14").removeAttr("checked");
+		}
+		
+		var checkedIs15 = $("#is15").is(':checked')
+		if (checkedIs15 == true) {
+			$("#is15").val('1');
+			$("#is15").attr("checked", "true");
+		} else {
+			$("#is15").val('0');
+			$("#is15").removeAttr("checked");
+		}
+		
+		var checkedIs16 = $("#is16").is(':checked')
+		if (checkedIs16 == true) {
+			$("#is16").val('1');
+			$("#is16").attr("checked", "true");
+		} else {
+			$("#is16").val('0');
+			$("#is16").removeAttr("checked");
+		}
+		
+		var checkedIs18 = $("#is18").is(':checked')
+		if (checkedIs18 == true) {
+			$("#is18").val('1');
+			$("#is18").attr("checked", "true");
+		} else {
+			$("#is18").val('0');
+			$("#is18").removeAttr("checked");
+		}
+	}
+	
+	function applyCustom(operate,status){
+		var msg = "${i18n.get('没有有效联系人，请完善联系人表格后提交！')}";
+		var personCnt = $("#personCnt").val();
+		if (personCnt == "0") {
+			alert(msg);
+			return;
+		}
+		msg= "${i18n.get('确定启动活动申请流程吗？')}";
+		
+		var formDatas = $('#form_customEventInfo').serialize();
+		formDatas = "id=${(customEventInfo.id)!}&"+formDatas;
+		
+		bootbox.confirm(msg, function(result) {
+			if(result) {
+				$.ajax({
+					type : "POST",
+					url : "${ctx}/custom/eventApply.html",
+					async: true,
+					data : formDatas, 
+					dataType : 'json',
+					success : function(msg) {
+						alert(msg.message);
+						parent.currentParent2.reload_tableEventList(); 
+						javascript:api.close();
+					},
+					error: function(e) {
+						alert(e.responseJSON.message);
+					} 
+				});
+			}
+		});
+	}
+	
+	function customDataGet(){
+		var formDatas = $('#form_customHandoverList').serialize();
+		formDatas = "id=${(customEventInfo.id)!}&"+formDatas;
+		var msg = "${i18n.get('确定提交反馈意见嘛吗？')}";
+		
+		bootbox.confirm(msg, function(result) {
+			if(result) {
+				$.ajax({
+					type : "POST",
+					url : "${ctx}/custom/event/feedBack.html",
+					async: true,
+					data : formDatas, 
+					dataType : 'json',
+					success : function(msg) {
+						alert(msg.message);
+					},
+					error: function(e) {
+						alert(e.responseJSON.message);
+					} 
+				});
+			}
+		});
+	}
+	
+	function setCustomDisp(){
+		var isExistVal = $('#isExist').val();
+		if (isExistVal === undefined || isExistVal === null ){
+			isExistVal = '${isExistValue!}';
+		}
+		
+		$("#customSet").hide();
+		$("#customSetNoReport").hide();
+		if(isExistVal === 'COMMONYN_Y'){
+			$("#customSet").show();
+		}else{
+			$("#customSetNoReport").show();
+		}
+	}
+</script>
+<script src="${ctx}/anne/js/util.js"></script>
+</#escape>

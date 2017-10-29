@@ -1,0 +1,32 @@
+<#escape x as x?html>
+<#if (permission["P02ReceptionT2ActionAdd"]?? && ("${(customEventInfo.eventStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customEventInfo.eventStatus)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customEventInfo.eventStatus)!}" == "CUSTOM_NORMAL_STATUS_20"))>
+	<#assign addActionURL = "'${ctx}/custom/event/item/add.html?id=${(customEventInfo.id)!}'"    />
+</#if>
+
+<#if (permission["P02ReceptionT2ActionEdit"]?? && ("${(customEventInfo.eventStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customEventInfo.eventStatus)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customEventInfo.eventStatus)!}" == "CUSTOM_NORMAL_STATUS_20"))>
+	<#assign editActionURL= "'${ctx}/custom/event/item/edit.html'" />
+</#if>
+
+<#if (permission["P02ReceptionT2ActionDelete"]?? && ("${(customEventInfo.eventStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customEventInfo.eventStatus)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customEventInfo.eventStatus)!}" == "CUSTOM_NORMAL_STATUS_20"))>
+	<#assign deleteActionURL = "'${ctx}/custom/event/item/delete.html'"    />
+</#if>
+
+<@form.table id="item" 
+class="col-xs-12"
+height="131px"
+title="${i18n.get('协助事项')}" 
+url = "${ctx}/custom/event/item/page.html?id=${(customEventInfo.id)!}"
+rowNum = "5" 
+addURL = "${addActionURL!}"
+editURL = "${editActionURL!}"
+deleteURL= "${deleteActionURL!}" 
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'eventPid',label:'${i18n.get('编码')}',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'itemName',label:'${i18n.get('协助事项')}',hidden:false,width:200,sortable:true,align:'center' },
+	{name:'comment',label:'${i18n.get('具体协助事项')}',hidden:false,width:300,sortable:true,align:'center' }
+	]" 
+	>
+</@form.table>
+
+</#escape>

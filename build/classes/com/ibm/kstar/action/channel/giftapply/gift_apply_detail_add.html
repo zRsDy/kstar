@@ -1,0 +1,90 @@
+<@cui.body2>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1" success="function(){ 
+		try{
+			parent.currentParent.reload_detail_2('${(detailInfo.applyId)!}','${(detailInfo.id)!}');
+		}catch(e){
+			parent.currentParent2.reload_detail_2('${(detailInfo.applyId)!}','${(detailInfo.id)!}');
+		}
+		}" 
+		class="form-horizontal">	
+			<div align="center">
+				<table>
+					<tr>
+						<td align="right" width="50px"><strong style="color: red;">*</strong>${i18n.get('编号 :')}</td>
+						<td width="350px">
+							<input type="hidden" id="giftId" name="giftId" value="${(detailInfo.giftId)!}" />
+							<@form.input id="giftCode" name="giftCode" style="width:163px;" tip="${i18n.get('资料或礼品编号')}" readonly="true" required="${i18n.get('不能为空')}" value="${(detailInfo.giftManage.giftCode)!}" />
+							<@biz.picker_product id="select" url="${ctx}/giftApply/selectGift.html" 
+								callback="function(data){
+									if(data){
+										$('#giftId').val(data.id);
+										$('#giftCode').val(data.giftCode);
+										$('#giftDesc').val(data.giftDesc);
+										$('#giftType').val(data.giftTypeName);
+										$('#giftUnit').val(data.giftUnitName);
+										$('#giftPrice').val(data.giftPrice);
+									 }
+								}"
+							/>
+						</td>
+						<td align="right" width="50px">
+							<label class="no-padding-right" for="giftDesc"> ${i18n.get('描述 :')} </label>
+						</td>
+						<td width="350px">
+							<@form.input id="giftDesc" name="giftDesc" style="width:163px;" tip="${i18n.get('资料或礼品的描述')}" readonly="true" value="${(detailInfo.giftManage.giftDesc)!}" />
+						</td>
+						<td align="right" width="100px">
+							<label class="no-padding-right" for="giftType"> ${i18n.get('分类 :')} </label>		
+						</td>
+						<td width="350px">
+							<@form.input id="giftType" name="giftType" style="width:163px;" tip="${i18n.get('资料或礼品的分类')}" readonly="true" value="${(detailInfo.giftManage.giftTypeName)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">
+							<label class="no-padding-right" for="giftUnit"> ${i18n.get('单位 :')} </label>
+						</td>
+						<td width="280px">
+							<@form.input id="giftUnit" name="giftUnit" style="width:163px;" tip="${i18n.get('资料或礼品的单位')}" readonly="true" value="${(detailInfo.giftManage.giftUnitName)!}" />
+						</td>
+						<td align="right" width="100px">
+							<label class="no-padding-right" for="giftPrice">${i18n.get(' 单价 :')} </label>
+						</td>
+						<td width="280px">
+							<@form.number id="giftPrice" name="giftPrice" style="width:163px;" tip="${i18n.get('资料或礼品的单价')}" readonly="true" value="${(detailInfo.giftManage.giftPrice)!}" />
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('申请数量 :')}</td>
+						<td width="280px">
+							<@form.number id="applyQuantity" name="applyQuantity" style="width:163px;" tip="${i18n.get('申请数量')}" required="${i18n.get('不能为空')}" value="${(detailInfo.applyQuantity)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">
+							<label class="no-padding-right" for="explain">${i18n.get('说明 :')}</label>
+						</td>
+						<td colspan="5">
+							<@form.textArea id="explain" style="width:1063px;" name="explain" tip="${i18n.get('申请行说明')}" value="${(detailInfo.explain)!}" />
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<#if !detailInfo?? || !detailInfo.id?? || statusEdit>
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					</#if>
+					<button class="btn" type="button" onclick="javascript:frameElement.api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+	</@form.panel>
+</@cui.body2>

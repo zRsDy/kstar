@@ -1,0 +1,276 @@
+<@pui.body>
+<script language="javascript">
+$(function(){
+	$(".print").click(function(){
+		var printData = document.getElementById("printDataDiv").innerHTML;
+		document.body.innerHTML = printData;
+		
+		window.print();
+	
+		/* newwin = window.open("", "newwin");
+        newwin.document.body.innerHTML = printData;
+        newwin.window.print();
+        newwin.window.close(); */
+	});
+})
+
+$(document).ready(function(){
+	//debugger;
+	createListTable();
+});
+
+function createListTable(){
+	//var listTable = document.getElementById("listTable");
+	var printData = document.getElementById("printDataDiv").children[1].cloneNode(true);
+	document.getElementById("printDataDiv").appendChild(printData);
+	printData.id = "";
+	printData.name = "printData";
+	printData.style.display = "";
+	var listTable = printData.children[0].children[0].children[1].children[0].children[1];
+	var i = 1;
+	<#list list as bean>
+		var tr = listTable.children[0].children[1].cloneNode(true);
+		tr.style.display = "";
+		
+		tr.children[0].innerHTML = "${(bean.lineNo)!}";
+		tr.children[1].innerHTML = "${(bean.act)!}";
+		tr.children[2].innerHTML = "${(bean.proBrand)!'KSTAR'}";
+		tr.children[3].innerHTML = "${(bean.proModel)!}";
+		tr.children[4].innerHTML = "${(bean.materielCode)!}";
+		tr.children[5].innerHTML = "${(bean.proQty)!}";
+		tr.children[6].innerHTML = "${(bean.price)!}";
+		tr.children[7].innerHTML = "${(bean.amount)!}";
+		tr.children[8].innerHTML = "${(bean.requestDate?date)!}";
+		tr.children[9].innerHTML = "${(bean.spCode)!}";
+		tr.children[10].innerHTML = "${(bean.sourceCode)!}";
+		
+		<#if bean.isSp == 'No'>
+		tr.children[11].innerHTML = "${i18n.get('否')}";
+		<#else>
+		tr.children[11].innerHTML = "${i18n.get('是')}";
+		</#if>
+		
+		listTable.children[0].appendChild(tr);
+		
+		if(listTable.offsetHeight > 510){
+			listTable.children[0].removeChild(tr);
+			
+			var index = document.getElementById("pageIndex").children[0].children[0].cloneNode(true);
+			
+			index.children[0].innerHTML = i;
+			i++;
+			var mt = printData.children[0].children[0];
+			mt.appendChild(index);
+			
+			printData = document.getElementById("printDataDiv").children[1].cloneNode(true);
+			document.getElementById("printDataDiv").appendChild(printData);
+			printData.id = "";
+			printData.name = "printData";
+			printData.style.display = "";
+			listTable = printData.children[0].children[0].children[1].children[0].children[1];
+			listTable.children[0].appendChild(tr);
+		}
+		
+		if((${bean_index}+1) == ${list?size}){
+			var index = document.getElementById("pageIndex").children[0].children[0].cloneNode(true);
+			
+			index.children[0].innerHTML = i;
+			var mt = printData.children[0].children[0];
+			mt.appendChild(index);
+			
+			var tf = document.getElementById("listTableTotal").children[0].children[0];
+			listTable.children[0].appendChild(tf.cloneNode(true));
+		}
+	</#list>
+	
+	var printDatas = document.getElementById("printDataDiv").childNodes;
+	
+	for(var j = 0; j < printDatas.length; j++){
+		if("printData" == printDatas[j].name){
+			var mt = printDatas[j].children[0].children[0];
+			var index = mt.lastChild.children[0].innerHTML;
+			
+			mt.lastChild.children[0].innerHTML = "${i18n.get('订单号')}:${(orderHeader.orderCode)!}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${i18n.get('页码:')}"+index+"/"+i;
+		}
+	}
+}
+</script>
+
+<div style="margin:10px auto;height:30px; width: 50px;">
+	<input type="button" class="m-btn highlight print" style="float: right;" value=" ${i18n.get('打印')} " />
+</div>
+
+<div id="printDataDiv">
+<style >
+	@page {
+      size: auto;  /* auto is the initial value */
+      margin: 0mm; /* this affects the margin in the printer settings */
+    }
+	body {font-size:14px;}
+	*{padding:0;margin:0;color:#000;}
+	table.item{border-top:none;}
+	.row{line-height: 30px; width:100%;margin:0;}
+	.row2{line-height: 26px; width:100%;margin:0;}
+	.txt{float:left;}
+	.line{float:left; border-bottom:solid 1px #333;height:24px;}
+	.width10{width:20%;float:left;height:20px;}
+</style>
+<div style="width: 24cm;margin: 0 auto;vertical-align: middle;height: 1240px;display: none;">
+	<!-- <div><img src="${ctx}/assets/img2/print.png" height="34" /></div> -->
+	<table style="width: 100%;">
+		<tr name="rHead">
+			<td>
+				<table style="width: 100%;font-size: 14px;">
+			 		<tr style="width: 100%">
+			 			<br>
+			 			<td style="width: 100%"><div style="font-size: 24px; width: 100%; text-align: center; font-weight:bold;">${i18n.get('科士达产品订货单（合同）')}</div></td>
+			 		</tr>
+			 		<tr style="width: 100%">
+			 			<td style="width: 100%">
+			 				<div class="row" >
+			 					<div class="txt" style="width:15%;">${i18n.get('订货单位（甲方）：')}</div><div class="txt" style="width:85%;">${i18n.get('深圳科士达科技股份有限公司')}</div>
+			 				</div>
+			 			</td>
+			 		</tr>
+			 		<tr style="width: 100%">
+			 			<td style="width: 100%">
+			 				<div class="row">
+								<div class="txt" style="width:15%;">${i18n.get('订货单位（乙方）：')}</div><div class="line" style="width:85%;">${(orderHeader.customerName)!}</div>
+							</div>
+			 			</td>
+			 		</tr>
+			 		<tr style="width: 100%">
+			 			<td style="width: 100%">
+			 				<div class="row">
+								<div class="txt" style="width:10%">${i18n.get('收货单位：')}</div><div class="line" style="width:40%">${(orderHeader.customerName)!}</div>
+								<div class="txt" style="width:10%">${i18n.get('收货人：')}</div><div class="line" style="width:40%">${(orderHeader.custAttnName)!}</div>
+							</div>
+			 			</td>
+			 		</tr>
+			 		<tr style="width: 100%">
+			 			<td style="width: 100%">
+			 				<div class="row">
+								<div class="txt" style="width:10%">${i18n.get('收货地址：')}</div><div class="line" style="width:90%;">${(orderHeader.deliveryAddress)!}</div>
+							</div>
+			 			</td>
+			 		</tr>
+			 		<tr style="width: 100%">
+			 			<td style="width: 100%">
+			 				<div class="row">
+								<div class="txt" style="width:10%">${i18n.get('收货电话：')}</div><div class="line" style="width:40%">${(orderHeader.custAttnTel)!}</div>
+							</div>
+			 			</td>
+			 		</tr>
+			 		<tr style="width: 100%">
+			 			<td style="width: 100%">
+			 				<div class="row">
+								<div class="txt" style="width:10%">${i18n.get('订购日期：')}</div><div class="line" style="width:40%">${(orderHeader.orderDate?date)!}</div>
+								<div class="txt" style="width:10%">${i18n.get('订单状态：')}</div><div class="line" style="width:40%">${(orderHeader.executeStatusLable)!}</div>
+							</div>
+			 			</td>
+			 		</tr>
+			 		<tr style="width: 100%">
+			 			<td style="width: 100%">
+			 				<div class="row">
+								<div style="width:10%;float: left;">${i18n.get('补充说明：')}</div>
+								<div style="width:90%; border-bottom:solid 1px #333;float: left;">${(orderHeader.remark)!}</div>
+							</div>
+			 			</td>
+			 		</tr>
+			 	</table>
+			</td>
+		</tr>
+		<tr name="rBody" style="height: 530px;vertical-align: top;"><td>
+			<div style="line-height: 30px; width:100%;margin:0;">${i18n.get('依据')}《<span style="font-weight:bold;">${i18n.get('科士达授权经销商协议')}</span>》，${i18n.get('今乙方向甲方订购以下产品')}：</div>
+			<table style="width:24cm;font-size: 14px;border-bottom :1px #333 solid;" cellspacing=0>
+				<tr style="line-height: 20px;font-weight: bold;">
+					<td class="center" width="40px" style="border-right :1px #333 solid;border-top :1px #333 solid;border-bottom :1px #333 solid;border-left :1px #333 solid;">${i18n.get('行号')}</td>
+					<td class="center" width="100px" style="border-right :1px #333 solid;border-top :1px #333 solid;border-bottom :1px #333 solid;">${i18n.get('产品名称')}</td>
+					<td class="center" width="60px" style="border-right :1px #333 solid;border-top :1px #333 solid;border-bottom :1px #333 solid;">${i18n.get('品牌商标')}</td>
+					<td class="center" width="60px" style="border-right :1px #333 solid;border-top :1px #333 solid;border-bottom :1px #333 solid;">${i18n.get('型号规格')}</td>
+					<td class="center" width="80px" style="border-right :1px #333 solid;border-top :1px #333 solid;border-bottom :1px #333 solid;">${i18n.get('料号')}</td>
+					<#if employeeType == 'A'>       
+					</#if>    
+					<td class="center" width="60px" style="border-right :1px #333 solid;border-top :1px #333 solid;border-bottom :1px #333 solid;">${i18n.get('数量')}</td>
+					<td class="center" width="60px" style="border-right :1px #333 solid;border-top :1px #333 solid;border-bottom :1px #333 solid;">${i18n.get('单价')}</td>
+					<td class="center" width="60px" style="border-right :1px #333 solid;border-top :1px #333 solid;border-bottom :1px #333 solid;">${i18n.get('金额')}</td>
+					<td class="center" width="60px" style="border-right :1px #333 solid;border-top :1px #333 solid;border-bottom :1px #333 solid;">${i18n.get('交货时间')}</td>
+					<td class="center" width="60px" style="border-right :1px #333 solid;border-top :1px #333 solid;border-bottom :1px #333 solid;">${i18n.get('特价申请编号')}</td>
+					<td class="center" width="60px" style="border-right :1px #333 solid;border-top :1px #333 solid;border-bottom :1px #333 solid;">${i18n.get('商机编号')}</td>
+					<td class="center" width="50px" style="border-right :1px #333 solid;border-top :1px #333 solid;border-bottom :1px #333 solid;">${i18n.get('是否特价')}</td>
+				</tr>
+				<tr style="line-height: 20px;display: none;">
+					<td align="center" style="border-right :1px #333 solid;border-top :1px #333 solid;border-left : 1px #333 solid;"></td>
+					<td align="left" style="border-right :1px #333 solid;border-top :1px #333 solid;"></td>
+					<td align="left" style="border-right :1px #333 solid;border-top :1px #333 solid;"></td>
+					<td align="left" style="border-right :1px #333 solid;border-top :1px #333 solid;"></td>
+					<td align="center" style="border-right :1px #333 solid;border-top :1px #333 solid;"></td>
+					<#if employeeType == 'A'>
+					</#if>
+					<td align="center" style="border-right :1px #333 solid;border-top :1px #333 solid;"></td>
+					<td align="center" style="border-right :1px #333 solid;border-top :1px #333 solid;"></td>
+					<td align="center" style="border-right :1px #333 solid;border-top :1px #333 solid;"></td>
+					<td align="left" style="border-right :1px #333 solid;border-top :1px #333 solid;"></td>
+					<td align="left" style="border-right :1px #333 solid;border-top :1px #333 solid;"></td>
+					<td align="left" style="border-right :1px #333 solid;border-top :1px #333 solid;"></td>
+					<td align="center" style="border-right :1px #333 solid;border-top :1px #333 solid;"></td>
+				</tr>
+			</table>
+		</td></tr>
+		<tr name="rFoot"><td>
+			<div class="row2">${i18n.get('本订单订货条款')}：</div>
+			<div class="row2">${i18n.get('1．本订单为甲乙双方签定的')}《<span style="font-weight:bold;">${i18n.get('科士达授权经销商协议')}</span>》${i18n.get('或合同之附件，订单中未明事项，按协议或合同的约定执行。')}</div>
+			<div class="row2">${i18n.get('2．本订单货款结算按协议、合同或其他相关约定执行。')}</div>
+			<div class="row2">${i18n.get('3．本订单价格按（请选择）a、销售合同价格条款  b、特殊价格，不计入年底回款返点。')}</div>
+			<div class="row2">${i18n.get('4．本订单签约地为深圳，以上各项必须逐项填明不得涂改，经甲乙双方签字、盖章生效。')}</div>
+			<div class="row2">${i18n.get('5．本订单传真件有效。')}</div>
+			<div class="row2">${i18n.get('6．本订单违约及争议解决方式：按《中华人民共和国合同法》有关条款执行或由双方协商解决，如协商不成，交由甲方')}</div>
+			<div class="row2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${i18n.get('所在地人民法院裁决')}。</div>
+			<div class="row2">${i18n.get('7．自产品签收五个工作日内未提出书面异议，即视为产品合格。')}</div>
+			<div class="row2"><div class="txt">${i18n.get('8．其他条款')}</div><div class="line" style="width:89%;"></div></div>
+			
+			<div style="padding:10px 0;clear: both;">
+				<div class="txt" style="width:40%">${i18n.get('甲方：深圳科士达科技股份有限公司')}</div>
+				<div class="width10"> </div>
+				<div class="txt" style="width:40%"><span class="txt">${i18n.get('乙方')}：</span><span class="line" style="width:85%;height:24px;"></span></div>
+			</div>
+			<div style="line-height: 30px;">
+				<div style="padding: 0 0 0 40px;float:left;">${i18n.get('授权代表：（签章）')}</div>
+				<div style="padding: 0 0 0 290px;float:left;">${i18n.get('（法定代表人或授权人签章）')}</div>
+			</div>
+			
+			<div>
+				<div class="line" style="width:30%;margin-left: 40px;"></div>
+				<div style="float:left;width:25%;height:20px;"></div>
+				<div class="line" style="width:39%;"></div>
+			</div>
+			
+			<div style="line-height: 40px;">
+				<div class="" style="width:30%;margin-left: 40px;float:left;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${i18n.get('年')}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${i18n.get('月')}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${i18n.get('日')}</div>
+				<div style="float:left;width:22%;height:20px;float:left;"></div>
+				<div class="" style="width:30%;margin-left: 40px;float:left;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${i18n.get('年')}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${i18n.get('月')}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${i18n.get('日')}</div>
+			</div>
+			<br>
+			<br>
+			
+		</td></tr>
+	</table>
+</div>
+
+</div>
+<div style="margin:10px auto;height:30px; width: 50px;">
+	<input type="button" class="m-btn highlight print" style="float: right;" value=" ${i18n.get('打印')} " />
+</div>
+<table style="width:24cm;font-size: 14px;display: none;" cellspacing=0 id="listTableTotal">
+	<tr >
+		<td align="left" colspan="7" style="height:30px;border-bottom :1px #333 solid;border-top :1px #333 solid;border-left : 1px #333 solid;">${i18n.get('合计金额(大写)/元')}：${(toUpper)!}</td>
+		<td align="left" colspan="5" style="border-right :1px #333 solid;border-top :1px #333 solid;border-bottom : 1px #333 solid;">
+			<span style="width:10%;display: block;float: left;">${i18n.get('￥')}：</span>
+			<span class="line" style="display: block;width:80%;">${(orderHeader.amount)!'0'}</span>
+		</td>
+	</tr>
+</table>
+<table style="width:24cm;font-size: 14px;display: none;" cellspacing=0 id="pageIndex">
+	<tr ><td align="center" style="width: 100%;"></td></tr>
+</table>
+</@pui.body>

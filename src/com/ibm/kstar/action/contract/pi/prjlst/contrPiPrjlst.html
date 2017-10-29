@@ -1,0 +1,227 @@
+<@pui.body> 
+				
+	<div class="col-xs-12" >
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t10"
+			success="function(){ 
+			try{
+				parent.currentParent.reload_prjlst();
+			}catch(e){
+				parent.currentParent2.reload_prjlst();
+			}
+				try{ parent.currentParent.reload_prjlsttree1('${(parentLovMember.id)!}'); }catch(e){ }
+			}" 
+			class="form-horizontal"
+			>
+			
+			<input type="hidden" name="groupCode"  value="${lovGroup.code}" />
+
+				
+			<div class="form-group">
+				<label class="col-sm-3 control-label no-padding-right" for="type"> ${i18n.get('标准产品')}: </label>
+				<div class="radio">
+					<label>
+						<@form.radio  name="leafFlag" id='c1' value="N" selectValue=(lovMember.leafFlag)!'N'/>
+						<span class="lbl"> ${i18n.get('是')} </span>
+					</label>
+					
+					<label>
+						<@form.radio  name="leafFlag" id='c2' value="Y" selectValue=(lovMember.leafFlag)!'N'/>
+						<span class="lbl"> ${i18n.get('否')} </span>
+					</label>
+				</div>
+			</div>
+				
+				<div id="inputArea">
+
+						<@form.input 
+						id="code"
+						name="code"
+						type="hidden"
+						value="${(lovMember.code)!}"
+						/>
+
+						<@form.input 
+						id="name" 
+						name="name" 
+						type="hidden"
+						value="${(lovMember.name)!}"
+						/>
+
+						<@form.input 
+							id="quotCode" 
+							name="quotCode" 
+							type="hidden"
+							value="${contrId}"
+							/>
+			
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right">
+							 ${i18n.get('请选择产品')}：
+						</label>
+						<input type = "button" value = "${i18n.get('选择产品')}" onclick="$('#selectProduct').click();"/>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('产品名称')}: </label>
+						<@form.input  id="prdNm" name="prdNm" readonly ="readonly"  tip="${i18n.get('产品名称')}" value="${(prjLst.prdNm)!}"
+							/>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('产品分类')}: </label>
+						<@form.input  id="prdCtg"  name="prdCtg" readonly ="readonly"   tip="${i18n.get('产品分类')}" value="${(prjLst.prdCtg)!}"
+							/>
+					</div>					
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('产品型号')}: </label>
+						<@form.input  id="prdTyp"  name="prdTyp" readonly ="readonly"   tip="${i18n.get('产品型号')}" value="${(prjLst.prdTyp)!}"
+							/>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('物料号')}: </label>
+						<@form.input  id="materCode"  name="materCode" readonly ="readonly"   tip="${i18n.get('物料号')}" value="${(prjLst.materCode)!}"
+							/>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('单位')}: </label>
+						<@form.input  id="prdUnt"  name="prdUnt" readonly ="readonly"   tip="${i18n.get('单位')}" value="${(prjLst.prdUnt)!}"
+							/>
+					</div>						  					
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('定价')}: </label>
+						<@form.input  id="prdSprc"  name="prdSprc"   tip="${i18n.get('定价')}"  readonly ="readonly"  value="${(prjLst.prdPrc)!}"
+							/>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('报价')}: </label>
+						<@form.input 
+							id="prdPrc" 
+							name="prdPrc"  
+							tip="${i18n.get('报价')}"
+							value="${(prjLst.prdPrc)!}"
+							/>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('数量')}: </label>
+						<@form.input 
+							id="amt" 
+							name="amt" 
+							tip="${i18n.get('数量')}"
+							value="${(prjLst.amt)!}"
+							/>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('备注')}: </label>
+						<@form.input 
+							id="notes" 
+							name="notes" 
+							tip="${i18n.get('备注')}"
+							value="${(prjLst.notes)!}"
+							/>
+					</div>		
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('客户产品描述')}: </label>
+						<@form.input  id="cusProDesc"  name="cusProDesc" tip="${i18n.get('客户产品描述')}" value="${(prjLst.cusProDesc)!}"
+							/>
+					</div>	
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('产品描述')}: </label>
+						<@form.input  id="proDesc"  name="proDesc" readonly ="readonly"   tip="${i18n.get('产品描述')}" value="${(prjLst.proDesc)!}"
+							/>
+					</div>	
+
+						<@form.input 
+							id="ttlUnt" 
+							name="ttlUnt" 
+							type="hidden" 
+							value="${(prjLst.ttlUnt)!}"
+							/>
+
+
+						<@form.input 
+							id="hhTtl" 
+							name="hhTtl" 
+							type="hidden"
+							value="${(prjLst.hhTtl)!}"
+							/>
+
+
+						<@form.input 
+							id="avgTtl" 
+							name="avgTtl" 
+							type="hidden"
+							value="${(prjLst.avgTtl)!}"
+							/>
+
+
+						<@form.input 
+							id="nstRq" 
+							name="nstRq"
+							type="hidden" 
+							value="${(prjLst.nstRq)!}"
+							/>
+
+			
+				</div>
+			
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button" onclick="changeType()" >
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+		
+		<div style="visibility: hidden;" >
+			<@biz.picker_product id="selectProduct" url="${ctx}/common/product/selectList.html" 
+					button="${i18n.get('选择产品')}"
+					callback="function(data){
+						if(data){
+							if(window.confirm('${i18n.get('你确定选择该产品')}？')){
+								$('#name').val(data.productName);
+								$('#prdNm').val(data.productName);
+								$('#prdCtg').val(data.erpCategoryGrid);								
+								$('#prdUnt').val(data.unit);
+								$('#prdSprc').val(data.catalogPrice);
+								$('#prdTyp').val(data.proModel);
+								$('#materCode').val(data.materCode);
+								$('#proDesc').val(data.proDesc);
+								
+	              			}
+						 }
+					}"
+			/>
+		</div>
+		
+		<div class="col-xs-12" >
+		<script type="text/javascript">
+			
+		)
+		
+
+		
+		  // init the status
+		  $().ready(function(){
+			  var leaf = '${(lovMember.leafFlag)!}';
+			  if(leaf == 'N'){
+				$('#c2').click();
+			  }else{
+				$('#c1').click();
+			  }
+		  });
+		
+
+		</script>
+	</div>
+</@pui.body>

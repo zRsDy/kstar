@@ -1,0 +1,296 @@
+<table border="0" cellpadding="0" cellspacing="0" >
+ 		<tr align="left">
+	  <td align="right" width="120px">
+			${i18n.get(' 物流公司：')}
+         </td>
+         <td align="left" width="220px" >
+         	<input id="logisticsId" type="hidden" name="logistics.id" placeholder="" tip="" value="${(logistics.id)!}" />
+         	<@form.select 
+         		id="logtsCoName"  name="logistics.logtsCoName" 
+				code="TRANSPORT_CO"
+				idKey="code"
+				value="${(logistics.logtsCoName)!}" 
+			/>
+         </td>
+         <td align="right"  width="120px">
+         	${i18n.get(' 保险公司：')}
+         </td>
+         <td align="left"  width="220px">
+         	<@form.select
+					id="insurer"  name="logistics.insurer" 
+					idKey="code"
+					code="INSURANCE_CO"
+					value="${(logistics.insurer)!}" 
+					/>
+         </td>
+           <td align="right"  width="120px">
+			${i18n.get(' 报关行：')}
+         </td>
+         <td align="left"  width="220px">
+         		<@form.input
+			id="customsBroker"  name="logistics.customsBroker" 
+			placeholder="" 
+			tip="" 
+			value="${(logistics.customsBroker)!}" 
+			/>
+         </td>
+    	</tr>
+    	<tr align="left">
+	  		<td align="right">
+				${i18n.get('运输方式：')}
+         	</td>
+         	<td align="left">
+         		<@form.select
+					id="transportMode"  name="logistics.transportMode" 
+					idKey="code"
+					code="TRANSPORT_METHOD"
+					value="${(logistics.transportMode)!}" 
+					/>
+         	</td>
+         	<td align="right">
+				${i18n.get('保单号：')}
+         	</td>
+         	<td align="left">
+         		<@form.input
+					id="policyNo"  name="logistics.policyNo" 
+					placeholder="" 
+					tip="" 
+					value="${(logistics.policyNo)!}" 
+					/>
+         	</td>
+         	<td align="right">
+				${i18n.get('报关合同：')}
+         	</td>
+         	<td align="left">
+         		<@form.input
+					id="customsContract"  name="logistics.customsContract" 
+					placeholder="" 
+					tip="" 
+					value="${(logistics.customsContract)!}" 
+					/>
+         	</td>
+      </tr>
+      <tr align="left">
+	  	<td align="right">
+				${i18n.get('运单号：')}
+         	</td>
+         	<td align="left">
+         		<@form.input
+					id="logisticsNo"  name="logistics.logisticsNo" 
+					placeholder="" 
+					tip="" 
+					value="${(logistics.logisticsNo)!}" 
+					/>
+         	</td>
+         	<td align="right">
+				${i18n.get('保费：')}
+         	</td>
+         	<td align="left">
+         		<@form.number
+					id="policyFee"  name="logistics.policyFee" 
+					placeholder="" 
+					tip="" 
+					value="${(logistics.policyFee)!}" 
+					/>
+         	</td>
+         	<td align="right">
+				${i18n.get('出口发票：')}
+         	</td>
+         	<td align="left">
+         		<@form.input
+					id="exportInvoice"  name="logistics.exportInvoice" 
+					placeholder="" 
+					tip="" 
+					value="${(logistics.exportInvoice)!}" 
+					/>
+         	</td>
+      	</tr>
+      	<tr align="left">
+	  		<td align="right">
+				${i18n.get('船名：')}
+         	</td>
+         	<td align="left">
+         		<@form.input
+				id="shipName"  name="logistics.shipName" 
+				placeholder="" 
+				tip="" 
+				value="${(logistics.shipName)!}" 
+				/>
+         	</td>
+         	<td align="right">
+				${i18n.get('投标有效期：')}
+         	</td>
+         	<td align="left">
+         		<@form.date   
+					id="tender"  name="logistics.tender" 
+					placeholder="" 
+					tip="" 
+					value="${(logistics.tender?date)!}" 
+					/>
+         	</td>
+         	<td align="right">
+				${i18n.get('外汇核销单：')}
+         	</td>
+         	<td align="left">
+         		<@form.input
+					id="forexVerification"  name="logistics.forexVerification" 
+					placeholder="" 
+					tip="" 
+					value="${(logistics.forexVerification)!}" 
+					/>
+         	</td>
+      </tr>
+       <tr align="left">
+	  	<td align="right">
+			${i18n.get('船期：')}
+         	</td>
+         	<td align="left">
+         		<@form.date   
+					id="shipment"  name="logistics.shipment" 
+					placeholder="" 
+					tip="" 
+					value="${(logistics.shipment?date)!}" 
+					/>
+         	</td>
+         	<td align="right">
+				${i18n.get('保险说明：')}
+         	</td>
+         	<td align="left">
+         		<@form.input
+					id="policyRemarks"  name="logistics.policyRemarks" 
+					placeholder="" 
+					tip="" 
+					value="${(logistics.policyRemarks)!}" 
+					/>
+         	</td>
+         	<td align="right">
+				${i18n.get('报关日期：')}
+         	</td>
+         	<td align="left">
+         		<@form.date   
+					id="customsDate"  name="logistics.customsDate" 
+					placeholder="" 
+					tip="" 
+					value="${(logistics.customsDate?date)!}" 
+				/>
+         	</td>
+      	</tr>
+      	<tr align="left">
+	  		<td align="right">
+				${i18n.get('重量：')}
+         	</td>
+         	<td align="left">
+         		<@form.input
+					id="weight"  name="logistics.weight" 
+					placeholder="" 
+					tip="" 
+					value="${(logistics.weight)!}" 
+					/>
+         	</td>
+         	<td align="right">
+				${i18n.get('保险状态：')}
+         	</td>
+         	<td align="left">
+         		<@form.input
+					id="policyStatus"  name="logistics.policyStatus" 
+					placeholder="" 
+					tip="" 
+					value="${(logistics.policyStatus)!}" 
+					/>
+         	</td>
+         	<td align="right">
+				${i18n.get('报关状态：')}
+         	</td>
+         	<td align="left">
+         		<@form.input
+					id="customsStatus"  name="logistics.customsStatus" 
+					placeholder="" 
+					tip="" 
+					value="${(logistics.customsStatus)!}" 
+					/>
+         	</td>
+      	</tr>
+      	<tr align="left">
+	  		<td align="right">
+				${i18n.get('体积：')}
+         	</td>
+         	<td align="left">
+         		<@form.input
+				id="volume"  name="logistics.volume" 
+				placeholder="" 
+				tip="" 
+				value="${(logistics.volume)!}" 
+				/>
+         	</td>
+          	<td align="right">
+				${i18n.get('截关时间：')}
+         	</td>
+         	<td align="left">
+         		<@form.date   
+					id="closingTime"  name="logistics.closingTime" 
+					placeholder="" 
+					tip="" 
+					value="${(logistics.closingTime?date)!}" 
+				/>
+         	</td>
+          	<td align="right">
+				${i18n.get('截仓时间：')}
+         	</td>
+         	<td align="left">
+         		<@form.date   
+					id="cutOffDate"  name="logistics.cutOffDate" 
+					placeholder="" 
+					tip="" 
+					value="${(logistics.cutOffDate?date)!}" 
+				/>
+         	</td>
+      	</tr>
+      	<tr align="left">
+	  		<td align="right">
+				${i18n.get('国内运费：')}
+         	</td>
+         	<td align="left">
+         		<@form.number id="freightInternal"  name="logistics.freightInternal" 
+					placeholder="" 
+					tip="" 
+					value="${(logistics.freightInternal)!}" 
+					/>
+        	 </td>
+         	<td align="right" >
+				${i18n.get('订舱单号：')}
+         	</td>
+         	<td align="left" colspan="3">
+         		<@form.input
+					id="bookingNumber"  name="logistics.bookingNumber" 
+					placeholder="" 
+					tip="" 
+					value="${(logistics.bookingNumber)!}" 
+					/>
+         	</td>
+      	</tr>
+     	<tr align="left">
+	  		<td align="right">
+				${i18n.get('国际运费：')}
+         	</td>
+         	<td align="left" colspan="5">
+         		<@form.number id="freightExternal"  name="logistics.freightExternal" 
+				placeholder="" 
+				tip="" 
+				value="${(logistics.freightExternal)!}" 
+				/>
+         	</td>
+      </tr>
+      <tr align="left">
+	  	<td align="right">
+			${i18n.get('计划到港日期：')}
+         	</td>
+         	<td align="left" colspan="5">
+         		<@form.date   
+				id="dtArrival"  name="logistics.dtArrival" 
+				placeholder="" 
+				tip="" 
+				value="${(logistics.dtArrival?date)!}" 
+				/>
+         	</td>
+      </tr>
+</table>

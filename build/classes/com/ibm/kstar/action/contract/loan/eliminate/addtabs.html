@@ -1,0 +1,227 @@
+<#escape x as x?html>
+<@pui.body>
+<script type="text/javascript">
+
+$(document).ready(function(){
+	$("#eliminateTypeDesc").attr("disabled","disabled");
+});
+
+function countContractVeriedMoney(){
+	
+	var prjlstGrid = $("#prjlst").jqGrid("getRowData");
+	var contractVeriedMoney = 0;
+	$.each(prjlstGrid,function(i,data){
+		contractVeriedMoney = parseFloat(contractVeriedMoney) + parseFloat(data.contractVeriedNum)*parseFloat(data.prdPrc);
+		contractVeriedMoney = contractVeriedMoney.toFixed(2);
+	})
+	$("#contractVeriedMoney").val(contractVeriedMoney);
+}
+
+function startContractEliminateProcess(){
+	var contrId = "${contractEliminate.contractId!''}";
+	var typ = "${(typ)!''}";
+	var formDatas = $('#form_eliminateForm').serializeArray();
+	
+	bootbox.confirm('${i18n.get('您确定要开启此合同的评审吗？')}' , function(result) {		
+		if(result) {
+					ajax({
+						type:'post',
+						url : '${ctx}/loan/eliminate/startContractEliminateProcess.html?contrId='+contrId+'&typ='+typ,	 
+						data: formDatas,
+						success : function(result) {
+							alert('${i18n.get('合同评审流程已开启')}'); 
+							parent.reload_eliminate();
+							api.close();
+						}
+					})
+		}
+	});		
+}
+
+function aFormatName(rowData){
+	//给添加的列加选择按钮  
+	var lable = '选择产品';
+	if(rowData && rowData['prjlst']){
+		lable =  rowData['prjlst'].prdNm;
+	}else if(rowData && rowData['prdNm']){
+		lable =  rowData['prdNm'];
+	}
+	var ps ='';
+	if((rowData && rowData['prdCtg']) || (rowData && rowData['prdCtg'])){
+		ps =  '<a href="#" onclick="proSelect(\''+rowData['id']+'\');" >'+lable+'</a>';
+	}else{
+		ps = lable;
+	}
+	return ps;
+}
+
+function checkContractVeriedNum(){
+	var sumbit = true;
+	var contrLoanGrid = $("#attachment_CONTR_LOAN").jqGrid("getRowData");
+	if(contrLoanGrid.length<1){
+		sumbit = false;
+		alert('${i18n.get('请先上传附件！再进行保存!')}');
+	}
+	var prjlstGrid = $("#prjlst").jqGrid("getRowData");
+	$.each(prjlstGrid,function(i,data){
+		if(parseInt(data.notVeriNum)<parseInt(data.contractVeriedNum)){
+			alert('${i18n.get('借货明细第')}'+(i+1)+'${i18n.get('行数据,本次核销数量大于未核销数量')}');
+			sumbit = false;
+		}
+	})
+	if(false){
+		var contrId = "${contractEliminate.contractId}";
+		var eliminateid = "${contractEliminate.id}";
+		var d={};
+		d.listStr= JSON.stringify(prjlstGrid);
+		d.contrId= contrId;
+		d.eliminateid= eliminateid;
+		ajax({
+			type:'post',
+			url : '${ctx}/standard/prjlst/submitEliminateLines.html',  
+			dataType : 'json',
+			async: false,
+			data: d,
+			success : function(result) {
+				if(result){
+					sumbit=false;
+					alert(result);
+					return sumbit;
+				}else{
+					alert('${i18n.get('操作成功!')}');
+				}
+			}
+		});	
+	}
+	return sumbit;
+}
+
+function getGrid(){
+    $('#prjlst').trigger('blur');
+    var grid_data =$('#prjlst').jqGrid('getRowData');
+    return JSON.stringify(grid_data);
+}
+</script>
+	<@form.panel title="${i18n.get('基本信息')}">
+	<@form.form id="eliminateForm" 
+		before= 'checkContractVeriedNum' 
+		postData="function() {
+	        var data = {};
+	        data.prjlst = getGrid();
+	        return data;
+	    }"
+	    success="function(){
+	    	debugger;
+	    	alert('${i18n.get('保存成功!')}');
+	    	reload_prjlst();
+	    	reload_eliminateForm();
+	    }"
+	 autoClose="false"  class="form-horizontal"> 
+	
+	<div style="height: 20px;">
+			<div style="padding-right: 20px; float: right;" >
+			<#if buttonType=='01'||buttonType=='04' >
+					<button id="saveContrBtn" class="btn btn-info submit" type="button"  >
+							<i class="icon-ok bigger-110"></i> ${i18n.get('保存')} </button> 
+					<#else>
+					<button id="saveContrBtn" class="btn btn-info submit" type="button"  disabled="disabled">
+							<i class="icon-ok bigger-110"></i> ${i18n.get('保存')} </button>
+			</#if>
+			<#if buttonType=='01' >
+					<button id="trialStatBtn" class="btn btn-info" type="button" onclick="startContractEliminateProcess()" >
+							<i class="icon-undo bigger-110"></i>${i18n.get('提交')}</button>		
+					<#else>
+					<button id="trialStatBtn" class="btn btn-info" type="button" disabled="disabled" >
+							<i class="icon-undo bigger-110"></i>${i18n.get('提交')}</button>		
+			</#if>
+			</div>
+		</div>
+		<br/>	
+	
+		<table id="header">
+		<#if buttonType!='04' >
+		<input type="hidden" id="id" name="id"  value="${(contractEliminate.id)!}" />
+		</#if>
+		<input type="hidden" id="eliminateUserId" name="eliminateUserId"  value="${(contractEliminate.eliminateUserId)!}" />
+		<input type="hidden" id="contractId" name="contractId"  value="${(contractEliminate.contractId)!}" />
+		<input type="hidden" id="eliminateType"  name="eliminateType"  value="${(contractEliminate.eliminateType)!}" />
+		<tr>
+			<td width="100px" align="middle">${i18n.get('申请编号')}:</td>
+			<td width="180px"><@form.input id="eliminateNumber" name="eliminateNumber" required="${i18n.get('不能为空')}" placeholder="" tip="" value="${contractEliminate.eliminateNumber!}" /></td>
+           	<td width="100px" align="middle"><strong style="color: red;">*</strong>申请人:</td>
+			<td width="180px"><@form.input id="eliminateUser" name="eliminateUser" readonly='true' required="${i18n.get('不能为空')}" placeholder="" tip="" value="${(contractEliminate.eliminateUser)!}" /></td>
+			<td width="100px" align="middle">${i18n.get('申请日期')}:</td>
+			<td width="180px"><@form.input id="eliminateDate" name="eliminateDate" readonly='true' required="${i18n.get('不能为空')}" placeholder="" tip="" value="${(contractEliminate.eliminateDate?date)!}" /></td>
+			<td width="100px" align="middle">${i18n.get('申请状态')}:</td>
+			<td>
+             	<@form.select style="width: 160px;" id="eliminateTypeDesc" name="eliminateTypeDesc" readonly="true" 
+             		code="CONTRACTELIMINATE"  value ="${(contractEliminate.eliminateType)!}"   
+             		/> 
+			</td>
+		</tr>
+		<tr>
+			<td width="100px" align="middle">${i18n.get('本次核销总金额')}:</td>
+			<td width="180px"><@form.input id="contractVeriedMoney" name="contractVeriedMoney" readonly='true'  placeholder="" tip=""  /></td>
+			<td width="100px" align="middle">${i18n.get('备注')}:</td>
+			<td colspan="5"><@form.textArea id="remark" name="remark" width="100" placeholder="" tip="" value="${(contractEliminate.remark)!}" /></td>
+		</tr>
+	
+	
+	<tr >
+		<td valign="top" colspan="8">
+			<@form.table id="prjlst"
+			class="col-xs-12"
+			shrinkToFit = 'false'
+			title="${i18n.get('借货明细')}"
+			url = "${ctx}/standard/prjlst/eliminatePrjLstPage.html?contrId=${(contractEliminate.contractId)!}&typ=${(typ)!}&eliminateId=${(contractEliminate.id)}"
+			rowNum = "20"
+			rownumbers = 'true'
+			colModel = "[
+			  { name : 'id', label : 'prjlstID',hidden : true, width : 30 ,sortable:false},
+			  { name : 'lineNum', label : '${i18n.get('行号')}', hidden : true,width : 50 ,sortable:false },
+			  { name : 'proId', label : 'prdId', hidden : true , sortable:false}, 
+			  { name : 'prdNm', label : '${i18n.get('产品名称')}',  sortable:false,hidden : true},
+			  { name : 'act', label : '${i18n.get('产品名称')}', width:120, sortable:false,hidden : false, formatter:function(cellvalue, options,rowdata){ return aFormatName(rowdata); }  },
+			  { name : 'prdCtgid', label : 'prdCtgId', hidden : true , sortable:false}, 
+			  { name : 'prdCtg', label : '${i18n.get('CRM产品分类')}',width:120, align:'center',sortable:false ,editable : false },
+			  { name : 'prdTyp', label : '${i18n.get('产品型号')}', sortable:false ,align:'center',editable : false },
+			  { name : 'materCode', label : '${i18n.get('物料号')}', width:120,align:'center',hidden : false , sortable:false ,editable : false },
+			  { name : 'prdUnt', label : '${i18n.get('单位')}', width : 50 ,sortable:false ,editable : false },
+			  { name : 'prdSprc', label : '${i18n.get('定价')}',hidden : true, width : 100 ,align:'right',sortable:false  ,editable : false },
+			  { name : 'prdPrc', label : '${i18n.get('合同价格')}', width : 120 ,align:'right',sortable:false ,editable : false },
+			  { name : 'amt', label : '${i18n.get('数量')}', width : 100 ,align:'right',sortable:false,editable : false },
+			  { name : 'ttlUnt', label : '${i18n.get('单品总金额')}', width : 120 ,align:'right',sortable:false ,editable : false,formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''} },
+		   	  { name : 'veriedNum', label : '${i18n.get('已核销数量')}',align:'center', width : 100 ,sortable:false },
+		   	  { name : 'contractVeriedNum', label : '${i18n.get('本次核销数量')}',align:'center', width : 100 ,sortable:false,editable : true,formatter:'number' ,formatoptions:{decimalPlaces : 0,defaultValue:'0'}},
+			  { name : 'notVeriNum', label : '${i18n.get('未核销数量')}',align:'center', width : 100 ,sortable:false },
+		   	  { name : 'ordNum', label : '${i18n.get('下单数量')}', hidden : true, width : 50 ,sortable:false,editable : false },
+		   	  { name : 'ordNo', label : '${i18n.get('订单编号')}', hidden : true, width : 80 ,sortable:false ,editable : false },
+			  { name : 'notes', label : '${i18n.get('备注')}', width : 200 ,sortable:false }, 
+			  { name : 'proDesc', label : '${i18n.get('产品描述')}', width : 500 ,sortable:false }
+			  ]"
+			  
+			 search="false"
+		 	 onLineEditAfter = "function(id,rowData){
+				var rowNum = parseInt($('#prjlst').getGridParam('records'),10);
+				if(rowNum > 0){
+				}
+				countContractVeriedMoney();
+			 }"	
+			 onComplete="function(id,rowData){countContractVeriedMoney();}"	
+			 buttons = "[]"
+	>
+			
+			</@form.table>
+		</td>
+	</tr>
+</table>
+	<div id="info" style="padding-top: 20px;">
+	<input type="hidden" id="selectedId"  />
+	<@plug.tabs tabMain=tabMain></@plug.tabs>		
+</div>
+</@form.form>  
+</@form.panel>
+
+</@pui.body>
+
+</#escape>

@@ -1,0 +1,99 @@
+<#escape x as x?html>
+<@cui.body>
+<#if permission["P01CustomCsrEdit"]?? >
+	<#assign editCsrURL = "'${ctx}/custom/csr/detail.html'"/>
+	<#assign delCsrURL = "'${ctx}/custom/csr/delete.html'"/>
+	<#assign exportURL = "'${ctx}/custom/csr/mappageRightExport.html'" />
+</#if> 
+
+<@form.table id="satInvestList" 
+class="col-xs-12"
+title="${i18n.get('客户满意度调查')}" 
+url = "${ctx}/custom/csr/page.html" 
+rowNum = "20" 
+editURL = "${editCsrURL!}"
+deleteURL= "${delCsrURL!}"
+exportURL = "${exportURL!}"
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+	{name:'investQuarter',label:' ${i18n.get('季度')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'investCode',label:'${i18n.get('调查编号')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'principalName',label:'${i18n.get('负责人')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'areaOrIndustryPathName',label:'${i18n.get('办事处区域行业')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'createEmployeeName',label:'${i18n.get('发起人')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'createDate',label:'${i18n.get('发起时间')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'effDate',label:'${i18n.get('有效时间')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'serviceAttitudeName',label:'${i18n.get('服务态度')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'serviceAttitudeImprove',label:' ${i18n.get('服务态度改进')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'businessAbilityName',label:'${i18n.get('业务能力')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'businessAbilityImprove',label:'${i18n.get('业务能力改进')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'cooperateAttitudeName',label:'${i18n.get('工作配合程度')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'cooperateAttitudeImprove',label:'${i18n.get('工作配合程度改进')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'procStatusCdName',label:'${i18n.get('流程状态')}',hidden:false,width:100,sortable:false,align:'center' }
+	]" 
+	
+	buttons = "[{
+	  			id:'invest',
+	  			label : '${i18n.get('添加满意度调查对象')}',
+	  			icon : 'icon-save',
+	  			own : ${editCsrURL!'false'},
+	  			handler : function(e,rowData){
+	  				parent.addTab('${i18n.get('添加满意度调查对象')}','${ctx}/custom/csr/inevest.html');
+	  			} 
+	  		}]"
+	> 
+	<div class="col-xs-12">
+		<div class="form-group col-xs-2" align="right"> ${i18n.get('季度')}：</div>
+		<div class="form-group col-xs-4">
+			<select name="investQuarter">
+					<option value=""> ${i18n.get('全部')}</option>
+					<#list investQuarterList as element>
+						<option value="${element}">${element}</option>
+					</#list>
+			</select>
+		</div>
+		
+		<div class="form-group col-xs-2" align="right">${i18n.get('办事处区域行业')}：</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="orgName" id="orgName" readonly="readonly" value="${(inevestVo.orgName)!}" style="width: 100px" />
+			<input type="hidden" name="orgId" id="orgId" value="${(inevestVo.orgId)!}" />
+			<@biz.picker_lov_tree id="picker_lov_tree" leafFlag="N" groupId="ORG" button="${i18n.get('办事处区域/行业')}" defaultSelect="selectedDatas_picker_lov_tree" callback="function(datas){
+			 	if(datas){
+			 		selectedDatas_picker_lov_tree = datas;
+				 	$('#orgName').val(datas.namePath);
+				 	$('#orgId').val(datas.id);
+			 	}
+			}" />
+		</div>
+		
+		<div class="form-group col-xs-2" align="right">${i18n.get('负责人')}：</div>
+		<div class="form-group col-xs-4">
+				<input id="employeeId"  name="employeeId" type ="hidden" value="${(inevestVo.employeeId)!}" />
+				<@form.autocomplete  
+					id="employee" name="employee" 
+	            	idKey='id'
+	            	required="${i18n.get('请选择')}"
+	            	placeholder="${i18n.get('请选择负责人')}"
+					multiple="false"
+	            	formatResult="function(data) {
+	            		return '<div>[' +data.no +']'+data.name+'</div>';
+	            	}"
+	            	formatSelection="function(data) { 
+	            		return '<div>[' +data.no +']'+data.name+'</div>';
+	            	}"
+					url="function(){ 
+						return '${ctx}/employee/findList.html';
+					}"
+					onSelect="function(data){
+	            		if( data.id != null && data.id !='' && data.id != 'undefined'){
+	            			$('#employeeId').val(data.id); 
+	            		}
+						
+					}"
+	           	/>
+		</div>
+	</div>
+</@form.table> 
+
+</@cui.body>
+</#escape>

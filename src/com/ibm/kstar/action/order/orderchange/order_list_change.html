@@ -1,0 +1,226 @@
+<@cui.body2>
+<style type="text/css">
+	table {
+	border-collapse: collapse;
+	border-color: #ff0000;
+	}
+	
+	table td {
+		padding:1px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	select {
+		width: 180px;
+	}
+</style>
+<div class="col-xs-12">
+
+	<#if permission["P06OrderChangeListEdit"]??>
+		<#assign editURL= "'${ctx}/order/change/edit.html'" />
+	</#if>
+	
+	<#if permission["P06OrderChangeListDelete"]??>
+		<#assign deleteURL = "'${ctx}/order/change/delete.html'"  />
+	</#if>
+
+	<@form.table id="orderChangeListForm" 
+		class="col-xs-12"
+		title="${i18n.get('订单变更')}" 
+		url = "${ctx}/order/change/page.html" 
+		rowNum = "20" 
+		editURL= "'${ctx}/order/change/edit.html'"
+		deleteURL= "${deleteURL!}"
+		colModel = "[
+			 	{name : 'id', label:'id', width : 20, editable : false, hidden : true}, 
+			 	{name : 'changeCode', label:'${i18n.get('变更编号')}', width : 150, editable : false}, 
+			 	{name : 'businessEntityLable.name', label:'${i18n.get('业务实体')}', width : 250, sortable:false, editable:false, align:'center'}, 
+			  	{name : 'orderTypeLable.name', label:'${i18n.get('订单类型')}', width : 150, sortable:false, editable:false, align:'center'},
+			    {name : 'orderCode', label:'${i18n.get('订单编号')}', width : 150, editable : false}, 
+			  	{name : 'eventStatusLable', label:'${i18n.get('变更状态')}', width : 100, editable:false, align:'center'}, 
+			  	{name : 'version', label:'${i18n.get('变更版本')}', width : 100, editable:false, align:'center'}, 
+			  	{name : 'orderDate',label:'${i18n.get('下单日期')}',hidden:false,width:150,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+				{name : 'customerName', label:'${i18n.get('客户名称')}', width : 250, editable:false ,align:'center',sortable:true}, 
+			  	{name : 'customerCode', label:'${i18n.get('客户编号')}', width : 150, editable:false, align:'center',sortable:true}, 
+			  	{name : 'salesmanCenterLable', label:'${i18n.get('客户所属营销一级部门')}', width : 120, editable:false, align:'center',sortable:false}, 
+			  	{name : 'salesmanDepLable', label:'${i18n.get('客户所属营销二级部门')}', width : 120, editable:false, align:'center',sortable:false}, 
+			  	{name : 'salesmanName', label:'${i18n.get('销售人员')}', width : 100, editable:false, align:'center',sortable:true},
+			  	{name : 'currency', label:'${i18n.get('币种')}', width : 100, editable:false, align:'center',sortable:true}, 
+			  	{name : 'createdByName', label:'${i18n.get('订单创建人')}', width : 100, editable:false, align:'center',sortable:false}, 
+			  	{name : 'amount', label:'${i18n.get('金额（元）')}', width : 150, sortable:false, editable:false, align:'center',sortable:true}, 
+			  	{name : 'erpOrderCode', label:'${i18n.get('ERP订单号')}', width : 100, sortable:false, editable:false, align:'center',sortable:true},
+			  	{name : 'sourceTypeLable.name', label:'${i18n.get('来源类型')}', width : 100, sortable:false, editable:false, align:'center',sortable:false}, 
+			  	{name : 'sourceCode', label:'${i18n.get('我司合同编号')}', width : 200, sortable:false, editable:false, align:'center',sortable:true},
+			  	{name : 'customerPo', label:'${i18n.get('客户合同编号')}', width : 150, sortable:false, editable:false, align:'center',sortable:true}
+			]" 
+			buttons = "[
+				{
+					id:'refresh',
+					label : '${i18n.get('刷新')}',
+					icon : 'icon-refresh',
+					own : true,
+					handler : function(e,rowData){
+						reload_orderListForm();
+					}
+				}
+			]" > 
+			<input id="contrId"  name="contrId" value = "${(contrId)!}" hidden="hidden" />
+			<table border="0" cellpadding="0" cellspacing="0" >
+		    	<tr align="left">
+		    		<td align="right" width="120px">
+		  			    	${i18n.get('业务实体：')}
+		            </td>
+		            <td align="left" width="200px" >
+						<@form.select id="businessEntity" name="businessEntity"
+							placeholder="${i18n.get('请选择业务实体')}"
+							required="${i18n.get('请选择业务实体')}"
+							code="OPERATION_UNIT"
+							childId = "orderType"
+							level = "1"/> 
+					</td>
+		            <td align="right" width="120px">
+		  				${i18n.get('订单编号：')}
+		            </td>
+		            <td align="left"  >
+			  			<@form.input 
+							id="orderCode"  name="orderCode" 
+							placeholder="" 
+							tip="" 
+						/>
+		            </td>
+		             <td align="right" width="120px">
+		  				${i18n.get('ERP订单编号：')}
+		            </td>
+		            <td width="200px">
+		  				<@form.input  
+							id="erpOrderCode"  name="erpOrderCode" 
+							placeholder="" 
+							tip="" 
+							/>
+		            </td>
+		        </tr>
+		        <tr>
+		        	<td align="right">
+		  				${i18n.get('订单类型：')}
+		            </td>
+		             <td align="left">
+		             	<@form.select  
+		             		id="orderType" name="orderType" 
+		             		placeholder="${i18n.get('请选择订单类型')}"
+		             		idKey='code'
+		             		code="OPERATION_UNIT"
+		             		parentId="businessEntity"
+		             		level = "2"
+		             	/>
+		            </td>
+		             <td align="right">
+		  				${i18n.get('销售人员：')}
+		            </td>
+		             <td align="left">
+						<@form.autocomplete  id="salesmanId" name="salesmanId" 
+							placeholder="${i18n.get('请选择销售人员')}"
+							idKey='employeeId'
+							multiple="false"
+							formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+							url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+						/>
+		            </td>
+		             <td align="right">
+		  				${i18n.get('创建人：')}
+		            </td>
+		             <td align="left">
+						<@form.autocomplete  id="createdById" name="createdById" 
+							placeholder="${i18n.get('请选择创建人')}"
+							idKey='employeeId'
+							multiple="false"
+							formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+							url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+						/>
+		            </td>
+		        </tr>
+		        <tr>
+		        	<td align="right" >
+		  				${i18n.get('客户：')}
+		            </td>
+		            <td align="left">
+		            	<@form.autocomplete  id="customerId" name="customerId" 
+			            	idKey='id'
+			            	placeholder="${i18n.get('请选择客户')}"
+			            	formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+							url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html'; }"
+		            	/>
+		            </td>
+		        	<td align="right">
+		  				${i18n.get('客户PO：')}
+		            </td>
+		            <td align="left">
+		  				<@form.input 
+							id="customerPo"  name="customerPo" 
+							placeholder="" 
+							tip="" 
+							/>
+		            </td>
+		            <td align="right">
+		  				${i18n.get('订单状态：')}
+		            </td>
+		            <td align="left">
+						<@form.select id="executeStatus" name="executeStatus"  
+							code="ORDERSTATUS" 
+							idKey='code' 
+							/> 
+					</td>
+		        </tr>
+		        <tr>
+		        	<td align="right">
+		  				${i18n.get('来源类型：')}
+		            </td>
+		            <td align="left">
+						<@form.select 
+		             		id="sourceType" name="sourceType" 
+		             		placeholder="${i18n.get('请选择来源类型')}"
+		             		idKey='code'
+		             		code="ORDERSOURCE" 
+		             	/>
+		            </td>
+		            <td align="right">
+		  				${i18n.get('来源编号：')}
+		            </td>
+		            <td align="left" colspan="3">
+		  				<@form.input  
+							id="sourceCode"  name="sourceCode"
+							placeholder="" 
+							tip="" 
+							/>
+					</td>
+		        </tr>
+		        <tr>
+		        	 <td align="right">
+		  				${i18n.get('下单日期从：')}
+		            </td>
+		             <td align="left">
+		  				<@form.date  
+							id="orderDate_begin"  name="orderDate_begin" 
+							placeholder="" 
+							tip="" 
+							/>
+		            </td>
+		             <td align="right">
+		  				${i18n.get('下单日期至：')}
+		            </td>
+		             <td align="left">
+		  				<@form.date  
+							id="orderDate_end"  name="orderDate_end" 
+							placeholder="" 
+							tip="" 
+							/>
+		            </td>
+		        </tr>
+			</table>
+	</@form.table>
+</div>
+</@cui.body2>

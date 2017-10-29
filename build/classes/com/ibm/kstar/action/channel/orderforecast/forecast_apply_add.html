@@ -1,0 +1,116 @@
+<@cui.body2>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1" success="function(){ parent.currentParent.reload_forecast_2('${(forecastInfo.id)!}'); }" class="form-horizontal">	
+			<div align="center" class="form-group">
+				<table>
+					<tr>
+						<td align="right" width="100px">${i18n.get('预测单号 :')}</td>
+						<td width="280px">
+							<@form.input id="forecastCode" name="forecastCode" style="width:163px;" tip="${i18n.get('申请单据编号')}" value="${(forecastInfo.forecastCode)!}" readonly="true" />
+						</td>
+						<td align="right" width="100px">${i18n.get('预测单位 :')}</td>
+						<td width="280px">
+							<input type="hidden" id="forecastUnit" name="forecastUnit" value="${(forecastInfo.forecastUnit)!}" />
+							<@form.input id="forecastUnitName" name="forecastUnitName" style="width:163px;" tip="${i18n.get('建立销售预测的单位名称')}" readonly="true" value="${(forecastInfo.forecastUnitName)!}" />
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('预测起始周次 :')}</td>
+						<td width="280px">
+							<@form.select style="width:163px;" id="forecastWeek" name="forecastWeek" tip="${i18n.get('销售预测的起始周次')}" code="FORECASTWEEK" idKey='id' required="不能为空" value="${(forecastInfo.forecastWeek)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">${i18n.get('预测日期 :')}</td>
+						<td width="280px">
+							<@form.input id="forecastDate" style="width:163px;" name="forecastDate" tip="${i18n.get('销售预测创建日期')}" readonly="true" value="${(forecastInfo.forecastDate?date)!}" />
+						</td>
+						<td align="right" width="100px">${i18n.get('提交人 :')}</td>
+						<td width="280px">
+							<input type="hidden" id="applier" name="applier" value="${(forecastInfo.applier)!}" />
+							<@form.input id="applierName" name="applierName" style="width:163px;" tip="${i18n.get('提交人姓名')}" readonly="true" value="${(forecastInfo.applierName)!}" />
+						</td>
+						<td align="right" width="100px">${i18n.get('提交人电话 :')}</td>
+						<td width="280px">
+							<@form.input id="applierPhone" style="width:163px;" name="applierPhone" tip="${i18n.get('提交人电话号码')}" value="${(forecastInfo.applierPhone)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">${i18n.get('状态 :')}</td>
+						<td width="280px">
+							<input type="hidden" id="status" name="status" value="${(forecastInfo.status)!}" />
+							<@form.select id="uiStatus" name="uiStatus" tip="${i18n.get('单据状态')}" style="width:163px;" code="ORDER_FORECAST_PROC" idKey='id' value="${(forecastInfo.status)!}"/>
+							<script type="text/javascript">$("#uiStatus").attr("disabled","disabled");</script>
+						</td>
+						<td align="right" width="100px">${i18n.get('是否经销商 :')}</td>
+						<td width="280px">
+							<@form.select style="width:163px;" id="uiDealer" name="uiDealer" tip="${i18n.get('创建申请单的用户是否经销商用户')}" code="NY" idKey='id' value="${(forecastInfo.dealer)!}" />
+							<input type="hidden" id="dealer" name="dealer" value="${(forecastInfo.dealer)!}" />
+						    <script type="text/javascript">
+		    	                $("#uiDealer").attr("disabled","disabled")
+		                    </script>
+						</td>
+						<td align="right" width="100px">
+						</td>
+						<td width="280px">
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">${i18n.get('说明 :')}</td>
+						<td colspan="5">
+							<@form.textArea id="explain" style="width:924px;" name="explain" tip="${i18n.get('预测单据的说明')}" value="${(forecastInfo.explain)!}" />
+						</td>
+					</tr>
+				</table>
+			</div>
+			<#if inFlow>
+			<div style="width:1430px;">
+			<@form.table id="detail" 
+				class="col-xs-12"
+				title="${i18n.get('下单预测明细')}"
+				url = "${ctx}/orderForecast/pageDetail.html?forecastId=${forecastInfo.id}"
+				rowNum = "10"
+				colModel = "[
+					{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+					{name:'productSeries',label:'${i18n.get('产品系列')}',hidden:false,width:150,sortable:true,align:'left' }, 
+					{name:'productKind',label:'${i18n.get('产品型号')}',hidden:false,width:150,sortable:true,align:'left' }, 
+					{name:'materielCode',label:'${i18n.get('物料号')}',hidden:false,width:150,sortable:true,align:'left' }, 
+					{name:'customerName',label:'${i18n.get('客户')}',hidden:false,width:150,sortable:true,align:'left' }, 
+					{name:'firstWeekQuantity',label:'${i18n.get('第一周数量')}',hidden:false,width:150,sortable:true,align:'left' }, 
+					{name:'secondWeekQuantity',label:'${i18n.get('第二周数量')}',hidden:false,width:150,sortable:true,align:'left' }, 
+					{name:'thirdWeekQuantity',label:'${i18n.get('第三周数量')}',hidden:false,width:150,sortable:true,align:'left' }, 
+					{name:'fourthWeekQuantity',label:'${i18n.get('第四周数量')}',hidden:false,width:150,sortable:true,align:'left' }
+				]" > 
+				<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">	
+					<div class="form-group col-xs-3">
+						<input type="text" id="searchKey" name="searchKey" placeholder='请输入产品型号或系列' size="30" />
+					</div>	
+				</div>
+			</@form.table>
+			</div>
+			</#if>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<#if !forecastInfo?? || !forecastInfo.id?? || statusEdit || ableEdit>
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					</#if>
+					<#if !ableEdit>
+					<button class="btn" type="button" onclick="javascript:frameElement.api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+					</#if>
+				</div>
+			</div>
+		</@form.form>
+		<div id="info" style="padding-top: 20px;" class="row">
+			<div class="col-xs-12">
+				<input type="hidden" id="selectedId"  />
+				<@plug.tabs tabMain=tabMainInfo>
+			</@plug.tabs>
+		</div>
+	</@form.panel>
+</@cui.body2>

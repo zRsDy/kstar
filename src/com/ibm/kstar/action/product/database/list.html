@@ -1,0 +1,236 @@
+<@pui.body>
+<table style="width: 100%" >
+	<tr>
+		<td id="treeTd" style="width: 400px" valign="top">
+		
+		<#if (permission["P01-1DatabaseManager"])??>
+			<#assign productManager="true" />
+			<#assign addURL="'${ctx}/product/database/addFile.html?parentId='+$('#parentId').val()" />
+			<#assign deleteURL="'${ctx}/product/database/deleteFile.html?parentId='+$('#parentId').val()" />
+		<#else>
+			<#assign productManager="false" />
+		</#if>
+		
+			<#if productManager == "true">
+			<@form.panel title="${i18n.get('产品目录树')}" style='height:100;'>
+				<@plug.tree 
+				id="tree1" 
+				checkbox='false'
+				moveEdit = '${productManager}' 
+				onMove = "function(dragNode,newParentNode,moveType){
+				debugger;
+					var data = {
+						dragNodeId : dragNode[0].id,
+						newParentNodeId : newParentNode != null ? newParentNode.id : null
+					}
+					if(moveType == 'inner'){
+						var dialog = bootbox.dialog({
+						    message: '${i18n.get('岗位调整中......')}',
+						    closeButton: false
+						});
+						ajax({
+							type:'post',
+							url : '${ctx}/lov/member/move.html',
+							data: data,
+							success : function(result) {
+								dialog.modal('hide');
+							},
+							error : function(result) {
+								dialog.modal('hide');
+								reload_tree1();
+							}
+						});
+					}else{
+						reload_tree1();
+					}
+				}"
+				asyncUrl='${ctx}/lov/member/tree.html?groupId=PRODUCT_DATABASE'
+			  	
+			  	onClick=" function(event, treeId, treeNode){
+			  		$('#parentId').val(treeNode.id);
+			  		$('#productCatalogId').val(treeNode.id);
+			  		$('#all').val('N');
+			  		reload_t1();
+			  		reload_t2();
+			  	}"
+			  	
+			  	onRightClick="function(event, treeId, treeNode) {
+				   	var treeObj = $.fn.zTree.getZTreeObj(treeId);
+					var nodes = treeObj.getNodes();
+					if (nodes.length>0) {
+						treeObj.cancelSelectedNode();
+					}
+					$('#parentId').val('');
+					reload_t1();
+				}"
+			  	isParent="function(data){return true;}"
+				/>
+			</@form.panel>
+			
+			<#else>
+				<script type="text/javascript">
+					var catalogList =  ${catalogList![]};
+				</script>
+			
+				<@form.panel title="${i18n.get('产品目录树')}" style='height:100;'>
+					<@plug.tree 
+						id="tree1" 
+						async="false"
+						checkbox='false'
+						datas="catalogList"
+					  	onClick=" function(event, treeId, treeNode){
+					  		$('#parentId').val(treeNode.id);
+					  		$('#all').val('N');
+					  		reload_t1();
+					  	}"
+					  	
+						isParent="function(data){return true;}"
+					 />
+				</@form.panel>
+			</#if>
+		</td>
+	
+		<td valign="top">
+			<@form.table id="t1"
+			class="col-xs-12"
+			shrinkToFit = 'false'
+			title="${i18n.get('产品资料')}"
+			url = "${ctx}/product/database/page.html"
+			rowNum = "20"
+			addURL="${addURL!}"
+			deleteURL="${deleteURL!}"
+			colModel = "[
+			  { name : 'id',    label : 'id', hidden : true ,sortable:false,align:'center' },
+			  { name : 'name', label : '${i18n.get('资料名称')}', width : 450 ,sortable:false },
+			  { name : 'type', label : '${i18n.get('权限类型')}', hidden : true , width : 50 ,sortable:false },
+			  { name : 'path', label : '${i18n.get('操作')}' , width : 150 ,sortable:false,
+			   formatter:function(cellvalue, options, item){
+			   		var view = '?view=Y';
+			   		var viewAction = '${i18n.get('不支持在线查看')}';
+			   		var ft = item.fileType.toUpperCase();
+			   		if(ft == '.DOC' || ft == '.DOCX' || ft == '.PDF' || ft == '.MP4' || ft == '.JPG' || ft == '.JPEG'){
+			   			viewAction = '<a target=_blank href= ' +cellvalue+ view +' > ${i18n.get('查看')} </a>';
+			   		}
+			   		if(item.type == '1' && (ft != '.MP4' || ft != '.JPG' || ft != '.JPEG')){
+			   			return '<a target=_blank href= ' +cellvalue+ '> ${i18n.get('下载')} </a> ' + viewAction
+			   		}else{
+			   			return viewAction;
+			   		}
+			  }},
+			  { name : 'fileType', label : '${i18n.get('文件类型')}', width : 80 ,sortable:false },
+			  { name : 'size', label : '${i18n.get('文件长度')}', width : 80 ,sortable:false },
+			  { name : 'createDate', label : '${i18n.get('创建时间')}', width : 120 ,sortable:false,
+			  formatter:function(cellvalue, options){
+			  	return formatDate(cellvalue);
+			  }}
+			  ]"
+			buttons="[{
+						id:'addBtn',
+			  			label : '${i18n.get('添加目录')}',
+			  			icon : 'icon-save',
+			  			own : ${productManager},
+			  			handler : function(e,rowData){
+							 var url = '${ctx}/product/database/add.html?parentId='+$('#parentId').val();	
+	               			 var dialog = parent.dialog('${i18n.get('添加目录')}',url,window);
+			  			}
+					},{
+						id:'editBtn',
+			  			label : '${i18n.get('修改目录')}',
+			  			icon : 'icon-save',
+			  			own : ${productManager},
+			  			handler : function(e,rowData){
+							 var url = '${ctx}/product/database/edit.html?id='+$('#parentId').val();	
+	               			 var dialog = parent.dialog('${i18n.get('修改目录')}',url,window);
+			  			}
+					},{
+						id:'deleteBtn',
+			  			label : '${i18n.get('删除目录')}',
+			  			icon : 'icon-save',
+			  			own : ${productManager},
+			  			handler : function(e,rowData){
+							var url = '${ctx}/product/database/delete.html?id='+$('#parentId').val();
+							bootbox.confirm('${i18n.get('你确定要删除该条数据吗?')}', function(result) {
+			                    if(result) {
+			                        var delid = $('#parentId').val();
+			                        ajax({
+			                            type:'post',
+			                            url : url,
+			                            success : function(result) {
+			                                reload_tree1();
+			                                debugger;
+			                                $('#parentId').val('');
+			                            },
+			                            error : function(result) {
+			                            	debugger;
+			                                alert(result);
+			                            }
+			                        });
+			                    }
+			                });
+			  			}
+					}]"
+			>
+			<div class="col-xs-12">
+				<input type="hidden" id="parentId" name="parentId" />
+				<div class="form-group col-xs-2" align="right">${i18n.get('资料名称 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="searchKey" size="30" />
+				</div>
+				
+				<select name="all" id="all">
+					<option value="N" >${i18n.get('本级目录')}</option>
+					<option value="Y" >${i18n.get('全部目录')}</option>
+				</select>
+				
+			</div>
+			</@form.table>
+		</td>
+	</tr>
+	<#if productManager == "true">
+	<tr>
+		<td></td>
+		<td>
+			<@form.table id="t2"
+			class="col-xs-12"
+			shrinkToFit = 'true'
+			title="${i18n.get('权限列表')}"
+			url = "${ctx}/product/database/selectedPage.html"
+			rowNum = "20"
+			search="false"
+			colModel = "[
+			  { name : 'id', label : 'id', hidden : true , width : 60,sortable:false,align:'center' }, 
+			  { name : 'optTxt1',    label : '${i18n.get('类型')}', hidden : false , width : 60,sortable:false,align:'center',formatter:function(cellvalue, options){ return 'Y'== cellvalue ? '${i18n.get('岗位')}':'${i18n.get('组织')}' } },
+			  { name : 'parentId', label : '${i18n.get('权限类型')}', width : 60 ,sortable:false,formatter:function(cellvalue, options){ return '1'== cellvalue ? '${i18n.get('下载权限')}':'${i18n.get('在线查看权限')}' } },
+			  { name : 'name', label : '${i18n.get('目录名称')}', width : 150 ,sortable:false },
+			  { name : 'memo', label : '${i18n.get('说明')}',sortable:false }
+			  ]"
+			 buttons = "[{
+			  			id:'config',
+			  			label : '${i18n.get('设置下载权限')}',
+			  			icon : 'icon-save',
+			  			own : ${productManager},
+			  			handler : function(e,rowData){
+			  				var selectedId = $('#productCatalogId').val();
+							parent.dialog('${i18n.get('设置权限')}','${ctx}/product/database/config.html?type=1&productCatalogId='+selectedId,window);
+			  			}
+			  		},
+			  		{
+			  			id:'config2',
+			  			label : '${i18n.get('设置在线查看权限')}',
+			  			icon : 'icon-save',
+			  			own : ${productManager},
+			  			handler : function(e,rowData){
+			  				var selectedId = $('#productCatalogId').val();
+							parent.dialog('${i18n.get('设置权限')}','${ctx}/product/database/config.html?type=2&productCatalogId='+selectedId,window);
+			  			}
+			  		}
+			  		]"
+			>
+			<input type="hidden" name="productCatalogId" id="productCatalogId" />
+			</@form.table>
+		</td>
+	</tr>	
+	</#if>
+</table>	
+</@pui.body>
+

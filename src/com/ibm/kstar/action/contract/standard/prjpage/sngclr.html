@@ -1,0 +1,171 @@
+<div>
+	<@form.form id="sngclr" action="${ctx}/standard/prjpage/sngclr.html" success="function(){
+	alert('${i18n.get('保存成功')}！');opener.reload_sngclr(); }" class="form-horizontal">
+	<@form.input id="id" name="id" placeholder="" tip="" type="hidden"
+	value="${(sngclrInf.id)!}" />
+
+	<h5 style="background-color: #E9E9E9;">${i18n.get('空调部分')}</h5>
+	<table>
+		<tr>
+			<td width="100px">${i18n.get('项目技术要求')}:</td>
+			<td width="180px">
+			<div>
+				<button class="btn btn-info" onclick= "javascript:parent.dialog('${i18n.get('项目技术要求')}','${ctx}/kstarDoc/add.html?systemId=${contrId}&systemCode=SNGCLRATTM',window)" type="button">
+				${i18n.get('上传附件')}
+				</button>
+			</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('空调制冷方式')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="clrTyp" value="a"
+							selectValue="${(sngclrInf.clrTyp)!'N'}" /> <span class="lbl">${i18n.get('风冷')}</span>
+						</label> 
+						<label><@form.radio name="clrTyp" value="b"
+							selectValue="${(sngclrInf.clrTyp)!'N'}" /> <span class="lbl">${i18n.get('水冷')}</span>
+						</label>
+						<label><@form.radio name="clrTyp" value="c"
+							selectValue="${(sngclrInf.clrTyp)!'N'}" /> <span class="lbl">${i18n.get('冷冻水')}</span>
+						</label> 
+						<label><@form.radio name="clrTyp" value="d"
+							selectValue="${(sngclrInf.clrTyp)!'N'}" /> <span class="lbl">${i18n.get('其他')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('空调送风方式')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="wndTyp" value="a"
+							selectValue="${(sngclrInf.wndTyp)!'N'}" /> <span class="lbl">${i18n.get('行级送风')}</span>
+						</label> 
+						<label><@form.radio name="wndTyp" value="b"
+							selectValue="${(sngclrInf.wndTyp)!'N'}" /> <span class="lbl">${i18n.get('下送风')}</span>
+						</label>
+						<label><@form.radio name="wndTyp" value="c"
+							selectValue="${(sngclrInf.wndTyp)!'N'}" /> <span class="lbl">${i18n.get('风帽直吹')}</span>
+						</label> 
+						<label><@form.radio name="wndTyp" value="d"
+							selectValue="${(sngclrInf.wndTyp)!'N'}" /> <span class="lbl">${i18n.get('其他')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('机型选择')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="mchTyp" value="a"
+							selectValue="${(sngclrInf.mchTyp)!'N'}" /> <span class="lbl">${i18n.get('恒温恒湿')}</span>
+						</label> 
+						<label><@form.radio name="mchTyp" value="b"
+							selectValue="${(sngclrInf.mchTyp)!'N'}" /> <span class="lbl">${i18n.get('单冷')}</span>
+						</label>
+						<label><@form.radio name="mchTyp" value="c"
+							selectValue="${(sngclrInf.mchTyp)!'N'}" /> <span class="lbl">${i18n.get('带加热')}</span>
+						</label> 
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('室外机位置')}:</td>
+			<td width="180px"><@form.input id="mchPst"
+				name="mchPst" placeholder="" tip=""
+				value="${(sngclrInf.mchPst)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('室外机与室内机之间的高度差')}:</td>
+			<td width="180px"><@form.input id="mchHgh"
+				name="mchHgh" placeholder="" tip=""
+				value="${(sngclrInf.mchHgh)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('室内机与室外机的管程长度')}:</td>
+			<td width="180px"><@form.input id="mchLng"
+				name="mchLng" placeholder="" tip=""
+				value="${(sngclrInf.mchLng)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('其他情况说明')}:</td>
+			<td width="180px"><@form.input id="othersNts"
+				name="othersNts" placeholder="" tip=""
+				value="${(sngclrInf.othersNts)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('是否需要监控')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="ifMnt" value="y"
+							selectValue="${(sngclrInf.ifMnt)!'N'}" /> <span class="lbl">${i18n.get('是')}</span>
+						</label> 
+						<label><@form.radio name="ifMnt" value="n"
+							selectValue="${(sngclrInf.ifMnt)!'N'}" /> <span class="lbl">${i18n.get('否')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('监控方式')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="mntTyp" value="a"
+							selectValue="${(sngclrInf.mntTyp)!'N'}" /> <span class="lbl">RS485</span>
+						</label> 
+						<label><@form.radio name="mntTyp" value="b"
+							selectValue="${(sngclrInf.mntTyp)!'N'}" /> <span class="lbl">SNMP${i18n.get('卡')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('是否需要漏水检测')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="ifDrp" value="y"
+							selectValue="${(sngclrInf.ifDrp)!'N'}" /> <span class="lbl">${i18n.get('是')}</span>
+						</label> 
+						<label><@form.radio name="ifDrp" value="n"
+							selectValue="${(sngclrInf.ifDrp)!'N'}" /> <span class="lbl">${i18n.get('否')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('漏水检测方式')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="drpTyp" value="a"
+							selectValue="${(sngclrInf.drpTyp)!'N'}" /> <span class="lbl">${i18n.get('定位式')}</span>
+						</label> 
+						<label><@form.radio name="drpTyp" value="b"
+							selectValue="${(sngclrInf.drpTyp)!'N'}" /> <span class="lbl">${i18n.get('非定位式')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('水冷空调进出水温度')}:</td>
+			<td width="280px">${i18n.get('进水温度')}: <@form.input id="clrIntmp"
+				name="clrIntmp" placeholder="" tip="" style="width:40px;"
+				value="${(sngclrInf.clrIntmp)!}" />, ${i18n.get('出水温度')}: 
+				<@form.input id="clrOttmp"
+				name="clrOttmp" placeholder="" tip="" style="width:40px;"
+				value="${(sngclrInf.clrOttmp)!}" />
+				</td>
+		</tr>
+	</table>
+
+	<div class="clearfix form-actions">
+		<div class="col-md-offset-5 col-md-7">
+			<button class="btn btn-info submit" type="button" align="left">
+				<i class="icon-ok bigger-110"></i> ${i18n.get('修订')}
+			</button>
+			&nbsp; &nbsp; &nbsp;
+		</div>
+	</div>
+	</@form.form>
+
+</div>

@@ -1,0 +1,83 @@
+<@pui.body>
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1"
+		    success="function(){parent.currentParent.reload_contactPerson(); }"
+			class="form-horizontal">	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="role"> ${i18n.get('角色:')} </label>
+					<@form.input
+					id="role"  name="role" 
+					placeholder="" 
+					tip="${i18n.get('角色')}" 
+					required="${i18n.get('不能为空！')}"
+					value="${(entity.role)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="name"> ${i18n.get('姓名 :')} </label>
+					  
+					<@form.input
+					id="name"  name="name" 
+					placeholder="" 
+					tip="${i18n.get('姓名 ')}" 
+					required="${i18n.get('不能为空！')}"
+					value="${(entity.name)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="duty"> ${i18n.get('职务 :')} </label>
+					  
+					<@form.input
+					id="duty"  name="duty" 
+					placeholder="" 
+					tip="${i18n.get('职务')}" 
+					required="${i18n.get('不能为空！')}"
+					value="${(entity.duty)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="phonenumber"> ${i18n.get('联系电话:')} </label>
+					  
+					<@form.input
+					id="phonenumber"  name="phonenumber" 
+					placeholder="" 
+					tip="${i18n.get('联系电话')}" 
+					value="${(entity.phonenumber)!}" 
+					/>
+				</div>		
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="decisionWeight"> ${i18n.get('决策权重 :')} </label>
+					  
+					<@form.input
+					id="decisionWeight"  name="decisionWeight" 
+					placeholder="" 
+					tip="${i18n.get('决策权重 ')}" 
+					value="${(entity.decisionWeight)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="supportLevel"> ${i18n.get('对我司支持程度 :')} </label>
+					  
+					<@form.input
+					id="supportLevel"  name="supportLevel" 
+					placeholder="" 
+					tip="${i18n.get('对我司支持程度 ')}" 
+					value="${(entity.supportLevel)!}" 
+					/>
+				</div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+</@pui.body>

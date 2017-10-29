@@ -1,0 +1,109 @@
+	<@pui.body>
+	<@form.table id="t1" 
+	class="col-xs-12"
+	title="${i18n.get('产品列表')}" 
+	url = "page.html" 
+	rowNum = "5" 
+	addURL = "'${ctx}/demo/add.html'" 
+	editURL= "'${ctx}/demo/edit.html'" 
+	deleteURL = "'${ctx}/demo/delete.html'" 
+	colModel = "[
+		{name:'productID',label:'${i18n.get('产品')}ID',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'productCode',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'productName',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'proEName',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'proDesc',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'materCode',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'vmaterCode',label:'',hidden:false,width:100,sortable:false,align:'center'},
+		{name:'proModel',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'fatherProCode',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'publishStatus',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'priceStatus',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'saleStatus',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'rohStatus',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'proOrgId',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'unit',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'crossWeight',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'netWeight',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'customsCode',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'proLength',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'proWidth',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'proHight',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'proWrapLength',label:'',hidden:false,width:100,sortable:false,align:'center'},
+		{name:'proWrapWidth',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'proWrapHight',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'cabinet20Flat',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'cabinet20Weight',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'cabinet40Flat',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'cabinet40Hight',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'erpCategory',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'crmCategory',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'proBrand',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'saleType',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'cProCategory',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'proLine',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'proSeries',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'clientCategory',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'clientCode',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'isSpecialUse',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'cSaleStatus',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'cProPowcap',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'demandCode',label:'',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'supplyChainID',label:'',hidden:false,width:100,sortable:false,align:'center' }
+		]" 
+		onSelectRow= "function(selectedData){
+				$('#selectedId').val(selectedData.productID);
+				$('#info').show();
+				showPage('tab1','info1.html');
+				 }"
+		buttons = "[]" > 
+	</@form.table> 
+	<br/>
+<div id="info" style="display: none">
+
+<input type="hidden" id="selectedId"  />
+<ul class="nav nav-tabs" role="tablist" id="maintab">
+  <li class="active"><a href="#tab1"  onclick='showPage("tab1","info1.html")'>${i18n.get('基本信息')}</a></li>
+  <li><a href="#tab2" onclick='showPage("tab2","info2.html")'>tab2</a></li>
+  <li><a href="#tab3" onclick='showPage("tab3","info3.html")'>tab3</a></li>
+  <li><a href="#tab4" onclick='showPage("tab4","info4.html")'>tab4</a></li>
+  
+  <li class="dropdown">
+		<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+			${i18n.get('多子')}Tab &nbsp;
+			<i class="icon-caret-down bigger-110 width-auto"></i>
+		</a>
+		<ul class="dropdown-menu dropdown-info">
+			<li>
+				<a data-toggle="tab" href="#tab5" onclick='showPage("tab5","info5.html")'>${i18n.get('子')}Tab1</a>
+			</li>
+			<li>
+				<a data-toggle="tab" href="#tab6" onclick='showPage("tab6","info6.html")'>${i18n.get('子')}Tab2</a>
+			</li>
+		</ul>
+	</li>
+</ul>
+
+<div class="tab-content">
+  	<div class="tab-pane active" id="tab1"></div>
+  	<div class="tab-pane" id="tab2"></div>
+  	<div class="tab-pane" id="tab3"></div>
+  	<div class="tab-pane" id="tab4"></div>
+  	<div class="tab-pane" id="tab5"></div>
+  	<div class="tab-pane" id="tab6"></div>
+</div>
+
+<script type="text/javascript">
+	var loadimg="<img src ='${ctx}/assets/img/loading.gif' /> ";
+	function showPage(tabId, url){
+		$('#maintab a[href="#'+tabId+'"]').tab('show');
+		$('#'+tabId).html(url+'?id='+$("#selectedId").val() +'<br>'+loadimg+' ${i18n.get('页面加载中，请稍后...')}');
+		$('#'+tabId).load(url+'?id='+$("#selectedId").val(),function(response,status,xhr){
+			if(status === 'error'){
+				$('#'+tabId).html(url+'?id='+$("#selectedId").val() +'<br> ${i18n.get('页面加载失败??')}');
+			}
+		});
+	}
+</script>
+</div>
+</@pui.body>

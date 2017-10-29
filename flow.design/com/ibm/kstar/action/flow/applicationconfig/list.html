@@ -1,0 +1,90 @@
+<@pui.body> 
+	<div class="col-xs-12">
+		<@form.table id="appFlow"
+			class="col-xs-12"
+			shrinkToFit = 'true'
+			title="${i18n.get('应用管理')}"
+			url = "${ctx}/application/config/page.html"
+			rowNum = "10"
+			colModel = "[
+			  	{ name : 'id', label : 'id', hidden : true , width : 60,sortable:true,align:'center' }, 
+			  	{ name : 'code', label : '${i18n.get('应用编码')}', width : 90 ,sortable:true}, 
+			  	{ name : 'name', label : '${i18n.get('应用名称')}', width : 90 ,sortable:true}, 
+			  	{ name : 'optTxt1', label : '${i18n.get('流程编码')}', width : 150 ,sortable:true },
+			  	{ name : 'optTxt1Name', label : '${i18n.get('流程名称')}', width : 150 ,sortable:true }
+			]"
+			onSelectRow = "function(){
+				$('.applicationId').val(selected_appFlow.id);
+				reload_param();
+				if($('#powerAndParam').css('display') == 'none'){
+					$('#powerAndParam').show();
+				}
+			}"
+			onComplete = "function(){
+				$('#powerAndParam').hide();
+			}"
+			buttons = "[
+		  		{
+		  			id:'config_appFlow',
+		  			label : '${i18n.get('配置')}',
+		  			icon : 'icon-trash',
+		  			own : true,
+		  			handler : function(e,rowData){
+						if(!selected_appFlow){
+							alert('${i18n.get('没有选中任何数据!')}');
+							return;
+						}else{
+							parent.dialog('${i18n.get('配置')}','${ctx}/application/config/config.html?id='+selected_appFlow.id,window);
+						}
+		  			}
+		  		}
+		  	]">
+			<div class="col-xs-12">
+				<div class="form-group col-xs-2" align="right">${i18n.get('应用编码 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="code" size="30" />
+				</div>	
+				<div class="form-group col-xs-2" align="right">${i18n.get('应用名称 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="name" size="30" />
+				</div>
+				<div class="form-group col-xs-2" align="right">${i18n.get('流程编码 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="optTxt1" size="30" />
+				</div>	
+			</div>
+		</@form.table>
+	</div>
+	<div id="powerAndParam">
+		<@form.table id="param"
+			class="col-xs-12"
+			shrinkToFit = 'true'
+			title="${i18n.get('变量')}"
+			url = "${ctx}/application/config/pageParam.html"
+			addURL = "'${ctx}/application/config/configParam.html?applicationId='+$('#param_applicationId').val()"
+			editURL = "'${ctx}/application/config/configParam.html'"
+			deleteURL = "'${ctx}/application/config/deleteParam.html'"
+			rowNum = "10"
+			colModel = "[
+			  	{ name : 'id', label : 'id', hidden : true , width : 60,sortable:true,align:'center' }, 
+			  	{ name : 'paramName', label : '${i18n.get('变量名')}', width : 250 ,sortable:true}, 
+			  	{ name : 'remark', label : '${i18n.get('备注')}', width : 400 ,sortable:true },
+			  	{ name : 'relatedForm', label : '${i18n.get('关联表单')}', width : 400 ,sortable:true },
+			  	{ name : 'relatedTableField', label : '${i18n.get('关联表字段')}', width : 400 ,sortable:true }
+			]"
+			buttons = "[]">
+			<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">	
+				<div class="form-group col-xs-8">
+					<input type="hidden" id="param_applicationId" class="applicationId" name="applicationId" />
+					<input type="text" name="searchKey" placeholder="${i18n.get('查询关键字')}" />
+				</div>	
+				<div class="form-group col-xs-2" style="margin-left:20px;">
+					<button type="submit" class="btn btn-info" > 
+						<i class="icon-search bigger-110"></i>
+						${i18n.get('查询')}
+					</button>
+				</div>
+			</div>
+		</@form.table>
+	</div>
+</@pui.body>

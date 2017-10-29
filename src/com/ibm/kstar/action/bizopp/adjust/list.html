@@ -1,0 +1,827 @@
+	
+<@pui.body>
+	<script type="text/javascript">
+	function checkForm(cellvalue){
+		
+		var html="<input type=\"checkbox\"  onclick=\"return false;\" />";
+		if(cellvalue == '0'){
+			
+		}else if(cellvalue == '1'){
+			 html="<input type=\"checkbox\" checked=\"checked\"  onclick=\"return false;\"/>";
+		}
+		return html;
+	}
+</script>
+	<@form.table id="t82"
+	class="col-xs-12"
+	title="${i18n.get('商机信息')}"
+	url = "${ctx}/bizadjust/page.html?status=15"
+	editURL= "'${ctx}/bizopp/edit.html'"
+	rowNum = "10"
+	shrinkToFit="true"
+	height="220"
+	colModel = "[
+	    {name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'number',label:'${i18n.get('商机编号')}',hidden:true,width:200,sortable:true,align:'center' },
+		{name:'opportunityName',label:'${i18n.get('商机名称')}',hidden:false,sortable:true,align:'center' },
+		{name:'bizOppAddressName',label:'${i18n.get('商机所在地')}',hidden:false,width:80,sortable:true,align:'center'},
+		{name:'address',label:'${i18n.get('详细地址')}',hidden:true,width:80,sortable:true,align:'center' },
+		{name:'clientName',label:'${i18n.get('终端用户')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'enterpriseName',label:'${i18n.get('报备单位')}',hidden:true,width:200,sortable:true,align:'center' },
+		{name:'createdByIdName',label:'${i18n.get('报备人')}',hidden:false,width:80,sortable:true,align:'center' },
+		{name:'createdAt',label:'${i18n.get('报备时间')}',hidden:false,width:60,sortable:true,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+		{name:'statusName',label:'${i18n.get('处理状态')}',hidden:false,width:60,sortable:true,align:'center' },
+		{name:'conflictStatusName',label:'${i18n.get('商机状态')}',hidden:false,width:40,sortable:true,align:'center' }
+		]"
+		 onSelectRow = "function(data,status){
+	 		$('#layCompLine').show();
+	 		$('#bizId').val(data.id);
+	 		
+	 		
+	 		$('#layer2Value').val('1');
+	 		$('#layer3Value').val('1');
+	 		$('#industryValue').val('1');
+	 		$('#industrySubValue').val('1');
+	 		
+	 		$('#is1').attr('checked','true'); 
+	 		$('#is2').attr('checked','true');
+	 		$('#is3').attr('checked','true');
+	 		$('#is4').attr('checked','true');
+	 		
+	 		reload_conflict();
+		 }"
+		>
+
+    <div class="col-xs-12" style="padding-top: 20px;">
+	<#--<tr>-->
+	<#--<div class="form-group col-xs-3">-->
+	<#--<input type="text" id="search" name="search" placeholder='查询关键字' size="30" />-->
+	<#--</div>-->
+	<#--<div class="form-group col-xs-2" align="right">-->
+	<#--<button type="submit" class="btn btn-info">-->
+	<#--<i class="icon-search bigger-110"></i>-->
+	<#--查询-->
+	<#--</button>-->
+	<#--</div>-->
+	<#--</tr>-->
+        <tr align="left">
+            <td align="right" width="120px">
+      ${i18n.get('商机编号:')}
+            </td>
+            <td align="left" width="180px">
+				<@form.input name="pageSearch_number_like" type="text"
+				id="pageSearch_number_like"
+							/>
+            </td>
+            <td align="right" width="120px">
+      ${i18n.get('报备单位:')}
+            </td>
+            <td align="left" width="180px">
+
+				<@form.autocomplete  id="pageSearch_enterprise" name="pageSearch_enterprise"
+				idKey='id'
+				style="width: 158px;"
+				required=" ${i18n.get('请选择组织')}"
+				formatResult="function(data) {return '<div >' +data.name + '</div>';}"
+				url="function(){ return '${ctx}/lovcontract/autocompleteOrg.html'; }"
+					/>
+
+            </td>
+            <td align="right" width="120px">
+      ${i18n.get('报备人:')}
+            </td>
+            <td align="left" width="180px">
+				<@form.autocomplete  id="pageSearch_createdById" name="pageSearch_createdById"
+				idKey='employeeId'
+				style='width:147px'
+				style="width: 158px;"
+				multiple="false"
+				formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+				url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+
+						/>
+            </td>
+        </tr>
+        <tr align="left">
+            <td align="right" width="120px">
+      ${i18n.get('客户名称:')}
+            </td>
+            <td align="left" width="180px">
+				<@form.autocomplete  id="pageSearch_clientId" name="pageSearch_clientId"
+				idKey='id'
+				required="${i18n.get('请选择客户')}"
+				style="width: 158px;"
+				formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+				url="function(){ return '${ctx}/lovcustom/autocomplete_customAuth.html'; }"
+
+				onSelect="function(data){
+					            	        $('#clientName').val(data.customFullName);
+						            		if (data.customCategoryName) {
+						            		}
+						            	}"
+				            	    />
+            </td>
+            <td align="right" width="120px">
+       ${i18n.get('商机名称:')}
+            </td>
+            <td align="left" width="180px">
+				<@form.input name="pageSearch_opportunityName" type="text"
+				id="pageSearch_opportunityName"
+				required=" ${i18n.get('不能为空！')}"/>
+            </td>
+            <td align="right" width="120px">
+       ${i18n.get('销售阶段:')}
+            </td>
+            <td align="left" width="180px">
+				<@form.select
+					id="pageSearch_saleStage" name="pageSearch_saleStage"
+				style="width: 158px;"
+				code="SALES_METHODS"
+				idKey="id"
+				required=" ${i18n.get('不能为空！')}"
+				level="2"
+				parentId="saleMethod"
+									/>
+            </td>
+        </tr>
+        <tr align="left">
+            <td align="right" width="120px">
+     ${i18n.get('报备日期起:')}
+            </td>
+            <td align="left" width="180px">
+				<@form.date name="pageSearch_createdAt_begin"
+				id="pageSearch_createdAt_begin"
+					/>
+            </td>
+            <td align="right" width="120px">
+      ${i18n.get('报备日期至:')}
+            </td>
+            <td align="left" width="180px">
+				<@form.date name="pageSearch_createdAt_end"
+				id="pageSearch_createdAt_end"
+						/>
+            </td>
+            <td align="right" width="120px">
+
+            </td>
+            <td align="left" width="180px">
+
+            </td>
+        </tr>
+        <tr>
+            <td align="right" width="120px">
+                <strong style="color: red;">*</strong>
+        ${i18n.get('所在地（省）:')}
+            </td>
+            <td align="left" width="180px">
+
+				<@form.select
+					code="ADDRESSREGION"
+				level="2"
+				childId="pageSearch_layer3"
+				id="pageSearch_layer2"
+				name="pageSearch_layer2"
+				style="width: 158px;"
+				placeholder="省"
+				tip=""
+					/>
+
+            </td>
+            <td align="right" class="sub_flag_2">
+        ${i18n.get('所在地（市）:')}
+            </td>
+            <td align="left" width="180px">
+				<@form.select
+					code="ADDRESSREGION"
+				level="3"
+				parentId="pageSearch_layer2"
+				childId="pageSearch_layer4"
+				id="pageSearch_layer3"
+				name="pageSearch_layer3"
+				style="width: 158px;"
+				placeholder="市"
+				tip=""
+									/>
+            </td>
+            <td align="right" width="120px">
+         ${i18n.get('所在地（区/县）:')}
+            </td>
+            <td align="left" width="180px">
+				<@form.select
+					code="ADDRESSREGION"
+				style="width: 158px;"
+				level="4"
+				parentId="pageSearch_layer3"
+				id="pageSearch_layer4"
+				name="pageSearch_layer4"
+				placeholder=" ${i18n.get('区/县')}"
+				tip=""
+									/>
+            </td>
+
+        </tr>
+		<tr>
+			<td align="right" width="120px">
+				 ${i18n.get('客户名称:')}
+			</td>
+			<td align="left" width="180px">
+				<@form.input name="pageSearch_clientName_like" type="text"
+				id="pageSearch_clientName_like"
+				required=" ${i18n.get('不能为空！')}"/>
+			</td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+
+        </td>
+    </div>
+
+	</@form.table>
+	<div style="display:none">
+		<input type="checkbox" name="bizOppBox1" id="bizOppBox1"  />
+		<input type="checkbox" name="bizOppBox2" id="bizOppBox2"  />
+		<input type="checkbox" name="bizOppBox3" id="bizOppBox3"  />
+		<input type="checkbox" name="bizOppBox4" id="bizOppBox4"  />
+		<input type="checkbox" name="bizOppBox5" id="bizOppBox5"  />
+		<input type="checkbox" name="bizOppBox6" id="bizOppBox6"  />
+		<input type="checkbox" name="bizOppBox7" id="bizOppBox7"  />
+		<input type="checkbox" name="bizOppBox8" id="bizOppBox8"  />
+		<input type="checkbox" name="bizOppBox9" id="bizOppBox9"  />
+		<input type="checkbox" name="bizOppBox10" id="bizOppBox10"  />
+		<input type="checkbox" name="bizOppBox11" id="bizOppBox11"  />
+		<input type="checkbox" name="bizOppBox12" id="bizOppBox12"  />
+		<input type="checkbox" name="bizOppBox13" id="bizOppBox13"  />
+		<input type="checkbox" name="bizOppBox14" id="bizOppBox14"  />
+		<input type="checkbox" name="bizOppBox15" id="bizOppBox15"  />
+		<input type="checkbox" name="bizOppBox16" id="bizOppBox16"  />
+		<input type="checkbox" name="bizOppBox17" id="bizOppBox17"  />
+		<input type="checkbox" name="bizOppBox18" id="bizOppBox18"  />
+		<input type="checkbox" name="bizOppBox19" id="bizOppBox19"  />
+		<input type="checkbox" name="bizOppBox20" id="bizOppBox20"  />
+		<input type="hidden" class="idPasser" name="bizOpp1_" id="bizOpp1_" value="" />
+		<input type="hidden" class="idPasser" name="bizOpp2_" id="bizOpp2_" value="" />
+		<input type="hidden" class="idPasser" name="bizOpp3_" id="bizOpp3_" value="" />
+		<input type="hidden" class="idPasser" name="bizOpp4_" id="bizOpp4_" value="" />
+		<input type="hidden" class="idPasser" name="bizOpp5_" id="bizOpp5_" value="" />
+		<input type="hidden" class="idPasser" name="bizOpp6_" id="bizOpp6_" value="" />
+		<input type="hidden" class="idPasser" name="bizOpp7_" id="bizOpp7_" value="" />
+		<input type="hidden" class="idPasser" name="bizOpp8_" id="bizOpp8_" value="" />
+		<input type="hidden" class="idPasser" name="bizOpp9_" id="bizOpp9_" value="" />
+		<input type="hidden" class="idPasser" name="bizOpp10_" id="bizOpp10_" value="" />
+		<input type="hidden" class="idPasser" name="bizOpp11_" id="bizOpp11_" value="" />
+		<input type="hidden" class="idPasser" name="bizOpp12_" id="bizOpp12_" value="" />
+		<input type="hidden" class="idPasser" name="bizOpp13_" id="bizOpp13_" value="" />
+		<input type="hidden" class="idPasser" name="bizOpp14_" id="bizOpp14_" value="" />
+		<input type="hidden" class="idPasser" name="bizOpp15_" id="bizOpp15_" value="" />
+		<input type="hidden" class="idPasser" name="bizOpp16_" id="bizOpp16_" value="" />
+		<input type="hidden" class="idPasser" name="bizOpp17_" id="bizOpp17_" value="" />
+		<input type="hidden" class="idPasser" name="bizOpp18_" id="bizOpp18_" value="" />
+		<input type="hidden" class="idPasser" name="bizOpp19_" id="bizOpp19_" value="" />
+		<input type="hidden" class="idPasser" name="bizOpp20_" id="bizOpp20_" value="" />
+	</div>
+	<div class = "biz_basic_info" id = "top03">
+		<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px"></p>
+		<table border="0" cellpadding="0" cellspacing="0" >
+			<tr>
+				<td align="right">
+					 ${i18n.get('说明:')}
+				</td>
+				<td align="left" colspan="5">
+				   <@form.textArea id="projectSituation"  name="projectSituation" 
+					width="109" 
+					height="1"
+					placeholder="" 
+					tip="" 
+					value="" 
+					/>
+				</td>
+				<td align="left">
+				    <div style="padding-right: 20px; float: right;padding-top: 3px;" >
+					<#-- 商机报备工作台-批准 --><#-- /bizadjust/approved.html -->
+						<#if permission["P03BIZReportDeskOppoApprove"]??>
+						<button class="btn btn-info submit" type="button" onclick="approved();">
+							<i class="icon-ok bigger-110"></i>
+							 ${i18n.get('批准')}
+						</button>
+						</#if>
+					<#-- 商机报备工作台-驳回 --><#-- /bizadjust/rejected.html -->
+						<#if permission["P03BIZReportDeskOppoReject"]??>
+						<button class="btn btn-info" type="button" onclick="rejected();">
+							<i class="icon-ok bigger-110"></i>
+							 ${i18n.get('驳回')}
+						</button>
+						</#if>
+					<#-- 商机报备工作台-发布冲突 --><#-- /bizadjust/publish.html -->
+						<#if permission["P03BIZReportDeskOppoPublish"]??>
+						<button class="btn" type="button" onclick="publish();">
+							<i class="icon-undo bigger-110"></i>
+							 ${i18n.get('发布冲突')}
+						</button>
+						</#if>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="6" > ${i18n.get('查询条件:')}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					&nbsp;&nbsp;<input name="is1" type="checkbox" id="is1" value="${(layer2)!}" style="width: 20px;" onclick="changeCheckValue2()"/> ${i18n.get('省份')}
+					&nbsp;&nbsp;<input name="is2" type="checkbox" id="is2" value="${(layer3)!}" style="width: 20px;" onclick="changeCheckValue2()"/> ${i18n.get('城市')}
+					&nbsp;&nbsp;<input name="is3" type="checkbox" id="is3" value="${(industry)!}" style="width: 20px;" onclick="changeCheckValue2()"/> ${i18n.get('行业大类')}
+					&nbsp;&nbsp;<input name="is4" type="checkbox" id="is4" value="${(industrySub)!}" style="width: 20px;" onclick="changeCheckValue2()"/> ${i18n.get('行业小类')}
+					&nbsp;&nbsp;<input name="is5" type="checkbox" id="is5" value="${(keyWord)!}" style="width: 20px;" onclick="changeCheckValue2()"/> ${i18n.get('关键字')}
+				</td>
+			</tr>
+			<tr>
+			</tr>
+		</table>
+	</div>
+	<div id="layCompLine">
+
+	<@form.table id="conflict"
+	class="col-xs-12"
+	title="${i18n.get('排查冲突')}"
+	url = "${ctx}/bizadjust/pageConflict.html"
+	rowNum = "24"
+	search="false"
+	shrinkToFit="false"
+	height="680"
+	colModel = "[
+		{name:'id',label:'',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'bizOppProperty',label:'商机属性',hidden:false,width:160,sortable:true,align:'center' },
+		{name:'bizOpp1',label:'<a  id=bizOpp1_Y>√</a> <a id=bizOpp1_N>口</a>' + '${i18n.get('商机1')}',hidden:false,width:195,sortable:false,align:'center' },
+		{name:'bizOpp2',label:'<a  id=bizOpp2_Y>√</a> <a id=bizOpp2_N>口</a>' + '${i18n.get('商机2')}',hidden:false,width:195,sortable:false,align:'center' },
+		{name:'bizOpp3',label:'<a  id=bizOpp3_Y>√</a> <a id=bizOpp3_N>口</a>' + '${i18n.get('商机3')}',hidden:false,width:195,sortable:false,align:'center' },
+		{name:'bizOpp4',label:'<a  id=bizOpp4_Y>√</a> <a id=bizOpp4_N>口</a>' + '${i18n.get('商机4')}',hidden:false,width:195,sortable:false,align:'center' },
+		{name:'bizOpp5',label:'<a  id=bizOpp5_Y>√</a> <a id=bizOpp5_N>口</a>' + '${i18n.get('商机5')}',hidden:false,width:195,sortable:false,align:'center' },
+		{name:'bizOpp6',label:'<a  id=bizOpp6_Y>√</a> <a id=bizOpp6_N>口</a>' + '${i18n.get('商机6')}',hidden:false,width:195,sortable:true,align:'center' },
+		{name:'bizOpp7',label:'<a  id=bizOpp7_Y>√</a> <a id=bizOpp7_N>口</a>' + '${i18n.get('商机7')}',hidden:false,width:195,sortable:true,align:'center' },
+		{name:'bizOpp8',label:'<a  id=bizOpp8_Y>√</a> <a id=bizOpp8_N>口</a>' + '${i18n.get('商机8')}',hidden:false,width:195,sortable:true,align:'center' },
+		{name:'bizOpp9',label:'<a  id=bizOpp9_Y>√</a> <a id=bizOpp9_N>口</a>' + '${i18n.get('商机9')}',hidden:false,width:195,sortable:true,align:'center' },
+		{name:'bizOpp10',label:'<a  id=bizOpp10_Y>√</a> <a id=bizOpp10_N>口</a>' + '${i18n.get('商机10')}',hidden:false,width:195,sortable:true,align:'center' },
+		{name:'bizOpp11',label:'<a  id=bizOpp11_Y>√</a> <a id=bizOpp11_N>口</a>' + '${i18n.get('商机11')}',hidden:false,width:195,sortable:true,align:'center' },
+		{name:'bizOpp12',label:'<a  id=bizOpp12_Y>√</a> <a id=bizOpp12_N>口</a>' + '${i18n.get('商机12')}',hidden:false,width:195,sortable:true,align:'center' },
+		{name:'bizOpp13',label:'<a  id=bizOpp13_Y>√</a> <a id=bizOpp13_N>口</a>' + '${i18n.get('商机13')}',hidden:false,width:195,sortable:true,align:'center' },
+		{name:'bizOpp14',label:'<a  id=bizOpp14_Y>√</a> <a id=bizOpp14_N>口</a>' + '${i18n.get('商机14')}',hidden:false,width:195,sortable:true,align:'center' },
+		{name:'bizOpp15',label:'<a  id=bizOpp15_Y>√</a> <a id=bizOpp15_N>口</a>' + '${i18n.get('商机15')}',hidden:false,width:195,sortable:true,align:'center' },
+		{name:'bizOpp16',label:'<a  id=bizOpp16_Y>√</a> <a id=bizOpp16_N>口</a>' + '${i18n.get('商机16')}',hidden:false,width:195,sortable:true,align:'center' },
+		{name:'bizOpp17',label:'<a  id=bizOpp17_Y>√</a> <a id=bizOpp17_N>口</a>' + '${i18n.get('商机17')}',hidden:false,width:195,sortable:true,align:'center' },
+		{name:'bizOpp18',label:'<a  id=bizOpp18_Y>√</a> <a id=bizOpp18_N>口</a>' + '${i18n.get('商机18')}',hidden:false,width:195,sortable:true,align:'center' },
+		{name:'bizOpp19',label:'<a  id=bizOpp19_Y>√</a> <a id=bizOpp19_N>口</a>' + '${i18n.get('商机19')}',hidden:false,width:195,sortable:true,align:'center' },
+		{name:'bizOpp20',label:'<a  id=bizOpp20_Y>√</a> <a id=bizOpp20_N>口</a>' + '${i18n.get('商机20')}',hidden:false,width:195,sortable:true,align:'center' }
+		]"
+	onComplete = "function(data){
+		$('#bizOpp1_Y').hide();
+		$('#bizOpp2_Y').hide();
+		$('#bizOpp3_Y').hide();
+		$('#bizOpp4_Y').hide();
+		$('#bizOpp5_Y').hide();
+		$('#bizOpp6_Y').hide();
+		$('#bizOpp7_Y').hide();
+		$('#bizOpp8_Y').hide();
+		$('#bizOpp9_Y').hide();
+		$('#bizOpp10_Y').hide();
+		$('#bizOpp11_Y').hide();
+		$('#bizOpp12_Y').hide();
+		$('#bizOpp13_Y').hide();
+		$('#bizOpp14_Y').hide();
+		$('#bizOpp15_Y').hide();
+		$('#bizOpp16_Y').hide();
+		$('#bizOpp17_Y').hide();
+		$('#bizOpp18_Y').hide();
+		$('#bizOpp19_Y').hide();
+		$('#bizOpp20_Y').hide();
+
+		$('#bizOpp1_N').show();
+		$('#bizOpp2_N').show();
+		$('#bizOpp3_N').show();
+		$('#bizOpp4_N').show();
+		$('#bizOpp5_N').show();
+		$('#bizOpp6_N').show();
+		$('#bizOpp7_N').show();
+		$('#bizOpp8_N').show();
+		$('#bizOpp9_N').show();
+		$('#bizOpp10_N').show();
+		$('#bizOpp11_N').show();
+		$('#bizOpp12_N').show();
+		$('#bizOpp13_N').show();
+		$('#bizOpp14_N').show();
+		$('#bizOpp15_N').show();
+		$('#bizOpp16_N').show();
+		$('#bizOpp17_N').show();
+		$('#bizOpp18_N').show();
+		$('#bizOpp19_N').show();
+		$('#bizOpp20_N').show();
+
+
+
+		$('#bizOpp1_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox1').prop('checked',false);
+			$('#bizOpp1_Y').hide();
+			$('#bizOpp1_N').show();
+                $('#bizOpp1_').val('');
+
+		});
+
+		$('#bizOpp1_N').unbind('click').bind('click',function(){
+			$('#bizOppBox1').prop('checked',true);
+			$('#bizOpp1_N').hide();
+			$('#bizOpp1_Y').show();
+                $('#bizOpp1_').val(data[24].bizOpp1);
+		});
+
+		$('#bizOpp2_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox2').prop('checked',false);
+			$('#bizOpp2_Y').hide();
+			$('#bizOpp2_N').show();
+                $('#bizOpp2_').val('');
+		});
+
+		$('#bizOpp2_N').unbind('click').bind('click',function(){
+			$('#bizOppBox2').prop('checked',true);
+			$('#bizOpp2_N').hide();
+			$('#bizOpp2_Y').show();
+                $('#bizOpp2_').val(data[24].bizOpp2);
+		});
+
+		$('#bizOpp3_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox3').prop('checked',false);
+			$('#bizOpp3_Y').hide();
+			$('#bizOpp3_N').show();
+                $('#bizOpp3_').val('');
+		});
+
+		$('#bizOpp3_N').unbind('click').bind('click',function(){
+			$('#bizOppBox3').prop('checked',true);
+			$('#bizOpp3_N').hide();
+			$('#bizOpp3_Y').show();
+                $('#bizOpp3_').val(data[24].bizOpp3);
+		});
+
+		$('#bizOpp4_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox4').prop('checked',false);
+			$('#bizOpp4_Y').hide();
+			$('#bizOpp4_N').show();
+                $('#bizOpp4_').val('');
+		});
+
+		$('#bizOpp4_N').unbind('click').bind('click',function(){
+			$('#bizOppBox4').prop('checked',true);
+			$('#bizOpp4_N').hide();
+			$('#bizOpp4_Y').show();
+                $('#bizOpp4_').val(data[24].bizOpp4);
+		});
+
+		$('#bizOpp5_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox5').prop('checked',false);
+			$('#bizOpp5_Y').hide();
+			$('#bizOpp5_N').show();
+                $('#bizOpp5_').val('');
+		});
+
+		$('#bizOpp5_N').unbind('click').bind('click',function(){
+			$('#bizOppBox5').prop('checked',true);
+			$('#bizOpp5_N').hide();
+			$('#bizOpp5_Y').show();
+                $('#bizOpp5_').val(data[24].bizOpp5);
+		});
+
+		$('#bizOpp6_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox6').prop('checked',false);
+			$('#bizOpp6_Y').hide();
+			$('#bizOpp6_N').show();
+                $('#bizOpp6_').val('');
+		});
+
+		$('#bizOpp6_N').unbind('click').bind('click',function(){
+			$('#bizOppBox6').prop('checked',true);
+			$('#bizOpp6_N').hide();
+			$('#bizOpp6_Y').show();
+                $('#bizOpp6_').val(data[24].bizOpp6);
+		});
+
+		$('#bizOpp7_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox7').prop('checked',false);
+			$('#bizOpp7_Y').hide();
+			$('#bizOpp7_N').show();
+                $('#bizOpp7_').val('');
+		});
+
+		$('#bizOpp7_N').unbind('click').bind('click',function(){
+			$('#bizOppBox7').prop('checked',true);
+			$('#bizOpp7_N').hide();
+			$('#bizOpp7_Y').show();
+                $('#bizOpp7_').val(data[24].bizOpp7);
+		});
+
+		$('#bizOpp8_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox8').prop('checked',false);
+			$('#bizOpp8_Y').hide();
+			$('#bizOpp8_N').show();
+                $('#bizOpp8_').val('');
+		});
+
+		$('#bizOpp8_N').unbind('click').bind('click',function(){
+			$('#bizOppBox8').prop('checked',true);
+			$('#bizOpp8_N').hide();
+			$('#bizOpp68_Y').show();
+                $('#bizOpp8_').val(data[24].bizOpp8);
+		});
+		$('#bizOpp9_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox9').prop('checked',false);
+			$('#bizOpp9_Y').hide();
+			$('#bizOpp9_N').show();
+                $('#bizOpp9_').val('');
+		});
+		$('#bizOpp9_N').unbind('click').bind('click',function(){
+			$('#bizOppBox9').prop('checked',true);
+			$('#bizOpp9_N').hide();
+			$('#bizOpp9_Y').show();
+                $('#bizOpp9_').val(data[24].bizOpp9);
+		});
+		$('#bizOpp10_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox10').prop('checked',false);
+			$('#bizOpp10_Y').hide();
+			$('#bizOpp10_N').show();
+                $('#bizOpp10_').val('');
+		});
+		$('#bizOpp10_N').unbind('click').bind('click',function(){
+			$('#bizOppBox10').prop('checked',true);
+			$('#bizOpp10_N').hide();
+			$('#bizOpp10_Y').show();
+                $('#bizOpp10_').val(data[24].bizOpp10);
+		});
+		$('#bizOpp11_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox11').prop('checked',false);
+			$('#bizOpp11_Y').hide();
+			$('#bizOpp11_N').show();
+                $('#bizOpp11_').val('');
+		});
+		$('#bizOpp11_N').unbind('click').bind('click',function(){
+			$('#bizOppBox11').prop('checked',true);
+			$('#bizOpp11_N').hide();
+			$('#bizOpp11_Y').show();
+                $('#bizOpp11_').val(data[24].bizOpp11);
+		});
+		$('#bizOpp12_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox12').prop('checked',false);
+			$('#bizOpp12_Y').hide();
+			$('#bizOpp12_N').show();
+                $('#bizOpp12_').val('');
+		});
+		$('#bizOpp12_N').unbind('click').bind('click',function(){
+			$('#bizOppBox12').prop('checked',true);
+			$('#bizOpp12_N').hide();
+			$('#bizOpp12_Y').show();
+                $('#bizOpp12_').val(data[24].bizOpp12);
+		});
+		$('#bizOpp13_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox13').prop('checked',false);
+			$('#bizOpp13_Y').hide();
+			$('#bizOpp13_N').show();
+                $('#bizOpp13_').val('');
+		});
+		$('#bizOpp13_N').unbind('click').bind('click',function(){
+			$('#bizOppBox13').prop('checked',true);
+			$('#bizOpp13_N').hide();
+			$('#bizOpp13_Y').show();
+                $('#bizOpp13_').val(data[24].bizOpp13);
+		});
+		$('#bizOpp14_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox14').prop('checked',false);
+			$('#bizOpp14_Y').hide();
+			$('#bizOpp14_N').show();
+                $('#bizOpp14_').val('');
+		});
+		$('#bizOpp14_N').unbind('click').bind('click',function(){
+			$('#bizOppBox14').prop('checked',true);
+			$('#bizOpp14_N').hide();
+			$('#bizOpp14_Y').show();
+                $('#bizOpp14_').val(data[24].bizOpp14);
+		});
+		$('#bizOpp15_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox15').prop('checked',false);
+			$('#bizOpp15_Y').hide();
+			$('#bizOpp15_N').show();
+                $('#bizOpp15_').val('');
+		});
+		$('#bizOpp15_N').unbind('click').bind('click',function(){
+			$('#bizOppBox15').prop('checked',true);
+			$('#bizOpp15_N').hide();
+			$('#bizOpp15_Y').show();
+                $('#bizOpp15_').val(data[24].bizOpp15);
+		});
+		$('#bizOpp16_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox16').prop('checked',false);
+			$('#bizOpp16_Y').hide();
+			$('#bizOpp16_N').show();
+                $('#bizOpp16_').val('');
+		});
+		$('#bizOpp16_N').unbind('click').bind('click',function(){
+			$('#bizOppBox16').prop('checked',true);
+			$('#bizOpp16_N').hide();
+			$('#bizOpp16_Y').show();
+                $('#bizOpp16_').val(data[24].bizOpp16);
+		});
+		$('#bizOpp17_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox17').prop('checked',false);
+			$('#bizOpp17_Y').hide();
+			$('#bizOpp17_N').show();
+                $('#bizOpp17_').val('');
+		});
+		$('#bizOpp17_N').unbind('click').bind('click',function(){
+			$('#bizOppBox17').prop('checked',true);
+			$('#bizOpp17_N').hide();
+			$('#bizOpp17_Y').show();
+                $('#bizOpp17_').val(data[24].bizOpp17);
+		});
+		$('#bizOpp18_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox18').prop('checked',false);
+			$('#bizOpp18_Y').hide();
+			$('#bizOpp18_N').show();
+                $('#bizOpp18_').val('');
+		});
+		$('#bizOpp18_N').unbind('click').bind('click',function(){
+			$('#bizOppBox18').prop('checked',true);
+			$('#bizOpp18_N').hide();
+			$('#bizOpp18_Y').show();
+                $('#bizOpp18_').val(data[24].bizOpp18);
+		});
+		$('#bizOpp19_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox19').prop('checked',false);
+			$('#bizOpp19_Y').hide();
+			$('#bizOpp19_N').show();
+                $('#bizOpp19_').val('');
+		});
+		$('#bizOpp19_N').unbind('click').bind('click',function(){
+			$('#bizOppBox19').prop('checked',true);
+			$('#bizOpp19_N').hide();
+			$('#bizOpp19_Y').show();
+                $('#bizOpp19_').val(data[24].bizOpp19);
+		});
+		$('#bizOpp20_Y').unbind('click').bind('click',function(){
+			$('#bizOppBox20').prop('checked',false);
+			$('#bizOpp20_Y').hide();
+			$('#bizOpp20_N').show();
+                $('#bizOpp20_').val('');
+		});
+		$('#bizOpp20_N').unbind('click').bind('click',function(){
+			$('#bizOppBox20').prop('checked',true);
+			$('#bizOpp20_N').hide();
+			$('#bizOpp20_Y').show();
+                $('#bizOpp20_').val(data[24].bizOpp20);
+		});
+	}"
+	>
+		<input type="hidden" name="bizId" id ="bizId" />
+		<input type="hidden" name="layer2Value" id ="layer2Value" value="${(layer2Value)!}"/>
+		<input type="hidden" name="layer3Value" id ="layer3Value" value="${(layer3Value)!}"/>
+		<input type="hidden" name="industryValue" id ="industryValue" value="${(industryValue)!}"/>
+		<input type="hidden" name="industrySubValue" id ="industrySubValue" value="${(industrySubValue)!}"/>
+		<input type="hidden" name="keyWordValue" id ="keyWordValue" value="${(keyWordValue)!}"/>
+	</@form.table>
+	</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('#layCompLine').hide();
+        $('#grid-pager_conflict').remove();
+    })
+    
+    
+    function changeCheckValue2() {
+		var checkedlayer2 = $("#is1").is(':checked')
+		if (checkedlayer2 == true) {
+			$("#layer2Value").val('1');
+			$("#is1").attr("checked", "true");
+		} else {
+			$("#layer2Value").val('0');
+			$("#is1").removeAttr("checked");
+		}
+		
+		var checkedlayer3 = $("#is2").is(':checked')
+		if (checkedlayer3 == true) {
+			$("#layer3Value").val('1');
+			$("#is2").attr("checked", "true");
+		} else {
+			$("#layer3Value").val('0');
+			$("#is2").removeAttr("checked");
+		}
+		
+		var checkedindustry = $("#is3").is(':checked')
+		if (checkedindustry == true) {
+			$("#industryValue").val('1');
+			$("#is3").attr("checked", "true");
+		} else {
+			$("#industryValue").val('0');
+			$("#is3").removeAttr("checked");
+		}
+		
+		var checkedindustrySub = $("#is4").is(':checked')
+		if (checkedindustrySub == true) {
+			$("#industrySubValue").val('1');
+			$("#is4").attr("checked", "true");
+		} else {
+			$("#industrySubValue").val('0');
+			$("#is4").removeAttr("checked");
+		}
+		
+		var checkedkeyWord = $("#is5").is(':checked')
+		if (checkedkeyWord == true) {
+			$("#keyWordValue").val('1');
+			$("#is5").attr("checked", "true");
+		} else {
+			$("#keyWordValue").val('0');
+			$("#is5").removeAttr("checked");
+		}
+		
+		reload_conflict();
+    }
+
+	function approved() {
+        $.ajax({
+            type: "POST",
+            url: "${ctx}/bizadjust/approved.html",
+            async: true,
+            data: "id=" + $("#bizId").val(),
+            dataType: 'json',
+            success: function (msg) {
+                reload_t82();
+                alert('${i18n.get('操作成功！')}'); 
+            },
+            error: function (e) {
+                var msg = eval("(" + e.responseText + ")");
+                if (msg) {
+                    alert(msg.message);
+                } else {
+                	alert('${i18n.get('操作失败，请联系管理员')}'); 
+                }
+            }
+        });
+    }
+    
+    function rejected() {
+        $.ajax({
+            type: "POST",
+            url: "${ctx}/bizadjust/rejected.html",
+            async: true,
+            data: "id=" + $("#bizId").val(),
+            dataType: 'json',
+            success: function (msg) {
+            	alert('${i18n.get('操作成功！')}'); 
+//                parent.currentParent2.reload_t1();
+//                api.close();
+                reload_t82();
+            },
+            error: function (e) {
+                var msg = eval("(" + e.responseText + ")");
+                if (msg) {
+                    reload_t82();
+                    alert(msg.message);
+                } else {
+                	alert('${i18n.get('操作失败，请联系管理员')}'); 
+                }
+            }
+        });
+    }
+
+    function getUrlParams() {
+        var str = "&";
+        var arr = $(".idPasser");
+        arr.each(function (index, obj) {
+            if (obj.value) {
+                str = str + obj.name + "=" + obj.value + "&";
+            }
+        });
+		return str;
+    }
+    function publish() {
+        var entityId = $("#bizId").val();
+        var urlParams = getUrlParams();
+        if (urlParams==="&"){
+        	alert('${i18n.get('未选中需要发布冲突的数据！')}'); 
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url: "${ctx}/bizadjust/publish.html",
+            async: true,
+            data: "id=" + entityId + urlParams,
+            dataType: 'json',
+            success: function (msg) {
+            	alert('${i18n.get('操作成功！')}'); 
+                reload_t82();
+//                api.close();
+            },
+            error: function (e) {
+                var msg = eval("(" + e.responseText + ")");
+                if (msg) {
+                    alert(msg.message);
+                } else {
+                	alert('${i18n.get('操作失败，请联系管理员')}'); 
+                }
+            }
+        });
+    }
+</script>
+</@pui.body>

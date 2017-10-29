@@ -1,0 +1,37 @@
+
+<@form.table id="att" 
+	class="col-xs-12"
+	title="${i18n.get('附件')}" 
+	url = "${ctx}/quot/attPage.html?qid=${qid}" 
+	rowNum = "5" 
+	addURL = "'${ctx}/quot/addAtt.html?qid=${qid}'" 
+	editURL= "'${ctx}/quot/editAtt.html?qid=${qid}'" 
+	deleteURL = "'${ctx}/quot/deleteAtt.html'" 
+	colModel = "[
+		{name:'id',label:'${i18n.get('附件')} ID',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'docNm',label:'${i18n.get('文档名称')}',hidden:false,width:200,sortable:false,align:'center' },
+		{name:'docTp',label:'${i18n.get('文档类型')}',hidden:false,width:200,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatatttypArr(cellvalue) }  },
+		{name:'updr',label:'${i18n.get('上传人')}',hidden:false,width:200,sortable:false,align:'center' },
+		{name:'updDt',label:'${i18n.get('上传时间')}',hidden:false,width:200,sortable:false,align:'center' },
+		{name:'cNotes',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:false,align:'center' }
+		]" 
+		ondblClickRow= "function(selectedData){
+				 }"
+		buttons = "[]" > 
+	</@form.table> 
+<script type="text/javascript">
+
+	
+	var atttypArr = {
+			"att01" : "${i18n.get('招投标书')}",
+			"att02" : "${i18n.get('标书')}",
+			"att03" : "${i18n.get('其它')}"
+	};
+
+
+	
+	function formatatttypArr(value){
+		 return atttypArr[value];
+	}
+	
+</script>

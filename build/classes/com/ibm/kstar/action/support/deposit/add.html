@@ -1,0 +1,317 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+	<@form.form id="supportTemplate" success="function(){ parent.currentParent.reload_DepositApplyTable(); }" class="form-horizontal" >
+		<div class="form-group">	
+			<div class="col-md-offset-7 col-md-4">
+				<button class="btn btn-info submit" type="button">
+					<i class="bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				<button class="btn btn-info" id="apply" type="button" onclick="applyCustom('submit','20')">
+					<i class="bigger-110"></i>
+					${i18n.get('提交')}
+				</button>
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+				
+			</div>
+		</div>
+			
+		<div class="form-group" >
+			<table>
+				<tr>
+					<td align="right" width="200">
+						<label class="no-padding-right" > ${i18n.get('责任人 :')} </label>
+					</td>
+					<td>
+						<@form.input
+						id="applierName"  
+						name="applierName" 
+						placeholder="" 
+						tip="" 
+						readonly="readonly" 
+						value="${(depositApply.applierName)!}" 
+						/>
+					</td>
+					
+					<td align="right" width="200">
+						<label class="no-padding-right" >${i18n.get('工号:')}</label>
+					</td>
+					<td>
+						<input id="applier" name="applier" type="hidden" value="${(depositApply.applier)!}" >
+						<input id="applierPos" name="applierPos" type="hidden" value="${(depositApply.applierPos)!}" >
+						<input id="applierOrg" name="applierOrg" type="hidden" value="${(depositApply.applierOrg)!}" >
+						<@form.input
+						id="applierNo"  
+						name="applierNo" 
+						placeholder="" 
+						tip="" 
+						readonly="readonly" 
+						value="${(depositApply.applierNo)!}" 
+						/>
+					</td>
+					<td align="right" width="200">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('金额 :')} </label>
+					</td>
+					<td>
+						<@form.number
+						id="amount"  
+						name="amount" 
+						placeholder="" 
+						required="${i18n.get('不能为空')}"
+						tip="" 
+						value="${(depositApply.amount)!}" 
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('申请类型 :')} </label>
+					</td>
+					<td>						
+						<@form.select  style="width: 147px;"
+							id="applyType" name="applyType" 
+							code="APPLYTYPE" 
+							required="${i18n.get('不能为空')}" 
+							value ="${(depositApply.applyType)!}"
+						/>
+					</td>
+					
+					<td align="right" width="200">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('资金性质:')}</label>
+					</td>
+					<td>
+						<@form.select  style="width: 147px;"
+							id="nature" name="nature" 
+							code="CAPITALNATURE" 
+							required="${i18n.get('不能为空')}" 
+							value ="${(depositApply.nature)!}"
+						/>
+					</td>
+					<td align="right" width="200">
+						<label class="no-padding-right" > ${i18n.get('责任部门 :')} </label>
+					</td>
+					<td>
+						<@form.input
+						id="applierOrgName"  
+						name="applierOrgName" 
+						placeholder="" 
+						readonly="readonly" 
+						tip="" 
+						value="${(depositApply.applierOrgName)!}" 
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('收款部门名称 :')} </label>
+					</td>
+					<td>
+						<@form.input
+						id="paymentCompany"  
+						name="paymentCompany" 
+						placeholder="" 
+						required="${i18n.get('不能为空')}"
+						tip="" 
+						value="${(depositApply.paymentCompany)!}" 
+						/>
+					</td>
+					
+					<td align="right" width="200">
+						<label class="no-padding-right" >${i18n.get('商机名称:')}</label>
+					</td>
+					<td>
+						<@form.input
+						id="opportunity"  
+						name="opportunity" 
+						placeholder="" 
+						tip="" 
+						value="${(depositApply.opportunity)!}" 
+						/>
+					</td>
+					<td align="right" width="200">
+						<label class="no-padding-right" > ${i18n.get('申请编号 :')} </label>
+					</td>
+					<td>
+						<@form.input
+						id="applyCode"  
+						name="applyCode" 
+						placeholder="" 
+						readonly="readonly" 
+						tip="" 
+						value="${(depositApply.applyCode)!}" 
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200">
+						<label class="no-padding-right" > ${i18n.get('收款单位银行名称 :')} </label>
+					</td>
+					<td>
+						<@form.input
+						id="paymentBank"  
+						name="paymentBank" 
+						placeholder="" 
+						tip="" 
+						value="${(depositApply.paymentBank)!}" 
+						/>
+					</td>
+					
+					<td align="right" width="200">
+						<label class="no-padding-right" >${i18n.get('报价单:')}</label>
+					</td>
+					<td>
+						<@form.input
+						id="quotation"  
+						name="quotation" 
+						placeholder="" 
+						tip="" 
+						value="${(depositApply.quotation)!}" 
+						/>
+					</td>
+					<td align="right" width="200">
+						<label class="no-padding-right" > ${i18n.get('申请时间 : ')}</label>
+					</td>
+					<td>
+						<@form.input
+						id="applyDate"  
+						name="applyDate" 
+						readonly="readonly" 
+						placeholder="" 
+						tip="" 
+						value="${(depositApply.applyDate)!}" 
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200">
+						<label class="no-padding-right" > ${i18n.get('收款单位银行账号 : ')}</label>
+					</td>
+					<td>
+						<@form.input
+						id="paymentAccount"  
+						name="paymentAccount" 
+						placeholder="" 
+						tip="" 
+						value="${(depositApply.paymentAccount)!}" 
+						/>
+					</td>
+					
+					<td align="right" width="200">
+						<label class="no-padding-right" >${i18n.get('合同:')}</label>
+					</td>
+					<td>
+						<@form.input
+						id="contract"  
+						name="contract" 
+						placeholder="" 
+						tip="" 
+						value="${(depositApply.contract)!}" 
+						/>
+					</td>
+					<td align="right" width="200">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('拟回款日期 :')} </label>
+					</td>
+					<td>
+						<@form.date id="paymentDateReturn"  
+						name="paymentDateReturn" 
+						placeholder="" 
+						tip="" 
+						value="${(depositApply.paymentDateReturn)!}" 
+						required="${i18n.get('不能为空')}"
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('币种 : ')}</label>
+					</td>
+					<td>
+						<@form.select id="currency" 
+						name="currency" 
+						tip="" 
+						code="CURRENCY" 
+						value="${(depositApply.currency)!}" />
+						
+					</td>
+					
+					<td align="right" width="200">
+						<label class="no-padding-right" >${i18n.get('状态:')}</label>
+					</td>
+					<td>
+						
+						<@form.select style="width: 147px;"
+							id="status" name="status" 
+							code="CUSTOM_NORMAL_STATUS" 
+							value ="${(depositApply.status)!}"
+						/>
+					</td>
+					<td align="right" width="200">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('拟付款日期 :')} </label>
+					</td>
+					<td>
+						<@form.date id="paymentDate"  
+						name="paymentDate" 
+						placeholder="" 
+						tip="" 
+						value="${(depositApply.paymentDate)!}" 
+						required="${i18n.get('不能为空')}"
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200">
+						<label class="no-padding-right" > ${i18n.get('备注 :')} </label>
+					</td>
+					<td colspan="5" >
+						<@form.textArea id="comment" 
+						name="comment" 
+						width="143px" 
+						height="3" 
+						value="${(depositApply.comment)!}" 
+						/>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div class="hr hr-18 dotted hr-double"></div>
+		<div id="attmDiv"> </div>
+		
+		</@form.form>
+	</@form.panel>
+</@pui.body>
+<script type="text/javascript">
+	
+$(function() {
+	showPage();
+});
+
+function showPage(){
+	
+	_url = '${ctx}/common/attachment/attachment.html?businessId=${(depositApply.id)!}&businessType=ACCOUNT_FILE&docGroupCode=CONTRACTDOCTYPE';
+
+	$('#attmDiv').load(_url, function(response,status,xhr){
+		if(status === 'error'){
+			$('#attmDiv').html(_url +'<br> ${i18n.get('页面加载失败')}');
+		}
+	});
+	
+}
+	
+$(document).ready(function() {
+	if ('${(depositApply.id)!}' === undefined || '${(depositApply.id)!}' === ''){
+		$("#attmDiv").hide();
+	}
+});
+</script>
+</#escape>

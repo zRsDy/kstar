@@ -1,0 +1,89 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="t1" success="function(){ 
+		try{
+			parent.currentParent2.reload_erp(); 
+		}catch(e){
+			parent.currentParent.reload_erp(); 
+		}
+	}" class="form-horizontal" >
+		<input id="customId" name="customId" type="hidden"  value="${(customErpInfo.customId)!}">
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > <strong style="color: red;">*</strong>${i18n.get('业务实体')} : </label>
+			
+			<@form.select style="width: 147px;"
+				id="corpErpUnit" name="corpErpUnit" 
+				code="OPERATION_UNIT" 
+				level="1"
+				required="${i18n.get('不能为空！')}" 
+				value ="${(customErpInfo.corpErpUnit)!}"
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > <strong style="color: red;">*</strong>${i18n.get('引入地址 ')}: </label>
+			
+			<input id="corpLeadedAddress" name="corpLeadedAddress" type="hidden" value="${(customErpInfo.corpLeadedAddress)!}" >
+			<@form.input id="area" style="width: 300px;"
+				name="area" 
+				readonly="readonly" 
+				tip="" 
+				required="${i18n.get('不能为空！')}"
+				value="${(customErpInfo.area)!}" />
+			
+			<@biz.picker_product id="selectAddress" 
+				urlFunction="function(){ return '${ctx}/popup/addressSelect.html?customId=${(customErpInfo.customId)!}'}" 
+					callback="function(data){
+						if(data){
+							$('#corpLeadedAddress').val(data.id);
+							$('#area').val(data.area + '/' + data.customAddress);
+						 }
+					}"
+				/>
+						
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" >${i18n.get('引入说明')}  : </label>
+			<@form.input
+			id="corpLeadedComment"  
+			name="corpLeadedComment" 
+			placeholder="" 
+			tip="" 
+			value="${(customErpInfo.corpLeadedComment)!}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > ${i18n.get('状态')} : </label>
+			
+			<input id="corpErpStatus" name="corpErpStatus" type="hidden" value="${(customErpInfo.corpErpStatus)!}" >
+						
+			<@form.input
+				id="corpErpStatusName"  
+				name="corpErpStatusName" 
+				placeholder="" 
+				required="${i18n.get('不能为空！')}"
+				readonly="readonly"
+				tip="" 
+				value="${(customErpInfo.corpErpStatusName)!}" 
+				/>
+		</div>
+		
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+		<div class="clearfix form-actions">
+			<div class="col-md-offset-5 col-md-7">
+				<button class="btn btn-info submit" type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				&nbsp; &nbsp; &nbsp;
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+	</@form.form>
+	</@form.panel>
+</@pui.body>
+</#escape>

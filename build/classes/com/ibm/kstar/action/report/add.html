@@ -1,0 +1,198 @@
+<@pui.body>
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="addanltgt1"
+			success="function(){
+				parent.currentParent.reload_anltgt1();
+			 }" 
+			class="form-horizontal">	
+
+
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right"> ${i18n.get('类型 :')} </label>	  
+					<@form.select  id="ctype" name="ctype" code="SALES_TARGET_TYPE" idKey='id' style="width:160px;" value="${(anltgtInfo.ctype)!}" />
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for=""> ${i18n.get('部门 :')} </label>	  
+		            <input id="depid" name="depid" type="hidden" >
+		           	<@form.autocomplete  id="dep" name="dep" 
+		            	idKey='id' style="width: 160px;" required="${i18n.get('请选择组织')}"
+		            	formatResult="function(data) {return '<div >' +data.name + '</div>';}"
+						url="function(){ return '${ctx}/lovcontract/autocompleteOrg.html'; }"
+		            	value="{id: '${(anltgtInfo.depid)!}',name:'${(anltgtInfo.dep)!}'}"
+		            	
+		           		onSelect="function(data){
+								if( data.id != null && data.id !='' && data.id != 'undefined'){
+									debugger;
+									$('#depid').val(data.id);
+									$('#dep').val(data.name);
+								}
+							}" 
+		           	/>
+						</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right"> ${i18n.get('销售员 : ')}</label>	  
+					<input id="empId" name="empId" type="hidden" value="${(anltgtInfo.empId)!}" >
+					<input id="empNm" name="empNm" type="hidden" value="${(anltgtInfo.empNm)!}" >
+					<input id="posId" name="posId" type="hidden" value="${(anltgtInfo.posId)!}" >
+					
+						<@form.autocomplete  id="emp" name="emp" 
+							idKey='employeeId'
+							style='width:200px'
+							required="${i18n.get('请选择')}"
+							multiple="false"
+							formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + ' | '+ data.positionName + '</div>';}"
+							url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+							value="{
+								employeeName:'${(anltgtInfo.emp)!}'
+								,employeeNo:'${(anltgtInfo.empNm)!}'
+								,employeeId:'${(anltgtInfo.empId)!}'
+								,employeePosId:'${(anltgtInfo.posId)!}'
+								,positionName:'${(anltgtInfo.posNm)!}'
+							}"
+							
+							onSelect="function(data){
+								if( data.id != null && data.id !='' && data.id != 'undefined'){
+									$('#empId').val(data.employeeId);
+									$('#empNm').val(data.employeeNo);
+									$('#emp').val(data.employeeName);
+									$('#posId').val(data.positionId);
+								}
+							}" 
+						/>
+					
+					
+				</div>
+
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right"> ${i18n.get('币种 : ')}</label>	  
+					<@form.select  id="currency" name="currency" code="CURRENCY" idKey='id' style="width:160px;" value="${(anltgtInfo.currency)!}" />
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right"> ${i18n.get('年度 :')} </label>	  
+					<@form.select  id="annual" name="annual" code="ANNUAL" idKey='code' style="width:160px;" value="${(anltgtInfo.annual)!}" />
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="quotName"> ${i18n.get('年度目标 :')} </label>	  
+					<@form.number
+					id="anlTrg"  name="anlTrg" 
+					placeholder="" 
+					required="${i18n.get('不能为空！')}"
+					value="${(anltgtInfo.anlTrg)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="quotName"> ${i18n.get('1月 :')} </label>	  
+					<@form.number
+					id="janTrg"  name="janTrg" 
+					placeholder="" 
+					value="${(anltgtInfo.janTrg)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="quotName"> ${i18n.get('2月 :')} </label>	  
+					<@form.number
+					id="febTrg"  name="febTrg" 
+					placeholder="" 
+					value="${(anltgtInfo.febTrg)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="quotName"> ${i18n.get('3月 :')} </label>	  
+					<@form.number
+					id="mrcTrg"  name="mrcTrg" 
+					placeholder="" 
+					value="${(anltgtInfo.mrcTrg)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="quotName"> ${i18n.get('4月 :')} </label>	  
+					<@form.number
+					id="aprTrg"  name="aprTrg" 
+					placeholder="" 
+					value="${(anltgtInfo.aprTrg)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="quotName"> ${i18n.get('5月 : ')}</label>	  
+					<@form.number
+					id="mayTrg"  name="mayTrg" 
+					placeholder="" 
+					value="${(anltgtInfo.mayTrg)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="quotName"> ${i18n.get('6月 :')} </label>	  
+					<@form.number
+					id="junTrg"  name="junTrg" 
+					placeholder="" 
+					value="${(anltgtInfo.junTrg)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="quotName"> ${i18n.get('7月 :')} </label>	  
+					<@form.number
+					id="julTrg"  name="julTrg" 
+					placeholder="" 
+					value="${(anltgtInfo.julTrg)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="quotName"> ${i18n.get('8月 : ')}</label>	  
+					<@form.number
+					id="agtTrg"  name="agtTrg" 
+					placeholder="" 
+					value="${(anltgtInfo.agtTrg)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="quotName"> ${i18n.get('9月 :')} </label>	  
+					<@form.number
+					id="sepTrg"  name="sepTrg" 
+					placeholder="" 
+					value="${(anltgtInfo.sepTrg)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="quotName"> ${i18n.get('10月 : ')}</label>	  
+					<@form.number
+					id="octTrg"  name="octTrg" 
+					placeholder="" 
+					value="${(anltgtInfo.octTrg)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="quotName"> ${i18n.get('11月 : ')}</label>	  
+					<@form.number
+					id="novTrg"  name="novTrg" 
+					placeholder="" 
+					value="${(anltgtInfo.novTrg)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="quotName"> ${i18n.get('12月 :')} </label>	  
+					<@form.number
+					id="decTrg"  name="decTrg" 
+					placeholder="" 
+					value="${(anltgtInfo.decTrg)!}" 
+					/>
+				</div>
+
+
+				
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+</@pui.body>

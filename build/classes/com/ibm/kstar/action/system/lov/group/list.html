@@ -1,0 +1,59 @@
+<@pui.body>
+
+<#if (permission["/LOV/GROUP/MEMBER"])??>
+				<#assign memberList="true" />
+			</#if>
+
+<div class="row">
+<div class="col-xs-12">
+		<@form.table id="t1"
+		class="col-xs-12"
+		title="${i18n.get('维度列表')}"
+		shrinkToFit = 'true'
+		url = "${ctx}/lov/group/page.html"
+		rowNum = "20"
+		addURL = "'${ctx}/lov/group/add.html'"
+		editURL = "'${ctx}/lov/group/edit.html'"
+		deleteURL = "'${ctx}/lov/group/delete.html'"
+		colModel = "[
+	  { name : 'id', label : 'id', hidden : true , width : 0,sortable:false,align:'center' }, 
+	  { name : 'name', label : '${i18n.get('维度说明')}', width : 10 ,sortable:false }, 
+	  { name : 'code', label : '${i18n.get('维度代码')}', width : 5 ,sortable:false}, 
+	  { name : 'treeFlag', label : '${i18n.get('树形结构')}', width :5,sortable:false},
+	  { name : 'memo', label : '${i18n.get('备注')}', width :40,sortable:false},
+	  { name : 'creationDate', label : '${i18n.get('创建时间')}', width :10,sortable:false},
+	  { name : 'creationBy', label : '${i18n.get('创建人')}', width :10,sortable:false},
+	  { name : 'lastUpdatedDate', label : '${i18n.get('最后更新时间')}', width :10,sortable:false},
+	  { name : 'lastUpdatedBy', label : '${i18n.get('最后更新人')}', width :10,sortable:false}
+	  ]"
+	 buttons = "[{
+	  			id:'memberList',
+	  			label : '${i18n.get('维值维护')}',
+	  			icon : 'icon-save',
+	  			own : ${memberList!'false'},
+	  			handler : function(e,rowData){
+	  				if(rowData){
+	  					parent.addTab(rowData.name,'${ctx}/lov/member/list.html?groupId='+rowData.id);
+	  				}else{
+	  					alert('${i18n.get('请选择要查看的维度')}');
+	  				}
+	  			} 
+	  		}]"
+	>
+	
+	<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">
+							<div class="form-group col-xs-3">
+								<input type="text" id="searchKey" name="searchKey" placeholder='查询关键字' />
+							</div>	
+							<div class="form-group col-xs-2">
+								<button type="submit" class="btn btn-info" > 
+									<i class="icon-search bigger-110"></i>
+									${i18n.get('查询')}
+								</button>
+							</div>
+						</div>
+	
+	</@form.table>
+		</div>
+</div>
+</@pui.body>

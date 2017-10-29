@@ -1,0 +1,224 @@
+<@cui.body2>
+
+	
+	<div style="margin-top:20px;margin-bottom:20px; padding-left: 40px" >
+		<form>
+				${i18n.get('年份')}：
+				<select name="year">
+					<#list years as y>
+						<option <#if y == year?number> selected="selected" </#if> > ${y}</option>
+					</#list>
+				</select>
+				
+				${i18n.get('币种')}：
+				<select name="currency">
+					<option value="RMB" <#if currency == 'RMB'> selected="selected" </#if>> ${i18n.get('人民币')} </option>
+					<option value="USD" <#if currency == 'USD'> selected="selected" </#if>> ${i18n.get('美元')} </option>
+				</select>
+				
+			<input name="reportType" type="hidden" value="${reportType}"/>
+			
+			<#if reportType== "ORG">
+			${i18n.get('组织')}:
+				<input name="orgId" type="hidden" id="orgId" value="${org.id}"/>
+				<@biz.picker_lov_tree id="picker_lov_tree" leafFlag="N" groupId="ORG" button="${org.name}" rootId="${rootId!'EMPTY'}" defaultSelect="selectedDatas_picker_lov_tree" callback="function(datas){
+				 	if(datas){
+					 	$('#orgId').val(datas.id);
+					 	$('#orgName').val(datas.name);
+					 	$('#picker_lov_tree').html(datas.name);
+				 	}
+				}" />
+			<#else>
+				${i18n.get('销售员')}：
+				<@form.autocomplete  id="employeeId" name="employeeId" 
+						placeholder="${i18n.get('请选择销售员')}"
+						idKey='employeeId'
+						multiple="false"
+						style="width:350px"
+						formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo +' | '+ data.positionName + '</div>';}"
+						url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+						value="{
+							 employeeName:'${(employee.name)!}',
+							 employeeNo:'${(employee.no)!}',
+							 employeeId:'${(employee.id)!}',
+							 positionName:'${(position.name)!}'
+						}"
+						onSelect="function(data){
+							if( data.id != null && data.id !='' && data.id != 'undefined'){
+								$('#positionId').val(data.positionId);
+							}
+						}" 
+					/>
+				<input id="positionId" name="positionId" type="hidden" value="${positionId}"/>
+			</#if>
+				
+				
+				<input name="flag" id="flag" type="hidden" value="${flag}" />
+				<button class="btn btn-info searchBtn">${i18n.get('查询')}</button>
+		</form>
+	</div>
+
+	<div class="row" style="margin-left: auto; margin-right: auto;">
+						<table class="table" border="1">
+								<thead>
+									<th <#if flag == "1"> colspan="2"<#elseif flag == "2">colspan="3" </#if> >
+									${i18n.get('分类')}
+									<#if flag == "2"> 
+										<button type="button" class="btn" onclick="javascript:search('0')">${i18n.get('汇总')}</button> 
+									<#elseif flag == "1">
+										<button type="button" class="btn" onclick="javascript:search('2')">${i18n.get('下钻(行业小类)')}</button>
+									<#else>
+										<button type="button" class="btn" onclick="javascript:search('1')">${i18n.get('下钻(行业大类)')}</button>
+									</#if>  
+									</th>
+									<th>${i18n.get('一月')}</th>
+									<th>${i18n.get('二月')}</th>
+									<th>${i18n.get('三月')}</th>
+									<th>${i18n.get('四月')}</th>
+									<th>${i18n.get('五月')}</th>
+									<th>${i18n.get('六月')}</th>
+									<th>${i18n.get('七月')}</th>
+									<th>${i18n.get('八月')}</th>
+									<th>${i18n.get('九月')}</th>
+									<th>${i18n.get('十月')}</th>
+									<th>${i18n.get('十一月')}</th>
+									<th>${i18n.get('十二月')}</th>
+								</thead>
+								<tbody>
+									<#list list as ctv>
+										<tr>
+											<#assign n = customTypeMap[(ctv.customClass)!]!0 />
+											<#assign cc = customChildMap[(ctv.customClass)!][(ctv.customType)!]!0 />
+											<#if flag == "1">
+												<#if n gt 0 >
+													<td rowspan="${customTypeMap[ctv.customClass]}">${(ctv.customClass)!}</td>
+												</#if>
+												<td>${(ctv.customType)!}</td>
+											<#elseif flag == "2">
+												<#if n gt 0 >
+													<td rowspan="${customTypeMap[ctv.customClass]}">${(ctv.customClass)!}</td>
+												</#if>
+												 <#if cc gt 0 >										
+													<td rowspan="${customChildMap[(ctv.customClass)!][(ctv.customType)!]}">${(ctv.customType)!}</td>
+												</#if>
+												<td>${(ctv.customTypeSub)!}</td> 
+											<#else>
+												<#if n gt 0 >
+													<td rowspan="${customTypeMap[ctv.customClass]}">${(ctv.customClass)!}</td>
+												</#if>
+											</#if>
+											
+<!-- 										<td>${(ctv.customType)!}</td> -->
+
+											<td>${ctv.value.m01}</td>
+											<td>${ctv.value.m02}</td>
+											<td>${ctv.value.m03}</td>
+											<td>${ctv.value.m04}</td>
+											<td>${ctv.value.m05}</td>
+											<td>${ctv.value.m06}</td>
+											<td>${ctv.value.m07}</td>
+											<td>${ctv.value.m08}</td>
+											<td>${ctv.value.m09}</td>
+											<td>${ctv.value.m10}</td>
+											<td>${ctv.value.m11}</td>
+											<td>${ctv.value.m12}</td>
+										</tr>
+									</#list>
+									
+									<tr>
+										<th <#if flag == "1">colspan="2"<#elseif flag == "2">colspan="3" </#if> >合计</th>
+										<#assign sm01 = 0/>
+										<#assign sm02 = 0/>
+										<#assign sm03 = 0/>
+										<#assign sm04 = 0/>
+										<#assign sm05 = 0/>
+										<#assign sm06 = 0/>
+										<#assign sm07 = 0/>
+										<#assign sm08 = 0/>
+										<#assign sm09 = 0/>
+										<#assign sm10 = 0/>
+										<#assign sm11 = 0/>
+										<#assign sm12 = 0/>
+										<#list list as ctv>
+											<#assign sm01 = sm01 + ctv.value.m01 />
+											<#assign sm02 = sm02 + ctv.value.m02 />
+											<#assign sm03 = sm03 + ctv.value.m03 />
+											<#assign sm04 = sm04 + ctv.value.m04 />
+											<#assign sm05 = sm05 + ctv.value.m05 />
+											<#assign sm06 = sm06 + ctv.value.m06 />
+											<#assign sm07 = sm07 + ctv.value.m07 />
+											<#assign sm08 = sm08 + ctv.value.m08 />
+											<#assign sm09 = sm09 + ctv.value.m09 />
+											<#assign sm10 = sm10 + ctv.value.m10 />
+											<#assign sm11 = sm11 + ctv.value.m11 />
+											<#assign sm12 = sm12 + ctv.value.m12 />
+										</#list>
+										<td>${sm01}</td>
+										<td>${sm02}</td>
+										<td>${sm03}</td>
+										<td>${sm04}</td>
+										<td>${sm05}</td>
+										<td>${sm06}</td>
+										<td>${sm07}</td>
+										<td>${sm08}</td>
+										<td>${sm09}</td>
+										<td>${sm10}</td>
+										<td>${sm11}</td>
+										<td>${sm12}</td>
+									</tr>
+								</tbody>
+						</table>
+			</div>
+			
+		<div class="container-fluid">
+			<div class="row" style="margin-left: auto; margin-right: auto;">
+				<div style="float: left;margin-left: auto; margin-right: auto;">
+					<div class="span5" style="float: left; margin-left: 2px; margin-right: auto;">
+						<div class="row-fluid" style="margin-right: 3px;">
+							<div id="chart1" style="width: 800px;height:400px;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	<script type="text/javascript">
+		function search(flag){
+			$('#flag').val(flag);
+			$('.searchBtn').trigger('click');
+		}
+	
+	  	var myChart1 = echarts.init(document.getElementById('chart1'));
+		var option = {
+			title : {
+				text : '${i18n.get('全年占比分析')}',
+				x : 'center'
+			},
+			tooltip : {
+				trigger : 'item',
+				formatter : "{a} <br/>{b} : {c} ({d}%)"
+			},
+			legend : {
+				orient : 'vertical',
+				left : 'left',
+				data : ${typeList}
+			},
+			series : [ {
+				name : '${i18n.get('类型')}',
+				type : 'pie',
+				radius : '55%',
+				center : [ '50%', '60%' ],
+				data :  ${valueList},
+				itemStyle : {
+					emphasis : {
+						shadowBlur : 10,
+						shadowOffsetX : 0,
+						shadowColor : 'rgba(0, 0, 0, 0.5)'
+					}
+				}
+			} ]
+		};
+		myChart1.setOption(option);
+	</script>		
+			
+</@cui.body2>

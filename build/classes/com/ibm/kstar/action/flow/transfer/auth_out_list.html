@@ -1,0 +1,26 @@
+
+<@form.table id="authOutListForm"
+	class="col-xs-12"
+	shrinkToFit = 'true'
+	title="${i18n.get('委托他人')}"
+	url = "${ctx}/flow/auth/page.html?type=${type}"
+	addURL = "'${ctx}/flow/auth/add.html'"
+	rowNum = "20"
+	colModel = "[
+	  	{ name : 'id', label : 'id', hidden : true , width : 60,sortable:true,align:'center' }, 
+	  	{ name : 'ownerId', label : '${i18n.get('任务拥有者')}ID', hidden : true , width : 90 ,sortable:true , align:'center'}, 
+  		{ name : 'ownerName', label : '${i18n.get('任务拥有者名称')}', width : 250 ,sortable:true , align:'center'},
+  		{ name : 'ownerType', label : '${i18n.get('任务拥有者类型')}', hidden : true , width : 100 ,sortable:true , align:'center'},  
+  		{ name : 'assigneeId', label : '${i18n.get('任务被委托人')}ID',hidden : true , width : 90 ,sortable:true , align:'center'}, 
+  		{ name : 'assigneeName', label : '${i18n.get('任务被委托人名称')}', width : 250 ,sortable:true , align:'center'}, 
+  		{ name : 'assigneeType', label : '${i18n.get('任务被委托人类型')}',hidden : true , width : 100 ,sortable:true , align:'center'}, 
+  		{ name : 'type', label : '${i18n.get('委托类型编码')}', hidden : true , width : 100 ,sortable:true , align:'center'}, 
+  		{ name : 'typeLable', label : '${i18n.get('委托类型')}', width : 100 ,sortable:true , align:'center'}, 
+  		{ name : 'module', label : '${i18n.get('流程编码/应用编码')}', width : 250 ,sortable:true , align:'center'}
+	]"
+	
+	buttons = "[
+	
+  	]">
+</@form.table>
+

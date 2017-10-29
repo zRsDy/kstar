@@ -1,0 +1,50 @@
+&lt;@ui.body nav1="${i18n.get('用户管理')}" nav2="${i18n.get('新增')}/${i18n.get('编辑')}" type="popup"> 
+
+	<div class="col-xs-12" >
+		&lt;@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+		&lt;@form.form id="t1"
+			success="function(){ opener.reload_t1(); }" class="form-horizontal"
+			>
+			<#list fields as field>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="${field.name}"> ${(viewNameMap[field.name])!'${field.name}'} : </label>
+					<#if field.type.name == "java.util.Date">&lt;@form.date </#if> <#if field.type.name == "java.lang.Double">&lt;@form.number </#if> 
+					<#if field.type.name == "java.lang.Integer" || field.type.name == "int" >
+						&lt;@form.number 
+					</#if>
+					<#if field.type.name == "java.lang.String">
+						<#if valueSourceMap[field.name]??>
+							&lt;@form.select 
+							code="${valueSourceMap[field.name]}"
+						<#else>
+							&lt;@form.input
+						</#if>
+					</#if>
+					id="${field.name}"  name="${field.name}" 
+					placeholder="${(placeholderMap[field.name])!}" 
+					<#if requiredMap[field.name]??>
+						required="${(requiredMap[field.name])!}"
+					</#if>
+					tip="${(tipMap[field.name])!}" 
+					value="&amp;{(${dShortClassName}.${field.name})!}" 
+					/>
+				</div>	
+			</#list>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info" type="submit">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		&lt;/@form.form>
+		&lt;/@form.panel>
+	</div>
+&lt;/@ui.body>

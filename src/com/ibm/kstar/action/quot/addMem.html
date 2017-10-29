@@ -1,0 +1,54 @@
+<@pui.body>
+		<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+		<@form.form id="t1"
+			success="function(){ parent.currentParent.reload_mem(); }" 
+			class="form-horizontal">
+
+					<@form.input
+					id="quotCode"  name="quotCode" 
+					type="hidden"
+					value="${(memInfo.quotCode)!}" 
+					/>
+	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="memName"> ${i18n.get('团队成员')} : </label>
+					<@form.input
+					id="memName"  name="memName" 
+					placeholder="" 
+					tip="${i18n.get('团队成员')}" 
+					required="${i18n.get('不能为空')}！"
+					value="${(memInfo.memName)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right"> ${i18n.get('角色')} : </label>
+					<@form.select  id="role" name="role" code="PRJROLE" idKey='code' style="width:160px;" value="${(memInfo.role)!}" /> 
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="notes"> ${i18n.get('备注')} : </label>
+					  
+					<@form.input
+					id="notes"  name="notes" 
+					placeholder="" 
+					tip="${i18n.get('备注')}" 
+					value="${(memInfo.notes)!}" 
+					/>
+				</div>
+	
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+</@pui.body>

@@ -1,0 +1,30 @@
+<#-- 技术支持申请-支持反馈-新增 --> <#if permission["P03PresSupportResourceAdd"]?? > <#assign addURL = "'${ctx}/sfb/add.html?businessId=${(businessId)!}'" /></#if>
+
+
+<#-- 技术支持申请-支持反馈-修改 --> <#if permission["P03PresSupportResourceSave"]?? > <#assign editURL = "'${ctx}/sfb/edit.html'" /></#if>
+
+
+<#-- 技术支持申请-支持反馈-删除 --> <#if permission["P03PresSupportResourceDelete"]?? > <#assign deleteURL = "'${ctx}/sfb/delete.html'" /></#if>
+
+
+<@form.table id="salesOutTable"
+title="${i18n.get('支持反馈')}"
+search = "false"
+addURL = "${addURL!}"
+editURL= "${editURL!}"
+deleteURL = "${deleteURL!}"
+url = "${ctx}/sfb/page.html?businessId=${(businessId)!}"
+rowNum = "5"
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'saleName',label:'${i18n.get('支持人员')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'distributeDate',label:'${i18n.get('分配日期')}',hidden:false,width:100,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }  },
+	{name:'supportBegin',label:'${i18n.get('支持日期从')}',hidden:false,width:100,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }  },
+	{name:'supportEnd',label:'${i18n.get('支持日期至')}',hidden:false,width:100,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }  },
+	{name:'resultDesc',label:'${i18n.get('结果说明')}',hidden:false,width:200,sortable:true,align:'center' },
+	{name:'eventResultName',label:'${i18n.get('支持满意度')}',hidden:false,width:150,sortable:true,align:'center' }
+	]"
+>
+<input type='hidden' id='salesOut'  name='salesOut'  />
+</@form.table>
+

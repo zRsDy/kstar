@@ -1,0 +1,45 @@
+<@pui.body>
+<input type="hidden" name="businessId" id="businessId" value="${(businessId)!}">
+<input type="hidden" name="groupId" id="groupId" value="${(groupId)!}">
+
+<#if (permission["P08DocAdminT2Set"])??>
+	<#assign docAdminURL="true" />
+</#if>
+
+<#if (permission["P08DocAdminT2Query"])??>
+	<#assign queryURL = "${ctx}/common/permission/selectedPage.html?businessId=${(businessId)!}&groupId=${(groupId)!}" />
+</#if>
+
+<@form.table id="t2"
+	class="col-xs-12"
+	shrinkToFit = 'true'
+	title="${i18n.get('权限列表')}"
+	url = "${queryURL!}"
+	rowNum = "20"
+	search="false"
+	colModel = "[
+	  { name : 'id', label : 'id', hidden : true , width : 60,sortable:false,align:'center' }, 
+	  { name : 'optTxt1',    label : '${i18n.get('类型')}', hidden : false , width : 60,sortable:false,align:'center',formatter:function(cellvalue, options){ return 'Y'== cellvalue ? '岗位':'组织' } }, 
+	  { name : 'name', label : '${i18n.get('目录名称')}', width : 150 ,sortable:false },
+	  { name : 'memo', label : '${i18n.get('说明')}', width : 150 ,sortable:false }
+	  ]"
+	 buttons = "[{
+	  			id:'configPermission',
+	  			label : '${i18n.get('设置权限')}',
+	  			icon : 'icon-trash',
+	  			own : ${docAdminURL!'false'},
+	  			handler : function(e,rowData){
+	  				var s = $('#businessId').val();
+					if(!s || s==''){
+						exalert(e,'${i18n.get('没有选中任何数据!')}');
+						return;
+					}
+					parent.dialog('${i18n.get('设置权限')}','${ctx}/common/permission/config.html?businessId='+$('#businessId').val() + '&groupId=' +$('#groupId').val(),window);
+	  			}
+	  		}]"
+	>
+	
+</@form.table>
+
+</@pui.body>
+

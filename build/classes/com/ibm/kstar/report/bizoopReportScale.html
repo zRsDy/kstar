@@ -1,0 +1,45 @@
+<@cui.body2>
+<style type="text/css">
+	table {
+	border-collapse: collapse;
+	border-color: #ff0000;
+	}
+	
+	table td {
+		padding:1px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	select {
+		width: 180px;
+	}
+</style>
+<div class="col-xs-12">
+	<@form.table id="bizoppReportScale" 
+		class="col-xs-12"
+		title="${i18n.get('报备授权明细')}" 
+		url = "${ctx}/report/bizoppReportScale.html?orgIdOrEmployeeId=${orgIdOrEmployeeId}&reportType=${reportType}"
+		rowNum = "20" 
+		colModel = "[
+			 	{name : 'opportunityName', label:'${i18n.get('商机名称')}', width : 250, sortable:false, editable:false, align:'center'}, 
+			  	{name : 'bizOppAddressName', label:'${i18n.get('商机所在地名称')}', width : 250, sortable:false, editable:false, align:'center'},
+			  	{name : 'clientName', label:'${i18n.get('客户名称')}', width : 250, editable : false}, 
+			  	{name : 'createdByIdName', label:'${i18n.get('报备人')}', width : 150, editable : false}, 
+			  	{name : 'createdOrgIdName', label:'${i18n.get('所属组织 ')}', width : 100, editable:false, align:'center'}, 
+			  	{name : 'createdAt', label:'${i18n.get('报备时间')}', width : 100, editable:false, align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+			  	{name : 'statusName',label:'${i18n.get('处理状态')}',hidden:false,width:150,sortable:true,align:'center' }, 
+				{name : 'conflictStatusName', label:'${i18n.get('商机状态')}', width : 150, editable:false ,align:'center',sortable:true }, 
+				{name : 'saleStageName', label:'${i18n.get('商机阶段')}', width : 150, editable:false, align:'center',sortable:true}, 
+			  	{name : 'successDate', label:'${i18n.get('生效日期')}', width : 150, editable:false, align:'center',sortable:true,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }}, 
+			  	{name : 'endDate', label:'${i18n.get('失效日期')}', width : 120, editable:false, align:'center',sortable:false,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }}, 
+			  	{name : 'isReport', label:'${i18n.get('是否已授权')}', width : 120, editable:false, align:'center',sortable:false}
+			]" 
+			> 
+		</@form.table>
+</div>
+</@cui.body2>

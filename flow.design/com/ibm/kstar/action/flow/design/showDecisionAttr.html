@@ -1,0 +1,48 @@
+<@pui.body>
+<@form.panel title="${i18n.get('任务类型属性设置')}">
+	<div class="row">
+		${i18n.get('节点名称：')}<input type="text" id="text" />
+	</div>
+	
+	<div class="row">
+		${i18n.get('表达式：')}(${i18n.get('注意表达式使用')}javascript${i18n.get('语言，最后返回路径名称，表达式中只能使用双引号，不能使用单引号')})
+	</div>
+	
+	<div class="row">
+		<textarea rows="10" style="width: 95%;margin-left:10px;margin-right:10px" id="expression">
+			
+		</textarea>
+	</div>
+	
+<script type="text/javascript">
+	$(function($) {
+		if(parent.decisionSetting.expression){
+			$('#expression').val(parent.decisionSetting.expression);
+			$('#text').val(parent.decisionSetting.text);
+		}
+	})
+</script>
+	<div class="clearfix form-actions">
+		<div class="col-md-offset-5 col-md-7">
+			<button class="btn btn-info" id="selectOK2" type="button">
+				<i class="icon-ok bigger-110"></i> ${i18n.get('确定')}
+			</button>
+
+			<button class="btn" type="button" onclick="javascript:api.close()">
+				<i class="icon-undo bigger-110"></i> ${i18n.get('关闭')}
+			</button>
+		</div>
+	</div>
+</@form.panel>
+<script type="text/javascript">
+	$('#selectOK2').click(function(){
+		var setting = {};
+		setting.expression = $('#expression').val();
+		setting.text = $("#text").val();
+		parent.decisionCallback(setting);
+		parent.test();
+		api.close();
+	})
+</script>
+
+</@pui.body>

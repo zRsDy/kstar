@@ -1,0 +1,175 @@
+ <@pui.body>
+ <style>
+ 
+.clientWidth{
+	width:1500px;
+}
+</style>
+		<@form.panel title="${i18n.get('新增/编辑')}">
+			
+		
+				<label> ${title!} </label>
+				<#if title?index_of('${i18n.get('ECR提交流程')}')!=-1>
+					<@form.table id="ecr_process" 
+					class="clientWidth"
+					title="${i18n.get('ECR变更')}" 
+					url ="${ctx}/product/ecrList.html?processID=${processID!}" 
+					shrinkToFit="true" 
+					rowNum = "20" 
+					height="150"
+					colModel = "[
+					{name:'id',label:'',hidden:true,width:60,sortable:false,align:'center'},
+					{name:'ecrCode',label:'${i18n.get('变更单号')}',hidden:false,width:140,sortable:false,align:'center'},
+					{name:'ergent',label:'${i18n.get('紧急程度')}',hidden:true,width:80,sortable:false,align:'center'},
+					{name:'urgentName',label:'${i18n.get('紧急程度')}',hidden:false,width:100,sortable:false,align:'center'},
+					
+					{name:'changeType',label:'${i18n.get('变更原因类型')}',hidden:true,width:100,sortable:false,align:'center'},
+					{name:'changeTypeName',label:'${i18n.get('变更原因类型')}',hidden:false,width:160,sortable:false,align:'center'},
+					
+					{name:'changeRoot',label:'${i18n.get('变更原因')}',hidden:false,width:160,sortable:false,align:'center'},
+					{name:'ecrChangeContent',label:'${i18n.get('变更内容')}',hidden:false,width:160,sortable:false,align:'center'},
+					{name:'createBy',label:'',hidden:true,width:60,sortable:false,align:'center'},
+					{name:'productID',label:'',hidden:true,width:60,sortable:false,align:'center'},
+					{name:'referIdGrid',label:'${i18n.get('参考已有ECR')}',hidden:false,width:120,sortable:false,align:'center'},
+					{name:'ecrStatus',label:'${i18n.get('状态')}',hidden:true,width:100,sortable:false,align:'center'},
+					{name:'ecrStatusName',label:'${i18n.get('状态')}',hidden:false,width:60,sortable:false,align:'center'},
+					
+					{name:'applyPerson',label:'${i18n.get('申请人')}',hidden:false,width:80,sortable:false,align:'center'},
+					{name:'createTime',label:'${i18n.get('提交时间')}',hidden:false,width:160,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+					{name:'nearEffectTime',label:'${i18n.get('生效时间')}',hidden:false,width:140,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+					{name:'ecnNumber',label:'${i18n.get('ECN单号')}',hidden:false,width:100,sortable:false,align:'center'}]" 
+					 buttons = "[]"> 
+					</@form.table>
+
+		    	 
+		    	 <#else> 
+		    	 	<@form.table id="t45" 
+						class="clientWidth"
+						title="${i18n.get('产品列表')}" 
+						url = "${ctx}/product/processpage.html?processID=${processID!}" 
+						rowNum = "5" 
+						height="200"
+						shrinkToFit="true" 
+						editURL= "'${ctx}/product/edit.html'" 
+						search="false"
+						colModel = "[
+							{name:'id',label:'${i18n.get('产品ID')}',hidden:true,width:100,sortable:false,align:'center' },
+							{name:'productCode',label:'${i18n.get('产品编码')}',hidden:false,width:100,sortable:false,align:'center' },
+							{name:'productName',label:'${i18n.get('产品名称')}',hidden:false,width:100,sortable:false,align:'center' },
+							{name:'proEName',label:'${i18n.get('英文名')}',hidden:false,width:100,sortable:false,align:'center' },
+							{name:'proDesc',label:'${i18n.get('产品描述')}',hidden:false,width:140,sortable:false,align:'center' },
+							{name:'materCode',label:'${i18n.get('物料号')}',hidden:false,width:100,sortable:false,align:'center' },
+							{name:'vmaterCode',label:'${i18n.get('预定义物料号')}',hidden:false,width:100,sortable:false,align:'center'},
+							{name:'proModel',label:'${i18n.get('产品型号')}',hidden:false,width:100,sortable:false,align:'center' },
+							{name:'fatherProCode',label:'${i18n.get('父产品')}',hidden:false,width:100,sortable:false,align:'center' },
+							{name:'publishStatus',label:'${i18n.get('发布状态')}',hidden:true,width:100,sortable:false,align:'center' },
+							{name:'publishStatusName',label:'${i18n.get('发布状态')}',hidden:false,width:60,sortable:false,align:'center' },
+							{name:'priceStatus',label:'${i18n.get('订价状态')}',hidden:true,width:100,sortable:false,align:'center' },
+							{name:'priceStatusName',label:'${i18n.get('订价状态')}',hidden:false,width:60,sortable:false,align:'center' },
+							{name:'saleStatus',label:'${i18n.get('转销状态')}',hidden:true,width:100,sortable:false,align:'center' },
+							{name:'saleStatusName',label:'${i18n.get('转销状态')}',hidden:false,width:60,sortable:false,align:'center' },
+							{name:'rohStatus',label:'${i18n.get('是否RoHS')}',hidden:false,width:60,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatRohs(cellvalue) } }
+						
+							]" 
+
+							ondblClickRow= "function(selectedData){
+								parent.addTab('${i18n.get('产品详细信息')}','${ctx}/product/edit.html?id='+selectedData);
+							
+							 }"		 
+							buttons = "[]" > 
+						</@form.table> 
+		      	</#if> 
+				
+				
+			
+					
+		
+		</@form.panel>
+			<@form.panel title="${i18n.get('新增/编辑')}">
+			<@form.form id="t1aaa"
+			success="function(){ 
+				parent.currentParent.reload_t1();
+			}" 
+			
+			class="form-horizontal"
+			>
+				
+					<label> ${i18n.get('意见建议:')} </label>
+					
+					 <@form.textArea 
+						id="comment" 
+						name="comment" 
+						placeholder="${i18n.get('请输入备注')}" 
+						tip="${i18n.get('意见建议')}"
+						/> 
+				
+				<input type="hidden" id="processID" name="processID" value="${processID!}" />
+				<input type="hidden" id="submitType" name="submitType" value="1" />
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info" type="submit" onclick="s('1')">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('同意')}
+					</button>
+					
+					<#if task?? && task.isNormalTask == 'Y' && task.activityType == 'task'>
+						<#if rejectPathList?? && rejectPathList?size gt 0>
+							&nbsp; &nbsp; &nbsp;
+							<button class="btn btn-info" type="submit" onclick="s('0')">
+								<i class="icon-ok bigger-110"></i>
+								${i18n.get('驳回')}
+							</button>
+							<select name="activityId">
+								<option></option>
+								<#list rejectPathList as path>
+									<option value="${path.activityId}">${path.activityName}</option>
+								</#list>
+							</select>
+						</#if>
+
+						&nbsp; &nbsp; &nbsp;
+						<button class="btn btn-info" type="button">
+							<i class="icon-ok bigger-110"></i>
+							${i18n.get('支持')}
+						</button>
+						
+						&nbsp; &nbsp; &nbsp;
+						<button class="btn btn-info" type="button">
+							<i class="icon-ok bigger-110"></i>
+							${i18n.get('委托')}
+						</button>
+					</#if> 
+					
+					&nbsp; &nbsp; &nbsp; 
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div> 
+			<script type="text/javascript">
+				function s(type){
+					$('#submitType').val(type);
+				}
+			</script>
+		</@form.form>
+		</@form.panel>
+
+		<div class="col-xs-12" >
+		<#list historyList as history>
+			<p>${history.activityName},${history.startTime?datetime}  <#if (history.endTime)??>, ${history.endTime?datetime} </#if>, ${(history.operatorName)!} , ${(history.comment)!}</p>
+		</#list>
+		</div>
+</@pui.body> 
+<script type="text/javascript">
+
+	var customTypeArr = {
+		"0" : "${i18n.get('否')}",
+		"1" : "${i18n.get('是')}"
+	};
+
+	function formatRohs(value){
+	    return customTypeArr[value];
+	}
+
+</script>

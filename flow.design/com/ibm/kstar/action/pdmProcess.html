@@ -1,0 +1,133 @@
+ <@pui.body>
+ <style>
+.clientWidth{
+	width:1500px;
+}
+</style>
+			<div id="formContent" class="row col-lg-12 col-md-12">
+				<#include "pdmProductProcess.html" />
+				<div id="query_hint" class="query_hint" style="text-align:center">
+			    	<img src="../assets/img/loading.gif" />${i18n.get('正在提交PDM审批，请稍等．．．')}
+				</div>
+			</div>				
+			<@form.panel title="${i18n.get('流程处理')}">
+			<@form.form id="t1"
+			success="function(){ 
+				parent.showflowList();
+				parent.currentParent.reload_t2();
+			}" 
+			class="form-horizontal">
+					<label> ${i18n.get('意见建议:')} </label>
+					 <@form.textArea 
+						id="opinions" 
+						name="opinions" 
+						placeholder="${i18n.get('请输入意见建议')}"
+						/> 
+			<input type="hidden" id="submitType" name="submitType"  />
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-2 col-md-10">
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn btn-info submit" id="argee" type="button" onclick="s('submit')">
+						<i class="icon-ok bigger-110"></i>
+					${i18n.get('同意')}
+					</button>
+				
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn btn-info submit" id="regect" type="button" onclick="s('reject')">
+						<i class="icon-ok bigger-110"></i>
+					${i18n.get('驳回')}
+					</button>
+					
+					&nbsp; &nbsp; &nbsp; 
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+					</button>
+				</div>
+			</div> 
+			<script type="text/javascript">
+				$(document).ready(function () {
+					$("#query_hint").hide();
+				})
+			
+				function s(type){
+					var id = "${id?default('')}";
+					var procId = "${procId?default('')}";
+					var opinions = $('#opinions').val();
+					var loginguid = "${loginguid?default('')}";
+					$('#submitType').val(type);
+					
+					var data = {
+							id:id,
+							procId:procId,
+							opinions:opinions,
+							loginguid:loginguid,
+							type:type
+					};
+					
+					$("#query_hint").show();
+					if(type == 'submit'){
+						$('#argee').attr("disabled",true);
+						$.ajax({
+				            type: "POST",
+				            url: "${ctx}/flow/doPdmProcess.html",
+				            async: false,
+				            data: data,
+				            dataType: 'json',
+				            success: function (msg) {
+				            	//alert(msg.message.result)
+				            		//debugger;
+				            	if(true == msg.message.result){
+				            		alert('${i18n.get('确认成功！')}');
+				            		parent.currentParent.reload_t2();
+				            		api.close();
+				            	}else{
+				            		alert('${i18n.get('PDM接口异常提示：')}'+msg.message.errinfo);
+				            		parent.currentParent.reload_t2();
+				            		api.close();
+				            	} 
+				            	$("#query_hint").hide();
+				            },
+				            error: function (e) {
+				            	alert("页面异常报错，请联系系统维护人员！")
+				            	$("#query_hint").hide();
+				            }
+				        });
+					}
+					
+					if(type == 'reject'){
+						$('#regect').attr("disabled",true);
+						$.ajax({
+				            type: "POST",
+				            url: "${ctx}/flow/doPdmProcess.html",
+				            async: false,
+				            data: data,
+				            dataType: 'json',
+				            success: function (msg) {
+				            	if(true == msg.message.result){
+				            		alert('${i18n.get('驳回成功！')}');
+				            		parent.currentParent.reload_t2();
+				            		api.close();
+				            	}else{
+				            		alert('${i18n.get('PDM接口异常提示：')}'+msg.message.errinfo);
+				            		parent.currentParent.reload_t2();
+				            		api.close();
+				            	} 
+				            	$("#query_hint").hide();
+				                //reload_t2();
+				            },
+				            error: function (e) {
+				            	alert("页面异常报错，请联系系统维护人员！")
+				            	$("#query_hint").hide();
+				            }
+				        });
+					}
+				}
+				
+				var getEvent = function(){
+				    return window.event || arguments.callee.caller.arguments[0];
+				}
+			</script>
+		</@form.form>
+	</@form.panel>
+</@pui.body> 

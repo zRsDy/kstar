@@ -1,0 +1,77 @@
+package com.anne.action.${modelName};
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.xsnake.web.action.BaseAction;
+import org.xsnake.web.page.IPage;
+
+import com.anne.api.AnneException;
+import com.anne.api.PageCondition;
+import com.anne.api.${modelName}.I${shortClassName}Service;
+import ${className};
+
+@Controller
+@RequestMapping("/")
+public class ${shortClassName}Action extends BaseAction{
+	
+	@Autowired
+	I${shortClassName}Service ${dShortClassName}Service;
+	
+	@ResponseBody
+	@RequestMapping("/page")
+	public String page(PageCondition condition,HttpServletRequest request){
+		
+		IPage p = ${dShortClassName}Service.query${shortClassName}s(condition);
+		return sendSuccessMessage(p);
+	}
+	
+	@RequestMapping("/list")
+	public String list(){
+		return forward("list");
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/delete",method=RequestMethod.POST)
+	public String delete(String id){
+		${dShortClassName}Service.delete${shortClassName}(id);
+		return sendSuccessMessage();
+	}
+	
+	@RequestMapping("/add")
+	public String add(Model model){
+		return forward("${dShortClassName}");
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/add",method=RequestMethod.POST)
+	public String add(${shortClassName} ${dShortClassName}){
+		${dShortClassName}Service.save${shortClassName}(${dShortClassName});
+		return sendSuccessMessage();
+	}
+	
+	@RequestMapping("/edit")
+	public String edit(String id,Model model){
+		if(id==null){
+			throw new AnneException("${i18n.get('没有找到需要修改的数据')}");
+		}
+		${shortClassName} ${dShortClassName} = ${dShortClassName}Service.get${shortClassName}(id);
+		if(${dShortClassName}==null){
+			throw new AnneException("${i18n.get('没有找到需要修改的数据')}");
+		}
+		model.addAttribute("${dShortClassName}",${dShortClassName});
+		return forward("${dShortClassName}");
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/edit",method=RequestMethod.POST)
+	public String edit(${shortClassName} ${dShortClassName}){
+		${dShortClassName}Service.update${shortClassName}(${dShortClassName});
+		return sendSuccessMessage();
+	}
+}

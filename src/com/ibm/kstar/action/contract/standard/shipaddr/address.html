@@ -1,0 +1,51 @@
+
+<#escape x as x?html>
+
+	
+	<#if (permission['P05ConT6ShipAddressAdd'])??>
+		<#assign addURL="'${ctx}/standard/shipaddr/add.html?contrId=${contrId}&typ=${typ}'" >
+	</#if>
+	<#if (permission['P05ConT6ShipAddressEdit'])??>
+		<#assign editURL="'${ctx}/standard/shipaddr/edit.html'">
+	</#if>
+	<#if (permission['P05ConT6ShipAddressDelete'])??>
+		<#assign deleteURL="'${ctx}/standard/shipaddr/delete.html'">
+	</#if>
+
+	<@form.table id="addressLst" 
+	class="col-xs-12"
+	title="${i18n.get('发货地址列表')}" 
+	url = "${ctx}/standard/shipaddr/page.html?contrId=${contrId}&typ=${typ}"  
+	rowNum = "10" 
+	addURL = "${addURL!}" 
+	editURL=  "${editURL!}" 
+	deleteURL =  "${deleteURL!}"  
+	colModel = "[
+		{name:'id',label:'${i18n.get('内部')}ID',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'area',label:'${i18n.get('发货地址')}',hidden:false,width:500,sortable:true,align:'center' },
+		{name:'delivAddr',label:'${i18n.get('发货地址')}',hidden:true,width:10,sortable:true,align:'center' },
+		{name:'receiver',label:'${i18n.get('收货人')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'phone',label:'${i18n.get('电话')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'remark',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:true,align:'center' }
+		]"
+		onSelectRow= "function(selectedData){
+		}"
+		buttons = "[]"
+		search="false" > 
+	</@form.table> 
+	
+<script type="text/javascript">
+$(document).ready(function(){
+	var editFlag = "${editFlag}"; 
+	if(editFlag=="N"){
+		/* var btns = document.getElementsByTagName("button");
+		$.each(btns,function(){
+			($(this)).attr("disabled","disabled");
+		}); */
+
+		$(".btn_addressLst").attr("disabled","disabled");
+	}
+});
+</script>
+</#escape>
+

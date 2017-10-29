@@ -1,0 +1,228 @@
+<label> ${i18n.get('意见建议')}: </label>
+<@form.textArea  id="comment" name="comment" placeholder="${i18n.get('请输入备注')}" />
+<input type="hidden" id="submitType" name="submitType" value="1" />
+<input type="hidden" id="appointUserId" name="appointUserId" value="" />
+<div class="clearfix form-actions">
+<div class="col-md-offset-2 col-md-10">
+<#if task?? && (task.runtimeAssigneFlag)?? && task.runtimeAssigneFlag == 'Y'>
+${i18n.get('指派给')}：<input type="text" id="appointUserName" name="appointUserName" readonly="readonly" value="" />
+    &nbsp; &nbsp; &nbsp;
+    <@biz.picker_product id="appointUser" url="${ctx}/common/user/selectList.html"
+    button="${i18n.get('指派')}"
+    callback="function(data){
+								if(data){
+									$('#appointUserId').val(data.id);
+									$('#appointUserName').val(data.name);
+								 }
+							}"
+    />
+</#if>
+
+<#if task?? && (task.toIds)?? && task.isNormalTask == 'Y'>
+    <input type="hidden" name="toActivityId" id="toActivityId" />
+    <#list task.toIds?split(";") as toId>
+        <#if toId != "">
+            &nbsp; &nbsp; &nbsp;
+            <button class="btn btn-info submit" type="button" onclick="$('#toActivityId').val('${toId}');s('1');">
+                <i class="icon-ok bigger-110"></i>
+            ${toId}
+            </button>
+        </#if>
+    </#list>
+<#else>
+    &nbsp; &nbsp; &nbsp;
+    <button class="btn btn-info submit" type="button" onclick="s('1')">
+        <i class="icon-ok bigger-110"></i>
+    ${i18n.get('同意')}
+    </button>
+</#if>
+
+<#if task?? && task.isNormalTask == 'Y' && task.activityType == 'task' >
+    <#if rejectPathList?? && rejectPathList?size gt 0 && (task.rejectFlag)?? && task.rejectFlag == 'Y'>
+        &nbsp; &nbsp; &nbsp;
+        <button class="btn btn-info submit" type="button" onclick="s('0')">
+            <i class="icon-ok bigger-110"></i>
+        ${i18n.get('驳回')}
+        </button>
+
+        <select name="activityId" id="rejectActivityId">
+            <option></option>
+            <#list rejectPathList as path>
+                <option value="${path.activityId}">${path.activityName}</option>
+            </#list>
+        </select>
+    </#if>
+
+    <#if (task.closeFlag)?? && task.closeFlag == 'Y'>
+        &nbsp; &nbsp; &nbsp;
+        <button class="btn btn-info submit" type="button" onclick="s('2')">
+            <i class="icon-ok bigger-110"></i>
+        ${i18n.get('销毁')}
+        </button>
+    </#if>
+
+    &nbsp; &nbsp; &nbsp;
+    <@biz.picker_product id="selectUser" url="${ctx}/common/user/selectList.html"
+    button="${i18n.get('委托')}"
+    callback="function(data){
+								if(data){
+									$.ajax({
+										type : 'POST',
+										url : '${ctx}/flow/transfer.html',
+										async: true,
+										data : 'taskId=${(taskId)!}&userId='+data.id+'&comment='+$('#comment').val(), 
+										dataType : 'json',
+										success : function(msg) {
+											parent.showflowList();
+											alert(msg.message);
+											try{
+												parent.currentParent2.reload_t1();
+											}catch(e){}
+											api.close();
+										},
+										error: function(e) {
+											 alert('${i18n.get('操作失败,请联系管理员')}');
+										} 
+										
+									});
+								 }
+							}"
+    />
+
+    &nbsp; &nbsp; &nbsp;
+    <@biz.picker_product id="selectUserMulti" url="${ctx}/common/user/multiSelectList.html"
+    button="${i18n.get('沟通')}"
+    callback="function(datas){
+								if(datas){
+									var userIds = '';
+									$.each(datas,function(i,data){
+										if(i==0){
+											userIds = data.id;
+										}else{
+											userIds = userIds +','+data.id;
+										}
+									});
+									
+									$.ajax({
+										type : 'POST',
+										url : '${ctx}/flow/support.html',
+										async: true,
+										data : 'taskId=${(taskId)!}&userIds='+userIds+'&comment='+$('#comment').val(), 
+										dataType : 'json',
+										success : function(msg) {
+											parent.showflowList();
+											alert(msg.message);
+											try{
+												parent.currentParent2.reload_t1();
+											}catch(e){}
+											api.close();
+										},
+										error: function(e) {
+											 alert('${i18n.get('操作失败,请联系管理员')}');
+										} 
+										
+									});
+								 }
+							}"
+    />
+</#if>
+
+    &nbsp; &nbsp; &nbsp;
+    <button class="btn" type="button" onclick="javascript:api.close()">
+        <i class="icon-undo bigger-110"></i>
+    ${i18n.get('关闭')}
+    </button>
+</div>
+</div>
+<script type="text/javascript">
+function s(type) {
+    $('#submitType').val(type);
+    if (type == '1') {
+        if ($('#appointUserName').length > 0) {
+            if ($('#appointUserName').val() == '') {
+                alert("${i18n.get('请选择下一步办理人')}");
+                var e = getEvent();
+                e.stopPropagation();
+                return false;
+            }
+        }
+    }
+
+    if (type == '0') {
+        if ($('#rejectActivityId').length > 0) {
+            if ($('#activityId').val() == '') {
+                alert("${i18n.get('请选择驳回的环节')}");
+                var e = getEvent();
+                e.stopPropagation();
+                return false;
+            }
+        }
+    }
+}
+
+var getEvent = function () {
+    return window.event || arguments.callee.caller.arguments[0];
+}
+</script>
+
+<#if bizType?? && bizType=='CONTR_STAND'>
+    <@form.table id="contrHisItem"
+    class="col-xs-12"
+    title="${i18n.get('审批历史明细')}"
+    url = "${ctx}/standard/review/hisItem.html?contrId=${id}"
+    rowNum = "100"
+    shrinkToFit='true'
+    rownumbers = 'true'
+
+    grouping = "true"
+    groupingView = "{ groupField : ['processDefinitionName'] ,groupText : [ '<b>{0}</b>' ]  }"
+
+    colModel = "[
+		{name:'id',label:'ID',hidden:true,sortable:false,align:'center' },
+		{name:'activityName',label:'${i18n.get('环节')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'operatorName',label:'${i18n.get('办理人')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'comment',label:'${i18n.get('意见建议')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'startTime',label:'${i18n.get('开始时间')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate(cellvalue) } },
+		{name:'endTime',label:'${i18n.get('结束时间')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate(cellvalue) } },
+		{name:'processDefinitionName',label:'${i18n.get('评审类别')}',hidden:false,width:150,sortable:false,align:'center' }
+		]"
+    onSelectRow= "function(selectedData){
+		}"
+    search="false"
+    >
+    </@form.table>
+<#else>
+<div class="row">
+<div class="col-xs-12">
+    <div class="table-responsive">
+        <table id="sample-table-1" class="table table-striped table-bordered table-hover">
+            <thead>
+            <tr>
+                <th class="center">${i18n.get('环节')}</th>
+                <th>${i18n.get('办理人')}</th>
+                <th>${i18n.get('意见建议')}</th>
+                <th>${i18n.get('开始时间')}</th>
+                <th>${i18n.get('结束时间')}</th>
+            </tr>
+            </thead>
+
+            <tbody>
+                <#list historyList as history>
+                    <#if (history.activityType)?? && history.activityType != 'decision'>
+                    <tr class="">
+                        <td class="center">${(history.activityName)!}</td>
+                        <td>${(history.operatorName)!(history.assigneeName)!}</td>
+                        <td>
+                        ${(history.comment)!''}
+                        </td>
+                        <td>${(history.startTime?datetime)!}</td>
+                        <td><#if (history.endTime)??> ${(history.endTime?datetime)!} </#if></td>
+                    </tr>
+                    </#if>
+                </#list>
+            </tbody>
+        </table>
+    </div><!-- /.table-responsive -->
+</div><!-- /span -->
+</div>
+</#if>

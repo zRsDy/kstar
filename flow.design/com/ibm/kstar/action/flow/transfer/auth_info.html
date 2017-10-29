@@ -1,0 +1,153 @@
+<@pui.body> 
+<style type="text/css">
+	table {
+	border-collapse: collapse;
+	border-color: #ff0000;
+	}
+	
+	table td {
+		padding:2px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		height: 24px;
+		border-width: 0px 0px 0px 0px;
+	}
+	input {
+		width: 300px;
+	}
+	select {
+		width: 200px;
+	}
+</style>
+	
+<script type="text/javascript">
+	
+	$(document).ready(function(){
+		if("${(authorization.type)!}" == "F"){
+			$("#module_app").attr("disabled","disabled");
+			$("#module_app_tr").hide()
+		}else if("${(authorization.type)!}" == "A") {
+			$("#module_flows").attr("disabled","disabled");
+			$("#module_flows_tr").hide()
+		}
+		
+	});
+	
+</script>
+	<div class="col-xs-12" >
+	<@form.panel title="${i18n.get('新增/编辑')}">
+	<@form.form id="t1" 
+		success="function(){
+			alert('${i18n.get('保存成功！')}'); 
+			parent.currentParent.reload_authOutListForm(); 
+			api.close();
+		}" 
+		class="form-horizontal"
+	>
+	 <div align="center" class="form-group">
+	 	<table border="0" cellpadding="0" cellspacing="0" >
+			<tr align="center">
+				<td align="right" >${i18n.get('任务被委托人名称：')}
+				</td>
+				<td align="left" >
+					<@form.autocomplete  id="assigneeName" name="assigneeName" 
+							idKey='employeeName'
+							required="${i18n.get('请选择任务被委托人')}"
+							multiple="false"
+							formatResult="function(data) {return '<div >' +data.employeeName +'</div>';}"
+							url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+							value="{
+								 employeeName:'${(authorization.assigneeName)!}',
+								 employeeId:'${(authorization.assigneeId)!}'
+							}"
+							onSelect="function(data){
+								if( data.id != null && data.id !='' && data.id != 'undefined'){
+									$('#assigneeId').val(data.employeeId);
+								}
+							}" 
+						/>
+					<input id="assigneeId" name="assigneeId" type="hidden" placeholder="" tip="" value="${(authorization.assigneeId)!}" />
+				</td>
+			</tr>
+			<tr align="center">
+				<td align="right" >${i18n.get('委托类型：')}
+				</td>
+				<td align="left" >
+					<@form.select id="type" name="type" 
+						required="${i18n.get('请选择委托类型')}"
+						code="AUTH_TYPE"
+						style="width:300px;" 
+						idKey='code' 
+						value="${(authorization.type)!}" 
+						
+						onChange="function(){
+	            			var data = JSON.parse($('#type option:selected').attr('data')); 
+	            			if(data.code == 'F'){
+	            				$('#module_app').attr('disabled','disabled');
+								$('#module_app_tr').hide()
+								$('#module_flows').removeAttr('disabled');
+								$('#module_flows_tr').show();
+	            			}
+	            			if(data.code == 'A'){
+	            				$('#module_app').removeAttr('disabled');
+								$('#module_app_tr').show();
+	            				$('#module_flows').attr('disabled','disabled');
+								$('#module_flows_tr').hide()
+	            			}
+			            }"
+					/>
+				</td>
+				
+			</tr>
+			<tr id="module_flows_tr" align="center">
+				<td  align="right">${i18n.get('流程编码：')}</td>
+				<td align="left" >
+					<@form.select id="module_flows" name="module" 
+						tip="${i18n.get('流程编码')}" 
+						required="${i18n.get('编码不能为空')}"
+						style="width:300px;" 
+						viewKey="code" 
+						idKey='code' 
+						url="function(){
+							return '${ctx}/application/config/getFlows.html?optTxt1=${(authorization.module)!}'
+						}" 
+						value="${(authorization.module)!}" />
+				</td>
+			</tr>
+			
+			<tr id="module_app_tr" align="center">
+				<td align="right">${i18n.get('应用编码：')}</td>
+				<td align="left" >
+					<@form.select id="module_app" name="module" 
+						tip="${i18n.get('应用编码')}" 
+						required="${i18n.get('编码不能为空')}"
+						style="width:300px;" 
+						viewKey="code" 
+						idKey='code' 
+						url="function(){
+							return '${ctx}/application/config/getFlowApplication.html'
+						}" />
+				</td>
+			</tr>
+			</table>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</div>
+	</@form.form>
+		
+	</@form.panel>
+	</div>
+</@pui.body>

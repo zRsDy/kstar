@@ -1,0 +1,44 @@
+<#escape x as x?html>
+
+
+<#if (permission["P02CusT1AddressAdd"]?? && (customInfo.customReportedFlg)?? &&  ( customInfo.customReportedFlg == "CUSTOM_NORMAL_STATUS_10" || customInfo.customReportedFlg == "CUSTOM_NORMAL_STATUS_30" || customInfo.customReportedFlg == "CUSTOM_NORMAL_STATUS_40")
+										&& (customInfo.erpStatus)?? && (customInfo.erpStatus == "CUSTOM_NORMAL_STATUS_10" || customInfo.erpStatus == "CUSTOM_NORMAL_STATUS_30"|| customInfo.erpStatus == "CUSTOM_NORMAL_STATUS_40")) >
+	<#assign addAddressURL = "'${ctx}/custom/baseinfo/address/add.html?id=${(customInfo.id)!}'"  />
+</#if>
+
+<#if (permission["P02CusT1AddressEdit"]?? && (customInfo.customReportedFlg)?? &&  ( customInfo.customReportedFlg == "CUSTOM_NORMAL_STATUS_10" || customInfo.customReportedFlg == "CUSTOM_NORMAL_STATUS_30" || customInfo.customReportedFlg == "CUSTOM_NORMAL_STATUS_40")
+										&& (customInfo.erpStatus)?? && (customInfo.erpStatus == "CUSTOM_NORMAL_STATUS_10" || customInfo.erpStatus == "CUSTOM_NORMAL_STATUS_30"|| customInfo.erpStatus == "CUSTOM_NORMAL_STATUS_40")) >
+	<#assign editAddressURL= "'${ctx}/custom/baseinfo/address/edit.html'"    />	
+</#if>
+
+<#if (permission["P02CusT1AddressDelete"]?? && (customInfo.customReportedFlg)?? &&  ( customInfo.customReportedFlg == "CUSTOM_NORMAL_STATUS_10" || customInfo.customReportedFlg == "CUSTOM_NORMAL_STATUS_30" || customInfo.customReportedFlg == "CUSTOM_NORMAL_STATUS_40")
+										&& (customInfo.erpStatus)?? && (customInfo.erpStatus == "CUSTOM_NORMAL_STATUS_10" || customInfo.erpStatus == "CUSTOM_NORMAL_STATUS_30"|| customInfo.erpStatus == "CUSTOM_NORMAL_STATUS_40"))>
+	<#assign deleteAddressURL = "'${ctx}/custom/baseinfo/address/delete.html'"    />	
+</#if>
+
+<@form.table id="addr" 
+class="col-xs-12"
+height="131px"
+title="${i18n.get('地址信息')}" 
+url = "${ctx}/custom/baseinfo/address/page.html?id=${(customInfo.id)!}"
+rowNum = "5" 
+height="131px"
+addURL = "${addAddressURL!}"
+editURL = "${editAddressURL!}"
+deleteURL= "${deleteAddressURL!}" 
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+	{name:'customId',label:'${i18n.get('客户编码')}',hidden:true,width:100,sortable:false,align:'center' },
+	{name:'area',label:'${i18n.get('区域')}',hidden:false,width:300,sortable:false,align:'center' },
+	{name:'customAddress',label:'${i18n.get('地址')}',hidden:false,width:300,sortable:false,align:'center' },
+	{name:'customAddressTypeGrid.name',label:'${i18n.get('类型')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'customAddressPhone',label:'${i18n.get('电话')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'customAddressFax',label:'${i18n.get('传真')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'customAddressUseGrid.name',label:'${i18n.get('用途')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'customAddressValidGrid.name',label:'${i18n.get('有效')}',hidden:false,width:100,sortable:false,align:'center' }
+	]" 
+	>
+</@form.table> 
+
+<div id="attmDivBase"> </div>
+</#escape>

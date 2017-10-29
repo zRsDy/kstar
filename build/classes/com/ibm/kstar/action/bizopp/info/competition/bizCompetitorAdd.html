@@ -1,0 +1,99 @@
+<@pui.body>
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="competitionForm"
+			success="function(){ 
+			try{
+				parent.currentParent2.reload_competitionAnalysis(); 
+			}catch(e){
+				parent.currentParent.reload_competitionAnalysis(); 
+			}
+			}" 
+			class="form-horizontal">	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="competitorBrand">${i18n.get('竞争品牌:')}  </label>
+					<@form.input
+					id="competitorBrand"  name="competitorBrand" 
+					placeholder="" 
+					tip="${i18n.get('竞争品牌')}" 
+					required="${i18n.get('不能为空！')}"
+					value="${(entity.competitorBrand)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="productModel">${i18n.get('产品型号 :')}  </label>
+					  
+					<@form.input
+					id="productModel"  name="productModel" 
+					placeholder="" 
+					tip="${i18n.get('产品型号')}" 
+					required="${i18n.get('不能为空！')}"
+					value="${(entity.productModel)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="isSelectedBefor">${i18n.get('客户前期选用 :')}  </label>
+					<input name="isSelectedBefor" type="checkbox" id="isSelectedBefor" style="width: 20px;" onclick="changeCheckValue(this)" value="${(entity.isSelectedBefor)!}"/>  
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="advantage"> ${i18n.get('优势:')} </label>
+					  
+					<@form.input
+					id="advantage"  name="advantage" 
+					placeholder="" 
+					tip="${i18n.get('优势')}" 
+					value="${(entity.advantage)!}" 
+					/>
+				</div>		
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="disadvantage">  ${i18n.get('劣势 :')} </label>
+					  
+					<@form.input
+					id="disadvantage"  name="disadvantage" 
+					placeholder="" 
+					tip="${i18n.get('劣势 ')}" 
+					value="${(entity.disadvantage)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="proTechScheme"> ${i18n.get('项目技术方案 :')} </label>
+					  
+					<@form.input
+					id="proTechScheme"  name="proTechScheme" 
+					placeholder="" 
+					tip="${i18n.get('项目技术方案 ')}" 
+					value="${(entity.proTechScheme)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="proBizPlan"> ${i18n.get('项目商务方案 :')} </label>
+					  
+					<@form.input
+					id="proBizPlan"  name="proBizPlan" 
+					placeholder="" 
+					tip="${i18n.get('项目商务方案 ')}" 
+					value="${(entity.proBizPlan)!}" 
+					/>
+				</div>
+				<input type="hidden" id="bizOppId" name="bizOppId" value="${(entity.bizOppId)!}" />
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+</@pui.body>
+<script src="${ctx}/anne/js/util.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		iniCheck("is_selected_befor");
+	});
+</script>

@@ -1,0 +1,502 @@
+<@cui.body2>
+<style type="text/css">
+table {
+	table-layout: fixed;
+	border-collapse: collapse;
+	border-color: #ff0000;
+}
+
+table td {
+	padding:1px;
+	vertical-align: middle;
+	word-break: keep-all;
+	border: solid #ededed;
+	
+	border-width: 0px 0px 0px 0px;
+}
+input[type="text"] { width: 180px;}
+input[type="search"] {width: 180px;}
+select {
+	width: 180px;
+}
+</style>
+
+<script type="text/javascript">
+	$(window).resize(function(){
+		$("#statementInvoiceMasterForm").setGridWidth($(window).width()-90);
+		$("#statementInvoiceLinesForm").setGridWidth($(window).width()-90);
+		$("#statementDeliveryLinesForm").setGridWidth($(window).width()-90);
+	 	$("#statementReceiptsForm").setGridWidth($(window).width()-90);
+	});
+	$(document).ready(function(){
+		$("#applyDate").attr("disabled","disabled");
+		$("#status").attr("disabled","disabled");
+		
+		$("#save_button").hide();
+		$("#publish_button").hide();
+		$("#submit_button").hide();
+		
+		if("${(statementMaster.status)!}" == "10"){
+			$("#save_button").show();
+			if("${(statementMaster.id)!}" != null &&"${(statementMaster.id)!}"　!= "" ){
+				$("#submit_button").show();
+			}
+		}
+		if("${(statementMaster.status)!}" == "30"){
+			$("#publish_button").show();
+		}
+		
+		
+	});
+	
+	function seach(){
+		
+		var statementDateBegin =  $("#statementDateBegin").val();
+		var statementDateEnd =  $("#statementDateEnd").val();
+		var customerId =  $("#customerId").val();
+		var isPostAccount =  $("#isPostAccount").val();
+		
+		if(!statementDateBegin){
+			alert("${i18n.get('请选择对账开始日期')}");
+		}else if(!statementDateEnd){
+			alert("${i18n.get('请选择对账结束日期')}");
+		}else if(!customerId){
+			alert("${i18n.get('请选择对客户')}");
+		}else{
+			$("#statementDateBegin_InvoiceMaster").val(statementDateBegin);
+			$("#statementDateEnd_InvoiceMaster").val(statementDateEnd);
+			$("#customerId_InvoiceMaster").val(customerId);
+			$("#isPostAccount_InvoiceMaster").val(isPostAccount);
+			
+			$("#statementDateBegin_InvoiceDetail").val(statementDateBegin);
+			$("#statementDateEnd_InvoiceDetail").val(statementDateEnd);
+			$("#customerId_InvoiceDetail").val(customerId);
+			$("#isPostAccount_InvoiceDetail").val(isPostAccount);
+			
+			$("#statementDateBegin_DeliveryLines").val(statementDateBegin);
+			$("#statementDateEnd_DeliveryLines").val(statementDateEnd);
+			$("#customerId_DeliveryLines").val(customerId);
+			$("#isPostAccount_DeliveryLines").val(isPostAccount);
+			
+			$("#statementDateBegin_Receipts").val(statementDateBegin);
+			$("#statementDateEnd_Receipts").val(statementDateEnd);
+			$("#customerId_Receipts").val(customerId);
+			$("#isPostAccount_Receipts").val(isPostAccount);
+		
+			reload_statementInvoiceMasterForm();
+			reload_statementInvoiceLinesForm();
+			reload_statementDeliveryLinesForm();
+			reload_statementReceiptsForm();
+			//计算总金额
+			calculateInitialBalance();
+		}
+	}
+	//计算期初余额
+	function calculateInitialBalance(){
+		var deliveryAmount = 0 ;
+		var ids = $('#statementDeliveryLinesForm').jqGrid('getDataIDs');
+		$.each(ids,function(i,id){
+			var rowData = $("#statementDeliveryLinesForm").jqGrid("getRowData",id);
+			if(rowData.deliveryAmount){
+				deliveryAmount = deliveryAmount +  parseFloat(rowData.deliveryAmount);
+			}
+		});
+		
+		var veriAmount = 0 ;
+		var ids = $('#statementReceiptsForm').jqGrid('getDataIDs');
+		$.each(ids,function(i,id){
+			var rowData = $("#statementReceiptsForm").jqGrid("getRowData",id);
+			if(rowData.veriAmount){
+				veriAmount = veriAmount +  parseFloat(rowData.veriAmount);
+			}
+		});
+		$("#initBalance").val(deliveryAmount - veriAmount);
+	}
+	
+	function submit(){
+		$.ajax({
+ 			type : "POST",
+ 			url : "${ctx}/statement/submit.html",
+ 			async: true,
+ 			data : "id=${(statementMaster.id)!}", 
+ 			dataType : 'json',
+ 			success : function(msg) {
+				alert(msg.message);
+				parent.currentParent2.reload_statementListForm(); 
+				api.close();
+			},
+			error: function(e) {
+				 var msg = eval("("+e.responseText+")");
+				 if(msg !='' && msg != null && msg != 'undefined' && msg.message){
+					 alert(msg.message);
+				 }else{
+					alert("${i18n.get('操作失败，请联系管理员')}");
+				 }
+				
+			} 
+ 		});
+	}
+	
+	function publish(){
+		$.ajax({
+ 			type : "POST",
+ 			url : "${ctx}/statement/publish.html",
+ 			async: true,
+ 			data : "id=${(statementMaster.id)!}", 
+ 			dataType : 'json',
+ 			success : function(msg) {
+				alert(msg.message);
+				parent.currentParent2.reload_statementListForm(); 
+				api.close();
+			},
+			error: function(e) {
+				 var msg = eval("("+e.responseText+")");
+				 if(msg !='' && msg != null && msg != 'undefined' && msg.message){
+					 alert(msg.message);
+				 }else{
+					alert("${i18n.get('操作失败，请联系管理员')}");
+				 }
+				
+			} 
+ 		});
+	}
+	
+	
+</script>
+
+	<div class="col-xs-12" >
+	<@form.panel title="${i18n.get('新增/编辑')}">
+	<@form.form id="t1" 
+		success="function(){ 
+			alert('${i18n.get('保存成功！')}');
+			parent.currentParent2.reload_statementListForm(); 
+		}" 
+		class="form-horizontal" >
+	<div style="height: 15px;">
+		<div style="padding-right: 20px; float: right;padding-top: 3px;" >
+			<#if permission["P06AccountCheckSave"]??>
+				<button id="save_button" class="btn btn-info submit" type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+			</#if>
+			<#if permission["P06AccountCheckSubmit"]??>
+				<button id="submit_button" class="btn btn-info " type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('提交')}
+				</button>
+			</#if>
+			<#if permission["P06AccountCheckPublish"]??>
+				<button id="publish_button" class="btn btn-info " type="button" onclick="publish()">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('发布')}
+				</button>
+			</#if>
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+		</div>
+	</div>
+	<p>${i18n.get('对账单题头')}</p>
+	<div class="main" id="main" style="border-top: 2px solid #e9e9e9 ;padding-top: 10px;" >
+  		<table border="0" cellpadding="0" cellspacing="0">
+			<tr align="left">
+				<td align="right" width="120px">
+					<strong style="color: red;">*</strong> ${i18n.get('申请编号：')}
+				</td>
+				<td align="left" width="220px">
+					<@form.input
+						id="statementCode"  name="statementCode" 
+						required="${i18n.get('编号不能为空')}"
+						placeholder="" 
+						readonly="readonly"
+						tip="" 
+						value="${(statementMaster.statementCode)!}" 
+					/>
+				</td>
+				<td align="right" width="120px">
+					${i18n.get('申请人：')}
+				</td>
+				<td align="left" width="220px">
+					<@form.input
+					id="proposerName"  name="proposerName"
+					readonly="readonly" 
+					placeholder="" 
+					tip="" 
+					value="${(statementMaster.proposerName)!}" 
+					/>
+					<inpu id="proposerId"  name="proposerId" type="hidden" value="${(statementMaster.proposerId)!}" />
+				</td>
+				<td align="right" width="120px">
+					<strong style="color: red;">*</strong> ${i18n.get('期初余额：')}
+				</td>
+				<td align="left" width="220px">
+					<@form.input
+						id="initBalance"  name="initBalance" 
+						placeholder="" 
+						tip="" 
+						value="${(statementMaster.initBalance)!}" 
+						/>
+				</td>
+				<td align="right" width="120px">${i18n.get('对账期间：')}</td>
+				<td align="left" width="220px">
+					<@form.input
+						id="period"  name="period" 
+						placeholder="" 
+						tip="" 
+						value="${(statementMaster.period)!}" 
+						/>
+				</td>
+			</tr>
+			<tr>
+				<td align="right">${i18n.get('申请状态：')}</td>
+				<td align="left">
+					<@form.select id="status" name="status"  
+						code="ORDER_CONTROL_STATUS" 
+						idKey='code' 
+						value="${(statementMaster.status)!}"  /> 
+				</td>
+				<td align="right">${i18n.get('申请日期：')}</td>
+				<td align="left">
+					<@form.date   
+					id="applyDate"  name="applyDate" 
+					placeholder="" 
+					tip="" 
+					value="${(statementMaster.applyDate?date)!}" 
+					/>
+				</td>
+				<td align="right">${i18n.get('本期累计：')}</td>
+				<td align="left">
+					<@form.input
+						id="currentAmount"  name="currentAmount" 
+						placeholder="" 
+						tip="" 
+						value="${(statementMaster.currentAmount)!}" 
+						/>
+				</td>
+				<td align="right">${i18n.get('显示收款明细：')}</td>
+				<td align="left">
+					<input name="customerCode" type="checkbox" id="customerCode" value="" />
+				</td>
+			</tr>
+		</table>
+	</div>
+	<p style="padding-top:20px; ">${i18n.get('提取对账明细')}</p>
+	<div style="border-top: 2px solid #e9e9e9 ;padding-top: 10px;" >
+		<table border="0" cellpadding="0" cellspacing="0">
+			<tr align="right">
+				<td  align="right" width="120px">${i18n.get('对账日期从：')}</td>
+			 	<td align="left" width="220px">
+			 		<@form.date   
+					id="statementDateBegin"  name="statementDateBegin" 
+					placeholder="" 
+					tip="" 
+					value="${(statementMaster.statementDateBegin?date)!}" 
+					/>
+			 	</td>
+			 	<td  align="right" width="120px">
+			 		<strong style="color: red;">*</strong> ${i18n.get('客户名称：')}
+			 	</td>
+			 	<td  align="left"  width="220px">
+					<@form.autocomplete  id="customerId" name="customerId" 
+		            	idKey='id'
+		            	required="${i18n.get('请选择客户')}"
+		            	formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+						url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html'; }"
+		            	value="{id: '${(statementMaster.customerId)!}',customFullName:'${(statementMaster.customerName)!}', customCode: '${(statementMaster.customerCode)!}'}"
+		            	
+		            	onSelect="function(data){
+		            		if( data.id != null && data.id !='' && data.id != 'undefined'){
+		            			$('#customerCode').val(data.customCode);
+		            			$('#customerName').val(data.customFullName);
+		            		}
+		            	}" 
+	            	/>
+	            	<input id="customerCode"  name="customerCode"  type="hidden"  value="${(statementMaster.customerCode)!}"  />
+	            	<input id="customerName"  name="customerName"  type="hidden"  value="${(statementMaster.customerName)!}"  />
+			 	</td>
+			</tr>
+			<tr>
+				<td align="right" >${i18n.get('对账日期至：')}</td>
+			 	<td align="left">
+			 		<@form.date   
+						id="statementDateEnd"  name="statementDateEnd" 
+						placeholder="" 
+						tip="" 
+						value="${(statementMaster.statementDateEnd?date)!}" 
+						/>
+			 	</td>
+				<td align="right">${i18n.get('仓库已过账：')}</td>
+			 	<td align="left" >
+			 		<select id="isPostAccount" name="isPostAccount">
+		            	 <option value="Yes" selected="selected">${i18n.get('是')}</option>
+		            	 <option value="No" selected="selected">${i18n.get('否')}</option>
+					 </select>
+			 	</td>
+			 	<td align="left"  width="140px">
+			 		<div class="form-group col-xs-2">
+						<button type="button" class="btn btn-info" onclick="seach()"> 
+							<i class="icon-search bigger-110"></i>
+							${i18n.get('查询')}
+						</button>
+					</div>
+			 	</td>
+			</tr>
+		</table>
+	</div>
+	</@form.form>
+	<p style="padding-top:20px; ">${i18n.get('已出货，已开票明细')}</p>
+	<div style="border-top: 2px solid #e9e9e9 ;" >
+		<@form.table id="statementInvoiceMasterForm" 
+			class="col-xs-12"
+			title="${i18n.get('开票申请')}"
+			url = "${ctx}/statement/statementInvoiceMaster.html"
+			rowNum = "10"
+			search = "false"
+			colModel = "[ 
+				{name:'id',label:'id',hidden:true,width:100,sortable:false,align:'center' }, 
+				{name:'invoiceCode',label:'${i18n.get('申请编号')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'customerName',label:'${i18n.get('开票客户')}',hidden:false,width:200,sortable:false,align:'center' }, 
+				{name:'proposerName',label:'${i18n.get('申请人')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'applyDate',label:'${i18n.get('申请日期')} ',hidden:false,width:150,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+				{name:'postalAddress',label:'${i18n.get('邮寄地址')}',hidden:false,width:150,sortable:false,align:'center' }, 
+				{name:'expressNo',label:'${i18n.get('快递单号')}',hidden:false,width:150,sortable:false,align:'center' }, 
+				{name:'consignee',label:'${i18n.get('收票人')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'consigneeTel',label:'${i18n.get('收票人电话')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'invoiceDate',label:'${i18n.get('开票日期')}',hidden:false,width:100,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+				{name:'invoiceAmount',label:'${i18n.get('开票金额')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'statusLable',label:'${i18n.get('状态')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'remarks',label:'${i18n.get('开票说明')} ',hidden:false,width:150,sortable:false,align:'center' }
+				]"
+				ondblClickRow= "function(selectedData){
+					$('#selectedId').val(selectedData);
+						parent.addTab('${i18n.get('出货单[')}'+ selected_t1.invoiceCode+']','${ctx}/invoice/edit.html?id='+selected_t1.id);
+					 }"
+				buttons = "[]" > 
+				
+				<input id="statementDateBegin_InvoiceMaster"  name="statementDateBegin"  type="hidden" value="${(statementMaster.statementDateBegin?date)!}"  />
+				<input id="statementDateEnd_InvoiceMaster"  name="statementDateEnd" value="${(statementMaster.statementDateEnd?date)!}"   type="hidden"/>
+				<input id="customerId_InvoiceMaster"  name="customerId"   type="hidden" value="${(statementMaster.customerId)!}"/>
+				<input id="isPostAccount_InvoiceMaster"  name="isPostAccount"  type="hidden" value="${(statementMaster.isPostAccount)!}"/>
+				
+		</@form.table>
+		
+		<@form.table id="statementInvoiceLinesForm" 
+			class="col-xs-12" 
+			title="${i18n.get('开票申请明细行')}"
+			url = "${ctx}/statement/statementInvoiceDetail.html" 
+			rowNum = "10" 
+			search = "false"
+			colModel = "[ 
+				{name:'id',label:'',hidden:true,width:100,sortable:false,align:'center' }, 
+				{name:'invoiceCode',label:'${i18n.get('申请编号')}',hidden:false,width:150,sortable:false,align:'center' }, 
+				{name:'invoiceTypeLable',label:'${i18n.get('开票类型')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'orderCode',label:'${i18n.get('订单编号')}',hidden:false,width:120,sortable:false,align:'center' }, 
+				{name:'custCode',label:'${i18n.get('客户编号')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'custName',label:'${i18n.get('客户名称')}',hidden:false,width:200,sortable:false,align:'center' }, 
+				{name:'custAddr',label:'${i18n.get('客户地址')}',hidden:false,width:150,sortable:false,align:'center' }, 
+				{name:'custPo',label:'${i18n.get('客户PO')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'materielCode',label:'${i18n.get('物料编码')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'materielDesc',label:'${i18n.get('物料说明')}',hidden:false,width:150,sortable:false,align:'center' }, 
+				{name:'deliveryDate',label:'${i18n.get('出货日期')}',hidden:false,width:100,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+				{name:'invoiceQty',label:'${i18n.get('开票数量')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'invoicePrice',label:'${i18n.get('开票单价')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'invoiceAmount',label:'${i18n.get('开票金额')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'remarks',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:false,align:'center' }
+				]" buttons = "[]" > 
+				<input id="statementDateBegin_InvoiceDetail"  name="statementDateBegin"  type="hidden" value="${(statementMaster.statementDateBegin?date)!}"  />
+				<input id="statementDateEnd_InvoiceDetail"  name="statementDateEnd" value="${(statementMaster.statementDateEnd?date)!}"   type="hidden"/>
+				<input id="customerId_InvoiceDetail"  name="customerId"   type="hidden" value="${(statementMaster.customerId)!}"/>
+				<input id="isPostAccount_InvoiceDetail"  name="isPostAccount"  type="hidden" value="${(statementMaster.isPostAccount)!}"/>
+		</@form.table>
+	</div>
+	<p style="padding-top:20px;">${i18n.get('已出货，未开票明')}</p>
+	<div style="border-top: 2px solid #e9e9e9 ;" >
+		<@form.table id="statementDeliveryLinesForm" 
+			class="col-xs-12" 
+			title="${i18n.get('出货申请')}"
+			url ="${ctx}/statement/statementDeliveryLines.html" 
+			rowNum = "10" 
+			search = "false"
+			colModel = "[
+				{name:'id',label:'id',hidden:true,width:1,sortable:false,align:'center'},
+				{name:'deliveryCode',label:'deliveryCode',hidden:true,width:1,sortable:false,align:'center'},
+				{name:'orderId',label:'${i18n.get('订单行ID')}',hidden:true,width:150,sortable:false,align:'center'},
+				{name:'orderCode',label:'${i18n.get('订单编号')}',hidden:false,width:150,sortable:false,align:'center'},
+				{name:'orderType',label:'${i18n.get('订单类型')}',hidden:true,width:150,sortable:false,align:'center'},
+				{name:'orderTypeLable', label:'${i18n.get('订单类型')}', width : 120, sortable:false, editable:false, align:'center'},
+				{name:'singleCustId',label:'${i18n.get('下单客户ID')}',hidden:true,width:150,sortable:false,align:'center'},
+				{name:'singleCustCode',label:'${i18n.get('下单客户编号')}',hidden:false,width:120,sortable:false,align:'center'},
+				{name:'singleCustName',label:'${i18n.get('下单客户名称')}',hidden:false,width:150,sortable:false,align:'center'},
+				{name:'singleCustPO', label:'${i18n.get('客户PO')}', hidden:true,width:120,sortable : false,editable : false,align:'center'},  
+				{name:'proModel',label:'${i18n.get('产品型号')}',hidden:false,width:150,sortable:false,align:'center'},
+				{name:'materielCode',label:'${i18n.get('物料编码')}',hidden:false,width:150,sortable:false,align:'center'},
+				{name:'materielName',label:'${i18n.get('产品名称')}',hidden:false,width:150,sortable:false,align:'center'},
+				{name:'price',label:'${i18n.get('产品单价')}',hidden:false,width:100,sortable:false,align:'center'},
+				{name:'unit',label:'${i18n.get('单位')}',hidden:false,width:60,sortable:false,align:'center'},
+				{name:'deliveryQty',label:'${i18n.get('出货数量')}',hidden:false,width:80,sortable:false,align:'center'},
+				{name:'deliveryAmount',label:'${i18n.get('出货金额')}',hidden:false,width:100,sortable:false,align:'center'},
+				{name:'orderDate',label:'${i18n.get('下单日期')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue)} },
+				{name:'lineNum',label:'${i18n.get('出货行号')}',hidden:true,width:50,sortable:false,align:'center'},
+				{name:'orderLineNo',label:'${i18n.get('订单行号')}',hidden:false,width:50,sortable:false,align:'center'},
+				{name:'externalNo',label:'${i18n.get('出货单编号(外部)')}',hidden:false,width:150,sortable:false,align:'center'},
+				{name:'printTime',label:'${i18n.get('出货单打印日期（外部）')}',hidden:false,width:150,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue)} },
+				{name:'invoiceQty',label:'${i18n.get('开票数量')}',hidden:false,width:80,sortable:false,align:'center'},
+				{name:'remarks',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:false,align:'center'}
+				]" buttons = "[]" > 
+				
+				<input id="statementDateBegin_DeliveryLines"  name="statementDateBegin"  type="hidden" value="${(statementMaster.statementDateBegin?date)!}"  />
+				<input id="statementDateEnd_DeliveryLines"  name="statementDateEnd" value="${(statementMaster.statementDateEnd?date)!}"   type="hidden"/>
+				<input id="customerId_DeliveryLines"  name="customerId"   type="hidden" value="${(statementMaster.customerId)!}"/>
+				<input id="isPostAccount_DeliveryLines"  name="isPostAccount"  type="hidden" value="${(statementMaster.isPostAccount)!}"/>
+		</@form.table>
+			
+	</div>
+	<p style="padding-top:20px;">${i18n.get('收款明细')}</p>
+	<div style="border-top: 2px solid #e9e9e9 ;" >
+		<@form.table id="statementReceiptsForm" 
+			class="col-xs-12" 
+			title="${i18n.get('收款明细')}" 
+			url = "${ctx}/statement/statementReceipts.html" 
+			rowNum = "20" 
+			search = "false"
+			colModel = "[ 
+				{name:'id',label:'',hidden:true,width:100,sortable:false,align:'center' }, 
+				{name:'receiptsCode',label:'${i18n.get('收款单号')}',hidden:false,width:150,sortable:false,align:'center' }, 
+				{name:'receiptsDate',label:' ${i18n.get('收款日期')}',hidden:false,width:80,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+				{name:'businessCode',label:'${i18n.get('业务实体编号')}',hidden:false,width:80,sortable:false,align:'center' }, 
+				{name:'businessName',label:'${i18n.get('业务实体名称')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'receiptsBank',label:'${i18n.get('收款银行')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'bankAccount',label:'${i18n.get('银行账号')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'currency',label:'${i18n.get('币种')}',hidden:false,width:50,sortable:false,align:'center' }, 
+				{name:'amount',label:'${i18n.get('收款金额')}',hidden:false,width:100,sortable:false,align:'center' },
+				{name:'veriAmount',label:'${i18n.get('已核销金额')}',hidden:false,width:100,sortable:false,align:'center' },  
+				{name:'paymentCustomerId',label:'${i18n.get('付款客户ID')}',hidden:true,width:100,sortable:false,align:'center' }, 
+				{name:'paymentCustomerName',label:'${i18n.get('付款客户')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'erpCust',label:'${i18n.get('是否ERP客户')}',hidden:false,width:50,sortable:false,align:'center' }, 
+				{name:'correctCustId',label:'${i18n.get('更正客户ID')}',hidden:true,width:150,sortable:false,align:'center'},
+				{name:'correctCustName',label:'${i18n.get('更正客户名称')}',hidden:false,width:150,sortable:false,align:'center'}, 
+				{name:'bizDept',label:'${i18n.get('业务部门ID')}',hidden:true,width:100,sortable:false,align:'center' }, 
+				{name:'bizDeptLable',label:'${i18n.get('业务部门')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'salesmanId',label:'${i18n.get('销售人员ID')}',hidden:true,width:100,sortable:false,align:'center' }, 
+				{name:'salesmanName',label:'${i18n.get('销售人员')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'remarks',label:'${i18n.get('备注')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'pic',label:'${i18n.get('负责人')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'respDept',label:'${i18n.get('负责部门')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'status',label:'${i18n.get('状态')}',hidden:true,width:80,sortable:false,align:'center' }, 
+				{name:'statusLable',label:'${i18n.get('状态')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'createTime',label:'${i18n.get('创建日期')}',hidden:true,width:100,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+				{name:'creator',label:'${i18n.get('创建人')}',hidden:true,width:100,sortable:false,align:'center' }
+			]" buttons = "[]" > 
+			
+			<input id="statementDateBegin_Receipts"  name="statementDateBegin"  type="hidden" value="${(statementMaster.statementDateBegin?date)!}"  />
+			<input id="statementDateEnd_Receipts"  name="statementDateEnd" value="${(statementMaster.statementDateEnd?date)!}"   type="hidden"/>
+			<input id="customerId_Receipts"  name="customerId"   type="hidden" value="${(statementMaster.customerId)!}"/>
+			<input id="isPostAccount_Receipts"  name="isPostAccount"  type="hidden" value="${(statementMaster.isPostAccount)!}"/>
+	</@form.table> 
+	</div>
+	</@form.panel>
+	</div>
+
+</@cui.body2>

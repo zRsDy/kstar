@@ -1,0 +1,30 @@
+
+<#escape x as x?html>
+	<@form.table id="standardhistory" 
+	class="col-xs-12"
+	title="${i18n.get('评审列表')}" 
+	url = "${ctx}/standard/history/page.html?contrId=${contrId}"  
+	rowNum = "30" 
+	colModel = "[ 
+		{name:'operatorName',label:'${i18n.get('当前处理人')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'status',label:'${i18n.get('当前状态')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'comment',label:'${i18n.get('审核意见')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'startTime',label:'${i18n.get('开始处理时间')}',hidden:false,width:150,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate(cellvalue) }},
+		{name:'endTime',label:'${i18n.get('结束处理时间')}',hidden:false,width:150,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate(cellvalue) }}
+		]"
+		onSelectRow= "function(selectedData){
+		}"
+		buttons = "[
+					  	{		id:'view',
+					  			label : '${i18n.get('流程图')}',
+					  			icon : 'icon-trash',
+					  			own : true,
+					  			handler : function(e,rowData){
+									window.open('${ctx}/standard/history/historyview.html?contrId=${contrId}');
+					  			}
+					  		}
+		]" > 
+	</@form.table> 
+	
+
+</#escape>

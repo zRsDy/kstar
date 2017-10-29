@@ -1,0 +1,194 @@
+package com.ibm.kstar.entity.custom;
+
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.GenericGenerator;
+
+import com.ibm.kstar.api.system.lov.entity.LovMember;
+import com.ibm.kstar.cache.CacheData;
+
+@Entity
+@Table(name = "crm_t_custom_event_contact")
+public class CustomEventContact implements java.io.Serializable {
+    /** 版本号 */
+    private static final long serialVersionUID = 1L;
+    
+    /** 主键自增 */
+    @Id
+    @Column(name = "c_pid", unique = true, nullable = false, length = 32)
+    @GeneratedValue(generator = "custom_event_contact_pid_generator")
+   	@GenericGenerator(name="custom_event_contact_pid_generator", strategy="uuid")
+    private String id;
+    
+    /** 客户信息主键 */
+    @Column(name = "c_event_pid", nullable = false, length = 32)
+    private String eventPid;
+    
+    /** 姓名 */
+    @Column(name = "c_name", nullable = true, length = 100)
+    private String name;
+    
+    /** 性别 */
+    @Column(name = "c_sex", nullable = true, length = 100)
+    private String sex;
+    
+    @Transient
+	private String sexName;
+    
+    public String getSexName() {
+		LovMember lov =  ((LovMember)CacheData.getInstance().get(sex));
+		return lov==null? null : lov.getName();
+	}
+    
+    /** 职务 */
+    @Column(name = "c_post", nullable = true, length = 100)
+    private String post;
+    
+    /** 联系电话 */
+    @Column(name = "c_tel", nullable = true, length = 100)
+    private String tel;
+    
+    /** 备注 */
+    @Column(name = "c_comment", nullable = true, length = 100)
+    private String comment;
+    
+    /** 创建人 */
+    @Column(name = "c_created_by_id", nullable = true, length = 100)
+    private String createdById;
+    
+    /** 创建时间 */
+    @Column(name = "dt_created_at", nullable = true)
+    private Date createdAt;
+    
+    /** 创建人岗位 */
+    @Column(name = "c_created_pos_id", nullable = true, length = 100)
+    private String createdPosId;
+    
+    /** 创建人组织 */
+    @Column(name = "c_created_org_id", nullable = true, length = 100)
+    private String createdOrgId;
+    
+    /** 更新者 */
+    @Column(name = "c_updated_by_id", nullable = true, length = 100)
+    private String updatedById;
+    
+    /** 更新时间 */
+    @Column(name = "dt_updated_at", nullable = true)
+    private Date updatedAt;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getEventPid() {
+		return eventPid;
+	}
+
+	public void setEventPid(String eventPid) {
+		this.eventPid = eventPid;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getSex() {
+		return sex;
+	}
+
+	public void setSex(String sex) {
+		this.sex = sex;
+	}
+
+	public String getPost() {
+		return post;
+	}
+
+	public void setPost(String post) {
+		this.post = post;
+	}
+
+	public String getTel() {
+		return tel;
+	}
+
+	public void setTel(String tel) {
+		this.tel = tel;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	public String getCreatedById() {
+		return createdById;
+	}
+
+	public void setCreatedById(String createdById) {
+		this.createdById = createdById;
+	}
+
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public String getCreatedPosId() {
+		return createdPosId;
+	}
+
+	public void setCreatedPosId(String createdPosId) {
+		this.createdPosId = createdPosId;
+	}
+
+	public String getCreatedOrgId() {
+		return createdOrgId;
+	}
+
+	public void setCreatedOrgId(String createdOrgId) {
+		this.createdOrgId = createdOrgId;
+	}
+
+	public String getUpdatedById() {
+		return updatedById;
+	}
+
+	public void setUpdatedById(String updatedById) {
+		this.updatedById = updatedById;
+	}
+
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	public void setSexName(String sexName) {
+		this.sexName = sexName;
+	}
+    
+}

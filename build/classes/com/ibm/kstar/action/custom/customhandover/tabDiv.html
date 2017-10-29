@@ -1,0 +1,34 @@
+<#if (permission["P02HandoverT1PendingItemAdd"]?? && ("${(customHandoverList.handoverStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customHandoverList.handoverStatus)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign addPendingItemURL = "'${ctx}/custom/handover/proc/add.html?id=${(customHandoverList.handoverCode)!}'"   />
+</#if>
+
+<#if (permission["P02HandoverT1PendingItemEdit"]?? && ("${(customHandoverList.handoverStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customHandoverList.handoverStatus)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign editPendingItemURL= "'${ctx}/custom/handover/proc/edit.html'" />
+</#if>
+
+<#if (permission["P02HandoverT1PendingItemDelete"]?? && ("${(customHandoverList.handoverStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customHandoverList.handoverStatus)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign deletePendingItemURL = "'${ctx}/custom/handover/proc/delete.html'"   />
+</#if>
+
+<@form.table id="handoverList" 
+class="col-xs-12"
+height="131px"
+title="${i18n.get('未结事务')}" 
+url = "${ctx}/custom/handover/proc/page.html?id=${(customHandoverList.handoverCode)!}"
+rowNum = "5" 
+addURL = "${addPendingItemURL!}"
+editURL = "${editPendingItemURL!}"
+deleteURL= "${deletePendingItemURL!}" 
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'handoverCode',label:'${i18n.get('交接编码')}',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'businessOppoCode',label:'${i18n.get('商机编号')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'contractCode',label:'${i18n.get('合同编号')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'goingonProc',label:'${i18n.get('未尽事项')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'comment',label:'${i18n.get('详细描述')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'continueBy',label:'${i18n.get('后续工作及对接人')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'finishFlgName',label:'${i18n.get('已完成')}',hidden:false,width:100,sortable:true,align:'center' }
+	
+	]" 
+	>
+</@form.table> 

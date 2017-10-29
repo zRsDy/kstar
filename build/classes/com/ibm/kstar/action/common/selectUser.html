@@ -1,0 +1,140 @@
+<@pui.body>
+<div class="row col-xs-12" style="width: 1000px;margin-right: 0px; margin-left: 0px;" >
+
+<table style="width: 1000px">
+	<tr>
+		<td style="width: 330px">
+			<@form.panel title="${i18n.get('职位树')}" style='height:100'>
+				<@plug.tree 
+				checkbox="false" 
+				id="tree1" 
+				asyncUrl='${ctx}/lov/member/tree.html?groupId=POSITION'
+				onClick=" function(event, treeId, treeNode){
+			  		$('#positionId').val(treeNode.id);
+			  		reload_all_table1();
+			  	}"
+			  	onRightClick="function(event, treeId, treeNode) {
+				   	var treeObj = $.fn.zTree.getZTreeObj(treeId);
+					var nodes = treeObj.getNodes();
+					if (nodes.length>0) {
+						treeObj.cancelSelectedNode();
+					}
+					$('#positionId').val('');
+					reload_all_table1();
+				}"
+				/>
+			</@form.panel>
+		</td>
+	
+	<td style="width: 660px">
+<@form.table id="all_table1"
+	shrinkToFit = 'true'
+	title="${i18n.get('全部数据')}"
+	rowNum = "20"
+	class="row col-xs-6"
+	checkbox = 'true'
+	search='false' 
+	url = "${ctx}/common/userPage.html"
+	colModel = "[
+	  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:true,align:'center' }, 
+	  { name : 'employee.no', label : '${i18n.get('员工号')}', width : 90 ,sortable:true}, 
+	  { name : 'employee.name', label : '${i18n.get('姓名')}', width : 150 ,sortable:true }
+	  ]"
+	 buttons = "[]"
+	 onSelectRow = "function(data,status){
+	 	if(status){
+	 		var flag = true;
+	 		$.each(selectedList,function(i,item){
+	 			if(item && data.id === item.id){
+	 				flag = false;
+	 				return;
+	 			}
+	 		});
+	 		if(flag){
+		 		$('#selected_table1').jqGrid('addRowData',data.id,data);
+		 		selectedList.push(data);
+	 		}
+	 	}else{
+	 		var selectedIds = $('#selected_table1').jqGrid('getDataIDs');
+	 		$.each(selectedIds,function(i,id){
+	 			if(id == data.id){
+	 				$('#selected_table1').jqGrid('delRowData',id);
+	 			}
+	 		})
+	 		$.each(selectedList,function(i,item){
+	 			if(item && data.id === item.id){
+	 				selectedList.splice(i,1);
+	 			}
+	 		});
+	 	}
+	 }"
+	 onComplete = "function(){
+		var selectedIds = $('#selected_table1').jqGrid('getDataIDs');
+	 		$.each(selectedIds,function(i,id){
+	 			$.each(selectedList,function(index,item){
+		 			if(item && id === item.id){
+		 				$('#all_table1').jqGrid('setSelection',id,true);
+		 			}
+	 			});
+	 		})
+	 }"
+	>
+	<input type="hidden" name="positionId" id="positionId" />
+	<div class="col-xs-12">
+		<input type="hidden" id="parentId" name="parentId" />
+		<div class="form-group col-xs-3">
+			<input type="text" id="searchKey" name="searchKey" placeholder='查询关键字' />
+		</div>	
+		<div class="form-group col-xs-2">
+			<button type="submit" class="btn btn-info" > 
+				<i class="icon-search bigger-110"></i>
+				${i18n.get('查询')}
+			</button>
+		</div>
+	</div>
+	
+</@form.table>
+</td>
+<td style="width: 360px">
+
+<@form.table id="selected_table1"
+	shrinkToFit = 'true'
+	title="${i18n.get('已选数据')}"
+	rowNum = "20"
+	class="row col-xs-6"
+	search='false' 
+	data = "[]"
+	datatype = "local"
+	colModel = "[
+	   { name : 'id',    label : 'id', hidden : true , width : 60,sortable:true,align:'center' }, 
+	  { name : 'employee.no', label : '${i18n.get('员工号')}', width : 90 ,sortable:true}, 
+	  { name : 'employee.name', label : '${i18n.get('姓名')}', width : 150 ,sortable:true }
+	  ]"
+	 buttons = "[]"
+	/>
+	</td>
+	</tr>
+</table>
+
+<div class="clearfix form-actions">
+	<div class="col-md-offset-5 col-md-7">
+		<button class="btn btn-info" id="selectOK1" type="button">
+			<i class="icon-ok bigger-110"></i>
+			${i18n.get('选择')}
+		</button>
+		&nbsp; &nbsp; &nbsp;
+		<button class="btn" type="button" onclick="javascript:api.close()">
+			<i class="icon-undo bigger-110"></i>
+			${i18n.get('关闭')}
+		</button>
+	</div>
+</div>
+<script type="text/javascript">
+	var selectedList = [];
+	$('#selectOK1').click(function(){
+		parent.${pickerId}_callback("user",selectedList);
+		api.close();
+	})
+</script>
+</div>
+</@pui.body>

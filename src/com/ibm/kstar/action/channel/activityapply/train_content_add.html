@@ -1,0 +1,47 @@
+<@cui.body2>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1" success="function(){ parent.currentParent.reload_content_2('${(contentInfo.id)!}'); }" class="form-horizontal">	
+			<input id="applyId" type="hidden" value="${(contentInfo.applyId)!}">
+			<div align="center" class="form-group">
+				<table>
+					<tr>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('培训项目 :')}</td>
+						<td width="280px">
+							<@form.input id="trainProject" name="trainProject" style="width:163px;" tip="${i18n.get('培训项目描述说明')}" required="${i18n.get('不能为空')}" value="${(contentInfo.trainProject)!}" />
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('地点 :')}</td>
+						<td width="280px">
+							<@form.input id="activityPlace" name="activityPlace" style="width:163px;" tip="${i18n.get('培训执行地点')}" required="${i18n.get('不能为空')}" value="${(contentInfo.activityPlace)!}" />
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('负责人 :')}</td>
+						<td width="280px">
+							<@form.input id="responsiblePerson" name="responsiblePerson" style="width:163px;" tip="${i18n.get('培训项目的负责人')}" required="${i18n.get('不能为空')}" value="${(contentInfo.responsiblePerson)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('内容描述 :')}</td>
+						<td colspan="5">
+							<@form.textArea id="contentDesc" style="width:923px;" name="contentDesc" tip="${i18n.get('活动内容描述说明')}" required="${i18n.get('不能为空')}" value="${(contentInfo.contentDesc)!}" />
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<#if !contentInfo?? || !contentInfo.id?? || statusEdit>
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					</#if>
+					<button class="btn" type="button" onclick="javascript:frameElement.api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+	</@form.panel>
+</@cui.body2>

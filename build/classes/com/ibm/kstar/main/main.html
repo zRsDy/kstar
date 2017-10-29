@@ -1,0 +1,130 @@
+<@ui.body>
+
+<style>
+
+    #tabs-main{
+        border: 0px solid #c5d0dc;
+    } 
+    .page-content {
+	    padding: 0px;
+	}
+</style>
+
+<script type="text/javascript">
+
+    $(function(){
+        $('#tabs').tabs();
+    });
+    var currentParent;
+    var currentParent2;
+    var currentDatas;
+    var currentDatas1;
+    var currentDatas2;
+
+    function getWidth(){
+        return document.body.scrollWidth || document.documentElement.scrollWidth;
+    }
+
+    function dialog(title,url,win){
+        currentParent = win;
+        currentParent2  = win;
+        currentDatas = null;
+        currentDatas1 = null;
+        currentDatas2 = null;
+        var dialog = $.dialog({
+            title: title,
+            width: document.body.scrollWidth || document.documentElement.scrollWidth,
+            height: document.body.scrollHeight || document.documentElement.scrollHeight,
+            lock: false,
+            content:'url:' + url,
+            frm:false,
+            autoOpen:false,
+            fixed:true
+        });
+        $('.ui_max').trigger('click');
+    };
+
+
+    function dialog2(title,url,datas,win,width,height){
+        currentParent = win;
+        currentDatas = datas;
+        currentDatas1 = null;
+        currentDatas2 = null;
+        var dialog = $.dialog({
+            title: title,
+            width: width?width:1000 ,
+            height: height?height:500,
+            lock: true,
+            content:'url:' + url,
+            frm:false,
+            fixed:true,
+            left:"30%",
+            top:"20%"
+        });
+    };
+
+    function confirm(title,fun){
+        bootbox.confirm(title,fun);
+    }
+
+    function setIframeHeight(iframe) {
+        if (iframe) {
+            var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+// 			if (this.document.body) {
+            iframe.height = (this.document.documentElement.scrollHeight || this.document.body.scrollHeight) - 20;
+            iframe.height = iframe.height - document.getElementById('navbar').scrollHeight;
+            iframe.height = iframe.height - document.getElementById('navTabs').scrollHeight;
+// 			}
+        }
+    };
+
+    function addTab(title, url) {
+        var code = encodeURI(title);
+        var reg=new RegExp("%","g");
+        code = code.replace(reg,"");
+        //判断是否已经存在，存在则找出位置并选中
+        var p = -1;
+        var list = $("#navTabs li");
+        $.each(list, function(i, e) {
+            if (e.id == 'tab_li_' + code) {
+                p = i;
+            }
+        })
+        if (p > -1) {
+            $('#tabs').tabs("option", "active", p);
+            $('#tab_div_' + code).html( "<iframe onload='setIframeHeight(this)' frameBorder='0' width='100%' src='" + url + "'></iframe>")
+        } else {
+            var li = "<li id='tab_li_"+code+"' ><a href='#tab_div_"+code+"' >" + title + " &nbsp; <img src='${ctx}/assets/img2/00_03.png' style='margin-top: -4px;height: 8px;cursor:pointer;' onclick=closeTab('" + code+ "') />  </li>";
+            var div = "<div style='border: 0px solid #c5d0dc;padding: 0px 0px;' id='tab_div_"+code+"'><iframe onload='setIframeHeight(this)' frameBorder=0  width='100%' src='" + url + "'></iframe></div>";
+            $('#navTabs').append(li);
+            $('#tabs').append(div);
+            $('#tabs').tabs("refresh")
+            var list = $("#navTabs li");
+            $('#tabs').tabs("option", "active", list.length - 1);
+        }
+    }
+
+    function closeTab(title) {
+        var code = encodeURI(title);
+        var reg=new RegExp("%","g");
+        code = code.replace(reg,"");
+        $('#tab_li_' + code).remove();
+        $('#tab_div_' + code).remove();
+        var list = $("#navTabs li");
+        $('#tabs').tabs('refresh');
+        $('#tabs').tabs("option", "active", list.length - 1);
+    }
+</script>
+
+<div class="col-xs-12" style="padding-left: 1px;padding-right: 1px">
+    <div id="tabs">
+        <ul id="navTabs" style="padding-left: 10px;">
+            <li><a href="#tabs-main">${i18n.get("mainPage")}</a></li>
+        </ul>
+        <div id="tabs-main">
+
+
+        </div>
+    </div>
+</div>
+</@ui.body>

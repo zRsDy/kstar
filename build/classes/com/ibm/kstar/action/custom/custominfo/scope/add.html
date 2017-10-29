@@ -1,0 +1,53 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="t1" success="function(){ parent.currentParent.reload_scope(); }" class="form-horizontal" >
+		<input id="customId" name="customId" type="hidden"  value="${(customDistrScope.customId)!}">
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" >${i18n.get('产品类别 ')} : </label>
+			<@form.select style="width: 147px;"
+				id="distrScope" name="distrScope" 
+				code="REQUIRECLASS" 
+				required="${i18n.get('不能为空')}" 
+				value ="${(customDistrScope.distrScope)!}"
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > ${i18n.get('允许经销')} : </label>
+			<@form.select  style="width: 147px;"
+				id="distrAllow" name="distrAllow" 
+				code="COMMONYN" 
+				required="${i18n.get('不能为空')}"
+				value ="${(customDistrScope.distrAllow)!}"
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > ${i18n.get('备注')} : </label>
+			<@form.input
+			id="distrComment"  
+			name="distrComment" 
+			placeholder="" 
+			tip="" 
+			value="${(customDistrScope.distrComment)!}" 
+			/>
+		</div>
+		
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+		<div class="clearfix form-actions">
+			<div class="col-md-offset-5 col-md-7">
+				<button class="btn btn-info submit" type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				&nbsp; &nbsp; &nbsp;
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+	</@form.form>
+	</@form.panel>
+</@pui.body>
+</#escape>

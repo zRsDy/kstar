@@ -1,0 +1,36 @@
+<@form.table id="t6" shrinkToFit="true" 
+	class="col-xs-12"
+	title="${i18n.get('衍生品')}" 
+	url = "${ctx}/product/deriveList.html?fatherProCode=${id}" 
+	rowNum = "5" 
+	addURL = "" 
+	search='true'
+	editURL= "" 
+	deleteURL = "" 
+	colModel = "[
+		{name:'id',label:'${i18n.get('产品ID')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'productCode',label:'${i18n.get('产品编码')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'productName',label:'${i18n.get('产品名称')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'proEName',label:'${i18n.get('英文名')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'proModel',label:'${i18n.get('产品型号')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'lineBean.proSeries',label:'${i18n.get('产品系列')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'proDesc',label:'${i18n.get('产品描述')}',hidden:false,width:240,sortable:false,align:'center' },
+        {name:'customInfo.customFullName',label:'${i18n.get('客户名称')}',hidden:false,width:100,sortable:false,align:'center' },
+        {name:'clientCategory',label:'${i18n.get('客户型号')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'proBrand',label:'${i18n.get('品牌')}',hidden:false,width:60,sortable:false,align:'center' },
+		{name:'unit',label:'${i18n.get('单位')}',hidden:true,width:60,sortable:false,align:'center' },
+		{name:'unitName',label:'${i18n.get('单位')}',hidden:false,width:50,sortable:false,align:'center' },
+		{name:'demandCode',label:'${i18n.get('产品需求单编号')}',hidden:false,width:100,sortable:false,align:'center' }
+		]" 	 
+		buttons = "[]" > 
+	<div class="col-xs-12">
+		<div class="form-group col-xs-2" align="right">${i18n.get('产品编码 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="productCode" size="30" />
+		</div>	
+		<div class="form-group col-xs-2" align="right">${i18n.get('产品名称 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="productName" size="30" />
+		</div>
+	</div>
+	</@form.table> 

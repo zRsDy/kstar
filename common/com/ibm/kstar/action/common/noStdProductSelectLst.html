@@ -1,0 +1,71 @@
+<@pui.body>
+	<div class="col-xs-12">
+	<@form.table id="noStdPrdLst"
+		class="col-xs-12"
+		title="${i18n.get('产品列表')}"
+		checkbox="true"
+		url = "${ctx}/common/product/noStdProductSelectLstPage.html"
+		rowNum = "20"
+		colModel = "[
+		  	{ name : 'id',    label : 'id', hidden : true, width : 60,sortable:false,align:'center' }, 
+		  	{ name : 'proCode', label : '${i18n.get('产品编码')}', width : 110 ,sortable:false },
+		  	{ name : 'proName', label : '${i18n.get('产品名称')}', width : 150 ,sortable:false },
+		  	{ name : 'proModel', label : '${i18n.get('产品型号')}', width : 120 ,sortable:false },
+		  	{name : 'materielCode', label : '${i18n.get('物料号')}', hidden : true, width : 90 ,sortable:false },
+		  	{ name : 'proBrand',label:'${i18n.get('品牌')}',hidden:false,width:100,sortable:false,align:'center' },
+		  	{name : 'crmCategory', label : '${i18n.get('CRM产品类别')}', hidden : true, width : 90 ,sortable:false },
+		  	{name : 'crmCategoryLable', label : '${i18n.get('CRM产品类别')}', width : 90 ,sortable:false },
+		  	{name:'erpCategory',label:'${i18n.get('ERP产品类别')}',hidden:false,width:80,sortable:false,align:'center' },
+			{name:'publishStatus',label:'${i18n.get('发布状态')}',hidden:false,width:60,sortable:false,align:'center' },
+			{name:'priceStatus',label:'${i18n.get('订价状态')}',hidden:false,width:60,sortable:false,align:'center' },
+			{name:'saleStatus',label:'${i18n.get('转销状态')}',hidden:false,width:60,sortable:false,align:'center' },
+			{name:'cproCategory',label:'${i18n.get('产品分类')}',hidden:false,width:150,sortable:false,align:'center' },
+			{name:'cproType',label:'${i18n.get('产品类别')}',hidden:false,width:150,sortable:false,align:'center' },
+			{name:'proSeries',label:'${i18n.get('产品系列')}',hidden:false,width:150,sortable:false,align:'center' },
+		  	{name:'clientCategory',label:'${i18n.get('客户型号')}',hidden:false,width:150,sortable:false,align:'center' },
+			{name:'proDesc',label:'${i18n.get('产品描述')}',hidden:false,width:150,sortable:false,align:'center' }
+		  ]"
+		  search = "false"
+		 buttons = "[
+		 	{
+				id:'selectButton',
+				label : '${i18n.get('选择')}',
+				icon : 'icon-save',
+				own : 'true',
+				handler : function(e,rowData){
+					var selectedData = [];
+					var ids = $('#noStdPrdLst').jqGrid('getGridParam', 'selarrrow');
+					$.each(ids,function(i,id){
+						var line = $('#noStdPrdLst').jqGrid('getRowData',id);
+						selectedData.push(line);
+					}) 
+					parent.currentParent.${pickerId}_callback(selectedData);
+					api.close();
+				}
+			},
+			{
+				id:'close_t1',
+				label : '${i18n.get('关闭')}',
+				icon : 'icon-trash',
+				own : 'true',
+				handler : function(e,rowData){
+					frameElement.api.close();
+				}
+			}
+		 ]"
+		>
+			 <div class="col-xs-12" style="padding-top: 10px;">
+				<div class="form-group col-xs-3">
+					<input type="text" id="searchKey" name="searchKey" placeholder='查询关键字' />
+				</div>	
+				<div class="form-group col-xs-2" style="padding-left: 30px;">
+					<button type="submit" class="btn btn-info" > 
+						<i class="icon-search bigger-110"></i>
+						${i18n.get('查询')}
+					</button>
+				</div>
+			</div>
+	</@form.table>
+	</div>
+</@pui.body>
+

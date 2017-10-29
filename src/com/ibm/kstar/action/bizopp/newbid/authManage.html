@@ -1,0 +1,33 @@
+<#escape x as x?html>
+
+<#if permission["P03BidAuthT1OrgSave"]?? >
+	<#assign addDemandURL = "'${ctx}/newbid/auth/add.html?bidId=${(entity.id)!}'"  />
+</#if>
+
+<#if permission["P03BidAuthT1OrgEdit"]?? >
+	<#assign editDemandURL= "'${ctx}/newbid/auth/edit.html'"   />	
+</#if>
+
+<#if permission["P03BidAuthT1OrgDelete"]?? >
+	<#assign deleteDemandURL = "'${ctx}/newbid/auth/delete.html'"    />	
+</#if>
+
+<@form.table id="authTable" 
+class="col-xs-12"
+title="${i18n.get('授权单位')}" 
+height="131px"
+url = "${ctx}/newbid/auth/page.html?bidId=${(entity.id)!}"
+rowNum = "5" 
+addURL = "${addDemandURL!}"
+editURL = "${editDemandURL!}"
+deleteURL= "${deleteDemandURL!}" 
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+	{name:'integrator',label:'${i18n.get('授权单位')}',hidden:false,width:300,sortable:false,align:'center' },
+	{name:'address',label:'${i18n.get('地址')}',hidden:false,width:300,sortable:false,align:'center' }
+	]" 
+	>
+</@form.table>
+
+
+</#escape>

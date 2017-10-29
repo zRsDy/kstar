@@ -1,0 +1,25 @@
+
+	<@form.table id="chgattachment" 
+	class="col-xs-12"
+	title="${i18n.get('附件列表')}" 
+	url = "${ctx}/change/attachment/page.html?contrId=${contrId}" 
+	rowNum = "10" 
+	addURL = "'${ctx}/change/attachment/add.html?quotCode=${contrId}'" 
+	editURL= "'${ctx}/change/attachment/edit.html'" 
+	deleteURL = "'${ctx}/change/attachment/delete.html'" 
+	colModel = "[
+		{name:'id',label:'${i18n.get('文档ID')}',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'docNm',label:'${i18n.get('文档名称')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'docTp',label:'${i18n.get('文档类型')}',hidden:true,width:200,sortable:true,align:'center' },
+		{name:'docTpDesc',label:'${i18n.get('文档类型')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'updr',label:'${i18n.get('上传人')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'updDt',label:'${i18n.get('上传时间')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'cNotes',label:'${i18n.get('备注')}',hidden:false,width:200,sortable:true,align:'center' }
+		
+		]" 
+		onSelectRow= "function(selectedData){
+		}"
+		buttons = "[]" > 
+	</@form.table> 
+	
+

@@ -1,0 +1,49 @@
+<@cui.body2>
+<style type="text/css">
+	table {
+	border-collapse: collapse;
+	border-color: #ff0000;
+	}
+	
+	table td {
+		padding:1px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	select {
+		width: 180px;
+	}
+</style>
+<div class="col-xs-12">
+	<@form.table id="reportOverdue" 
+		class="col-xs-12"
+		title="${i18n.get('借货未核销')}"
+		url = "${ctx}/report/unverificationLoanPage.html?orgId=${orgId}&positionId=${positionId}&employeeId=${employeeId}&reportType=${reportType}"
+		rowNum = "20" 
+		colModel = "[
+			 	{name : 'id', label:'id', width : 20, editable : false, hidden : true}, 
+			 	{name : 'contrNo', label:'${i18n.get('借货编号')}', align:'center', width : 150, sortable:false, editable:false},
+			  	{name : 'submitTime', label:'${i18n.get('借货日期')}', width : 100, editable:false, align:'center',sortable:true,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+			  	{name : 'custName', label:'${i18n.get('客户名称')}', align:'center', width : 200	, sortable:false, editable:false},
+			  	{name : 'total', label:'${i18n.get('借货总金额')}', align:'center' , width : 120, editable : false},
+			  	{name : 'marketDept', label:'${i18n.get('营销部门')}',align:'center', width : 120, editable : false},
+			  	{name : 'org', label:'${i18n.get('销售部门')}', align:'center',width : 120, editable:false},
+			  	{name : 'creator', label:'${i18n.get('我司借货人')}', width : 100, editable:false, align:'center'},
+			  	{name : 'contrStat',label:'${i18n.get('审批状态')}',hidden:false,width:150,sortable:true,align:'center' },
+				{name : 'veri_status', label:'${i18n.get('核销状态')}', width : 80, editable:false ,align:'center',sortable:true,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+				{name : 'lineNum', label:'${i18n.get('行号')}', width : 60, editable:false, align:'center',sortable:true},
+			  	{name : 'proModel', label:'${i18n.get('产品型号')}', width : 150, editable:false, align:'center',sortable:true},
+			  	{name : 'amount', label:'${i18n.get('借货数量')}', width : 60, editable:false, align:'center',sortable:false},
+			  	{name : 'veriedNum', label:'${i18n.get('已核销数量')}', width : 60, editable:false, align:'center',sortable:false},
+			  	{name : 'unveri_num', label:'${i18n.get('未核销数量')}', width : 60, editable:false, align:'center',sortable:true},
+			  	{name : 'prdPrc', label:'${i18n.get('单价')}', width : 100, editable:false, align:'center',sortable:false},
+			]" 
+			> 
+		</@form.table>
+</div>
+</@cui.body2>

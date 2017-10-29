@@ -1,0 +1,140 @@
+<@pui.body>
+<style type="text/css">
+	table td {
+		padding:1px;
+		border: solid #ededed;
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	select {
+		width: 180px;
+	}
+</style>
+
+	<div class="col-xs-12" >
+		<input type="hidden" id="id" name="id" value="${id}" />
+		<input type="hidden" id="contractId" name="contractId" value="${contractId}" />
+		<@form.table id="contractReceiptsItem" 
+			class="col-xs-12" 
+			title="${i18n.get('收款记录')}" 
+			url = "${ctx}/receipts/contractReceiptsItem.html?id=${id}&contractId=${contractId}" 
+			rowNum = "10" 
+			search = "false"
+			colModel = "[ 
+			  { name : 'id', label : 'prjlstID',hidden : true, width : 30 ,sortable:false},
+			  { name : 'itemId', label : 'itemId',hidden : true, width : 30 ,sortable:false},
+			  { name : 'lineNum', label : '${i18n.get('行号')}', hidden : false,width : 50 ,sortable:false,align:'center' },
+			  { name : 'proId', label : 'prdId', hidden : true , sortable:false},
+			  { name : 'prdNm', label : '${i18n.get('产品名称')}', width:100, sortable:false,hidden : false},
+			  { name : 'prdCtg', label : '${i18n.get('CRM产品分类')}',width:100, sortable:false ,editable : false,align:'center' },
+			  { name : 'prdTyp', label : '${i18n.get('产品型号')}',width:120, sortable:false ,editable : false },
+			  { name : 'materCode', label : '${i18n.get('物料号')}',width:100, hidden : false , sortable:false ,editable : false,align:'center' },
+			  { name : 'prdUnt', label : '${i18n.get('单位')}', width : 50 ,sortable:false ,editable : false },
+			  { name : 'prdSprc', label : '${i18n.get('公开价格')}',hidden : true , width : 80 ,align:'right',sortable:false  ,editable : false },
+			  { name : 'goldPrc', label : '${i18n.get('金牌价格')}',hidden : true , width : 80 ,align:'right',sortable:false ,editable : false },
+			  { name : 'approveAmt', label : '${i18n.get('批复金额')}', hidden : true ,align:'right', width : 120 ,sortable:false ,editable : false  },
+			  { name : 'prdPrc', label : '${i18n.get('合同价格')}', width : 80 ,align:'right',sortable:false ,editable : false },
+			  { name : 'amt', label : '${i18n.get('数量')}', width : 80 ,align:'right',sortable:false,editable : false},
+			  { name : 'ttlUnt', label : '${i18n.get('单品总金额')}', width : 100 ,align:'right',sortable:false ,editable : false, formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''}  },
+			  { name : 'quantity', label : '${i18n.get('已核销数量')}', width : 100 ,align:'right',sortable:false ,editable : false, formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''}  },
+			  { name : 'quantityA', label : '${i18n.get('本次核销数量')}', width : 100 ,align:'right',sortable:false ,editable : true, formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''}  },
+			  { name : 'quantityB', label : '${i18n.get('未核销数量')}', width : 100 ,align:'right',sortable:false ,editable : false, formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''}  },
+			  { name : 'veriedNum', label : '${i18n.get('核销数量')}',hidden : true , width : 80 ,align:'right',sortable:false,editable : false },
+			  { name : 'notVeriNum', label : '${i18n.get('可下单数量')}',hidden : true , width : 80 ,align:'right',sortable:false,editable : false},
+			  { name : 'ordNum', label : '${i18n.get('下单数量')}', hidden : true, width : 50 ,sortable:false,editable : false },
+			  { name : 'ordNo', label : '${i18n.get('订单编号')}', hidden : true, width : 80 ,sortable:false ,editable : false },
+			  { name : 'applyDiscount', label : '${i18n.get('申请折扣(%)')}',hidden : true , width : 80 ,sortable:false  ,editable : false },
+			  { name : 'applyPrc', label : '${i18n.get('申请价格')}', hidden : true ,width : 120 ,align:'right',sortable:false ,editable : false },
+			  { name : 'applyAmt', label : '${i18n.get('申请金额')}', hidden : true ,align:'right', width : 120 ,sortable:false ,editable : false },
+			  { name : 'approveDiscount', label : '${i18n.get('批复折扣(%)')}',hidden : true , width : 80 ,align:'right',sortable:false  ,editable : false },
+			  { name : 'approvePrc', label : '${i18n.get('批复价格')}', hidden : true ,width : 100 ,align:'right',sortable:false ,editable : false },
+			  { name : 'notes', label : '${i18n.get('备注')}', width : 150 ,sortable:false,editable : true }, 
+			  { name : 'proDesc', label : '${i18n.get('产品描述')}', width : 350 ,sortable:false }
+			]" 
+				
+			onSelectRow = "function(data,status){
+			}"
+			ondblClickRow= "function(rowid){
+				$('#contractReceiptsItem input').bind('input',function(event){
+					var name = $(this).attr('name');
+					var quantity = parseFloat($(this).val());
+					if(name == 'quantityA'){
+						var rowId = $('#contractReceiptsItem').jqGrid('getGridParam','selrow');
+						var data = $('#contractReceiptsItem').jqGrid('getRowData',rowId);
+						var quantityB = parseFloat(data.quantityB);
+						if(quantity > quantityB){
+							$('#contractReceiptsItem').jqGrid('setRowData', rowId, { 'quantityA' : quantityB});
+						}
+					}
+				})
+			}"
+			onComplete = "function() { 
+				$('#receiptsProductListFrom').setGridWidth($(window).width()-60);
+			}"
+			
+			buttons = "[
+				{
+					id:'returnrReceipts',
+					label : '${i18n.get('保存')}',
+					icon : 'icon-save',
+					own : true,
+					handler : function(e,rowData){
+						
+						contractReceiptsItemFun(rowData);
+					}
+				}
+			]" > 
+		</@form.table> 
+		<br>
+		<div id="info">
+			<@plug.tabs tabMain=tabMain></@plug.tabs>
+		</div>
+	</div>
+	
+<script type="text/javascript">
+
+function contractReceiptsItemFun(rowData){
+	var ids = $('#contractReceiptsItem').jqGrid('getDataIDs');
+	var datas = [];
+	$.each(ids,function(i,id){
+		var data = $('#contractReceiptsItem').jqGrid('getRowData',id);
+		datas.push({
+			id : data.itemId,
+			detailId : '${id}',
+			contrId : '${contractId}',
+			contrIdLineId : data.id,
+			productId : data.proId,
+			quantityA : data.quantityA,
+			notes : data.notes,
+			price : data.prdPrc
+		});
+	});
+	var obj = {'items':datas};
+	debugger;
+	$.ajax({
+		type:'post',
+		url : '${ctx}/receipts/contractReceiptsItem.html?receiptsId=${receiptsId}',  
+		dataType : 'json',
+		contentType:"application/json;charset=utf-8",
+		data: JSON.stringify(obj),
+		success : function(result) {
+			try{parent.currentParent.reload_contractReceiptListForm();}catch(e){}
+			reload_contractReceiptsItem();
+			alert('${i18n.get('操作成功！')}'); 
+		},
+		error : function(e) {
+			var msg = eval("(" + e.responseText + ")");
+            if (msg) {
+                alert(msg.message);
+            } else {
+                alert("${i18n.get('操作失败，请联系管理员')}");
+            }
+		}
+	});
+	
+	
+}
+
+</script>
+</@pui.body>

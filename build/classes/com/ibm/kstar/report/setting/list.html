@@ -1,0 +1,37 @@
+<@pui.body>
+
+<div class="row">
+<div class="col-xs-12">
+		<@form.table id="t1"
+		class="col-xs-12"
+		title="${i18n.get('排名组列表')}"
+		shrinkToFit = 'true'
+		url = "${ctx}/report/param/page.html"
+		rowNum = "20"
+		addURL = "'${ctx}/report/param/add.html'"
+		editURL = "'${ctx}/report/param/edit.html'"
+		deleteURL = "'${ctx}/report/param/delete.html'"
+		colModel = "[
+		  { name : 'id', label : 'id', hidden : true , width : 0,sortable:false,align:'center' }, 
+		  { name : 'name', label : '${i18n.get('名称')}', width : 300 ,sortable:false }, 
+		  { name : 'remark', label : '${i18n.get('说明')}',sortable:false} 
+		  ]"
+	 buttons = "[{
+	  			id:'memberList',
+	  			label : '${i18n.get('配置组')}',
+	  			icon : 'icon-save',
+	  			own : true,
+	  			handler : function(e,rowData){
+	  				if(rowData){
+	  					parent.dialog('${i18n.get('配置组')}','${ctx}/report/param/config.html?headerId='+rowData.id,window);
+	  				}else{
+	  					alert('${i18n.get('请选择数据')}');
+	  				}
+	  			} 
+	  		}]"
+	>
+	
+	</@form.table>
+		</div>
+</div>
+</@pui.body>

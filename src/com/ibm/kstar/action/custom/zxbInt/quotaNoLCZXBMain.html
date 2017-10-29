@@ -1,0 +1,698 @@
+<@pui.body>
+	
+    <style type="text/css">
+        input {
+            width: 180px;
+        }
+        select {
+            width: 180px;
+        }
+    </style>
+    
+    <@form.panel title="${i18n.get('主信息')}">
+        <@form.form id="noLcInfor" success="function(result){
+        				alert(result);
+						parent.currentParent2.reload_tableQuotaNoLCList();
+					 }" class="form-horizontal">
+            <div class="form-group">
+                <div class="col-md-offset-10 col-md-4">
+                    <button class="btn btn-info submit" id="save" type="button">
+                        <i class="bigger-110"></i>
+                        	${i18n.get('保存')}
+                    </button>
+                    <button class="btn btn-info submit" id="update" type="button">
+                        <i class="bigger-110"></i>
+                      	${i18n.get('提交变更')}  
+                    </button>
+                    <button class="btn" type="button" onclick="javascript:api.close()">
+                        <i class="icon-undo bigger-110"></i>
+                       	${i18n.get('关闭')} 
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('申请主要信息')}</p>
+                <input id="selectedId" type="hidden" value="${(noLcInfor.id)!}">
+                <table>
+                    <!-- line 1 start -->
+                    <tr>
+                        <td align="right">
+                            <strong style="color: red;">*</strong>
+                            <label class="no-padding-right">${i18n.get('流水号')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="corpSerialNo" name="corpSerialNo" readonly="true" required="${i18n.get('不能为空')}" value="${(noLcInfor.corpSerialNo)!}"/>
+                        </td>
+                        <td align="right">
+                        	<strong style="color: red;">*</strong>
+                            <label class="no-padding-right">${i18n.get('企业标识')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="clientNo" name="clientNo" value="${(noLcInfor.clientNo)!}"/>
+                        </td>
+                        <td align="right">
+                            <strong style="color: red;">*</strong>
+                            <label class="no-padding-right">${i18n.get('保险单号')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="policyNo" name="policyNo" required="${i18n.get('请输入保险单号')}" value="${(noLcInfor.policyNo)!}"/>
+                        </td>
+                        <td align="right">
+                        	<strong style="color: red;">*</strong>
+                            <label class="no-padding-right">${i18n.get('客户代码 ')}:</label>
+                        </td>
+                        <td>
+                            <@form.autocomplete  
+                            	id="c_customer_id"
+                            	name="c_customer_id" 
+                            	required="${i18n.get('请选择客户代码')} "
+				            	idKey='id'
+				            	formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+				            	url="function(){ return '${ctx}/lovcustom/autocomplete_custom.html'; }"
+								value="{id:'${(noLcInfor.c_customer_id)!}', customFullName:'${(noLcInfor.buyerChnName)!}', corpRegAddress:'${(noLcInfor.buyerChnAddress)!}', customCode:'${(noLcInfor.sinosureBuyerNo)!}'}"
+								onSelect="function(data){
+				            		if( data.id !== null && data.id !== '' && data.id !== undefined){
+				            			$('#sinosureBuyerNo').val(data.customCode);
+				            			$('#buyerEngName').val(data.customFullName);
+				            			$('#buyerChnName').val(data.customFullName);
+				            			$('#buyerEngAddress').val(data.corpRegAddress);
+				            			$('#buyerChnAddress').val(data.corpRegAddress);
+				     				}
+			            		}"
+							/>
+							<input id="sinosureBuyerNo"  name="sinosureBuyerNo" type="hidden" value="${(noLcInfor.sinosureBuyerNo)!}"/>
+						</td>
+                    </tr>
+                    <!-- line 1 end -->
+                    <!-- line 2 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('买方中文名称')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="buyerChnName" name="buyerChnName" value="${(noLcInfor.buyerChnName)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('买方英文名称')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="buyerEngName" name="buyerEngName" value="${(noLcInfor.buyerEngName)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('国家代码 ')}:</label>
+                        </td>
+                        <td>
+                        	<@form.select id="buyerCountryCode" name="buyerCountryCode" code="ZXBCNTRYCODE" idKey="code" value="${(noLcInfor.buyerCountryCode)!}"/>
+                        </td>
+                        <td align="right">
+                            <strong style="color: red;">*</strong>
+                            <label class="no-padding-right">${i18n.get('买方代码 ')}:</label>
+                        </td>
+                        <td>
+                            <@form.input id="corpBuyerNo" name="corpBuyerNo" required="${i18n.get('不能为空！')}" value="${(noLcInfor.corpBuyerNo)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 2 end -->
+                    <!-- line 3 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('中文地址 ')}:</label>
+                        </td>
+                        <td>
+                            <@form.input id="buyerChnAddress" name="buyerChnAddress" value="${(noLcInfor.buyerChnAddress)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('英文地址')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="buyerEngAddress" name="buyerEngAddress" value="${(noLcInfor.buyerEngAddress)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('注册号')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="buyerRegNo" name="buyerRegNo" value="${(noLcInfor.buyerRegNo)!}"/>
+                        </td>
+                         <td align="right">
+                            <label class="no-padding-right">${i18n.get('注册地址')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="buyer_reg_address" name="buyer_reg_address" value="${(noLcInfor.buyer_reg_address)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 3 end -->
+                    <!-- line 4 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('买方电话')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="buyerTel" name="buyerTel" value="${(noLcInfor.buyerTel)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('买方传真')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="buyerFax" name="buyerFax" value="${(noLcInfor.buyerFax)!}"/>
+                        </td>
+                        <td align="right">
+                        	<strong style="color: red;">*</strong>
+                            <label class="no-padding-right">${i18n.get('合同支付方式')} :</label>
+                        </td>
+                        <td>
+                            <@form.select id="contractPayMode" name="contractPayMode" code="ZXBPAYMODEL" idKey="code" value="${(noLcInfor.contractPayMode)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('业务员名称')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="employeeName" name="employeeName" value="${(noLcInfor.employeeName)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 4 end -->
+                    <!-- line 5 start -->
+                    <tr>
+                        <td align="right">
+                        	<strong style="color: red;">*</strong>
+                            <label class="no-padding-right">${i18n.get('申请期限(天)')}:</label>
+                        </td>
+                        <td>
+                            <@form.input id="payTermApply" name="payTermApply" value="${(noLcInfor.payTermApply)!}"/>
+                        </td>
+                        <td align="right">
+                        	<strong style="color: red;">*</strong>
+                            <label class="no-padding-right">${i18n.get('申请额度(USD)')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="quotaSumApply" name="quotaSumApply" value="${(noLcInfor.quotaSumApply)!}"/>
+                        </td>
+                        <td align="right">
+                        	<strong style="color: red;">*</strong>
+                            <label class="no-padding-right">${i18n.get('当前订单未出货金额(USD')}) :</label>
+                        </td>
+                        <td>
+                            <@form.input id="orderSum" name="orderSum" value="${(noLcInfor.orderSum)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('当前应收余额(USD)')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="armSum" name="armSum" value="${(noLcInfor.armSum)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 5 end -->
+                    <!-- line 6 start -->
+                    <tr>
+                        <td align="right">
+                        	<strong style="color: red;">*</strong>
+                            <label class="no-padding-right">${i18n.get('销售商品类别 ')}:</label>
+                        </td>
+                        <td>
+                            <@form.select id="tradeNameCode" name="tradeNameCode" code="ZXBPRODUCTCODE" idKey="code" value="${(noLcInfor.tradeNameCode)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('其它销售商品名称')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="tradeElseName" name="tradeElseName" value="${(noLcInfor.tradeElseName)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('贸易术语')} :</label>
+                        </td>
+                        <td>
+                            <@form.select id="tradeTerms" name="tradeTerms" code="ZXBTRADETERMS" idKey="code" value="${(noLcInfor.tradeTerms)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('其他贸易术语')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="tradeElseTerms" name="tradeElseTerms" value="${(noLcInfor.tradeElseTerms)!}"/>
+                      	</td>
+                    </tr>
+                    <!-- line 6 end -->
+                    <!-- line 7 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('未逾期应收款(USD')}) :</label>
+                        </td>
+                        <td>
+                            <@form.input id="buyerPayBehave1" name="buyerPayBehave1" value="${(noLcInfor.buyerPayBehave1)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('逾期30天应收款(USD)')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="buyerPayBehave2" name="buyerPayBehave2" value="${(noLcInfor.buyerPayBehave2)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('逾期31-60天应收款(USD)')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="buyerPayBehave3" name="buyerPayBehave3" value="${(noLcInfor.buyerPayBehave3)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('逾期60天以上应收款(USD)')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="buyerPayBehave4" name="buyerPayBehave4" value="${(noLcInfor.buyerPayBehave4)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 7 end -->
+                    <!-- line 8 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('逾期原因代码 ')}:</label>
+                        </td>
+                        <td>
+                            <@form.input id="buyerOweReasonCode" name="buyerOweReasonCode" value="${(noLcInfor.buyerOweReasonCode)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('保存')}:</label>
+                        </td>
+                        <td>
+                            <@form.input id="buyerOweElseReason" name="buyerOweElseReason" value="${(noLcInfor.buyerOweElseReason)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('其他说明 ')}:</label>
+                        </td>
+                        <td>
+                            <@form.input id="remark" name="remark" value="${(noLcInfor.remark)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('是否发起买家资信调查 ')}:</label>
+                        </td>
+                        <td>
+                            <@form.select id="ifapplycredit" name="ifapplycredit" code="NY" idKey="code" value="${(noLcInfor.ifapplycredit)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 8 end -->
+                    <!-- line 9 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('申请人')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="applicant" name="applicant" value="${(noLcInfor.applicant)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('申请时间')} :</label>
+                        </td>
+                        <td>
+                            <@form.date id="applyTime" name="applyTime" value="${(noLcInfor.applyTime?date)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('附件个数')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="filenum" name="filenum" readonly="true" value="${(noLcInfor.filenum)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('是否与保单出运前约定一致')} :</label>
+                        </td>
+                        <td>
+                            <@form.select id="ifsamewithpolicy" name="ifsamewithpolicy" code="NY" idKey="code" value="${(noLcInfor.ifsamewithpolicy)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 9 end -->
+                    <!-- line 10 begin -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('出运前信用期限')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="precreditterm" name="precreditterm" value="${(noLcInfor.precreditterm)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('出运后信用期限')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="aftercreditterm" name="aftercreditterm" value="${(noLcInfor.aftercreditterm)!}"/>
+                        </td>
+                        <td align="right">
+                        	<strong style="color: red;">*</strong>
+                            <label class="no-padding-right">${i18n.get('在本信用限额项下是否有贸易融资需求')} :</label>
+                        </td align="left">
+                        <td >
+                            <@form.select id="ifhavetradefinancing" name="ifhavetradefinancing" code="NY" idKey="code" value="${(noLcInfor.ifhavetradefinancing)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('预留字段1')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="item1" name="item1" value="${(noLcInfor.item1)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 10 end -->
+
+                    <!-- line 11 begin -->
+                    <tr>
+                        <td colspan="3" align="right">
+                        	<strong style="color: red;">*</strong>
+                            <label class="no-padding-right">${i18n.get('被保险人及共保人、关联公司、代理人项下是否与买方存在关联关系')} :</label>
+                        </td>
+                        <td>
+                            <@form.select id="ifhaverelation" name="ifhaverelation" code="NY" idKey="code" value="${(noLcInfor.ifhaverelation)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('具体关联情况')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="relationdetail" name="relationdetail" value="${(noLcInfor.relationdetail)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('预留字段2 ')}:</label>
+                        </td>
+                        <td>
+                            <@form.input id="item1" name="item2" value="${(noLcInfor.item2)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 11 end -->
+                    <!-- line 12 begin -->
+                    <tr>
+                        <td colspan="3" align="right">
+                        	<strong style="color: red;">*</strong>
+                            <label class="no-padding-right">${i18n.get('被保险人与买方历史交易记录中付款人是否与合同买方一致')} :</label>
+                        </td>
+                        <td>
+                            <@form.select id="issamewithcontract" name="issamewithcontract" code="NY" idKey="code" value="${(noLcInfor.issamewithcontract)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('付款人名称及不一致的原因')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="nosamewithcontractreason" name="nosamewithcontractreason" value="${(noLcInfor.nosamewithcontractreason)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('预留字段3')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="item1" name="item3" value="${(noLcInfor.item3)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 12 end -->
+                    <!-- line 13 begin -->
+                    <tr>
+                        <td colspan="8" align="left">
+                            <span style="display:inline; float:left;">
+                                <input type="checkbox" checked="true" disabled="true">
+                                <p style="display:inline; float:right;">
+                                    	${i18n.get('被保险人知悉，所有询问内容构成保险人决定是否同意承保的基础，被保险人填写内容的真实性、完整性是保险人承担赔偿责任的前提条件之一，被保险人应如实告知。')}
+                                    <br>${i18n.get('如果被保险人未如实告知，保险人有权解除本保单，或者解除与被保险人未如实告知涉及的信用限额相关的保险合同部分，并拒绝承担赔偿责任，且不退还已收保险费。')}
+                                </p>
+                            </span>
+                            <input id="declaration"  name="declaration"  type="hidden"  value="1"  />
+                        </td>
+                    </tr>
+                    <!-- line 13 end -->
+                </table>
+            </div>
+
+            <div class="form-group">
+                <table>
+                    <!-- line 14 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('申请状态')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="apl_status_desc" name="apl_status_desc" readonly="true" value="${(noLcInfor.apl_status_desc)!}"/>
+                        	<input id="apply_status"  name="apply_status" type="hidden" value="${(noLcInfor.apply_status)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('批复状态')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="app_status_desc" name="app_status_desc" readonly="true" value="${(noLcInfor.app_status_desc)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('不通过原因')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="unAcceptReason" name="unAcceptReason" readonly="true" value="${(noLcInfor.unAcceptReason)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('批复时间')} :</label>
+                        </td>
+                        <td>
+                            <@form.date id="notifyTime" name="notifyTime" readonly="true" value="${(noLcInfor.notifyTime?date)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 14 end -->
+                    <!-- line 15 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('信用期限(天)')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="payTerm" name="payTerm" readonly="true" value="${(noLcInfor.payTerm)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('信用限额')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="quotaSum" name="quotaSum" readonly="true" value="${(noLcInfor.quotaSum)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('生效日期')} :</label>
+                        </td>
+                        <td>
+                            <@form.date id="effectDate" name="effectDate" readonly="true" value="${(noLcInfor.effectDate?date)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('')} :</label>
+                        </td>
+                        <td>
+                            <@form.date id="lapseDate" name="lapseDate" readonly="true" value="${(noLcInfor.lapseDate?date)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 15 end -->
+                    <!-- line 16 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('批复类型')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="approveType" name="approveType" readonly="true" value="${(noLcInfor.approveType)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('批复说明')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="billNote" name="billNote" readonly="true" value="${(noLcInfor.billNote)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('特别生效条件')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="adCondition" name="adCondition" readonly="true" value="${(noLcInfor.adCondition)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('闲置期(天)')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="idleSpan" name="idleSpan" readonly="true" value="${(noLcInfor.idleSpan)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 16 end -->
+                </table>
+            </div>
+            <div class="form-group">
+                <p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('担保人信息')}</p>
+                <table>
+                    <!-- line 17 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('是否有担保人')} :</label>
+                        </td>
+                        <td>
+                            <@form.select id="warrantorType" name="warrantorType" code="NY" idKey="code" value="${(noLcInfor.warrantorType)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('中信保担保人代码')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="sinosureWarrantorNo" name="sinosureWarrantorNo" value="${(noLcInfor.sinosureWarrantorNo)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('企业担保人代码 ')}:</label>
+                        </td>
+                        <td>
+                            <@form.input id="corpWarrantorNo" name="corpWarrantorNo" value="${(noLcInfor.corpWarrantorNo)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('担保人中文名称 ')}:</label>
+                        </td>
+                        <td>
+                            <@form.input id="warrantorChnName" name="warrantorChnName" value="${(noLcInfor.warrantorChnName)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 17 end -->
+                    <!-- line 18 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('担保人英文名称')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="warrantorEngName" name="warrantorEngName" value="${(noLcInfor.warrantorEngName)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('担保人国家代码')} :</label>
+                        </td>
+                        <td>
+                        	<@form.select id="warrantorCountryCode" name="warrantorCountryCode" code="ZXBCNTRYCODE" idKey="code" value="${(noLcInfor.warrantorCountryCode)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('担保人英文地址')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="warrantorEngAddress" name="warrantorEngAddress" value="${(noLcInfor.warrantorEngAddress)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('担保人中文地址')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="warrantorChnAddress" name="warrantorChnAddress" value="${(noLcInfor.warrantorChnAddress)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 18 end -->
+                    <!-- line 19 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('担保人注册号 ')}:</label>
+                        </td>
+                        <td>
+                            <@form.input id="warrantorRegNo" name="warrantorRegNo" value="${(noLcInfor.warrantorRegNo)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('担保人电话')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="warrantorTel" name="warrantorTel" value="${(noLcInfor.warrantorTel)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('担保人传真')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="warrantorFax" name="warrantorFax" value="${(noLcInfor.warrantorFax)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 19 end -->
+                </table>
+            </div>
+            <div class="form-group">
+                <p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('历史交易信息')}</p>
+                <table>
+                    <!-- line 20 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('是否有历史交易')} :</label>
+                        </td>
+                        <td align="left">
+                            <@form.select id="ifHistTrade" name="ifHistTrade" code="NY" idKey="code" value="${(noLcInfor.ifHistTrade)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('最近三年交易年份1')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="lastYear1" name="lastYear1" value="${(noLcInfor.lastYear1)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('最近三年交易结算方式1 ')}:</label>
+                        </td>
+                        <td>
+                        	<@form.select id="lastPayMode1" name="lastPayMode1" code="ZXBPAYMODEL" idKey="code" value="${(noLcInfor.lastPayMode1)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('最近三年交易额1 ')}:</label>
+                        </td>
+                        <td>
+                            <@form.input id="lastSum1" name="lastSum1" value="${(noLcInfor.lastSum1)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 20 end -->
+                    <!-- line 21 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('最早成交年份')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="earlyTradeYear" name="earlyTradeYear" value="${(noLcInfor.earlyTradeYear)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('最近三年交易年份2')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="lastYear2" name="lastYear2" value="${(noLcInfor.lastYear2)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('最近三年交易结算方式2')} :</label>
+                        </td>
+                        <td>
+                            <@form.select id="lastPayMode2" name="lastPayMode2" code="ZXBPAYMODEL" idKey="code" value="${(noLcInfor.lastPayMode2)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('最近三年交易额2')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="lastSum2" name="lastSum2" value="${(noLcInfor.lastSum2)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 21 end -->
+                    <!-- line 22 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('最早放账年份')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="startDebtYear" name="startDebtYear" value="${(noLcInfor.startDebtYear)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('最近三年交易年份3')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="lastYear3" name="lastYear3" value="${(noLcInfor.lastYear3)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('}最近三年交易结算方式3') :</label>
+                        </td>
+                        <td>
+                            <@form.select id="lastPayMode3" name="lastPayMode3" code="ZXBPAYMODEL" idKey="code" value="${(noLcInfor.lastPayMode3)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('最近三年交易额3')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="lastSum3" name="lastSum3" value="${(noLcInfor.lastSum3)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 22 end -->
+                </table>
+            </div>
+        </@form.form>	
+        
+        <div id="info" style="padding-top: 20px;" class="row">
+			<@plug.tabs tabMain=tabMain></@plug.tabs>
+		</div>
+		
+		<script type="text/javascript">
+			$(document).ready(function(){
+				var status = $('#apply_status').val();
+				switch (status){
+					case 'Drfat':
+					  $('#save').removeAttr('disabled');
+					  $('#update').removeAttr('disabled');
+					  break;
+					case 'Sumited':
+					  $('#save').attr({"disabled":"true"});
+					  $('#update').attr({"disabled":"true"});
+					  break;
+					case 'Responded':
+					  $('#save').attr({"disabled":"true"});
+					  $('#update').attr({"disabled":"true"});
+					  break;
+				}
+			}); 
+		</script>
+    </@form.panel>   
+</@pui.body>

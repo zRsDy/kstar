@@ -1,0 +1,74 @@
+ <@pui.body>
+ <style>
+.clientWidth{
+	width:1500px;
+}
+</style>
+
+<@form.panel title="${i18n.get('流程历史')}">
+<div class="row">
+	<div class="col-xs-12">
+		<div class="table-responsive">
+			<table id="sample-table-1" class="table table-striped table-bordered table-hover">
+				<thead>
+					<tr>
+						<th class="center">${i18n.get('环节')}</th>
+						<th>${i18n.get('办理人')}</th>
+						<th>${i18n.get('意见建议')}</th>
+						<th>${i18n.get('开始时间')}</th>
+						<th>${i18n.get('结束时间')}</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					<#list historyList as history>
+						<#if (history.activityType)?? && history.activityType != 'decision'>
+							<tr class="">
+								<td class="center">${(history.activityName)!}</td>
+								<td>${(history.operatorName)!(history.assigneeName)!}</td>
+								<td>
+									${(history.comment)!''}
+								</td>
+								<td>${(history.startTime?datetime)!}</td>
+								<td><#if (history.endTime)??> ${(history.endTime?datetime)!} </#if></td>
+							</tr>
+							
+							
+							<#if !(history.endTime)?? && !(history.operatorName)?? && (history.assigneeType == 'POSITION') >
+								<tr>
+									<td  class="center">
+										${(history.assigneeName)!} ${i18n.get('岗位的员工')}
+									</td>
+									
+									<td colspan="4" id='td_${history_index}'>
+										<script type="text/javascript">
+											$.ajax({
+												url : '${ctx}/org/employeePage.html?orgId=${(history.assigneeId)!}',
+												type : 'GET',
+												success : function(data) {
+													var html = "";
+													$.each(data.message.list,function(i,item){
+														html = html + " ["+item.no + " "+item.name +"] ";
+													})
+													$('#td_${history_index}').html(html);
+												}
+											});
+										</script>
+									</td>
+								</tr>
+							</#if>
+							
+						</#if>
+					</#list>
+				</tbody>
+			</table>
+		</div><!-- /.table-responsive -->
+	</div><!-- /span -->
+</div>
+</@form.panel>
+</@pui.body> 
+<script type="text/javascript">
+	function formatRohs(value){
+	    return customTypeArr[value];
+	}
+</script>

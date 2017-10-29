@@ -1,0 +1,43 @@
+<@ui.body nav1="${i18n.get('测试功能')}" nav2="DEMO" type="popup"> 
+	<div class="col-xs-12" >
+		<form id="t1" method='post'>
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" for="className"> ${i18n.get('实例类')}: </label>
+				<input id="className"
+				 name="className" 
+				 />
+			</div>
+			
+			<div class="form-group">
+			 <label class="col-sm-3 control-label no-padding-right" for="modelName"> ${i18n.get('模块名称')}: </label>
+				<input id="modelName"
+				 name="modelName" 
+				 />
+			</div>
+			
+			<div class="form-group">
+				<button type="submit" class="btn btn-info" > 
+					<i class="icon-search bigger-110"></i>
+					${i18n.get('下一步')}
+				</button>
+			</div>
+		</form>
+		
+		<script type="text/javascript">
+		$(function($) {
+			$("#t1").validate({
+				rules:{
+					name :{
+						required :true
+					}
+				},
+				messages:{
+					name :{
+						required :'${i18n.get('不能为空！')}'
+					}
+				}
+			});
+		});
+		</script>
+	</div>
+</@ui.body>

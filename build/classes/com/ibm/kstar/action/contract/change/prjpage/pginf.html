@@ -1,0 +1,22 @@
+<div class="row">
+<div class="col-xs-12">
+<@form.table id="pginf" 
+	class="col-xs-12"
+	title="${i18n.get('工程界面完成状态')}" 
+	url = "${ctx}/change/prjpage/pginfPage.html?contrId=${contrId}" 
+	rowNum = "5"  
+	colModel = "[
+		{name:'id',label:'${i18n.get('页面信息')}ID',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'pgTyp',label:'${i18n.get('界面类型')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'relPrd',label:'${i18n.get('相关产品/集成需求')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'cComplete',label:'${i18n.get('表单填写完成度')}',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'reqNo',label:'${i18n.get('支持请求单号')}',hidden:false,width:150,sortable:true,align:'center' },
+		{name:'cSupporter',label:'${i18n.get('支持人')}',hidden:false,width:150,sortable:true,align:'center' },
+		{name:'cStatus',label:'${i18n.get('受理状态')}',hidden:false,width:150,sortable:true,align:'center' }
+		]" 
+		ondblClickRow= "function(selectedData){
+				 }"
+		buttons = "[]" > 
+	</@form.table>
+	</div> 
+</div>

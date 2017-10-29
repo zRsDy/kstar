@@ -1,0 +1,32 @@
+<@pui.body>
+<#-- 国际业务周报列表页面-新增 --> <#if permission["P03WeekReportListAdd"]?? > <#assign addURL = "'${ctx}/weekly/add.html'" /></#if>
+
+<#-- 国际业务周报列表页面-修改 --> <#if permission["P03WeekReportListSave"]?? > <#assign editURL = "'${ctx}/weekly/edit.html'" /></#if>
+
+<#-- 国际业务周报列表页面-删除 --> <#if permission["P03WeekReportListDelete"]?? > <#assign deleteURL = "'${ctx}/weekly/delete.html'" /></#if>
+	<@form.table id="t1" 
+	class="col-xs-12"
+	title="${i18n.get('国际业务周报基本信息列表')}" 
+	url = "${ctx}/weekly/page.html" 
+	rowNum = "10" 
+	search = "true"
+	addURL = "${addURL!}"
+	editURL= "${editURL!}"
+	deleteURL = "${deleteURL!}"
+	colModel = "[
+		{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'department',label:'${i18n.get('部门')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'salesman',label:'${i18n.get('销售员')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'yearLabel.name',label:'${i18n.get('年度')}',hidden:false,width:50,sortable:true,align:'center' },
+		{name:'weeksLabel.name',label:'${i18n.get('周数')}',hidden:false,width:50,sortable:true,align:'center' },
+		{name:'newClient',label:'${i18n.get('本月新联系客户（个）')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'planDeal',label:'${i18n.get('预计成交客户（个）')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'clientCount',label:'${i18n.get('批量成交客户总数（个）')}',hidden:false,width:200,sortable:true,align:'center'},
+		{name:'placeOrderC',label:'${i18n.get('本周下单客户（个）')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'createDate',label:'${i18n.get('周报日期')}',hidden:false,width:100,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+		{name:'status',label:'${i18n.get('状态')}',hidden:false,width:100,sortable:true,align:'center' }
+		]"
+		buttons = "[]" >
+	</@form.table> 
+	<br/>
+</@pui.body>

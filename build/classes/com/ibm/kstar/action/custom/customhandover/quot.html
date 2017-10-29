@@ -1,0 +1,144 @@
+<#if (permission["P02HandoverT4QuoteHandover"]?? && ("${(customHandoverList.handoverStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customHandoverList.handoverStatus)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign quoteHandoverURL="${(checkDisplay)!}" />
+</#if>
+
+<@form.table id="hoQuotList" 
+	class="col-xs-12"
+height="149px"
+	title="${i18n.get('报价单基本信息列表')}" 
+	url = "${ctx}/custom/handover/quotPage.html?id=${(customHandoverList.id)!}" 
+	checkbox="true"
+	search="false"
+	rowNum = "5" 
+	colModel = "[
+		{name:'id',label:'${i18n.get('报价单ID')}',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'checkStatusName',label:'${i18n.get('交接选择')}',hidden:false,width:80,sortable:true,align:'center' },
+		{name:'businessStatus',label:'${i18n.get('交接状态')}',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'businessStatusName',label:'${i18n.get('交接状态')}',hidden:false,width:80,sortable:true,align:'center' },
+		{name:'quotCode',label:'${i18n.get('报价单编码')}',hidden:false,width:150,sortable:true,align:'center' },
+		{name:'quotName',label:'${i18n.get('报价单名称')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'status',label:'${i18n.get('状态')}',hidden:false,width:80,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatstatusArr(cellvalue) } },
+		{name:'quotVersion',label:'${i18n.get('版本')}',hidden:false,width:50,sortable:true,align:'center' },
+		{name:'customerName',label:'${i18n.get('客户')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'salesRep',label:'${i18n.get('销售代表')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'boName',label:'${i18n.get('商机名称')}',hidden:false,width:200,sortable:true,align:'center'},
+		{name:'priceList',label:'${i18n.get('价格表')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'currency',label:'${i18n.get('货币')}',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'currencyGrid.name',label:'${i18n.get('货币')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'amount',label:'${i18n.get('商机编号')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'creator',label:'${i18n.get('创建人')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'createTime',label:'${i18n.get('创建日期')}',hidden:false,width:100,sortable:true,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) },align:'center' },
+		{name:'bidResults',label:'${i18n.get('投标结果')}',hidden:false,width:100,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatbidResultsArr(cellvalue) } },
+		{name:'bidResReason',label:'${i18n.get('丢标/赢标原因')}',hidden:false,width:100,sortable:true,align:'center' }
+		]" 
+
+		buttons = "[
+		{
+			id:'publish_checkhoQuotList',
+			label : '${i18n.get('准备交接')}',
+			icon : 'icon-exchange',
+			own : ${quoteHandoverURL!'false'},
+			handler : function(e,rowData){
+				var selectedIds = [];
+				if(selectedList_hoQuotList.length == 0){
+					exalert(e,'${i18n.get('没有选中任何数据!')}');
+					return;
+				}
+				$.each(selectedList_hoQuotList,function(i,item){
+						selectedIds.push(item.id);
+					});
+				bootbox.confirm('${i18n.get('确认交接选中的数据吗？')}' , function(result) {
+					if(result) {
+						$.ajax({
+							url: '${ctx}/custom/handover/quotHandoverCheck.html',
+							type: 'POST',
+							data: {ids:selectedIds},
+							success : function(msg) {
+								alert(msg.message);
+								reload_hoQuotList();
+							},
+							error: function(e) {
+								alert(e.responseJSON.message);
+								reload_hoQuotList();
+							}
+						});
+					}
+				});
+			}
+		},
+		{
+			id:'publish_uncheckhoQuotList',
+			label : '${i18n.get('交接取消')}',
+			icon : 'icon-exchange',
+			own : ${quoteHandoverURL!'false'},
+			handler : function(e,rowData){
+				var selectedIds = [];
+				if(selectedList_hoQuotList.length == 0){
+					exalert(e,'${i18n.get('没有选中任何数据!')}');
+					return;
+				}
+				$.each(selectedList_hoQuotList,function(i,item){
+						selectedIds.push(item.id);
+					});
+				bootbox.confirm('${i18n.get('确认交接选中的数据吗？')}' , function(result) {
+					if(result) {
+						$.ajax({
+							url: '${ctx}/custom/handover/quotHandoverUnCheck.html',
+							type: 'POST',
+							data: {ids:selectedIds},
+							success : function(msg) {
+								alert(msg.message);
+								reload_hoQuotList();
+							},
+							error: function(e) {
+								alert(e.responseJSON.message);
+								reload_hoQuotList();
+							}
+						});
+					}
+				});
+			}
+		}
+	]" >
+
+<br>
+<div class="col-xs-9">
+	<div class="form-group col-xs-3">
+		<input type="text" id="searchKey" name="searchKey" placeholder='${i18n.get('查询关键字')}' />
+	</div>
+	<div class="form-group col-xs-2">
+		<button type="submit" class="btn btn-info">
+			<i class="icon-search bigger-110"></i> ${i18n.get('查询')}
+		</button>
+	</div>
+</div>
+
+</@form.table> 
+
+<script type="text/javascript">
+
+	var bidResultsArr = {
+			"R01" : "${i18n.get('赢标')}",
+			"R02" : "${i18n.get('丢标')}",
+			"R03" : "${i18n.get('无需投标')}",
+			"undefined" : ""
+	};
+
+	
+	var statusArr = {
+			"S01" : "${i18n.get('新建')}",
+			"S02" : "${i18n.get('赢标')}",
+			"S03" : "${i18n.get('丢标')}",
+			"S04" : "${i18n.get('关闭')}",
+			"undefined" : ""
+	};
+
+	function formatbidResultsArr(value){
+		 return bidResultsArr[value];
+	}
+	
+	function formatstatusArr(value){
+		 return statusArr[value];
+	}
+	
+</script>

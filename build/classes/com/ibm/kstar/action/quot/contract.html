@@ -1,0 +1,35 @@
+
+<@form.table id="cnt" 
+	class="col-xs-12"
+	title="${i18n.get('合同')}" 
+	url = "${ctx}/quot/contractPage.html?qid=${qid}" 
+	rowNum = "25" 
+	colModel = "[
+		{name:'id',label:'${i18n.get('合同')} ID',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'cntId',label:'${i18n.get('合同编号')}',hidden:false,width:200,sortable:false,align:'center' },
+		{name:'cntNm',label:'${i18n.get('合同名称')}',hidden:false,width:200,sortable:false,align:'center' },
+		{name:'cntTyp',label:'${i18n.get('合同类型')}',hidden:false,width:150,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatcntTypArr(cellvalue) } },
+		{name:'cntDt',label:'${i18n.get('创建时间')}',hidden:false,width:200,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate(cellvalue) } }
+		]" 
+		ondblClickRow= "function(selectedData){
+				 }"
+		buttons = "[]" > 
+	</@form.table> 
+
+<script type="text/javascript">
+	
+	var cntTypArr = {
+			"C01" : "${i18n.get('标准销售合同')}",
+			"C02" : "${i18n.get('框架协议')}",
+			"C03" : "${i18n.get('框架下合同')}",
+			"C04" : "${i18n.get('直销合同')}",
+			"C05" : "${i18n.get('借货合同')}"
+	};
+
+	
+	function formatcntTypArr(value){
+		 return cntTypArr[value];
+	}
+	
+</script>
+

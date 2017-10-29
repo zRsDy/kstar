@@ -1,0 +1,575 @@
+
+<style>
+
+.product_main_info{
+	position:absolute;
+	width: 560px;
+	height: 370px; 
+	//float: left; 
+	border: 1px solid;
+	border-color: #E9E9E9;
+	
+}
+.product_line_info{
+
+	width: 260px;
+	margin-left: 20px;  
+	left:570px;
+	 position:absolute;
+	   height: 255px;
+	    border: 1px solid;
+	     border-color: #E9E9E9;
+}
+.product_sale_info {
+position:absolute;
+z-index:2008;
+/* bottom:20px; */
+left:865px;
+width:260px;
+height:210px;
+margin-left: 20px; 
+	border: 1px solid;
+	border-color: #E9E9E9;
+}
+.product_ecr_info{
+
+	 position:absolute;
+	left:570px;
+	/* bottom:330px; */
+	top:277px;
+	
+	width: 260px; 
+	margin-left: 20px;  
+	clear:both;
+	 height: 110px;
+	  border: 1px solid; 
+	  border-color: #E9E9E9;
+
+}
+.product_supply_info{
+	position:absolute;
+	z-index:2008;
+	left:865px;
+	top:237px;
+	width: 260px; 
+	margin-left: 20px; 
+	height: 150px; 
+	border: 1px solid; 
+	border-color: #E9E9E9;
+}
+.product_other_info{
+	position:absolute;
+	z-index:2008;
+
+	width: 1132px; 
+	/* margin-left: 20px;  */
+	top:390px;
+	
+	bottom:90px;
+	height: 180px; 
+	border: 1px solid; 
+	border-color: #E9E9E9;
+
+}
+table{
+	table-layout: fixed;
+ 	border-collapse: collapse;
+	border-color:#ff0000; 
+}
+.mainPanel{
+	width:550px; 
+	height: 310px;
+	 margin-top: 4px;
+}
+
+#top01 table td {
+	text-align: left;
+	vertical-align: middle;
+	word-break: keep-all;
+	/* border:solid #ededed;  */
+	height:24px;
+	/* border-width:0px 0px 0px 0px;   */
+	border-width:1px 1px 1px 1px;  
+} 
+.productFont{
+ font-size: 12px;
+}
+
+#submitPanel{
+	position:absolute;
+	z-index:2008;
+	top:550px;
+	width: 1132px; 
+	bottom:5px;
+	height: 55px; 
+	border: 1px solid; 
+	border-color: #E9E9E9;
+}
+</style>
+<!-- <div class="productFont"> -->
+<script type="text/javascript">
+
+$(document).ready(function(){
+
+	  function typeChanged(obj){
+	 		 var selected = obj.value;
+	 		 
+	 		 if(selected != '0002'){
+	 			 $('#fatherProCode').val('');
+	 			$("#fatherProCode").attr("disabled","disabled")
+	 			//$("#selectProduct").attr("disabled","disabled"); 
+	 			 $('#selectProduct').hide();
+	 		 }else{
+	 			
+	 			$("#fatherProCode").attr("disabled",false); 
+	 			//$("#selectProduct").attr("disabled",false); 
+	 			 $('#selectProduct').show();
+	 		 }
+	 		 
+	 		 var myDate = new Date();
+	 		 $.ajax({
+	 			type : "POST",
+	 			url : "${ctx}/product/queryVMaterCode.html",
+	 			async: true,
+	 			data : "selectedID=" + selected+"&dt="+myDate, 
+	 			dataType : 'json',
+	 			success : function(msg) {
+	 				var datas = eval(msg);
+	 				if(datas.length == 1 &&  typeof(datas[0].success) != "undefined"){
+	 					//alert(datas[0].success);
+ 	 				 $('#vmaterCode').val(datas[0].success);
+ 	 				 $('#productCode').val(datas[0].success);
+					}else if(datas.length == 1 && typeof(datas[0].error)!="undefined" ){
+						 $('#vmaterCode').val('');
+ 	 				 $('#productCode').val('');
+ 	 				 $('#fatherProCode').val('');
+ 	 				
+						 alert("${i18n.get('不能生成标准产品')}！");
+						
+					}	
+	 			},
+	 			error: function(e) {
+	 				 $('#vmaterCode').val('');
+	 				 $('#productCode').val('');
+	 				 $('#fatherProCode').val('');
+	 				 alert("${i18n.get('生成')} ${i18n.get('预定义物料号异常')}： "+e.status +":"+ e.statusText);
+	 			} 
+	 		});
+	 	  }
+	
+	  var selectedobj={value:'0002'}; 
+	  typeChanged(selectedobj);
+
+	
+	  var checkedValue= $("#isSpecialUse").val();
+	  if(checkedValue == '0'){
+		  $("#isSpecialUse").removeAttr("checked"); 
+	  }else if (checkedValue == '1'){
+		  $("#isSpecialUse").attr("checked","true"); 
+	  }
+	  
+	  var checked2= $("#rohStatus").val();
+	  if(checked2 == '0'){
+		  $("#rohStatus").removeAttr("checked"); 
+	  }else if (checked2 == '1'){
+		  $("#rohStatus").attr("checked","true"); 
+	  }
+	});
+function changeCheckValue(){
+	
+	var checked =  $("#isSpecialUse").is(':checked')
+	
+	if(checked == true){
+	
+		$("#isSpecialUse").val('1');
+		 $("#isSpecialUse").attr("checked","true"); 
+	}else {
+
+		 $("#isSpecialUse").removeAttr("checked"); 
+		
+	}
+}
+
+function changeCheckValue2(){
+	
+	var checked =  $("#rohStatus").is(':checked')
+	
+	if(checked == true){
+	
+		$("#rohStatus").val('1');
+		 $("#rohStatus").attr("checked","true"); 
+	}else {
+
+		 $("#rohStatus").removeAttr("checked"); 
+		
+	}
+}
+
+
+</script>
+
+<@form.form id="t1" success="function(result){
+	alert('${i18n.get('保存成功')}');
+	$('#prdid').val(result);
+	try{
+		parent.currentParent.reload_prjlst();
+	}catch(e){
+		parent.currentParent2.reload_prjlst();
+	}
+	try{ 
+		parent.currentParent.reload_prjlsttree1('${(parentLovMember.id)!}'); 
+	}catch(e){ 
+		parent.currentParent2.reload_prjlsttree1('${(parentLovMember.id)!}'); 
+	}
+	parent.dialog('${i18n.get('添加需求单')}','${ctx}/standard/prjlst/demand.html?custContrNo=${custContrNo!''}&customId=${customId!''}&businessUnit=${businessUnit!''}&prodId='+$('#prdid').val(),window);
+	api.close();
+}" autoClose="false" action="${ctx}/standard/prjlst/mainInfoSave.html?contrId=${contrId}&typ=${typ}&groupId=${groupId}&parentId=${parentId}" class="form-horizontal">	
+	
+<div class="productFont" id="inputPanel">
+
+<div>	
+<div class = "product_main_info" id = "top01">
+	<p style="width: 560px; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('产品主信息')}</p>
+	<table  align="center" class="mainPanel">
+		<tr>
+		   <td width="80px;"><strong style="color: red;">*</strong>${i18n.get('产品名称')}:</td>
+		   <td  width="200px;">
+
+			<input type="hidden" id="prdid" name="prdid" value="${(product.id)!}"/>
+		  
+		   <@form.input
+			id="productName"  
+			name="productName" 
+			placeholder="${i18n.get('产品名称')}" 
+			required="${i18n.get('不能为空')}"
+			tip="" 
+			value="${(product.productName)!}" 
+			/>
+		   </td>
+		 <td width="80px;">${i18n.get('物料号')}:</td>
+		   <td width="200px;">
+		   <input type="text" readOnly="true" id="materCode" name="materCode" value="${(product.materCode)!}"/>
+		  <!--   <@form.input
+			id="materCode"  
+			
+			name="materCode" 
+			placeholder="物料号" 
+			value="${(product.materCode)!}" 
+			/> -->
+		   </td>
+		</tr>
+		<tr>
+		  <td >${i18n.get('英文名')}：</td>
+		  <td >
+		    <@form.input
+			id="proEName"  
+			name="proEName" 
+			placeholder="${i18n.get('英文名')}" 
+			value="${(product.proEName)!}" 
+			/>
+		  </td> 
+		   <td >${i18n.get('预定义物料号')}：</td>
+		   <td >
+		     <input type="text" readOnly="true" id="vmaterCode" name="vmaterCode" value="${(product.vmaterCode)!}"/>
+		   <!--  <@form.input
+			id="vmaterCode"  
+			name="vmaterCode" 
+			placeholder="" 
+			value="${(product.vmaterCode)!}" 
+			/> -->
+		   </td>
+		</tr>
+		<tr>
+		    <td>${i18n.get('产品型号')}</td>
+		    <td ><!-- <input name=proModel type="text" id="proModel" value="${(product.proModel)!}"/> -->
+		    
+		    <@form.select id="proModel" name="proModel" style="width:160px;" viewKey="id" viewKey2="" idKey='id' url="function(){return '${ctx}/product/select.html'}" value="${(product.proModel)!}" />
+		    
+		    </td>
+		    <td ><strong style="color: red;">*</strong>${i18n.get('产品编码')}:</td>
+		    <td >
+		    <!-- <input type="text" readOnly="true"   id="productCode" name="productCode" value="${(product.productCode)!}"/> -->
+		 <@form.input
+			id="productCode"  
+			name="productCode" 
+			readonly="readOnly"
+			placeholder="${i18n.get('产品编码')}" 
+			required="${i18n.get('不能为空')}"
+			tip="" 
+			value="${(product.productCode)!}" 
+			/> 
+			 
+		    </td>
+		</tr>
+		<tr>
+		    <td>${i18n.get('发布状态')}:</td>
+		    <td>
+		    
+		    <@form.select id="uipublishStatus" name="uipublishStatus" style="width:160px;" code="proPublishStatus" idKey='id' value="${(product.publishStatus)!}" />
+		     <input type="hidden" id=publishStatus name="publishStatus" value="${(product.publishStatus)!}"/>
+		    <script type="text/javascript">
+		    	$("#uipublishStatus").attr("disabled","disabled")
+		    </script>
+		    	
+		     <!--   <@form.input
+				id="publishStatus"  
+				name="publishStatus" 
+				placeholder="" 
+				value="${(product.publishStatus)!}" 
+				/> -->
+		    </td>
+		    <td>${i18n.get('转销状态')}:</td>
+		    <td>
+		    
+		    <@form.select id="uisaleStatus" name="uisaleStatus" style="width:160px;" code="proPreSaleStatus" idKey='id' value="${(product.saleStatus)!}"/>
+		     <input type="hidden" id="saleStatus" name="saleStatus" value="${(product.saleStatus)!}"/>
+		     <script type="text/javascript">
+		    	$("#uisaleStatus").attr("disabled","disabled")
+		    </script>
+		   		<!-- <@form.input
+				id="saleStatus"  
+				name="saleStatus" 
+				placeholder="" 
+				value="${(product.saleStatus)!}" 
+				/> -->
+		    </td>
+		</tr>
+		<tr>
+		    <td>${i18n.get('品牌')}:</td>
+		    <td>
+		    <@form.input
+				id="proBrand"  
+				name="proBrand" 
+				placeholder="" 
+				value="${(product.proBrand)!}" 
+				/>
+		    </td>
+		    <td>${i18n.get('定价状态')}:</td>
+		    <td>
+		     <@form.select id="uipriceStatus" name="uipriceStatus" style="width:160px;" code="proPriceSpecify" idKey='id' value="${(product.priceStatus)!}"  />
+		     
+		      <input type="hidden" id="priceStatus" name="priceStatus" value="${(product.priceStatus)!}"/>
+		     <script type="text/javascript">
+		    	$("#uipriceStatus").attr("disabled","disabled")
+		    </script>
+		    
+		   <!--  <@form.input
+				id="priceStatus"  
+				name="priceStatus" 
+				placeholder="" 
+				value="${(product.priceStatus)!}" 
+				/> -->
+		    </td>
+		</tr>
+		<tr>
+		    <td>CRM${i18n.get('产品类别')}:</td>
+		    <td>
+		    
+		    <#if (product.id)??  && (product.id) != ''> 
+		    	  	<@form.select id="fixedcrmCategory" name="fixedcrmCategory" style="width:160px;" code="crmCategory" idKey='code' value="${(product.crmCategory)!}"  />
+		    	  	 <input type="hidden" id=crmCategory name="crmCategory" value="${(product.crmCategory)!}"/>
+		    	  	<script type="text/javascript">
+		    	  		$("#fixedcrmCategory").attr("disabled","disabled")
+		    	  	</script>
+		    	 <#else> 
+		    	 	<@form.select id="crmCategory" name="crmCategory" required="${i18n.get('请选择产品类别')}" style="width:160px;" code="crmCategory" idKey='code' value="${(product.crmCategory)!}" onChange="typeChange(this)" />
+		    	 	<script type="text/javascript">
+
+		    		  function typeChange(obj){
+		    		 		 var selected = obj.value;
+		    		 		 
+		    		 		 if(selected != '0002'){
+		    		 			 $('#fatherProCode').val('');
+		    		 			$("#fatherProCode").attr("disabled","disabled")
+		    		 			//$("#selectProduct").attr("disabled","disabled"); 
+		    		 			 $('#selectProduct').hide();
+		    		 		 }else{
+		    		 			
+		    		 			$("#fatherProCode").attr("disabled",false); 
+		    		 			//$("#selectProduct").attr("disabled",false); 
+		    		 			 $('#selectProduct').show();
+		    		 		 }
+		    		 		 
+		    		 		 var myDate = new Date();
+		    		 		 $.ajax({
+		    		 			type : "POST",
+		    		 			url : "${ctx}/product/queryVMaterCode.html",
+		    		 			async: true,
+		    		 			data : "selectedID=" + selected+"&dt="+myDate, 
+		    		 			dataType : 'json',
+		    		 			success : function(msg) {
+		    		 				var datas = eval(msg);
+		    		 				if(datas.length == 1 &&  typeof(datas[0].success) != "undefined"){
+		    		 					//alert(datas[0].success);
+		    	 	 				 $('#vmaterCode').val(datas[0].success);
+		    	 	 				 $('#productCode').val(datas[0].success);
+		    						}else if(datas.length == 1 && typeof(datas[0].error)!="undefined" ){
+		    							 $('#vmaterCode').val('');
+		    	 	 				 $('#productCode').val('');
+		    	 	 				 $('#fatherProCode').val('');
+		    	 	 				
+		    							 alert("${i18n.get('不能生成标准产品')}！");
+		    							
+		    						}	
+		    		 			},
+		    		 			error: function(e) {
+		    		 				 $('#vmaterCode').val('');
+		    		 				 $('#productCode').val('');
+		    		 				 $('#fatherProCode').val('');
+		    		 				 alert("${i18n.get('生成')} ${i18n.get('预定义物料号异常')}： "+e.status +":"+ e.statusText);
+		    		 			} 
+		    		 		});
+		    		 	  }
+		    	 	
+		    	 	</script>
+		      </#if> 
+		    
+				
+		    </td>
+
+    	 	<!--  <@form.autocomplete 
+				id="proOrgId"
+				name="proOrgId"
+				placeholder="请选择组织" 
+				tip="请输入组织 "
+				style="width:160px;"
+				code="ORG&optTxt1=N"
+				required="组织不能为空"
+				value="${(org)!}"
+				/> -->
+		     <!-- <@form.input
+				id="proOrgId"  
+				name="proOrgId" 
+				placeholder="" 
+				value="${(product.proOrgId)!}" 
+				/> -->
+				
+			<td>${i18n.get('父产品')}:</td>
+		    <td>
+		    <@form.input
+				id="fatherProCode"  
+				name="fatherProCode" 
+				placeholder="" 
+				disabled="disabled"
+				readonly="readOnly"
+				value="${(product.fatherProCode)!}" 
+				/>
+			
+		    </td>
+		   
+		</tr>
+		
+		<tr>
+		   <td>${i18n.get('单位')}:</td>
+		    <td>
+		    
+		     <@form.select id="unit" name="unit" style="width:160px;" code="UNIT" idKey='id' value="${(product.unit)!}"  />
+		    <!--  <@form.input
+				id="unit"  
+				name="unit" 
+				placeholder="" 
+				value="${(product.unit)!}" 
+				/> -->
+		    
+		    </td>
+		    <td></td>
+		    <td>
+		    <@biz.picker_product id="selectProduct" urlFunction="function(){  return '${ctx}/product/selectProductListCondition.html?proModel='+$('#proModel').val()}" 
+						button="${i18n.get('选择父产品')}"
+						callback="function(data){
+							if(data){
+								$('#fatherProCode').val(data.id);
+								
+							 }
+						}"
+				/>
+				
+				<script type="text/javascript">
+					var crmCategory = $('#crmCategory').val();
+				    if(crmCategory === '0002'){
+				    	$("#fatherProCode").attr("disabled",false); 
+				    }else{
+				    	
+				    	$('#selectProduct').hide();
+				    }
+				 	
+				</script>
+		    
+		    </td>
+		</tr>
+
+		<tr>
+		   <td>ERP${i18n.get('产品类别')}:</td>
+		    <td> 
+		    
+		     <@form.select id="uierpCategory" name="uierpCategory" style="width:160px;" code="erpCategory" idKey='code' value="${(product.erpCategory)!}"  />
+		     
+		      <input type="hidden" id="erpCategory" name="erpCategory" value="${(product.erpCategory)!}"/>
+		     <script type="text/javascript">
+		    	$("#uierpCategory").attr("disabled","disabled")
+		    </script>
+		    </td>
+		    <td>${i18n.get('是否')}RoHS:</td>
+		    <td>
+		    <input name="rohStatus" type="checkbox" id="rohStatus" onclick="changeCheckValue2()" value="${(product.rohStatus)!}"/>  
+		    
+		    </td>
+		</tr> 
+		
+		<tr>
+		
+		 <td colspan="1">${i18n.get('产品描述')}:</td>
+		    <td colspan="1">
+		     <@form.input
+				id="proDesc"  
+				name="proDesc" 
+				placeholder="" 
+				value="${(product.proDesc)!}" 
+				/>
+		    </td>
+			 <td colspan="1">${i18n.get('需求描述')}:</td>
+		    <td colspan="1">
+		 	<input type="text" readOnly="true" id="proRequestDesc" name="proRequestDesc" value="${(product.proRequestDesc)!}"/> 
+		 	<input type="hidden"  id="proLineID" name="proLineID" value="${(product.proLineID)!}"/>
+		    </td>
+		    
+		   
+		</tr>
+		
+		
+	</table>
+</div>
+
+
+
+
+
+</div>
+
+
+
+<!-- <div class="hr hr-18 dotted hr-double"></div> -->
+		<div class="clearfix form-actions" id = "submitPanel">
+			<div class="col-md-offset-5 col-md-7">
+				<button class="btn btn-info submit" type="button" >
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('添加需求单')}
+				</button>
+				&nbsp; &nbsp; &nbsp;
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+				&nbsp; &nbsp; &nbsp;
+
+			</div>
+		</div>
+</div>
+
+		
+</@form.form>	
+
+
+
+
+

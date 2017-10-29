@@ -1,0 +1,256 @@
+<@cui.body2>
+
+<style type="text/css">
+
+
+table td {
+	padding:1px;
+	vertical-align: middle;
+	word-break: keep-all;
+	border: solid #ededed;
+	border-width: 0px 0px 0px 0px;
+}
+
+input {
+	width: 180px;
+}
+select {
+	width: 180px;
+}
+</style>
+
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		$("#status").attr("disabled","disabled");
+		$("#applyDate").attr("disabled","disabled");
+		$("#controlStatus").attr("disabled","controlStatus");
+		
+		$("#accounts_submit").hide();
+		$("#accounts_save").hide();
+		$("#accounts_apply").hide();
+		
+		if("${(accountsMaster.status)!}" == "10"){
+			if("${(accountsMaster.controlStatus)!}" =="10"){
+				$("#accounts_save").show();
+				if("${(accountsMaster.id)!}" != "" &&　"${(accountsMaster.id)!}"　!=　null){
+					$("#accounts_submit").show();
+				}
+			}else if("${(accountsMaster.controlStatus)!}" =="30"){
+				$("#accounts_apply").show();
+			}else if("${(accountsMaster.controlStatus)!}" =="40"){
+				$("#accounts_save").show();
+			}
+		}
+	});
+	
+	function submit_before(){
+		$("#accountsDetailListForm").trigger('blur')
+		$("#status").removeAttr("disabled");
+		$("#applyDate").removeAttr("disabled");
+		$("#controlStatus").removeAttr("disabled");
+		calculateAmount();
+	}
+	
+	
+	function updateStatus(op){
+		 $.ajax({
+			type : "POST",
+			url : "${ctx}/accounts/updateStatus.html",
+			async: true,
+			data : "id=${(accountsMaster.id)!}&op="+op, 
+			dataType : 'json',
+			success : function(msg) {
+				alert(msg.message);
+				javascript:api.close();
+				parent.currentParent2.reload_accountsListForm(); 
+			},
+			error: function(e) {
+				 alert(${i18n.get('操作失败,请联系管理员')});
+			} 
+		});
+	}
+	
+</script>
+
+<div class="col-xs-12" >
+	<@form.panel title="${i18n.get('新增/编辑')}">
+	<@form.form id="t1" 
+		success="function(){
+			alert(${i18n.get('保存成功！')});
+			parent.currentParent2.reload_accountsListForm(); 
+		}" 
+		
+		postData="function(){
+			var ids = $('#accountsDetailListForm').jqGrid('getDataIDs');
+			var datas = [];
+	 		$.each(ids,function(i,id){
+	 			var data = $('#accountsDetailListForm').jqGrid('getRowData',id);
+	 			delete data.act ;
+	 			datas.push(data);
+	 		})
+	 		var obj = {'detailList':datas};
+	 		return obj;
+		}"
+		
+		class="form-horizontal">
+	<div style="height: 15px;">
+		<div style="padding-right: 20px; float: right;padding-top: 3px;" >
+		
+		<#if permission["P06PaymentDaysSave"]??>
+		    <button id="accounts_save" class="btn btn-info submit" type="button" onclick="submit_before()">
+				<i class="icon-ok bigger-110"></i>
+				${i18n.get('保存')}
+			</button>
+		</#if>
+		<#if permission["P06PaymentDaysSubmit"]??>
+			<button id="accounts_submit" class="btn btn-info" type="button" onclick="updateStatus('submit')">
+				<i class="icon-ok bigger-110"></i>
+				${i18n.get('提交')}
+			</button>
+		</#if>
+		<#if permission["P06PaymentDaysPostpone"]??>
+			<button id="accounts_apply" class="btn btn-info" type="button" onclick="updateStatus('delay')">
+				<i class="icon-ok bigger-110"></i>
+				${i18n.get('申请延期')}
+			</button>
+		</#if>
+			<button class="btn" type="button" onclick="javascript:api.close()">
+				<i class="icon-undo bigger-110"></i>
+				${i18n.get('关闭')}
+		</button>
+		</div>
+	</div>
+	<p>${i18n.get('账期申请题头')}</p>
+	<div class="main" id="main" style="padding-left: 10px;border-top: 2px solid #e9e9e9 ;" >
+		<table border="0" cellpadding="0" cellspacing="0" style=" table-layout: fixed;" >
+			<tr align="left">
+				<td align="right" width="120px">${i18n.get('申请编号：')}
+				</td>
+				<td align="left" width="250px">
+					<@form.input id="accountsCode"  name="accountsCode" 
+						readonly="readonly"
+						placeholder="" 
+						tip="" 
+						value="${(accountsMaster.accountsCode)!}" 
+						/>
+				</td>
+				<td align="right" width="120px">${i18n.get('申请人：')}
+				</td>
+				<td align="left" width="250px">
+					<@form.input id="proposerName" name="proposerName" 
+						placeholder=""
+						tip="" 
+						readonly="readonly"
+						value="${(accountsMaster.proposerName)!}" />
+					<input id="proposerId" name="proposer" type="hidden" value="${(proposerId)!}" />
+				</td>
+				<td align="right" width="120px">${i18n.get('申请状态：')}
+				</td>
+				<td align="left" width="250px">
+					<@form.select id="status" name="status"  
+						code="ACCOUNTS_STATUS" 
+						idKey='code' 
+						value="${(accountsMaster.status)!}"  /> 
+				</td>
+			</tr>
+			<tr>
+				<td align="right">
+					<strong style="color: red;">*</strong> ${i18n.get('申请单位：')}
+				</td>
+				<td align="left">
+					<@form.autocomplete  id="companyId" name="companyId" 
+		            	idKey='id'
+		            	required="${i18n.get('请选择申请单位')}"
+		            	formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+						url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html'; }"
+		            	value="{id: '${(accountsMaster.companyId)!}',customFullName:'${(accountsMaster.companyName)!}'}"
+		            	onSelect="function(data){
+		            		if( data.id != null && data.id !='' && data.id != 'undefined'){
+		            			$('#companyName').val(data.customFullName);
+		            		}
+		            	}" 
+	            	/>
+	            	<input  id="companyName"  name="companyName" type="hidden" value="${(accountsMaster.companyName)!}" >
+				</td>
+				<td align="right">
+					<strong style="color: red;">*</strong> ${i18n.get('协议账期(天)：')}
+				</td>
+				<td align="left">
+					<@form.input id="periodAgt"  name="periodAgt" 
+						placeholder="" 
+						tip="" 
+						required="${i18n.get('协议账期不能为空')}"
+						value="${(accountsMaster.periodAgt)!}" 
+						/>
+				</td>
+				<td align="right" width="80px">${i18n.get('控制状态：')
+				</td>
+				<td align="left" width="250px">
+					<@form.select id="controlStatus" name="controlStatus"  
+						code="ORDER_CONTROL_STATUS" 
+						idKey='code' 
+						value="${(accountsMaster.controlStatus)!}"  /> 
+				</td>
+			</tr>
+			<tr>
+				<td align="right"><strong style="color: red;">*</strong> ${i18n.get('账期延期(天)：')
+				</td>
+				<td align="left">
+					<@form.input id="periodDelay"  name="periodDelay" 
+						placeholder="" 
+						required="${i18n.get('账期延期不能为空')"
+						tip="" 
+						value="${(accountsMaster.periodDelay)!}" 
+						/>
+				</td>
+				<td align="right">${i18n.get('逾期金额：')</td>
+				<td align="left">	
+					<@form.input id="overdueAmount"  name="overdueAmount" 
+						placeholder="" 
+						tip="" 
+						value="${(accountsMaster.overdueAmount)!}" 
+						/>
+				</td>
+				<td align="right">${i18n.get('延期金额：')</td>
+				<td align="left">
+					<@form.input id="delayAmount"  name="delayAmount" 
+						placeholder="" 
+						readonly = "readonly"
+						tip="" 
+						value="${(accountsMaster.delayAmount)!}" 
+						/>
+				</td>
+			</tr>
+			<tr>
+				<td align="right">${i18n.get('申请日期：')</td>
+				<td align="left" colspan="5">
+					<@form.date id="applyDate"  name="applyDate" 
+						placeholder="" 
+						tip="" 
+						value="${(accountsMaster.applyDate?date)!}" 
+						/>
+				</td>
+			</tr>
+			<tr>
+				<td align="right">${i18n.get('申请原因：')
+				</td>
+				<td align="left" colspan="5">
+					<@form.textArea id="applyReason"  name="applyReason" 
+					width="75px;" 
+					height="5"
+					placeholder="" 
+					tip="" 
+					value="${(accountsMaster.applyReason)!}" 
+					/>
+				</td>
+			</tr>
+		</table>
+		</div>
+		</@form.form>
+		<div id="info" style="padding-top: 20px;">
+			<@plug.tabs tabMain=tabMain></@plug.tabs>
+		</div>
+		</@form.panel>
+	</div>
+</@cui.body2>

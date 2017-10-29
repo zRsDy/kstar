@@ -1,0 +1,148 @@
+@charset "utf-8";
+/*--mytool iconlist style--*/
+#transition{background:url(../images/transition_bg.png) repeat-x 0 0;bottom:74px;height:13px;margin:0 10px;}
+.myToolItem{float:left;height:43px;width:46px;margin:0;}
+.myToolItem a{display:block;height:43px;padding:2px 0 0 0;width:48px;background:url(../images/myTool_a.png) no-repeat 0 0;}
+.myToolItem a:hover{background-position:0 -43px;}
+#icon_list{height:45px;overflow:hidden;margin:0 10px;bottom:29px;}
+.toolshow{position:absolute;left:0;right:0;}
+.toolhide{width:26px;position:absolute;right:0;}
+.infiniteCarousel{width:100%;position:relative;height:45px;background:url(../images/iconMenu_bg.png) repeat-x 0 0;}
+.infiniteCarousel .wrapper{width:90%;overflow:auto;height:45px;margin:0 40px 0 16px;position:absolute;background:none;top:0;left:20px;}
+.infiniteCarousel .wrapper ul{width:90%;list-style-image:none;list-style-position:outside;list-style-type:none;position:absolute;top:0;}
+.infiniteCarousel ul li{display:block;float:left;padding:0;height:43px;width:46px;}
+.infiniteCarousel .arrow{display:block;height:15px;width:9px;background:url(../images/arrow.png) no-repeat 0 0;text-indent:-9999px;position:absolute;top:17px;cursor:pointer;outline:0;}
+.infiniteCarousel .forward{background-position:0 0;right:30px;}
+.infiniteCarousel .back{background-position:0 -30px;left:2px;}
+.infiniteCarousel .forward:hover{background-position:0 -15px;}
+.infiniteCarousel .back:hover{background-position:0 -45px;}
+.seticon{width:26px;height:45px;z-index:50;position:absolute;top:0;right:0;background:#3e5d9a url(../images/blue_bg.png) repeat-x;}
+.seticon ul{width:100%;margin-top:2px;}
+.seticon ul li{display:block;height:22px;width:100%;}
+.seticon .system,.seticon .open,.seticon .close{display:block;height:16px;width:16px;margin:0 5px;text-indent:-9999px;cursor:pointer;outline:0;}
+.seticon .system{background:url(../images/ico_setting.png) no-repeat 0 0;}
+.seticon .open{background:url(../images/ico_show.png) no-repeat 0 0;}
+.seticon .close{background:url(../images/ico_minus.png) no-repeat 0 0;}
+.seticon .system:hover,.seticon .open:hover,.seticon .close:hover{background-position:0 -16px;}
+
+/*win icon*/
+.winicon{display:block;height:36px;width:36px;float:left;margin:2px 5px 0 5px;}
+.defaultwin .wintoplight .winicon{background:url(../images/icons/icon_default.png) no-repeat;}
+.jobwin .wintoplight .winicon{background:url(../images/icons/icon_job.png) no-repeat;}
+.clientwin .wintoplight .winicon{background:url(../images/icons/icon_client.png) no-repeat;}
+.formindexwin .wintoplight .winicon{background:url(../images/icons/icon_formindex.png) no-repeat;}
+.keepformwin .wintoplight .winicon{background:url(../images/icons/icon_keepform.png) no-repeat;}
+.analyzewin .wintoplight .winicon{background:url(../images/icons/icon_analyze.png) no-repeat;}
+.countwin .wintoplight .winicon{background:url(../images/icons/icon_count.png) no-repeat;}
+.toolwin .wintoplight .winicon{background:url(../images/icons/icon_tool.png) no-repeat;}
+.normindexwin .wintoplight .winicon{background:url(../images/icons/icon_normindex.png) no-repeat;}
+.whatifwin .wintoplight .winicon{background:url(../images/icons/icon_whatif.png) no-repeat;}
+.customwin .wintoplight .winicon{background:url(../images/icons/icon_custom.png) no-repeat;}
+.favoritewin .wintoplight .winicon{background:url(../images/icons/icon_favorite.png) no-repeat;}
+.systemwin .wintoplight .winicon{background:url(../images/icons/icon_system.png) no-repeat;}
+.auditwin .wintoplight .winicon{background:url(../images/icons/icon_audit.png) no-repeat;}
+.monitorwin .wintoplight .winicon{background:url(../images/icons/icon_monitor.png) no-repeat;}
+.datatracewin .wintoplight .winicon{background:url(../images/icons/icon_datatrace.png) no-repeat;}
+.cognoswin .wintoplight .winicon{background:url(../images/icons/icon_cognos.png) no-repeat;}
+.navwin .wintoplight .winicon{background:url(../images/icons/icon_nav.png) no-repeat;}
+.weightedwin .wintoplight .winicon{background:url(../images/icons/icon_weighted.png) no-repeat;}
+.marketwin .wintoplight .winicon{background:url(../images/icons/icon_market.png) no-repeat;}
+.economicwin .wintoplight .winicon{background:url(../images/icons/icon_economic.png) no-repeat;}
+.ratingwin .wintoplight .winicon{background:url(../images/icons/icon_rating.png) no-repeat;}
+.inforwin .wintoplight .winicon{background:url(../images/icons/icon_infor.png) no-repeat;}
+.policywin .wintoplight .winicon{background:url(../images/icons/icon_policy.png) no-repeat;}
+.movementwin .wintoplight .winicon{background:url(../images/icons/icon_movement.png) no-repeat;}
+.learningwin .wintoplight .winicon{background:url(../images/icons/icon_learning.png) no-repeat;}
+.topnavwin .wintoplight .winicon{background:url(../images/icons/icon_topnav.png) no-repeat;}
+.informationwin .wintoplight .winicon{background:url(../images/icons/icon_information.png) no-repeat;}
+.zbwin .wintoplight .winicon{background:url(../images/icons/icon_zb.png) no-repeat;}
+.xywin .wintoplight .winicon{background:url(../images/icons/icon_xy.png) no-repeat;}
+.scwin .wintoplight .winicon{background:url(../images/icons/icon_sc.png) no-repeat;}
+.czwin .wintoplight .winicon{background:url(../images/icons/icon_cz.png) no-repeat;}
+.ldwin .wintoplight .winicon{background:url(../images/icons/icon_ld.png) no-repeat;}
+.jgwin .wintoplight .winicon{background:url(../images/icons/icon_jg.png) no-repeat;}
+.wjwin .wintoplight .winicon{background:url(../images/icons/icon_wj.png) no-repeat;}
+.jxwin .wintoplight .winicon{background:url(../images/icons/icon_jx.png) no-repeat;}
+.xewin .wintoplight .winicon{background:url(../images/icons/icon_xe.png) no-repeat;}
+.analysiswin .wintoplight .winicon{background:url(../images/icons/icon_analysis.png) no-repeat;}
+.hywin .wintoplight .winicon{background:url(../images/icons/icon_hy.png) no-repeat;}
+.cpwin .wintoplight .winicon{background:url(../images/icons/icon_cp.png) no-repeat;}
+.qywin .wintoplight .winicon{background:url(../images/icons/icon_qy.png) no-repeat;}
+.khwin .wintoplight .winicon{background:url(../images/icons/icon_kh.png) no-repeat;}
+.macroscopywin .wintoplight .winicon{background:url(../images/icons/icon_macroscopy.png) no-repeat;}
+.competewin .wintoplight .winicon{background:url(../images/icons/icon_compete.png) no-repeat;}
+.mobilitywin .wintoplight .winicon{background:url(../images/icons/icon_mobility.png) no-repeat;}
+.ratewin .wintoplight .winicon{background:url(../images/icons/icon_rate.png) no-repeat;}
+.accreditwin .wintoplight .winicon{background:url(../images/icons/icon_accredit.png) no-repeat;}
+.khwin .wintoplight .winicon{background:url(../images/icons/icon_kh.png) no-repeat;}
+.macroscopywin .wintoplight .winicon{background:url(../images/icons/icon_macroscopy.png) no-repeat;}
+.competewin .wintoplight .winicon{background:url(../images/icons/icon_compete.png) no-repeat;}
+.mobilitywin .wintoplight .winicon{background:url(../images/icons/icon_mobility.png) no-repeat;}
+.ratewin .wintoplight .winicon{background:url(../images/icons/icon_rate.png) no-repeat;}
+.accreditwin .wintoplight .winicon{background:url(../images/icons/icon_accredit.png) no-repeat;}
+.exportwin .wintoplight .winicon{background:url(../images/icons/icon_export.png) no-repeat;}
+.measurewin .wintoplight .winicon{background:url(../images/icons/icon_measure.png) no-repeat;}
+.testwin .wintoplight .winicon{background:url(../images/icons/icon_test.png) no-repeat;}
+.stockswin .wintoplight .winicon{background:url(../images/icons/icon_stocks.png) no-repeat;}
+.groupwin .wintoplight .winicon{background:url(../images/icons/icon_group.png) no-repeat;}
+
+/*foottool icon*/
+.winicon{display:block;height:36px;width:36px;float:left;margin:2px 5px 0 5px;}
+.defaultwin .winicon{background:url(../images/icons/icon_default.png) no-repeat;}
+.jobwin .winicon{background:url(../images/icons/icon_job.png) no-repeat;}
+.clientwin .winicon{background:url(../images/icons/icon_client.png) no-repeat;}
+.formindexwin .winicon{background:url(../images/icons/icon_formindex.png) no-repeat;}
+.keepformwin .winicon{background:url(../images/icons/icon_keepform.png) no-repeat;}
+.analyzewin .winicon{background:url(../images/icons/icon_analyze.png) no-repeat;}
+.countwin .winicon{background:url(../images/icons/icon_count.png) no-repeat;}
+.toolwin .winicon{background:url(../images/icons/icon_tool.png) no-repeat;}
+.normindexwin .winicon{background:url(../images/icons/icon_normindex.png) no-repeat;}
+.whatifwin .winicon{background:url(../images/icons/icon_whatif.png) no-repeat;}
+.customwin .winicon{background:url(../images/icons/icon_custom.png) no-repeat;}
+.favoritewin .winicon{background:url(../images/icons/icon_favorite.png) no-repeat;}
+.systemwin .winicon{background:url(../images/icons/icon_system.png) no-repeat;}
+.auditwin .winicon{background:url(../images/icons/icon_audit.png) no-repeat;}
+.monitorwin .winicon{background:url(../images/icons/icon_monitor.png) no-repeat;}
+.datatracewin .winicon{background:url(../images/icons/icon_datatrace.png) no-repeat;}
+.cognoswin .winicon{background:url(../images/icons/icon_cognos.png) no-repeat;}
+.navwin .winicon{background:url(../images/icons/icon_nav.png) no-repeat;}
+.weightedwin .winicon{background:url(../images/icons/icon_weighted.png) no-repeat;}
+.marketwin .winicon{background:url(../images/icons/icon_market.png) no-repeat;}
+.economicwin .winicon{background:url(../images/icons/icon_economic.png) no-repeat;}
+.ratingwin .winicon{background:url(../images/icons/icon_rating.png) no-repeat;}
+.inforwin .winicon{background:url(../images/icons/icon_infor.png) no-repeat;}
+.policywin .winicon{background:url(../images/icons/icon_policy.png) no-repeat;}
+.movementwin .winicon{background:url(../images/icons/icon_movement.png) no-repeat;}
+.learningwin .winicon{background:url(../images/icons/icon_learning.png) no-repeat;}
+.topnavwin .winicon{background:url(../images/icons/icon_topnav.png) no-repeat;}
+.informationwin .winicon{background:url(../images/icons/icon_information.png) no-repeat;}
+.zbwin .winicon{background:url(../images/icons/icon_zb.png) no-repeat;}
+.xywin .winicon{background:url(../images/icons/icon_xy.png) no-repeat;}
+.scwin .winicon{background:url(../images/icons/icon_sc.png) no-repeat;}
+.czwin .winicon{background:url(../images/icons/icon_cz.png) no-repeat;}
+.ldwin .winicon{background:url(../images/icons/icon_ld.png) no-repeat;}
+.jgwin .winicon{background:url(../images/icons/icon_jg.png) no-repeat;}
+.wjwin .winicon{background:url(../images/icons/icon_wj.png) no-repeat;}
+.jxwin .winicon{background:url(../images/icons/icon_jx.png) no-repeat;}
+.xewin .winicon{background:url(../images/icons/icon_xe.png) no-repeat;}
+.analysiswin .winicon{background:url(../images/icons/icon_analysis.png) no-repeat;}
+.hywin .winicon{background:url(../images/icons/icon_hy.png) no-repeat;}
+.cpwin .winicon{background:url(../images/icons/icon_cp.png) no-repeat;}
+.qywin .winicon{background:url(../images/icons/icon_qy.png) no-repeat;}
+.khwin .winicon{background:url(../images/icons/icon_kh.png) no-repeat;}
+.macroscopywin .winicon{background:url(../images/icons/icon_macroscopy.png) no-repeat;}
+.competewin .winicon{background:url(../images/icons/icon_compete.png) no-repeat;}
+.mobilitywin .winicon{background:url(../images/icons/icon_mobility.png) no-repeat;}
+.ratewin .winicon{background:url(../images/icons/icon_rate.png) no-repeat;}
+.accreditwin .winicon{background:url(../images/icons/icon_accredit.png) no-repeat;}
+.khwin .winicon{background:url(../images/icons/icon_kh.png) no-repeat;}
+.macroscopywin .winicon{background:url(../images/icons/icon_macroscopy.png) no-repeat;}
+.competewin .winicon{background:url(../images/icons/icon_compete.png) no-repeat;}
+.mobilitywin .winicon{background:url(../images/icons/icon_mobility.png) no-repeat;}
+.ratewin .winicon{background:url(../images/icons/icon_rate.png) no-repeat;}
+.accreditwin .winicon{background:url(../images/icons/icon_accredit.png) no-repeat;}
+.exportwin .winicon{background:url(../images/icons/icon_export.png) no-repeat;}
+.measurewin .winicon{background:url(../images/icons/icon_measure.png) no-repeat;}
+.testwin .winicon{background:url(../images/icons/icon_test.png) no-repeat;}
+.stockswin .winicon{background:url(../images/icons/icon_stocks.png) no-repeat;}
+.groupwin .winicon{background:url(../images/icons/icon_group.png) no-repeat;}

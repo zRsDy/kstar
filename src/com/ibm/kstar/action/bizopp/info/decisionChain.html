@@ -1,0 +1,86 @@
+<div class="form-group" >
+<table>
+	<tr>
+		<td width="500px">
+			<div class="col-xs-12">
+			<#-- /lov/member/select.html --> <#if permission["商机界面-决策链-组织关系-新增"]?? > <#assign addURL1 = "'${ctx}/bizOrg/add.html?bid=${(id)!}'"  /></#if>
+
+			<#-- /lov/member/select.html --> <#if permission["商机界面-决策链-组织关系-修改"]?? > <#assign editURL1 = "'${ctx}/bizOrg/edit.html'"  /></#if>
+
+			<#-- /bizOrg/delete.html --> <#if permission["商机界面-决策链-组织关系-删除"]?? > <#assign deleteURL1 =  "'${ctx}/bizOrg/delete.html'"  /></#if>
+
+				<@form.table id="orgRelation"
+							class="col-xs-12"
+				title="${i18n.get('组织关系')}" 
+				url = "${ctx}/bizOrg/page.html?bizOppId=${(id)!}" 
+				rowNum = "10"
+				addURL = "${addURL1!}"
+				editURL= "${editURL1!}"
+				deleteURL = "${deleteURL1!}"
+				colModel = "[
+					{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+					{name:'enterpriseName',label:'${i18n.get('干系方名称')}',hidden:false,width:200,sortable:true,align:'center' },
+					{name:'bizRelationshipLable.name',label:'${i18n.get('业务关系')}',hidden:false,width:200,sortable:true,align:'center' }
+					]" 
+				onSelectRow= "function(selectedData){
+					$('#bizOrgId').val(selectedData.id);
+					
+					reload_contactPerson();
+				}"	
+					> 
+				</@form.table>
+			</div>
+		</td>
+		<td width="500px">
+			<div class="col-xs-12">
+			<#-- 商机界面-决策链-联系人-新增 --> <#if permission["P03BizOppoT3DecisionContactAdd"]?? > <#assign addURL = "'${ctx}/flow/page.html'" /></#if>
+
+			<#-- 商机界面-决策链-联系人-修改 --> <#if permission["P03BizOppoT3DecisionContactEdit"]?? > <#assign editURL = "'${ctx}/flow/page.html'" /></#if>
+
+			<#-- 商机界面-决策链-联系人-删除 --> <#if permission["P03BizOppoT3DecisionContactDelete"]?? > <#assign deleteURL = "'${ctx}/bizContact/delete.html'" /></#if>
+				<@form.table id="contactPerson" 
+				class="col-xs-12"
+				title="${i18n.get('联系人')}" 
+				url = "${ctx}/bizContact/page.html" 
+				rowNum = "10" 
+				addURL = "${addURL!}"
+				editURL= "${editURL!}"
+				deleteURL = "${deleteURL!}"
+				colModel = "[
+					{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+					{name:'role',label:'${i18n.get('角色')}',hidden:false,width:200,sortable:true,align:'center' },
+					{name:'name',label:'${i18n.get('联系人')}',hidden:false,width:100,sortable:true,align:'center' },
+					{name:'duty',label:'${i18n.get('职务')}',hidden:false,width:200,sortable:true,align:'center' },
+					{name:'phonenumber',label:'${i18n.get('联系电话')}',hidden:false,width:100,sortable:true,align:'center' },
+					{name:'decisionWeight',label:'${i18n.get('决策权重')}',hidden:false,width:100,sortable:true,align:'center' },
+					{name:'supportLevel',label:'${i18n.get('对我司支持程度')}',hidden:false,width:100,sortable:true,align:'center' }
+					]" 
+					buttons = "[]" > 
+				<input id="bizOrgId" name= "bizOrgId" type="hidden"  />
+				</@form.table>
+			</div>
+		</td>
+	</tr>
+	
+</table>
+</div>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#add_contactPerson').unbind('click').bind('click', function(){
+			_bizOrgId = $("#bizOrgId").val();
+			if (!_bizOrgId) {
+				alert('${i18n.get('干系方名称不能为空，请选择!')}'); 
+				alert("");
+				return false;
+			}
+			
+		var url = '${ctx}/bizContact/add.html?bizOrgId=' + _bizOrgId;
+		parent.dialog("${i18n.get('联系人')}",url,window);
+	   
+			
+	    });
+	});
+	
+	
+	
+</script>

@@ -1,0 +1,280 @@
+	
+<@pui.body>
+<#if (permission["P01-2PriceAdd"])??>
+	<#assign addURL="'${ctx}/proprice/ptHeadEdit.html'" />
+</#if>
+<#if (permission["P01-2PriceEdit"])??>
+	<#assign editURL="'${ctx}/proprice/ptHeadEdit.html'" />
+</#if>
+<div class="col-xs-12">
+<table style="width: 100%" >
+<tr>
+<td valign="top">
+	<@form.table id="t82" 
+		class="col-xs-12"
+		title="${i18n.get('价格表')}" 
+		url = "${ctx}/proprice/pricetableList.html" 
+		rowNum = "10" 
+		search="true"
+		addURL = "${addURL!}"
+		editURL = "${editURL!}" 
+		colModel = "[
+			{name:'id',label:'${i18n.get('价格头表')}ID',hidden:true,width:100,sortable:false,align:'center' },
+			{name:'priceTableName',label:'${i18n.get('价格表名称')}',hidden:false,width:200,sortable:false,align:'center' },
+			{name:'clientPrice',label:'${i18n.get('是否客户价格')}',hidden:false,width:80,sortable:false,align:'center',formatter:function(cellvalue, options, rowObject){ return checkForm(cellvalue)} },
+			{name:'commonPriceName',label:'${i18n.get('统一标准价格')}',hidden:false,width:80,sortable:false,align:'center'},
+			{name:'isWholesale',label:'${i18n.get('是否批发价')}',hidden:false,width:80,sortable:false,align:'center',formatter:function(cellvalue, options, rowObject){ return checkForm(cellvalue)}},
+			
+			{name:'clientId',label:'${i18n.get('客户')}',hidden:true,width:80,sortable:false,align:'center'},
+			{name:'clientName',label:'${i18n.get('客户')}',hidden:false,width:200,sortable:false,align:'center'},
+			{name:'currency',label:'${i18n.get('货币')}',hidden:true,width:80,sortable:false,align:'center' },
+			
+			{name:'currencyName',label:'${i18n.get('货币')}',hidden:false,width:60,sortable:false,align:'center' },
+			{name:'startDate',label:'${i18n.get('有效开始日期')}',hidden:false,width:90,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+			{name:'endDate',label:'${i18n.get('有效结束日期')}',hidden:false,width:90,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+			{name:'organization',label:'${i18n.get('组织')}',hidden:true,width:180,sortable:false,align:'center' },
+			 {name:'organizationName',label:'${i18n.get('组织')}',hidden:false,width:200,sortable:false,align:'center' }, 
+			{name:'createOrgName',label:'${i18n.get('创建组织')}',hidden:false,width:200,sortable:false,align:'center' },
+			{name:'createrName',label:'${i18n.get('创建人')}',hidden:false,width:70,sortable:false,align:'center' },
+			{name:'createDate',label:'${i18n.get('创建日期')}',hidden:false,width:80,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+			{name:'comments',label:'${i18n.get('说明')}',hidden:false,width:250,sortable:false,align:'center' }
+			]" 
+			
+			 onSelectRow = "function(data,status){
+		 		if($('#layCompLine').css('display') == 'none'){
+		 			$('#layCompLine').show();
+		 		}
+		 		$('#headId').val(data.id);
+		 		$('#organization').val(data.organization);
+		 		reload_t821();
+			 }" 
+			 onComplete = "function(){
+			 	$('#layCompLine').hide();
+			 }"
+			 
+		> 
+		<div class="col-xs-12">
+			<div class="form-group col-xs-2" align="right">${i18n.get('价格表名称 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="priceTableName" size="30" />
+			</div>	
+			<div class="form-group col-xs-2" align="right">${i18n.get('组织 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="organization" size="30" />
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('有效开始日期 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="startDate" class="date-picker" data-date-format="yyyy-mm-dd" />
+			</div>	
+			<div class="form-group col-xs-2" align="right">${i18n.get('有效结束日期 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="endDate" class="date-picker" data-date-format="yyyy-mm-dd" />
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('是否客户价格 ：')}</div>
+			<div class="form-group col-xs-4">
+				<select name="clientPrice">
+					<option value="">${i18n.get('全部')}</option>
+					<option value="0">${i18n.get('否')}</option>
+					<option value="1">${i18n.get('是')}</option>
+				</select>
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('是否统一标准价格 ：')}</div>
+			<div class="form-group col-xs-4">
+				<select name="commonPrice">
+					<option value="">${i18n.get('全部')}</option>
+					<option value="0">${i18n.get('否')}</option>
+					<option value="1">${i18n.get('是')}</option>
+				</select>
+			</div>
+		</div> 
+	</@form.table> 
+	
+	<#if (permission["P01-2PriceLineAdd"])??>
+		<#assign addURL_line="'${ctx}/proprice/priceLineEdit.html?headId='+$('#headId').val() + '&organization='+$('#organization').val()" />
+	</#if>
+	<#if (permission["P01-2PriceLineEdit"])??>
+		<#assign editURL_line="'${ctx}/proprice/priceLineEdit.html?headId='+$('#headId').val()+ '&organization='+$('#organization').val()" />
+	</#if>
+	<#if (permission["P01-2PriceLineDelete"])??>
+		<#assign deleteURL_line="'${ctx}/proprice/priceLineDelete.html?headId='+$('#headId').val()+ '&organization='+$('#organization').val()" />
+	</#if>
+	<#if (permission["P01-2PriceLineImport"])??>
+		<#assign importURL_line="'${ctx}/proprice/priceLineImport.html?headId='+$('#headId').val() + '&organization='+$('#organization').val()" />
+	</#if>
+	<#if (permission["P01-2PriceLineExport"])??>
+		<!-- 自动获取查询条件 -->
+		<#assign exportURL_line="'${ctx}/proprice/priceLineExport.html'" />
+	</#if>
+	<div id="layCompLine">
+	<hr>
+	<@form.table id="t821" 
+		class="col-xs-12"
+		title="${i18n.get('价格表行项目')}" 
+		url = "${ctx}/proprice/priceLineList.html" 
+		rowNum = "10" 
+		search="true"
+		addURL = "${addURL_line!}"
+		editURL = "${editURL_line!}"
+		deleteURL = "${deleteURL_line!}"
+		importURL = "${importURL_line!}"
+		importTempletURL = "${ctx}/proprice/priceLineExportTemplet.html"
+		exportURL = "${exportURL_line!}"
+		colModel = "[
+			{name:'id',label:'',hidden:true,width:100,sortable:false,align:'center' }, 
+			{name:'proId',label:'',hidden:true,width:100,sortable:false,align:'center' }, 
+			{name:'proCode',label:'${i18n.get('产品编码')}',hidden:false,width:100,sortable:false,align:'center' },
+			{name:'proName',label:'${i18n.get('产品名称')}',hidden:false,width:100,sortable:false,align:'center' }, 
+			{name:'materCode',label:'${i18n.get('物料号')}',hidden:false,width:100,sortable:false,align:'center' }, 
+			{name:'proDesc',label:'${i18n.get('产品描述')}',hidden:false,width:100,sortable:false,align:'center' },
+			{name:'proUnit',label:'${i18n.get('单位')}',hidden:false,width:40,sortable:false,align:'center' }, 
+			{name:'proModel',label:'${i18n.get('产品型号')}',hidden:false,width:100,sortable:false,align:'center' },
+			{name:'proLine',label:'${i18n.get('产品线')}',hidden:false,width:100,sortable:false,align:'center' },
+			{name:'proBrand',label:'${i18n.get('品牌')}',hidden:false,width:100,sortable:false,align:'center' },
+			{name:'proPowcap',label:'${i18n.get('功率容量')}',hidden:false,width:100,sortable:false,align:'center' },
+			{name:'saleStatus',label:'${i18n.get('转销状态')}',hidden:false,width:60,sortable:false,align:'center' },
+			{name:'proCost',label:'${i18n.get('产品成本')}',hidden:false,width:100,sortable:false,align:'center' },
+			{name:'catelogPrice',label:'${i18n.get('目录价格')}',hidden:false,width:100,sortable:false,align:'center' },
+		    {name:'catelogRate',label:'${i18n.get('毛利率')}',hidden:false,width:100,sortable:false,align:'center' },
+		    {name:'startDate',label:'${i18n.get('有效期开始时间')}',hidden:false,width:90,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+            {name:'endDate',label:'${i18n.get('有效期结束时间')}',hidden:false,width:90,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+            {name:'price1',label:'${i18n.get('层一价格')}',hidden:false,width:100,sortable:false,align:'center' },
+            {name:'discount1',label:'${i18n.get('层一价折扣率')}',hidden:false,width:100,sortable:false,align:'center' },
+            {name:'number1',label:'${i18n.get('层一数量级')}',hidden:false,width:100,sortable:false,align:'center' },
+            {name:'price2',label:'${i18n.get('层二价格')}',hidden:false,width:100,sortable:false,align:'center' },
+            {name:'discount2',label:'${i18n.get('层二价折扣率')}',hidden:false,width:100,sortable:false,align:'center' },
+            {name:'number2',label:'${i18n.get('层二数量级')}',hidden:false,width:100,sortable:false,align:'center' }, 
+            {name:'price3',label:'${i18n.get('层三价格')}',hidden:false,width:100,sortable:false,align:'center' }, 
+            {name:'discount3',label:'${i18n.get('层三价折扣率')}',hidden:false,width:100,sortable:false,align:'center' }, 
+            {name:'number3',label:'${i18n.get('层三数量级')}',hidden:false,width:100,sortable:false,align:'center' }, 
+            {name:'price4',label:'${i18n.get('层四价格')}',hidden:false,width:100,sortable:false,align:'center' }, 
+            {name:'discount4',label:'${i18n.get('层四价折扣率')}',hidden:false,width:100,sortable:false,align:'center' },
+            {name:'number4',label:'${i18n.get('层四数量级')}',hidden:false,width:100,sortable:false,align:'center' },
+            {name:'price5',label:'${i18n.get('层五价格')}',hidden:false,width:100,sortable:false,align:'center' }, 
+            {name:'discount5',label:'${i18n.get('层五价折扣率')}',hidden:false,width:100,sortable:false,align:'center' },
+            {name:'number5',label:'${i18n.get('层五数量级')}',hidden:false,width:100,sortable:false,align:'center' }, 
+            {name:'price6',label:'${i18n.get('层六价格')}',hidden:false,width:100,sortable:false,align:'center' },
+            {name:'discount6',label:'${i18n.get('层六价折扣率')}',hidden:false,width:100,sortable:false,align:'center' },
+			{name:'number6',label:'${i18n.get('层六数量级')}',hidden:false,width:100,sortable:false,align:'center' }
+		]"
+		buttons = "[
+			{
+	  			id:'addstprdButton',
+	  			label : '${i18n.get('新增批发产品')}',
+				own : true,
+				handler : function(e,rowData){
+					var rowdate= $('#t82').jqGrid('getGridParam','selrow');
+					var line = $('#t82').jqGrid('getRowData',rowdate);
+					if(line.isWholesale == '否'){
+						alert('${i18n.get('价格表非批发类型，不能添加批发产品！')}');
+					}else{
+						$('#selectProductMulti').click();
+					}
+				}
+			}
+		]"
+		> 
+		<div class="col-xs-12">
+			<div class="form-group col-xs-2" align="right">${i18n.get('产品编码 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="productCode" size="30" />
+			</div>	
+			<div class="form-group col-xs-2" align="right">${i18n.get('产品名称 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="productName" size="30" />
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('产品型号 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="proModel" size="30" />
+			</div>
+		</div> 
+		<input type="hidden" name="headId" id ="headId" />
+		<input type="hidden" name="organization" id ="organization" />
+	</@form.table> 
+	</div>
+</td>
+</tr>
+</table>	
+</div>
+
+
+<div style="display: none;" >
+	<@biz.picker_product id="selectProductMulti" 
+		urlFunction="function(){
+			return '${ctx}/common/product/multiSelectList.html?priceTableId=wholesale';
+		}"
+		button="${i18n.get('批量选择产品')}" 
+		callback="function(datas){
+			if(datas){
+         		addRowBatch(datas);
+			 }
+		}"
+	/>
+</div>
+
+
+</@pui.body>
+<script type="text/javascript">
+	$(function(){
+		$('#layCompLine').hide();
+	}); 
+	function checkForm(cellvalue){
+		var ret = '${i18n.get('是')}';
+		if(cellvalue == '0' || cellvalue == undefined){
+			ret = '${i18n.get('否')}';
+		}
+		return ret;
+	}
+	
+	var newrowid = 0;
+	function addRowBatch(datas){
+		var delid = $("#t82").jqGrid('getGridParam','selrow');
+		debugger;
+		var d={lines:[]};
+		
+		$.each(datas,function(i,data){
+			d.lines.push({
+				productID : data.proId
+			})
+		});
+		debugger;
+		d.headId = delid;
+		d = JSON.stringify(d);
+		$.ajax({
+            type: "post",
+            url: "${ctx}/proprice/saveProductPriceLine.html",
+            data: d,
+            async : false,
+            contentType:"application/json;charset=utf-8",
+            dataType: 'json',
+            success : function(result) {
+            	$.each(datas,function(i,data){
+
+        	 		delete data.id ;
+        	 		
+        			data['proCode'] = data.productCode;
+        			data['proName'] = data.productName;
+        			data['materCode'] = data.materielCode;
+        			data['proDesc'] = data.proDesc;
+        			data['proModel'] = data.proModel;
+        			data['saleStatus'] = data.saleStatusLable;
+        				
+        			newrowid = newrowid+1;  
+        		    //将新添加的行插入到第一列  
+        		    $("#t821").jqGrid("addRowData", newrowid, data, "last");  
+        		    //设置grid单元格不可编辑  
+        		    $("#t821").setGridParam({cellEdit:false});  
+        		});
+            },
+            error : function(e){
+            	var msg = eval("(" + e.responseText + ")");
+                if (msg) {
+                    alert(msg.message);
+                } else {
+                    alert("${i18n.get('操作失败，请联系管理员')}");
+                }
+            }
+        });
+	}
+	
+	
+</script>

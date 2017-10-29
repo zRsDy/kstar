@@ -1,0 +1,679 @@
+
+<style>
+	.product_main_info{
+		position:absolute;
+		width: 560px;
+		height: 370px;
+		float: left;
+		border: 1px solid;
+		border-color: #E9E9E9;
+	}
+	.product_line_info{
+		width: 260px;
+		left:570px;
+		position:absolute;
+		height: 255px;
+		border: 1px solid;
+		border-color: #E9E9E9;
+	}
+	.product_sale_info {
+		position:absolute;
+		z-index:2008;
+		left:835px;
+		width:260px;
+		height:210px;
+		border: 1px solid;
+		border-color: #E9E9E9;
+	}
+	.product_ecr_info{
+		position:absolute;
+		left:570px;
+		top:300px;
+		width: 260px;
+		clear:both;
+		height: 110px;
+		border: 1px solid;
+		border-color: #E9E9E9;
+	}
+	.product_supply_info{
+		position:absolute;
+		z-index:2008;
+		left:835px;
+		top:255px;
+		width: 260px;
+		height: 150px;
+		border: 1px solid;
+		border-color: #E9E9E9;
+	}
+	.product_other_info2{
+		width: 260px;
+		left:1100px;
+		width: 305px;
+		position:absolute;
+		height: 259px;
+		border: 1px solid;
+		border-color: #E9E9E9;
+	}
+	.product_other_info{
+		position:absolute;
+		z-index:2008;
+		width: 1132px;
+		top:430px;
+		bottom:90px;
+		height: 180px;
+		border: 1px solid;
+		border-color: #E9E9E9;
+	}
+	table{
+		table-layout: fixed;
+	 	border-collapse: collapse;
+		border-color:#ff0000;
+	}
+	.mainPanel{
+		width:550px;
+		height: 310px;
+		margin-top: 4px;
+	}
+	#top01 table td {
+		text-align: left;
+		vertical-align: middle;
+		word-break: keep-all;
+		height:24px;
+		border-width:1px 1px 1px 1px;
+	}
+	.productFont{
+	 	font-size: 12px;
+	}
+	#submitPanel{
+		position:absolute;
+		z-index:2008;
+		top:605px;
+		width: 1132px;
+		bottom:5px;
+		height: 55px;
+		border: 1px solid;
+		border-color: #E9E9E9;
+	}
+</style>
+<script type="text/javascript">
+	$(document).ready(function(){
+	  	var checkedValue= $("#isSpecialUse").val();
+	  	if(checkedValue == '0'){
+		 	$("#isSpecialUse").removeAttr("checked");
+	  	}else if (checkedValue == '1'){
+		  	$("#isSpecialUse").attr("checked","true");
+	  	}
+	  	var checked2= $("#rohStatus").val();
+	  	if(checked2 == '0'){
+		  	$("#rohStatus").removeAttr("checked");
+	  	}else if (checked2 == '1'){
+		  	$("#rohStatus").attr("checked","true");
+	  	}
+	});
+	function changeCheckValue(){
+		var checked =  $("#isSpecialUse").is(':checked')
+		if(checked == true){
+			$("#isSpecialUse").val('1');
+		 	$("#isSpecialUse").attr("checked","true");
+		}else {
+		 	$("#isSpecialUse").removeAttr("checked");
+		}
+	}
+	function changeCheckValue2(){
+		var checked =  $("#rohStatus").is(':checked')
+		if(checked == true){
+			$("#rohStatus").val('1');
+		 	$("#rohStatus").attr("checked","true");
+		}else {
+		 	$("#rohStatus").removeAttr("checked");
+		}
+	}
+</script>
+
+<@form.form id="t1" success="function(result){
+	var catelogId = '${(id)!}';
+	if(catelogId == ''){
+		alert('${i18n.get('保存成功')}');
+		window.location.href='${ctx}/product/edit.html?id='+result;
+	}else{
+		try{
+			parent.currentParent.reload_t1();
+			api.close();
+		}catch(e){
+			parent.currentParent2.reload_t1();
+			api.close();
+		}
+	}
+	}"
+	autoClose="false" action="${ctx}/product/mainInfoSave.html" class="form-horizontal"
+	>
+<div class="productFont" id="inputPanel">
+<div>
+	<div class = "product_main_info" id = "top01">
+		<p style="width: 560px; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('产品主信息')}</p>
+		<input type="hidden" id="catelogId" name="catelogId" value="${(catelogId)!}" />
+		<table align="center" class="mainPanel">
+			<tr>
+			   	<td width="86px;"><strong style="color: red;">*</strong>${i18n.get('产品名称')}:</td>
+			   	<td width="200px;">
+					<input type="hidden" id="id" name="id" value="${(product.id)!}"/>
+			   		<@form.input id="productName" name="productName" placeholder="${i18n.get('产品名称')}" required="${i18n.get('不能为空')}" value="${(product.productName)!}" />
+			   	</td>
+			 	<td width="86px;"><strong style="color: red;">*</strong>${i18n.get('CRM产品类别')}:</td>
+			    <td width="200px;">
+                    <script type="text/javascript">
+                        function typeChange(obj) {
+                            var crmCategory = obj.value;
+                            crmCategorySelected(crmCategory);
+                            getMaterCode(crmCategory);
+                        }
+                        function crmCategorySelected(crmCategory) {
+                            var selected = crmCategory;
+                            if (selected != '0002' && selected != '0001') {
+                                $('#fatherProCode').val('');
+                                $("#fatherProCode").attr("disabled", "disabled")
+                                $('#selectProduct').hide();
+                                $('#proModelLabel').html('${i18n.get('产品型号')}');
+                                $('#clientCategoryLabel').html('${i18n.get('客户型号')}');
+                                $('#product_other_info2').hide();
+                                $('.proModelValueStyle1').hide();
+                                $('.proModelValueStyle2').show();
+                            } else {
+                                $("#fatherProCode").attr("disabled", false);
+                                $('#selectProduct').show();
+                                $('#proModelLabel').html('<strong style="color: red;">*</strong>${i18n.get('产品型号')}');
+                                $('#clientCategoryLabel').html('<strong style="color: red;">*</strong>${i18n.get('客户型号')}');
+                                $('#product_other_info2').show();
+                                $('.proModelValueStyle1').show();
+                                $('.proModelValueStyle2').hide();
+                            }
+                        }
+                        function getMaterCode(crmCategory) {
+                            var selected = crmCategory;
+                            var myDate = new Date();
+                            $.ajax({
+                                type: "POST",
+                                url: "${ctx}/product/queryVMaterCode.html",
+                                async: true,
+                                data: "selectedID=" + selected + "&dt=" + myDate,
+                                dataType: 'json',
+                                success: function (msg) {
+                                    var datas = eval(msg);
+                                    if (datas.length == 1 && typeof(datas[0].success) != "undefined") {
+                                        $('#vmaterCode').val(datas[0].success);
+                                        $('#productCode').val(datas[0].success);
+                                    } else if (datas.length == 1 && typeof(datas[0].error) != "undefined") {
+                                        $('#vmaterCode').val('');
+                                        $('#productCode').val('');
+                                        $('#fatherProCode').val('');
+                                        alert("${i18n.get('不能生成标准产品！')}");
+                                    }
+                                },
+                                error: function (e) {
+                                    $('#vmaterCode').val('');
+                                    $('#productCode').val('');
+                                    $('#fatherProCode').val('');
+                                    alert("${i18n.get('生成 预定义物料号异常')}： " + e.status + ":" + e.statusText);
+                                }
+                            });
+                        }
+                    </script>
+                    <#if (product.id)??  && (product.id) != ''>
+                    <#--开放产品部门修改“CRM产品分类”功能-->
+                        <@form.select id="crmCategory" name="crmCategory" style="width:163px;" code="crmCategory" idKey='code' value="${(product.crmCategory)!}"  onChange="typeChange(this)" />
+                        <#if (permission["P01-1ProductAdd"])?? || (permission["P01-1ProductEdit"])??>
+                            <script>
+                                <#--修改CRM产品分类为非标/外购产品的时候可以编辑“预定义物料号”字段-->
+                                $(function () {
+                                    var setupMaterCodeAttr = function (value) {
+                                        if (value == '0002' || value == '0005'){
+                                            $("#vmaterCode").removeAttr("readonly");
+                                        } else {
+                                            $("#vmaterCode").attr("readonly","readonly");
+                                        }
+                                    }
+                                    var crmCategory = "${(product.crmCategory)!}";
+                                    setupMaterCodeAttr(crmCategory);
+                                    $("#crmCategory").on("change",function(e){
+                                        setupMaterCodeAttr(this.value);
+                                    });
+
+                                    if (crmCategory) {
+                                        crmCategorySelected(crmCategory);
+                                    }
+                                });
+                            </script>
+                        </#if>
+                        <script type="text/javascript">
+                            $("#crmCategory").attr("disabled", "disabled")
+                        </script>
+                    <#else>
+                        <#if (catelogId)??>
+                            <@form.select id="crmCategory" name="crmCategory" required="${i18n.get('请选择产品类别')}" style="width:163px;"
+                            code="crmCategory&codes=0002,0005" idKey='code' value="${(product.crmCategory)!}" onChange="typeChange(this)" />
+                        <#else>
+                            <@form.select id="crmCategory" name="crmCategory" required="${i18n.get('请选择产品类别')}" style="width:163px;"
+                            code="crmCategory" idKey='code' value="${(product.crmCategory)!}" onChange="typeChange(this)" />
+                        </#if>
+                    </#if>
+
+			    </td>
+			</tr>
+			<tr>
+			  	<td>${i18n.get('英文名')}：</td>
+			  	<td><@form.input id="proEName" name="proEName" placeholder="${i18n.get('英文名')}" value="${(product.proEName)!}" /></td>
+			   	<td>${i18n.get('预定义物料号')}：</td>
+			   	<td><input type="text" readOnly="true" id="vmaterCode" name="vmaterCode" value="${(product.vmaterCode)!}"/></td>
+			</tr>
+			<tr>
+
+				<input type="hidden" name="proModel" id = "proModel" value="${(product.proModel)!}"/>
+
+				<#if (product.id)??  && ((permission["P01-1ProductAdd"])?? || (permission["P01-1ProductEdit"])??)>
+				    <td id="proModelLabel"><strong style="color: red;">*</strong>${i18n.get('产品型号')}：</td>
+				    <td id="proModelValue">
+
+				    	<div class="proModelValueStyle1" >
+				    	<@form.autocomplete
+							id="proModel1"
+							name="proModel1"
+							idKey='name'
+							class="proModelValueStyle1"
+							required="${i18n.get('不能为空')}"
+							style="width:163px;"
+							url="function(){ return '${ctx}/lov/member/autocomplete.html?groupCode=PRODUCTMODE'; }"
+							formatResult="function(data) {return '<div >' + data.name + ' </div>';}"
+							value="{name:'${(product.proModel)!}'}"
+							onSelect="function(data){
+								debugger;
+								$('#proModel').val(data.name);
+							}"
+						/>
+						</div>
+						<div class="proModelValueStyle2" style="display: none">
+						<@form.input id="proModel2" class="proModelValueStyle2" name="proModel2" placeholder="${i18n.get('产品型号')}" style="display:none;" value="${(product.proModel)!}" />
+				    	</div>
+				    	<script type="text/javascript">
+				    		$('#proModel2').change(function(){
+				    			$('#proModel').val($('#proModel2').val());
+				    		})
+				    	</script>
+				    </td>
+
+				 <#else>
+
+				 	<td id="proModelLabel"><strong style="color: red;">*</strong>${i18n.get('产品型号：')}</td>
+				    <td id="proModelValue">
+				    	<div class="proModelValueStyle1" style="display: none">
+				    	<@form.autocomplete
+							id="proModel1"
+							name="proModel1"
+							idKey='name'
+							class="proModelValueStyle1"
+							required="${i18n.get('不能为空')}"
+							style="width:163px;"
+							url="function(){ return '${ctx}/lov/member/autocomplete.html?groupCode=PRODUCTMODE'; }"
+							formatResult="function(data) {return '<div >' + data.name + ' </div>';}"
+							value="{name:'${(product.proModel)!}'}"
+							onSelect="function(data){
+								debugger;
+								$('#proModel').val(data.name);
+							}"
+						/>
+                        </div>
+
+                        <div class="proModelValueStyle2">
+                            <#if (product.id)??  && product.isStandardProduct()>
+                            <#--数据有问题临时取消标准产品产品型号不能修改控制-->
+							<@form.input id="proModel2" class="proModelValueStyle2"  name="proModel2" placeholder="" value="${(product.proModel)!}" />
+						<#else>
+							<@form.input id="proModel2" class="proModelValueStyle2" name="proModel2" placeholder="${i18n.get('产品型号')}" value="${(product.proModel)!}" />
+						</#if>
+						</div>
+				    	<script type="text/javascript">
+				    		$('#proModel2').change(function(){
+				    			$('#proModel').val($('#proModel2').val());
+				    		})
+				    	</script>
+				    </td>
+			   	</#if>
+				<#if canEditProductModel?? && canEditProductModel==false>
+                    <script type="text/javascript">
+                        $('#proModel1').attr("disabled","disabled");
+                        $('#proModel2').attr("readonly", "readonly");
+                    </script>
+				</#if>
+
+			    <td><strong style="color: red;">*</strong>${i18n.get('产品编码:')}</td>
+			    <td><@form.input id="productCode" name="productCode" readonly="readOnly" placeholder="${i18n.get('产品编码')}" required="${i18n.get('不能为空')}" value="${(product.productCode)!}" /></td>
+			</tr>
+			<tr>
+			    <td>${i18n.get('发布状态:')}</td>
+			    <td>
+			    	<@form.select id="uipublishStatus" name="uipublishStatus" style="width:163px;" code="PRODUCT_PUBLISH_PROC" idKey='id' value="${(product.publishStatus)!}" />
+			     	<input type="hidden" id=publishStatus name="publishStatus" value="${(product.publishStatus)!}"/>
+			    	<script type="text/javascript">
+			    		$("#uipublishStatus").attr("disabled","disabled")
+			    	</script>
+			    </td>
+			    <td>${i18n.get('转销状态:')}</td>
+			    <td>
+			    	<@form.select id="uisaleStatus" name="uisaleStatus" style="width:163px;" code="PM_PTS_PROC" idKey='id' value="${(product.saleStatus)!}"/>
+			     	<input type="hidden" id="saleStatus" name="saleStatus" value="${(product.saleStatus)!}"/>
+			     	<script type="text/javascript">
+			    		$("#uisaleStatus").attr("disabled","disabled")
+			    	</script>
+			    </td>
+			</tr>
+			<tr>
+			    <td>${i18n.get('品牌:')}</td>
+			    <td><@form.input id="proBrand" name="proBrand" value="${(product.proBrand)!}" /></td>
+			    <td>${i18n.get('定价状态:')}</td>
+			    <td>
+			     	<@form.select id="uipriceStatus" name="uipriceStatus" style="width:163px;" code="proPriceSpecify" idKey='id' value="${(product.priceStatus)!}"  />
+			      	<input type="hidden" id="priceStatus" name="priceStatus" value="${(product.priceStatus)!}"/>
+			     	<script type="text/javascript">
+			    		$("#uipriceStatus").attr("disabled","disabled")
+			    	</script>
+			    </td>
+			</tr>
+			<tr>
+				<td width="86px;">${i18n.get('物料号:')}</td>
+			   	<td width="200px;"><input type="text" readOnly="true" id="materCode" name="materCode" value="${(product.materCode)!}"/></td>
+				<td>${i18n.get('父产品:')}</td>
+			    <td><@form.input id="fatherProCode" name="fatherProCode" readonly="readOnly" value="${(product.fatherProCode)!}" /></td>
+			</tr>
+			<tr>
+			   	<td>${i18n.get('单位:')}</td>
+			    <td>
+			    	<@form.input id="unit" name="unit" readonly="readOnly" value="${(product.unit)!}" />
+			    </td>
+			    <td></td>
+			    <td>
+			    	<@biz.picker_product id="selectProduct" urlFunction="function(){return '${ctx}/product/selectProductListCondition.html?proModel='+$('#proModel').val()}"
+							button="${i18n.get('选择父产品')}" callback="function(data){if(data){$('#fatherProCode').val(data.id);}}"/>
+					<script type="text/javascript">
+						var crmCategory = $('#crmCategory').val();
+					    if(crmCategory === '0002'){
+					    	$("#fatherProCode").attr("disabled",false);
+					    }else{
+					    	$('#selectProduct').hide();
+					    }
+					</script>
+			    </td>
+			</tr>
+			<tr>
+			   <td>${i18n.get('ERP产品类别:')}</td>
+			    <td>
+			     	<@form.select id="uierpCategory" name="uierpCategory" style="width:163px;" code="erpCategory" idKey='code' value="${(product.erpCategory)!}"  />
+			      	<input type="hidden" id="erpCategory" name="erpCategory" value="${(product.erpCategory)!}"/>
+			     	<script type="text/javascript">
+			    		$("#uierpCategory").attr("disabled","disabled")
+			    	</script>
+			    </td>
+			    <td>${i18n.get('是否RoHS:')}</td>
+			    <td><input name="rohStatus" type="checkbox" id="rohStatus" onclick="changeCheckValue2()" value="${(product.rohStatus)!}"/></td>
+			</tr>
+			<tr>
+			 	<td colspan="1">${i18n.get('产品描述:')}</td>
+			    <td colspan="3"><input type="text" readOnly="true" id="proDesc" name="proDesc" style="width:450px;" value="${(product.proDesc)!}"/></td>
+			</tr>
+			<tr>
+				<td colspan="1">${i18n.get('需求描述:')}</td>
+			    <td colspan="3">
+			 		<input type="text" readOnly="true" id="proRequestDesc" name="proRequestDesc" style="width:450px;" value="${(product.proRequestDesc)!}"/>
+			 		<input type="hidden"  id="proLineID" name="proLineID" value="${(product.proLineID)!}"/>
+			    </td>
+			</tr>
+		</table>
+	</div>
+	<div class="product_line_info">
+		<p style="width: 260px; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('产品分类信息')}</p>
+		<table style="width: 260px; height: 170px;">
+			<tr>
+				<td width="80px">${i18n.get('产品分类:')}</td>
+			    <td width="160px"><input type="text" readOnly="true" id="cproCategory" name="cproCategory" value="${(product.lineBean.cproCategory)!}"/></td>
+			</tr>
+			<tr>
+				<td width="80px">${i18n.get('产品类别:')}</td>
+			    <td width="160px"><input type="text" readOnly="true" id="cproType" name="cproType" value="${(product.lineBean.cproType)!}"/></td>
+			</tr>
+			<tr>
+				<td>${i18n.get('产品系列:')}</td>
+			    <td><input type="text" readOnly="true" id="proSeries" name="proSeries" value="${(product.lineBean.proSeries)!}"/>
+			    </td>
+			</tr>
+			<tr>
+				<td>${i18n.get('功率或容量:')}</td>
+			    <td><input type="text" readOnly="true" id="cproPowcap" name="cproPowcap" value="${(product.lineBean.cproPowcap)!}"/></td>
+			</tr>
+			<tr>
+				<td>${i18n.get('产品管理部:')}</td>
+			    <td><input type="text" readOnly="true" id="proLine" name="proLine" value="${(product.lineBean.proManageDep)!}"/></td>
+			</tr>
+			<tr>
+				<td>${i18n.get('产品组:')}</td>
+			    <td><input type="text" readOnly="true" id="proLine" name="proLine" value="${(product.lineBean.proGroup)!}"/></td>
+			</tr>
+			<tr>
+				<td>${i18n.get('产品线:')}</td>
+			    <td><input type="text" readOnly="true" id="proLine" name="proLine" value="${(product.lineBean.proLine)!}"/></td>
+			</tr>
+		</table>
+	</div>
+	<div class="product_sale_info">
+		<p style="width: 260px; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('销售相关')}</p>
+		<table style="width: 260px; height: 170px;">
+			<tr>
+				<td width="80px">${i18n.get('销售类型:')}</td>
+			    <td width="160px"><@form.select id="saleType" name="saleType" style="width:163px;" code="saleType" idKey='id' value="${(product.saleType)!}" /></td>
+			</tr>
+			<tr>
+				<td>${i18n.get('销售状态:')}</td>
+			    <td><@form.select id="uicsaleStatus" name="uicsaleStatus" style="width:163px;" code="csaleStatus" idKey='id' value="${(product.csaleStatus)!}" /></td>
+			    <input type="hidden" id="csaleStatus" name="csaleStatus" value="${(product.csaleStatus)!}" />
+			    <script type="text/javascript">
+  	                $("#uicsaleStatus").attr("disabled","disabled")
+                </script>
+			</tr>
+			<tr>
+				<td>${i18n.get('原因:')}</td>
+			    <td>
+			    	<@form.select id="uicsaleReason" name="uicsaleReason" style="width:163px;" code="REVISE_REASON" idKey='id' value="${(product.csaleReason)!}" />
+					<input type="hidden" id="csaleReason" name="csaleReason" value="${(product.csaleReason)!}" />
+				    <script type="text/javascript">
+    	                $("#uicsaleReason").attr("disabled","disabled")
+                    </script>
+			    </td>
+			</tr>
+			<tr>
+				<#if (product.id)??  && (product.crmCategory) == '0002'>
+				<td id="clientCategoryLabel"><strong style="color: red;">*</strong>${i18n.get('客户型号:')}</td>
+			    <td><@form.input id="clientCategory" name="clientCategory" value="${(product.clientCategory)!}" required="${i18n.get('不能为空')}" /></td>
+				<#else>
+				<td id="clientCategoryLabel">${i18n.get('客户型号:')}</td>
+			    <td><@form.input id="clientCategory" name="clientCategory" value="${(product.clientCategory)!}" /></td>
+			    </#if>
+			</tr>
+			<tr>
+				<td>${i18n.get('供应商:')}</td>
+			    <td><@form.input id="clientCode" name="clientCode" value="${(product.clientCode)!}" /></td>
+			</tr>
+			<tr>
+			    <td width="70px">${i18n.get('是否专用料:')}</td>
+			    <td width="180px"><input name="isSpecialUse" type="checkbox" id="isSpecialUse" onclick="changeCheckValue()" value="${(product.isSpecialUse)!}"/></td>
+			</tr>
+		</table>
+	</div>
+	<div class="product_ecr_info">
+		<p style="width: 260px; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('工艺改造')}</p>
+		<table style="width: 260px; height: 80px;">
+			<tr>
+				<td width="80px">${i18n.get('ECR变更类型:')}</td>
+			    <td width="1600px"><input type="text" readOnly="true" id="changeType" name="changeType" value="${(product.ecrBean.changeType)!}"/></td>
+			</tr>
+			<tr>
+				<td>${i18n.get('ECR最近生效时间:')}</td>
+			    <td width="160px"><input type="text" readOnly="true" id="nearEffectTime" name="nearEffectTime" value="${(product.ecrBean.nearEffectTime)!}"/></td>
+			</tr>
+			<tr>
+				<td></td>
+			    <td></td>
+			</tr>
+		</table>
+	</div>
+	<div class="product_supply_info">
+		<p style="width: 260px; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('供应链')}</p>
+		<table style="width: 260px; height: 100px;">
+			<tr>
+				<td width="80px">${i18n.get('所在仓库:')}</td>
+			    <td width="160px"><input name="wareHouse" readOnly="true"  type="text" id="wareHouse" value="${(product.wareHouse)!}"/></td>
+			</tr>
+			<tr>
+				<td>${i18n.get('仓库代码:')}</td>
+			    <td><input type="text" readOnly="true" id="wareHouseNumber" name="wareHouseNumber" value="${(product.wareHouseNumber)!}"/></td>
+			</tr>
+			<tr>
+				<td>${i18n.get('库存数量:')}</td>
+			    <td><input type="text" readOnly="true" id="stockNumber" name="stockNumber" value="${(product.stockNumber)!}"/></td>
+			</tr>
+		</table>
+	</div>
+</div>
+<div id="product_other_info2" class="product_other_info2" <#if !(product.id)??  || (product.crmCategory) != '0002'>style="display:none;"</#if>">
+	<p style="width: 303px; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('非标')}</p>
+	<table style="width: 1130px; height: 130px;">
+		<tr>
+			<td width="80px">${i18n.get('修改硬件:')}</td>
+		    <td>
+		    	<@form.input id="modifyHardware" name="modifyHardware" style="width:220px;" value="${(product.modifyHardware)!}" />
+		    </td>
+		</tr>
+		<tr>
+		    <td width="80px">${i18n.get('增加功能:')}</td>
+		    <td>
+		    	<@form.input id="addFunction" name="addFunction" style="width:220px;" value="${(product.addFunction)!}" />
+		    </td>
+		</tr>
+		<tr>
+			<td>${i18n.get('更改参数:')}</td>
+		    <td>
+		    	<@form.input id="modifyParamter" name="modifyParamter" style="width:220px;" value="${(product.modifyParamter)!}" />
+		    </td>
+		</tr>
+		<tr>
+		    <td>${i18n.get('机箱尺寸/外观变更:')}</td>
+		    <td>
+		    	<@form.input id="chassisSize" name="chassisSize" style="width:220px;" value="${(product.chassisSize)!}" />
+		    </td>
+		</tr>
+		<tr>
+			<td>${i18n.get('商品化资料:')}</td>
+		    <td>
+		    	<@form.input id="commercialData" name="commercialData" style="width:220px;" value="${(product.commercialData)!}" />
+		    </td>
+		</tr>
+		<tr>
+		    <td>${i18n.get('增加随机附件:')}</td>
+		    <td>
+		    	<@form.input id="randomAttach" name="randomAttach" style="width:220px;" value="${(product.randomAttach)!}" />
+		    </td>
+		</tr>
+		<tr>
+			<td>${i18n.get('其他:')}</td>
+		    <td>
+		    	<@form.input id="other" name="other" style="width:220px;" value="${(product.other)!}" />
+		    </td>
+		</tr>
+	</table>
+</div>
+<div class="product_other_info">
+	<p style="width: 1130px; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('其它')}</p>
+	<table style="width: 1130px; height: 130px;">
+		<tr>
+			<td width="90px">${i18n.get('毛重:')}</td>
+		    <td width="160px"><input name="crossWeight" type="text" readOnly="true" id="crossWeight" value="${(product.crossWeight)!}"/> </td>
+		    <td width="90px">${i18n.get('净重:')}</td>
+		    <td width="160px"><input name="netWeight" type="text" readOnly="true" id="netWeight" value="${(product.netWeight)!}"/></td>
+		    <td width="90px">${i18n.get('海关料号:')}</td>
+		    <td td width="160px"><@form.input id="customsCode" name="customsCode" maxlength="12" value="${(product.customsCode)!}" /></td>
+		    <td width="90px"></td>
+		    <td td width="160px">
+		</tr>
+		<tr>
+			<td width="90px">${i18n.get('产品长(mm):')}</td>
+		    <td width="160px"><input name="proLength" type="text" readOnly="true" id="proLength" value="${(product.proLength)!}"/></td>
+		    <td width="80px">${i18n.get('产品宽(mm):')}</td>
+		    <td width="160px"><input name="proWidth" type="text" readOnly="true" id="proWidth" value="${(product.proWidth)!}"/></td>
+		    <td width="90px">${i18n.get('产品高(mm):')}</td>
+		    <td width="160px"><input name="proHight" type="text" readOnly="true" id="proHight" value="${(product.proHight)!}"/></td>
+		    <#if (product.proHight)??  && (product.proWidth)?? && (product.proLength)??>
+		    <td width="90px">${i18n.get('产品体积(mm3):')}</td>
+		    <td width="160px">${(product.proHight) * (product.proWidth)*(product.proLength)}</td>
+		    <#else>
+		    <td width="90px"></td>
+		    <td width="160px"></td>
+			</#if>
+		</tr>
+		<tr>
+			<td>${i18n.get('包装长(mm):')}</td>
+		    <td><input name="proWrapLength" type="text" readOnly="true" id="proWrapLength" value="${(product.proWrapLength)!}"/></td>
+		    <td>${i18n.get('包装宽(mm):')}</td>
+		    <td><input name="proWrapWidth" type="text" readOnly="true" id="proWrapWidth" value="${(product.proWrapWidth)!}"/></td>
+		    <td>${i18n.get('包装高(mm):')}</td>
+		    <td><input name="proWrapHight" type="text" readOnly="true" id="proWrapHight" value="${(product.proWrapHight)!}"/></td>
+		    <#if (product.proWrapHight)??  && (product.proWrapWidth)?? && (product.proWrapLength)??>
+		    <td>${i18n.get('包装体积(mm3):')}</td>
+		    <td>${(product.proWrapHight) * (product.proWrapWidth)*(product.proWrapLength)}</td>
+		    <#else>
+		    <td width="90px"></td>
+		    <td width="160px"></td>
+		    </#if>
+		</tr>
+		<tr>
+			<td>${i18n.get('装柜数量(20尺平柜):')}</td>
+		    <td><input name="cabinet20Flat" type="text" readOnly="true" id="cabinet20Flat" value="${(product.cabinet20Flat)!}"/></td>
+		    <td>${i18n.get('装柜数量(20尺重柜):')}</td>
+		    <td><input name="cabinet20Weight" type="text" readOnly="true" id="cabinet20Weight" value="${(product.cabinet20Weight)!}"/></td>
+		    <td>${i18n.get('装柜数量(40尺普柜):')}</td>
+		    <td><input name="cabinet40Flat" type="text" readOnly="true" id="cabinet40Flat" value="${(product.cabinet40Flat)!}"/></td>
+		    <td>${i18n.get('装柜数量(40尺高柜):')}</td>
+		    <td><input name="cabinet40Hight" type="text" readOnly="true" id="cabinet40Hight" value="${(product.cabinet40Hight)!}"/></td>
+		</tr>
+	</table>
+</div>
+
+<div class="clearfix form-actions" id="submitPanel">
+<div class="col-md-offset-5 col-md-7">
+	<#if type ?? && type="ChanPinLieBiao">
+		<#if (permission["P01-1ProductListSave"])??>
+            <button class="btn btn-info submit" type="button">
+                <i class="icon-ok bigger-110"></i>${i18n.get('保存')}
+            </button>
+		</#if>
+	<#elseif type ?? && type="XiaoShouMuLu">
+		<#if (permission["P01-1ProductCatalogSave"])??>
+            <button class="btn btn-info submit" type="button">
+                <i class="icon-ok bigger-110"></i>${i18n.get('保存')}
+            </button>
+		</#if>
+	<#elseif type ?? && type="FeiBiaoWaiGouShenQing">
+		<#if (permission["P01-1FeiBiaoWaiGouSave"])??>
+            <button class="btn btn-info submit" type="button">
+                <i class="icon-ok bigger-110"></i>${i18n.get('保存')}
+            </button>
+		</#if>
+	</#if>
+
+    &nbsp; &nbsp; &nbsp;
+    <button class="btn" type="button" onclick="javascript:api.close()">
+        <i class="icon-undo bigger-110"></i>${i18n.get('关闭')}
+    </button>
+</div>
+</div>
+</div>
+</@form.form>
+
+
+
+

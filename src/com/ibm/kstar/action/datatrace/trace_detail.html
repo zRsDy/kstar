@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>${i18n.get('数据追踪')}</title>
+
+<link rel="stylesheet" href="${ctx}/assets/easyui/css/themes/default/easyui.css" />
+<link rel="stylesheet" href="${ctx}/assets/easyui/css/themes/icon.css" />
+
+
+
+<style type="text/css">
+html{
+	-webkit-touch-callout: none;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+	border: 0 none;
+}
+body{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	top: 0;
+	left: 0;
+	font-family: Microsoft YaHei,STXihei,SimSun,sans-serif;
+	font-size: 12px;
+	background-repeat: repeat;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-webkit-touch-callout: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+</style>
+
+
+<script type="text/javascript" src='${ctx}/assets/js/jquery-2.0.3.min.js'></script>
+<script type="text/javascript" src="${ctx}/assets/easyui/js/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="${ctx}/assets/easyui/js/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="${ctx}/assets/js/ajax.js"></script>
+
+</head>
+<body>
+
+	<table class="easyui-datagrid" style="width:100%;height:100%" id="traceDetailList"></table>
+
+	<!-- <div id="tb" style="height:auto;">
+	    <div style="padding-top: 1px;padding-bottom: 1px;">
+	    	<input class="easyui-textbox" style="width:265px;height: 25px;" data-options="label:'用户名/账号/岗位/组织:',labelWidth:135" id="qryCondition">
+	    	<input class="easyui-datetimebox" style="width:187px;height: 25px;" data-options="label:'开始时间:',labelWidth:57"  id="startTime">
+	    	<input class="easyui-datetimebox" style="width:187px;height: 25px;" data-options="label:'结束时间:',labelWidth:57"  id="endTime">
+	        <a href="javascript:void(0)" class="easyui-linkbutton" style="height: 25px;" onclick="reload()">&nbsp;&nbsp;查询&nbsp;&nbsp;</a>
+	        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	        <label id="tip"></label>
+	    </div>
+	</div> -->
+</body>
+<script type="text/javascript">
+
+
+$(document).ready(function(){
+	$('#traceDetailList').datagrid({
+		striped: true,
+		singleSelect: true,
+		url:'${ctx}/datatrace/traceDetailPage.html?pkValue=${pkValue}&tableName=${tableName}&operateDate=${operateDate}',
+	    columns:[[    
+	        {field:'colName',title:'${i18n.get('字段名')}',align:'right',resizable:true},
+	        {field:'colComment',title:'${i18n.get('字段注释')}',resizable:true},
+	        {field:'oldValue',title:'${i18n.get('旧值')}',resizable:true},
+	        {field:'newValue',title:'${i18n.get('新值')}',resizable:true}
+	    ]]
+	});
+});
+</script>
+</html>
+
+	

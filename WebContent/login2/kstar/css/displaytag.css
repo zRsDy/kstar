@@ -1,0 +1,24 @@
+div.exportlinks{background:#fff url(../images/exportlinks_bg.png) repeat-x 0 0;border-left:1px solid #ccc;border-right:1px solid #ccc;border-bottom:1px solid #ccc;border-top:none;padding:0 10px;height:32px;line-height:32px;text-align:left;margin-top:0;}
+span.export{padding:0 2px 0 30px;display:inline;display:inline-block;vertical-align:middle;cursor:pointer;color:#0f1c56;}
+span.export:hover{color:#5594e1;}
+span.excel{background:url(../images/ico_file_excel.png) no-repeat 0 center;}
+span.csv{background:url(../images/ico_file_csv.png) no-repeat 0 center;}
+span.xml{background:url(../images/ico_file_xml.png) no-repeat 0 center;}
+span.pdf{background-image:url(../images/ico_file_pdf.png) 0 center;}
+span.rtf{background-image:url(../images/ico_file_rtf.png) 0 center;}
+div.pagebanner{background:url(../images/page_bg.png) repeat-x 0 100%;border-left:1px solid #ccc;border-right:1px solid #ccc;border-bottom:none;border-top:1px solid #ccc;padding:4px 10px;height:24px;line-height:24px;text-align:right;color:#333;white-space:nowrap;word-break:keep-all;}
+div.pagebanner a.pagea{background:url(../images/page_a_r.png) no-repeat 100% 0;display:inline-block;height:24px;padding:0 8px 0 0;margin:0 2px;vertical-align:middle;}
+div.pagebanner a.pagea span{background:url(../images/page_a_l.png) no-repeat 0 0;color:#0a70bc;display:inline-block;height:24px;line-height:23px;padding:0 2px 0 10px;font-weight:bold;float:none;}
+div.pagebanner a.pagea:hover{color:#333;background:url(../images/page_a_rhover.png) no-repeat 100% 0;}
+div.pagebanner a.pagea:hover span{color:#4f788e;background:url(../images/page_a_lhover.png) no-repeat 0 0;}
+div.pagebanner a.pagestrong{background:none;padding:5px 0 3px;margin:0;}
+div.pagebanner a.pagestrong span{color:#4f788e;background:none;padding:5px 10px 3px 10px;font-weight:bold;}
+div.pagebanner a.pagebu{display:0;display:inline-block;height:24px;width:26px;vertical-align:middle;margin:0 3px;}
+div.pagebanner a.first{background:url(../images/page_first.png) 0 0;}
+div.pagebanner a.first:hover{background:url(../images/page_first_hover.png) 0 0;}
+div.pagebanner a.prev{background:url(../images/page_prev.png);}
+div.pagebanner a.prev:hover{background:url(../images/page_prev_hover.png) 0 0;}
+div.pagebanner a.next{background:url(../images/page_next.png) 0 0;}
+div.pagebanner a.next:hover{background:url(../images/page_next_hover.png) 0 0;}
+div.pagebanner a.last{background:url(../images/page_last.png) 0 0;}
+div.pagebanner a.last:hover{background:url(../images/page_last_hover.png) 0 0;}

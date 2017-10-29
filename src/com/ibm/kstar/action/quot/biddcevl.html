@@ -1,0 +1,46 @@
+
+
+<#if (permission["P04T7ReviewHistoryFlowchar"])??>
+	<#assign ifbiddcevlview="true" />
+</#if>
+
+<#if (permission["P04T7ReviewHistoryRevHistory"])??>
+	<#assign ifbiddcevlprocess="true" />
+</#if>
+
+
+
+	<@form.table id="biddcevl" 
+	class="col-xs-12"
+	title="${i18n.get('审批历史')}" 
+	url = "${ctx}/quotprocess/biddcevlPage.html?qid=${qid}"  
+	rowNum = "30" 
+	colModel = "[ 
+		{name:'id',hidden:true,sortable:false,align:'center' },
+		{name:'processDefinitionName',label:'${i18n.get('流程名称')}',hidden:false,width:200,sortable:false,align:'center' },
+		{name:'creatorName',label:'${i18n.get('发起人')}',hidden:false,width:90,sortable:false,align:'center' },
+		{name:'operatorName',label:'${i18n.get('当前处理人')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'status',label:'${i18n.get('状态')}',hidden:false,width:200,sortable:false,align:'center' },
+		{name:'comment',label:'${i18n.get('审核意见')}',hidden:true,width:200,sortable:false,align:'center' },
+		{name:'startTime',label:'${i18n.get('开始时间')}',hidden:false,width:150,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate(cellvalue) }},
+		{name:'endTime',label:'${i18n.get('结束时间')}',hidden:false,width:150,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate(cellvalue) }}
+		]"
+		onSelectRow= "function(selectedData){
+		}"
+		buttons = "[
+					  	{		id:'view',
+					  			label : '${i18n.get('审批历史')}',
+					  			own : ${ifbiddcevlview!'false'},
+					  			handler : function(e,rowData){
+
+					  				if(!selected_biddcevl){
+										alert('${i18n.get('没有选中任何数据')}!');
+										return;
+									}
+									javascript:parent.dialog('${i18n.get('流程表单')}', '${ctx}/flow/flowHistory.html?id='+selected_biddcevl.id, window);
+					  			}
+					  	}
+		]" > 
+	</@form.table> 
+	
+

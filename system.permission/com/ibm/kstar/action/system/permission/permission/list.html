@@ -1,0 +1,66 @@
+<@pui.body> 
+		<div class="col-xs-12">
+			<table style="width: 100%" >
+				<tr>
+					<#if lovGroup?? && lovGroup.treeFlag?? && lovGroup.treeFlag == 'Y'>
+						<td id="treeTd" style="width: 300px" valign="top">
+							<@form.panel title="${i18n.get('维度树')}" style='height:100'>
+								<@plug.tree 
+								checkbox="false" 
+								id="tree1" 
+								asyncUrl='${ctx}/permission/tree.html?groupId=${lovGroup.id}'
+								onClick=" function(event, treeId, treeNode){
+							  		$('#parentId').val(treeNode.id);
+							  		reload_t1();
+							  	}"
+							  	onRightClick="function(event, treeId, treeNode) {
+								   	var treeObj = $.fn.zTree.getZTreeObj(treeId);
+									var nodes = treeObj.getNodes();
+									if (nodes.length>0) {
+										treeObj.cancelSelectedNode();
+									}
+									$('#parentId').val('');
+									reload_t1();
+								}"
+								/>
+							</@form.panel>
+						</td>
+					</#if>
+					<td valign="top">
+					<@form.table id="t1"
+						class="col-xs-12"
+						shrinkToFit = 'true'
+						title="${i18n.get('权限')}"
+						url = "${ctx}/permission/page.html?groupId=${lovGroup.id}"
+						rowNum = "20"
+						addURL = "'${ctx}/permission/add.html?groupId=${lovGroup.id}&parentId=' + $('#parentId').val()"
+						editURL = "'${ctx}/permission/edit.html'"
+						deleteURL = "'${ctx}/permission/delete.html'"
+						colModel = "[
+						  { name : 'id',    label : 'id', hidden : true , width : 0,sortable:false,align:'center' }, 
+						  { name : 'code', label : '${i18n.get('编码')}', width : 150 ,sortable:false}, 
+						  { name : 'name', label : '${i18n.get('名称')}', width : 150 ,sortable:false },
+						  { name : 'namePath', label : '${i18n.get('权限路径')}', hidden : false, width : 350 ,sortable:false },
+						  { name : 'optTxt1', label : '${i18n.get('访问路径')}', hidden : false, width : 350 ,sortable:false },
+						  { name : 'memo', label : '${i18n.get('备注')}', hidden : true ,sortable:false }
+						  ]"
+						>
+						<div class="col-xs-12">
+							<input type="hidden" id="parentId" name="parentId" />
+							<div class="form-group col-xs-3">
+								<input type="text" id="searchKey" name="searchKey" placeholder="${i18n.get('查询关键字')}" />
+							</div>
+							<div class="form-group col-xs-2">
+								<button type="submit" class="btn btn-info" > 
+									<i class="icon-search bigger-110"></i>
+									${i18n.get('查询')}
+								</button>
+							</div>
+						</div>
+						</@form.table>
+					</td>
+				</tr>
+			</table>	
+		</div>
+		
+</@pui.body>

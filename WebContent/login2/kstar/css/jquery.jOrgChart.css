@@ -1,0 +1,73 @@
+/* Draw the lines */
+.jOrgChart .line{height:10px;width:2px;}
+.jOrgChart .down{background-color:#4f787e;margin:0 auto;}
+.jOrgChart .top{border-top:2px solid #4f787e;}
+.jOrgChart .left{border-right:2px solid #4f787e;}
+.jOrgChart .right{border-left:2px solid #4f787e;}
+
+/* node cell */
+.jOrgChart td{text-align:center;vertical-align:top;padding:0;}
+/* The node */
+.jOrgChart .node{display:inline-block;min-width:15px;min-height:15px;z-index:10;margin:0 2px;font-weight:bold;}
+
+/* jQuery drag 'n drop */
+.drag-active{border-style:dotted!important;}
+.drop-hover{border-color:#E05E00!important;border-style:solid!important;}
+
+.brand{color:#E05E00!important;}
+#orgchart{background:#fff;margin:10px;}
+#show-list{cursor:pointer;}
+.alert-message{margin:2px 0;}
+
+#showChart{overflow:auto;}
+.jOrgChart{padding:20px;}
+.jOrgChart table{margin:0 auto;}
+
+.jOrgChart .node{background:#fff;border:1px solid #4f787e;border-radius:4px;-moz-border-radius:4px;box-shadow:0 2px 3px #999;-moz-box-shadow:0 2px 3px #999;-webkit-box-shadow:0 2px 3px #999;}
+.node p{padding:2px;}
+
+.chart_blue1{background:#134f7b url(../images/orgchartbg.png) repeat-x 0 100%;border:1px solid #579bc7;border-radius:4px;-moz-border-radius:4px;padding:7px;color:#fff;min-width:50px;min-height:20px;-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;}
+.chart_blue1 a{color:#fff;text-decoration:none;}
+.chart_blue1:hover{background:#134f7b ;}
+
+.chart_blue2{background:#1c6397 url(../images/orgchartbg.png) repeat-x 0 100%;border:1px solid #579bc7;border-radius:4px;-moz-border-radius:4px;padding:7px;color:#fff;min-width:50px;min-height:20px;-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;}
+.chart_blue2 a{color:#fff;text-decoration:none;}
+.chart_blue2:hover{background:#1c6397;}
+
+.chart_blue3{background:#236ca1 url(../images/orgchartbg.png) repeat-x 0 100%;border:1px solid #579bc7;border-radius:4px;-moz-border-radius:4px;padding:7px;color:#fff;min-width:50px;min-height:20px;-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;}
+.chart_blue3 a{color:#fff;text-decoration:none;}
+.chart_blue3:hover{background:#236ca1;}
+
+.chart_blue4{background:#3084c0 url(../images/orgchartbg.png) repeat-x 0 100%;border:1px solid #579bc7;border-radius:4px;-moz-border-radius:4px;padding:7px;color:#fff;min-width:50px;min-height:20px;-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;}
+.chart_blue4 a{color:#fff;text-decoration:none;}
+.chart_blue4:hover{background:#3084c0;}
+
+.chart_blue5{background:#4389b9 url(../images/orgchartbg.png) repeat-x 0 100%;border:1px solid #579bc7;border-radius:4px;-moz-border-radius:4px;padding:7px;color:#fff;min-width:50px;min-height:20px;-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;}
+.chart_blue5 a{color:#fff;text-decoration:none;}
+.chart_blue5:hover{background:#4389b9;}
+
+.chart_blue7{background:#579bc7 url(../images/orgchartbg.png) repeat-x 0 100%;border:1px solid #579bc7;border-radius:4px;-moz-border-radius:4px;padding:7px;color:#fff;min-width:50px;min-height:20px;-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;}
+.chart_blue7 a{color:#fff;text-decoration:none;}
+.chart_blue7:hover{background:#579bc7;}
+
+.chart_red{background:#FF7F00  repeat-x 0 100%;border:1px solid #579bc7;border-radius:4px;-moz-border-radius:4px;padding:7px;color:#fff;min-width:50px;min-height:20px;-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;}
+.chart_red a{color:#fff;text-decoration:none;}
+.chart_red:hover{background:#FF7F00;}
+
+.chart_yellow{background:#FFFF00  repeat-x 0 100%;border:1px solid #579bc7;border-radius:4px;-moz-border-radius:4px;padding:7px;color:#fff;min-width:50px;min-height:20px;-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;}
+.chart_yellow a{color:#fff;text-decoration:none;}
+.chart_yellow:hover{background:#FFFF00;}
+
+.chart_green{background:#00FF00  repeat-x 0 100%;border:1px solid #579bc7;border-radius:4px;-moz-border-radius:4px;padding:7px;color:#fff;min-width:50px;min-height:20px;-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;}
+.chart_green a{color:#fff;text-decoration:none;}
+.chart_green:hover{background:#00FF00;}
+
+.chart_blue1nohover{background:#134f7b url(../images/orgchartbg.png) repeat-x 0 100%;border:1px solid #579bc7;border-radius:4px;-moz-border-radius:4px;padding:7px;color:#fff;min-width:50px;min-height:20px;-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;}
+.chart_blue2nohover{background:#1c6397 url(../images/orgchartbg.png) repeat-x 0 100%;border:1px solid #579bc7;border-radius:4px;-moz-border-radius:4px;padding:7px;color:#fff;min-width:50px;min-height:20px;-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;}
+.chart_blue3nohover{background:#236ca1 url(../images/orgchartbg.png) repeat-x 0 100%;border:1px solid #579bc7;border-radius:4px;-moz-border-radius:4px;padding:7px;color:#fff;min-width:50px;min-height:20px;-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;}
+.chart_blue4nohover{background:#3084c0 url(../images/orgchartbg.png) repeat-x 0 100%;border:1px solid #579bc7;border-radius:4px;-moz-border-radius:4px;padding:7px;color:#fff;min-width:50px;min-height:20px;-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;}
+.chart_blue5nohover{background:#4389b9 url(../images/orgchartbg.png) repeat-x 0 100%;border:1px solid #579bc7;border-radius:4px;-moz-border-radius:4px;padding:7px;color:#fff;min-width:50px;min-height:20px;-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;}
+.chart_blue7nohover{background:#579bc7 url(../images/orgchartbg.png) repeat-x 0 100%;border:1px solid #579bc7;border-radius:4px;-moz-border-radius:4px;padding:7px;color:#fff;min-width:50px;min-height:20px;-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;}
+.chart_rednohover{background:#FF7F00  repeat-x 0 100%;border:1px solid #579bc7;border-radius:4px;-moz-border-radius:4px;padding:7px;color:#fff;min-width:50px;min-height:20px;-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;}
+.chart_yellownohover{background:#FFFF00  repeat-x 0 100%;border:1px solid #579bc7;border-radius:4px;-moz-border-radius:4px;padding:7px;color:#fff;min-width:50px;min-height:20px;-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;}
+.chart_greennohover{background:#00FF00  repeat-x 0 100%;border:1px solid #579bc7;border-radius:4px;-moz-border-radius:4px;padding:7px;color:#fff;min-width:50px;min-height:20px;-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;}

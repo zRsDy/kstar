@@ -1,0 +1,22 @@
+@charset "utf-8";
+/*--reset--*/
+html,body,div,span,applet,object,iframe,img,
+font,h1,h2,h3,h4,h5,h6,p,strong,em,acronym,strong,b,u,i,del,dfn,ins,
+dl,dt,dd,ol,ul,li,
+table,caption,tbody,tfoot,thead,tr,th,td,
+input,textarea,select,a,hr,code,pre
+form,fieldset,label,legend{list-style-type:none;margin:0;padding:0;border:0;outline:0;background:transparent;font-family:"微软雅黑","宋体",Tahoma, Geneva,sans-serif;font-size:12px;}
+ol,ul{list-style:none;}
+p,li {word-wrap:break-word;}
+:focus{outline:0;-moz-outline-style:none;}
+a,a:hover{cursor:pointer;outline:none;text-decoration:none;}
+table{border-collapse:collapse;border-spacing:0;}
+img,input,select{vertical-align:middle;}
+h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}
+q:before,q:after{content:'';}
+article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block;}
+iframe{border:none;}
+/*--wrap--*/
+html,body{height:100%;overflow:hidden;}
+#wrap{height:100%;}
+/*modify line 20 and 21 21line add overflow-x,20 line pass overflow:hidden*/

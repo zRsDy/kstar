@@ -1,0 +1,40 @@
+<#if (permission["P01-1ProductClientAdd"])??>
+	<#assign addURL_t7="'${ctx}/product/clientEdit.html?productID=${id}'" />
+</#if>
+<#if (permission["P01-1ProductClientEdit"])??>
+	<#assign editURL_t7="'${ctx}/product/clientEdit.html?productID=${id}'" />
+</#if>
+<#if (permission["P01-1ProductClientDelete"])??>
+	<#assign deleteURL_t7="'${ctx}/product/clientDelete.html'" />
+</#if>
+
+<@form.table id="t7" shrinkToFit="true" 
+	class="col-xs-12"
+	title="${i18n.get('客户')}" 
+	url = "${ctx}/product/clientList.html?id=${id}" 
+	rowNum = "5" 
+	search='false'
+	addURL = "${addURL_t7!}"
+	editURL = "${editURL_t7!}"
+	deleteURL = "${deleteURL_t7!}" 
+	colModel = "[
+		{name:'id',label:'',hidden:true,width:60,sortable:false,align:'center' },
+		{name:'clientName',label:'${i18n.get('客户名称')}',hidden:false,width:60,sortable:false,align:'center' },
+		{name:'clientCode',label:'${i18n.get('客户编码')}',hidden:false,width:60,sortable:false,align:'center' },
+		{name:'clientModel',label:'${i18n.get('客户型号')}',hidden:false,width:60,sortable:false,align:'center' },
+		{name:'clientBrand',label:'${i18n.get('客户品牌')}',hidden:false,width:60,sortable:false,align:'center' },
+		{name:'clientRemark',label:'${i18n.get('备注说明')}',hidden:false,width:60,sortable:false,align:'center'},
+		{name:'productID',label:'${i18n.get('产品ID')}',hidden:true,width:60,sortable:false,align:'center'}
+		]" 	 
+		buttons = "[]" > 
+	<div class="col-xs-12">
+		<div class="form-group col-xs-2" align="right">${i18n.get('客户名称 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="clientName" size="30" />
+		</div>	
+		<div class="form-group col-xs-2" align="right">${i18n.get('客户编码 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="clientCode" size="30" />
+		</div>
+	</div>
+	</@form.table> 

@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+说明:
+    	TreeNode     : 节点信息
+		节点属性 :
+        name     : 节点名称
+        id       : 节点id(也是数据id，唯一)
+        maxValue : 节点最大值 
+        minValue : 节点最小值 
+        curValue : 节点最当前值 
+        colorDir : 节点值变化时，节点颜色区变化方向. (1:从红到绿. 2:从绿到红. )
+        type     : 节点类型  (1:普通数值节点. 2:百分比数值节点. 3:只显示名称的节点. 4:显示滑块的节点) 
+        _opened  : 节点默认打开情况 (true:默认打开. false:默认关闭) 
+-->
+<Response>
+    <Data>
+        <Tree>
+            <TreeNode name="操作风险RWA" id="1" maxValue="1000000" minValue="0" curValue="12500" colorDir="1" type="1" _opened="true" formulaDesc="=12.5 * {（第一年操作风险监管资本 + 第二年操作风险监管资本 + 第三年操作风险监管资本）/ 3 } ">
+                <TreeNode name="第一年操作风险监管资本" id="11" maxValue="10000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc="=Max{（公司金融第一年总收入*18% + 交易和销售第一年总收入*18% + 零售银行第一年销售余额*12% + 商业银行第一年销售余额*15% + 支付和清算第一年总收入*18% + 代理服务第一年总收入*15% + 资产管理第一年总收入*12% + 零售经纪第一年总收入*12% + 其他业务第一年总收入*18%）, 0}">
+                	 <TreeNode name="公司金融第一年总收入" id="111" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="2" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="交易和销售第一年总收入" id="112" maxValue="1000000" minValue="0" curValue="20" colorDir="1" type="3"  _opened="true" formulaDesc=""/>
+                	 <TreeNode name="零售银行第一年销售余额" id="113" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="4" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="商业银行第一年销售余额" id="114" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="支付和清算第一年总收入" id="115" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="代理服务第一年总收入" id="116" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="资产管理第一年总收入" id="117" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="零售经纪第一年总收入" id="118" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="其他业务第一年总收入" id="119" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                </TreeNode>
+                <TreeNode name="第二年操作风险监管资本" id="12" maxValue="10000"
+                	minValue="0" curValue="1000" colorDir="1" type="1"
+                	_opened="true" formulaDesc="=Max{（公司金融第二年总收入*18% + 交易和销售第二年总收入*18% + 零售银行第二年销售余额*12% + 商业银行第二年销售余额*15% + 支付和清算第二年总收入*18% + 代理服务第二年总收入*15% + 资产管理第二年总收入*12% + 零售经纪第二年总收入*12% + 其他业务第二年总收入*18%）, 0}">
+                	<TreeNode name="公司金融第一年总收入" id="121" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="交易和销售第一年总收入" id="122" maxValue="1000000" minValue="0" curValue="20" colorDir="1" type="1"  _opened="true" formulaDesc=""/>
+                	 <TreeNode name="零售银行第一年销售余额" id="123" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="商业银行第一年销售余额" id="124" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="支付和清算第一年总收入" id="125" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="代理服务第一年总收入" id="126" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="资产管理第一年总收入" id="127" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="零售经纪第一年总收入" id="128" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="其他业务第一年总收入" id="129" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                </TreeNode>
+                <TreeNode name="第三年操作风险监管资本" id="13" maxValue="1000"
+                	minValue="0" curValue="1000" colorDir="1" type="1"
+                	_opened="true" formulaDesc="=Max{（公司金融第三年总收入*18% + 交易和销售第三年总收入*18% + 零售银行第三年销售余额*12% + 商业银行第三年销售余额*15% + 支付和清算第三年总收入*18% + 代理服务第三年总收入*15% + 资产管理第三年总收入*12% + 零售经纪第三年总收入*12% + 其他业务第三年总收入*18%）, 0}">
+                	<TreeNode name="公司金融第一年总收入" id="131" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="交易和销售第一年总收入" id="132" maxValue="1000000" minValue="0" curValue="20" colorDir="1" type="1"  _opened="true" formulaDesc=""/>
+                	 <TreeNode name="零售银行第一年销售余额" id="133" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="商业银行第一年销售余额" id="134" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="支付和清算第一年总收入" id="135" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="代理服务第一年总收入" id="136" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="资产管理第一年总收入" id="137" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="零售经纪第一年总收入" id="138" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                	 <TreeNode name="其他业务第一年总收入" id="139" maxValue="200000" minValue="0" curValue="1000" colorDir="1" type="1" _opened="true" formulaDesc=""/>
+                </TreeNode>
+            </TreeNode>
+        </Tree>
+    </Data>
+</Response>

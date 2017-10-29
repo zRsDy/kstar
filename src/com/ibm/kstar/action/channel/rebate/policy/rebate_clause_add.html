@@ -1,0 +1,124 @@
+<@cui.body2>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1" success="function(){ parent.currentParent.reload_clause_2('${(clauseInfo.id)!}'); }" class="form-horizontal">	
+			<div align="center" class="form-group">
+				<table>
+					<tr>
+						<#if typeName == '年度返利'>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('产品组 :')}</td>
+						<td width="320px">
+							<@form.select id="productGroup" name="productGroup" style="width:163px;" tip="${i18n.get('返利条件对应的产品组')}" required="${i18n.get('不能为空')}" viewKey="groupName" idKey='id' url="function(){ return '${ctx}/rebatePolicy/getProducts.html'} " value="${(clauseInfo.productGroup)!}" />
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('基准量 :')}</td>
+						<td width="320px">
+							<@form.number id="referenceQuantity" name="referenceQuantity" style="width:163px;" tip="${i18n.get('对应产品组的基准任务量')}" required="${i18n.get('不能为空')}" value="${(clauseInfo.referenceQuantity)!}" />
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('至少回款率 :')}</td>
+						<td width="320px">
+							<@form.number id="leastReturnRate" name="leastReturnRate" style="width:163px;" tip="${i18n.get('日期范围内客户回款最低需要完成的比例 0-1')}" required="${i18n.get('不能为空')}" value="${(clauseInfo.leastReturnRate)!}" />
+						</td>
+						<#else>
+						<td align="right" width="120px">${i18n.get('产品组 :')}</td>
+						<td width="320px">
+							<@form.select id="productGroup" name="productGroup" style="width:163px;" tip="${i18n.get('返利条件对应的产品组')}" viewKey="groupName" idKey='id' url="function(){ return '${ctx}/rebatePolicy/getProducts.html'} " value="${(clauseInfo.productGroup)!}" />
+						</td>
+						<td align="right" width="120px">${i18n.get('基准量 :')}</td>
+						<td width="320px">
+							<@form.number id="referenceQuantity" name="referenceQuantity" style="width:163px;" tip="${i18n.get('对应产品组的基准任务量')}" value="${(clauseInfo.referenceQuantity)!}" />
+						</td>
+						<td align="right" width="120px">${i18n.get('至少回款率 :')}</td>
+						<td width="320px">
+							<@form.number id="leastReturnRate" name="leastReturnRate" style="width:163px;" tip="${i18n.get('日期范围内客户回款最低需要完成的比例 0-1')}" value="${(clauseInfo.leastReturnRate)!}" />
+						</td>
+						</#if>
+					</tr>
+					<tr>
+						<#if typeName == '年度返利'>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('完成率 :')}</td>
+						<td width="320px">
+							<@form.number id="finishRate" name="finishRate" style="width:163px;" tip="${i18n.get('日期范围内销量低需要达到的百分比 0-1')}" required="${i18n.get('不能为空')}" value="${(clauseInfo.finishRate)!}" />
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('返利比例(%) :')}</td>
+						<td width="320px">
+							<@form.number id="rebateRate" name="rebateRate" style="width:163px;" tip="${i18n.get('销量达到至少完成率以上，以及回款完成率达到至少回款率以上时给于客户的返利比例')}" required="${i18n.get('不能为空')}" value="${(clauseInfo.rebateRate)!}" />
+						</td>
+						<#else>
+						<td align="right" width="120px">${i18n.get('完成率 :')}</td>
+						<td width="320px">
+							<@form.number id="finishRate" name="finishRate" style="width:163px;" tip="${i18n.get('日期范围内销量低需要达到的百分比')}" value="${(clauseInfo.finishRate)!}" />
+						</td>
+						<td align="right" width="120px">${i18n.get('返利比例(%) :')}</td>
+						<td width="320px">
+							<@form.number id="rebateRate" name="rebateRate" style="width:163px;" tip="${i18n.get('销量达到至少完成率以上，以及回款完成率达到至少回款率以上时给于客户的返利比例')}" value="${(clauseInfo.rebateRate)!}" />
+						</td>
+						</#if>
+						<td align="right" width="120px">
+							<label class="no-padding-right" for="finishRate2"> ${i18n.get('完成率2 :')} </label>
+						</td>
+						<td width="320px">
+							<@form.number id="finishRate2" name="finishRate2" style="width:163px;" tip="${i18n.get('日期范围内销量低需要达到的百分比 0-1')}" value="${(clauseInfo.finishRate2)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="120px">
+							<label class="no-padding-right" for="rebateRate2">${i18n.get('返利比例2(%) :')}  </label>
+						</td>
+						<td width="320px">
+							<@form.number id="rebateRate2" name="rebateRate2" style="width:163px;" tip="${i18n.get('销量达到至少完成率以上，以及回款完成率达到至少回款率以上时给于客户的返利比例')}" value="${(clauseInfo.rebateRate2)!}" />
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('返利系数(%) :')}</td>
+						<td width="320px">
+							<@form.number id="rebateRatio" name="rebateRatio" style="width:163px;" tip="${i18n.get('返利系数')}" required="${i18n.get('不能为空')}" value="${(clauseInfo.rebateRatio)!}" />
+						</td>
+						<td align="right" width="120px">
+							<label class="no-padding-right" for="yearNoGrowth"> ${i18n.get('同比增长率(%) :')} </label>
+						</td>
+						<td width="320px">
+							<@form.number id="yearNoGrowth" name="yearNoGrowth" style="width:163px;" tip="${i18n.get('客户销量与上一年比的增长率')}" value="${(clauseInfo.yearNoGrowth)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="120px">
+							<label class="no-padding-right" for="AnnualTask"> ${i18n.get('超额返利(%):')}</label>
+						</td>
+						<td width="320px">
+							<@form.number id="excessRebate" name="excessRebate" style="width:163px;" tip="${i18n.get('超额返利系数')}" value="${(clauseInfo.excessRebate)!}" />
+						</td>
+						<td align="right" width="120px">
+						</td>
+						<td width="320px">
+						</td>
+						<td align="right" width="120px">
+						</td>
+						<td width="320px">
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="120px">
+							<label class="no-padding-right" for="remark">${i18n.get('备注 :')}</label>
+						</td>
+						<td colspan="5" width="1100px">
+							<@form.textArea id="remark" style="width:1043px;" name="remark" tip="${i18n.get('返利条款的备注说明')}" value="${(clauseInfo.remark)!}" />
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<#if !clauseInfo?? || !clauseInfo.id?? || statusEdit>
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					</#if>
+					<button class="btn" type="button" onclick="javascript:frameElement.api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+	</@form.panel>
+</@cui.body2>

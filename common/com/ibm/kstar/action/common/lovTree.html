@@ -1,0 +1,54 @@
+<@pui.body>
+<div class="col-xs-12">
+
+	
+	<label id="selected">  </label>
+	
+	<@plug.tree 
+		checkbox="false" 
+		id="tree1" 
+		asyncUrl='${ctx}/lov/member/tree.html?groupId=${groupId}&leafFlag=${leafFlag!}&rootId=${rootId!}&opType=${opType}'
+		onClick=" function(event, treeId, treeNode){
+	  		selectedData = treeNode;
+	  		$('#selected').html(selectedData.namePath);
+	  	}"
+	  	onRightClick="function(event, treeId, treeNode) {
+		   	var treeObj = $.fn.zTree.getZTreeObj(treeId);
+			var nodes = treeObj.getNodes();
+			if (nodes.length>0) {
+				treeObj.cancelSelectedNode();
+			}
+			selectedData = null;
+		}"
+	  	isParent="function(data){
+	  		return data.leafFlag == 'N';
+	  	}"
+		/>
+		
+		<div class="clearfix form-actions">
+	<div class="col-md-offset-5 col-md-7">
+		<button class="btn btn-info" id="selectOK" type="button">
+			<i class="icon-ok bigger-110"></i>
+			${i18n.get('选择')}
+		</button>
+		&nbsp; &nbsp; &nbsp;
+		<button class="btn" type="button" onclick="javascript:api.close()">
+			<i class="icon-undo bigger-110"></i>
+			${i18n.get('关闭')}
+		</button>
+	</div>
+</div>
+
+<script type="text/javascript">
+	var selectedData = parent.currentDatas ? parent.currentDatas : null;
+	if(selectedData){
+		$('#selected').html(selectedData.namePath);
+	}
+	console.info(selectedData);
+	$('#selectOK').click(function(){
+		parent.currentParent.${pickerId}_callback(selectedData);
+		api.close();
+	})
+</script>		
+</div>
+</@pui.body>

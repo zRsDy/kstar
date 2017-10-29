@@ -1,0 +1,110 @@
+<#escape x as x?html>
+<@pui.body>
+<#if permission["P02CompetitorReportAdd"]?? >
+	<#assign addReportURL = "'${ctx}/custom/report/add.html'"   />
+</#if>
+
+<#if permission["P02CompetitorReportEdit"]??>
+	<#assign editReportURL= "'${ctx}/custom/report/edit.html'" />
+</#if>
+
+<#if permission["P02CompetitorReportDelete"]??>
+	<#assign deleteReportURL = "'${ctx}/custom/report/delete.html'"   />
+</#if>
+	
+<@form.table id="tableReportList" 
+class="col-xs-12"
+height="131px"
+title="${i18n.get('竞争对手提报一览')}" 
+url = "${ctx}/custom/report/page.html" 
+rowNum = "5" 
+addURL = "${addReportURL!}"
+editURL = "${editReportURL!}"
+deleteURL= "${deleteReportURL!}" 
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'reportCode',label:'${i18n.get('报告编号')}',hidden:false,width:160,sortable:true,align:'center' },
+	{name:'reoprtDate',label:'${i18n.get('报告时间')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'applierOrgName',label:'${i18n.get('报告部门')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'applierName',label:'${i18n.get('报告用户')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'comment',label:'${i18n.get('备注')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'statusName',label:'${i18n.get('状态')}',hidden:false,width:100,sortable:true,align:'center' }
+	]" 
+	> 
+	
+	<div class="col-xs-12" style="padding-top: 20px;">
+		<table border="0" cellpadding="0" cellspacing="0" >
+			<tr align="left">
+				<td align="right" width="120px">
+					<label class="no-padding-right" > ${i18n.get('报告编号')}:</label>
+				</td>
+				<td align="left"  >
+					<@form.input 
+						id="reportCode"  name="reportCode" 
+						placeholder="" 
+						tip="" 
+					/>
+				</td>
+				<td align="right" width="120px">
+					<label class="no-padding-right" > ${i18n.get('报告时间(FROM)')} :</label>
+				</td>
+				<td align="left"  >
+					<@form.date id="dateFrom"  name="dateFrom" 
+						placeholder="" 
+						tip="" 
+						/>
+				</td>
+				 <td align="right" width="120px">
+					<label class="no-padding-right" >  ${i18n.get('报告时间(TO)')} :</label>
+				</td>
+				<td >
+					<@form.date id="dateTo"  name="dateTo" 
+						placeholder="" 
+						tip="" 
+						/>
+				</td>
+			</tr>
+			<tr align="left">
+				<td align="right" width="120px">
+					<label class="no-padding-right" > ${i18n.get('报告用户')} :</label>
+				</td>
+				<td align="left"  >
+					<input id="applier" name="applier" type="hidden"  >
+					<@form.autocomplete  id="handoverToName" name="handoverToName" 
+						idKey='employeeId'
+						style='width:161px'
+						required="${i18n.get('请选择')}"
+						multiple="false"
+						formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+						url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+						
+						onSelect="function(data){
+							if( data.id != null && data.id !='' && data.id != 'undefined'){
+								$('#applier').val(data.employeeId);
+							}
+						}" 
+					/>
+				</td>
+				<td align="right" width="120px">
+					<label class="no-padding-right" >${i18n.get('状态')} :</label>
+				</td>
+				<td align="left"  >
+					<@form.select 
+						code="CUSTOM_NORMAL_STATUS"
+						style="width: 161px;"
+						id="status" name="status" 
+						placeholder="" 
+						tip="" 
+						/>
+				</td>
+				 <td align="right" width="120px">
+				</td>
+				<td >
+				</td>
+			</tr>
+		</table>	
+	</div>
+</@form.table> 
+
+</@pui.body>
+</#escape>

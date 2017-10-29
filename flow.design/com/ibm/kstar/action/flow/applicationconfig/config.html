@@ -1,0 +1,36 @@
+<@pui.body>
+	<@form.form id="t1" success="function(){ parent.currentParent.reload_appFlow(); }" class="form-horizontal">	
+		<@form.panel title="${i18n.get('执行情况')}">
+			<div style="padding-left:420px;" class="form-group">
+				<table>
+					<tr>
+						<td  align="right" width="150px">${i18n.get('应用编码:')}</td>
+						<td width="420px">
+							<@form.input id="code" name="code" style="width:300px;" tip="${i18n.get('应用编码')}" readonly="true" value="${(lovMember.code)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td  align="right" width="150px">${i18n.get('流程编码:')}</td>
+						<td width="420px">
+							<@form.select id="optTxt1" name="optTxt1" tip="${i18n.get('流程编码')}" style="width:300px;" viewKey="code" idKey='code' url="function(){return '${ctx}/application/config/getFlows.html?optTxt1=${(lovMember.optTxt1)!}'}" value="${(lovMember.optTxt1)!}" />
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.panel>
+	</@form.form>
+</@pui.body>

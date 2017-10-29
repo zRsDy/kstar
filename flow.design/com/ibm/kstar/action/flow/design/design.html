@@ -1,0 +1,226 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<link type="text/css" href="${ctx}/flow/lib/jquery-ui-1.8.4.custom/css/smoothness/jquery-ui-1.8.4.custom.css" rel="stylesheet" />
+<script type="text/javascript" src="${ctx}/flow/lib/raphael-min.js"></script>
+<script type="text/javascript" src="${ctx}/flow/lib/jquery-ui-1.8.4.custom/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="${ctx}/flow/lib/jquery-ui-1.8.4.custom/js/jquery-ui-1.8.4.custom.min.js"></script>
+
+<script type="text/javascript" src="${ctx}/flow/lib/raphael-min.js"></script>
+<script type="text/javascript" src="${ctx}/flow/myflow.js"></script>
+<script type="text/javascript" src="${ctx}/flow/myflow.jpdl4.js"></script>
+<script type="text/javascript" src="${ctx}/flow/myflow.editors.js"></script>
+<script src="${ctx}/assets/js/dialog/lhgdialog.js"></script>
+
+<script type="text/javascript">
+	var a = ${json!'{}'};
+	
+	function test(){
+		$('#myflow').trigger("click");
+	}
+	
+	$(function() {
+		$('#myflow').myflow({
+			restore : a,
+			basePath : "",
+			tools : {
+				save : {
+					onclick : function(data) {
+						console.info(data);
+						var flow = {};
+						flow.json = data;
+						$.ajax({
+							url : "${ctx}/flow/design.html",
+							type : 'POST',
+							data : flow,
+							success : function() {
+								alert("${i18n.get('保存成功')}");
+							},error : function(result,status){
+								var r = eval("("+result.response+")");
+								alert(r.message);
+							}
+						});
+					}
+				}
+			}
+		});
+	});
+</script>
+<style type="text/css">
+body {
+	margin: 0;
+	pading: 0;
+	text-align: left;
+	font-family: Arial, sans-serif, Helvetica, Tahoma;
+	font-size: 12px;
+	line-height: 1.5;
+	color: black;
+	background-image: url(img/bg.png);
+}
+
+.node {
+	width: 70px;
+	text-align: center;
+	vertical-align: middle;
+	border: 1px solid #fff;
+}
+
+.mover {
+	border: 1px solid #ddd;
+	background-color: #ddd;
+}
+
+.selected {
+	background-color: #ddd;
+}
+
+.state {
+	
+}
+
+/* #myflow_props table { */
+	
+/* } */
+
+/* #myflow_props th { */
+/* 	letter-spacing: 2px; */
+/* 	text-align: left; */
+/* 	padding: 6px; */
+/* 	background: #ddd; */
+/* 	width:60px; */
+/* } */
+
+/* #myflow_props td { */
+/* 	background: #fff; */
+/* 	padding: 6px; */
+/* } */
+
+#pointer {
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+#path {
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+#task {
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+#state {
+	background-repeat: no-repeat;
+	background-position: center;
+}
+</style>
+</head>
+<body>
+<div id="myflow_tools" style="position: absolute; top: 10; left: 10; background-color: #fff; width: 70px; cursor: default; padding: 3px;"
+	class="ui-widget-content">
+	<div id="myflow_tools_handle" style="text-align: center;" class="ui-widget-header">${i18n.get('工具集')}</div>
+	<div class="node" id="myflow_save"><img src="${ctx}/flow/img/save.gif" />${i18n.get('保存')}</div>
+	<div>
+		<hr />
+	</div>
+	<div class="node selectable" id="pointer"><img src="${ctx}/flow/img/select16.gif" />${i18n.get('选择')}</div>
+	<div class="node selectable" id="path"><img src="${ctx}/flow/img/16/flow_sequence.png" />${i18n.get('转换')}</div>
+	<div>
+		<hr />
+	</div>
+	<div class="node state" id="start" type="start"><img src="${ctx}/flow/img/16/start_event_empty.png" />${i18n.get('开始')}</div>
+	<div class="node state" id="task" type="task"><img src="${ctx}/flow/img/16/task_empty.png" />${i18n.get('任务')}</div>
+	<div class="node state" id="multiTask" type="multiTask"><img src="${ctx}/flow/img/16/task_hql.png" />${i18n.get('会签')}</div>
+	<div class="node state" id="notice" type="notice"><img src="${ctx}/flow/img/16/task_hql.png" />${i18n.get('通知')}</div>
+	<div class="node state" id="fork" type="fork"><img src="${ctx}/flow/img/16/gateway_parallel.png" />${i18n.get('分支')}</div>
+	<div class="node state" id="decision" type="decision"><img src="${ctx}/flow/img/16/gateway_parallel.png" />${i18n.get('判断')}</div>
+	<div class="node state" id="join" type="join"><img src="${ctx}/flow/img/16/gateway_parallel.png" />${i18n.get('合并')}</div>
+	<div class="node state" id="end" type="end"><img src="${ctx}/flow/img/16/end_event_terminate.png" />${i18n.get('结束')}</div>
+</div>
+<div id="myflow_props" style="position: absolute; top: 30; right: 50; background-color: #fff; width: 200px; padding: 3px;" >
+	<div id="myflow_props_handle"  class="ui-widget-header">${i18n.get('属性')}</div>
+	<table border="0" width="100%"  cellpadding="0" cellspacing="0">
+	</table>
+</div>
+<input type="hidden" id="processModule" value="${processModule!''}" />
+<input type="hidden" id="processName" value="${processName!''}" />
+<div id="myflow" style="height: 4000px;width: 4000px"></div>
+</body>
+
+<script type="text/javascript">
+	
+	var callback = null;
+	function selectParticipant(cb){
+		callback = cb;
+		dialog("${i18n.get('选择')}","${ctx}/common/select.html?pickerId=selectParticipant");
+	}
+	function selectParticipant_callback(type,datas){
+		var _callback = callback;
+		_callback(type,datas);
+	}
+	function dialog(title,url){
+		var dialog = $.dialog({
+			title: title,
+			width: 500 , 
+			height: 500, 
+			lock: true, 
+			content:'url:' + url,
+			frm:false,
+			fixed:true,
+			left:"30%",
+			top:"20%"
+		});
+	};
+	
+	var taskSetting={};
+	
+	function showTaskAttr(type,t){
+		taskSetting.text = $('#text').val();
+		taskSetting.types = $('#types').val();
+		taskSetting.ids = $('#ids').val();
+		taskSetting.names = $('#names').val();
+		taskSetting.reject = $('#reject').val();
+		taskSetting.message = $('#message').val();
+		taskSetting.close = $('#close').val();
+		taskSetting.nonauto = $('#nonauto').val();
+		taskSetting.sql = $('#sql').val();
+		taskSetting.participantType = $('#participantType').val();
+		dialog("${i18n.get('设置任务属性')}","${ctx}/flow/showTaskAttr.html?code=${processModule}&type="+type);
+	}
+	
+	function taskCallback(_taskSetting){
+		taskSetting = _taskSetting;
+		$('#text').val(taskSetting.text);
+		$('#types').val(taskSetting.types);
+		$('#ids').val(taskSetting.ids);
+		$('#names').val(taskSetting.names);
+		$('#reject').val(taskSetting.reject);
+		$('#message').val(taskSetting.message);
+		$('#close').val(taskSetting.close);
+		$('#nonauto').val(taskSetting.nonauto);
+		$('#sql').val(taskSetting.sql);
+		$('#participantType').val(taskSetting.participantType);
+	}
+	
+	var decisionSetting={};
+	function showDecisionAttr(){
+		decisionSetting.text = $('#text').val();
+		decisionSetting.expression = $('#expression').val();
+		dialog("${i18n.get('设置判断属性')}","${ctx}/flow/showDecisionAttr.html?code=${processModule}");
+	}
+	
+	function decisionCallback(_decisionSetting){
+		decisionSetting = _decisionSetting;
+		$('#expression').val(decisionSetting.expression);
+		$('#text').val(decisionSetting.text);
+	}
+	
+	
+</script>
+
+</html>

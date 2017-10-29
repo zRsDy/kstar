@@ -1,0 +1,399 @@
+<#escape x as x?html>
+<@cui.body2>
+<@form.panel title="${i18n.get('新增/编辑')}">
+<@form.form id="t1"
+	before="function(){
+		$('#productInfo').trigger('blur');
+		$('#productInfo').setGridParam({cellEdit:false});
+	}"
+	postData="function() {
+		var lines = $('#productInfo').jqGrid('getRowData');
+		var data = {};
+		data.selectedList = JSON.stringify(lines);
+			return data;
+	}"
+	success="function(){
+		try{
+			alert('${i18n.get('数据保存成功！')}'); 
+			parent.currentParent2.reload_spePriceTable();
+		}catch(e){
+			parent.currentParent.reload_spePriceTable();
+		}
+	}"
+	class="form-horizontal">
+
+	<@form.input name="pid" type="hidden" id="pid" value="${(entity.pid)!}"/>
+	<div style="height: 50px;" >
+		<div style="padding-right: 20px; float: right;" >
+<#-- 特价申请页面-保存 --><#-- /spePrice/add.html -->
+	<#if permission["P03SpecialPriceSave"]??>
+			<button <#if entity.applyStatus?default('') != 'Rejected' && entity.applyStatus?default('') != 'Pending' > disabled="disabled" </#if>  class="btn btn-info submit" type="button">
+				<i class="icon-ok bigger-110"></i>
+				${i18n.get('保存')}
+			</button>
+	</#if>
+<#-- 特价申请页面-提交 --><#-- /spePrice/startProcess.html -->
+	<#if permission["P03SpecialPriceSubmit"]??>
+            <button <#if entity.applyStatus?default('') != 'Rejected' && entity.applyStatus?default('') != 'Pending' > disabled="disabled" </#if>  class="btn btn-info" type="button" onclick="startApplyProcess()">
+                <i class="icon-ok bigger-110"></i>
+              ${i18n.get('提交')}
+            </button>
+	</#if>
+<#-- 特价申请页面-审批确认 --><#-- /spePrice/edit.html -->
+	<#if permission["P03SpecialPriceApproval"]??>
+            <button <#if entity.applyStatus?default('') == 'Pending' > disabled="disabled" </#if>  class="btn btn-info submit" type="button">
+            <i class="icon-ok bigger-110"></i>
+              ${i18n.get('审批确认')}
+            </button>
+	</#if>
+			<button class="btn" type="button" onclick="javascript:api.close()">
+				<i class="icon-undo bigger-110"></i>
+				${i18n.get('关闭')}
+			</button>
+		</div>
+	</div>
+
+    <div class="form-group">
+        <p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('基本信息')}</p>
+	<table>
+		<tr>
+			<td align="right" width="200px">
+				<label class="no-padding-right">${i18n.get('申请人:')}</label>
+			</td>
+			<td width="200px">
+				<@form.input name="applicantName"
+				type="text"
+				id="applicantName"
+				readonly="readonly"
+				value="${(entity.applicantName)!}" />
+				<input type="hidden" id="applicant" name="applicant" value="${(entity.applicant)!}">
+			</td>
+			<td align="right" width="200px">
+				<label class="no-padding-right">${i18n.get('申请编号:')}</label>
+			</td>
+			<td width="200px">
+				<@form.input name="applyNumber"
+				type="text"
+				id="applyNumber"
+				readonly="readonly"
+				value="${(entity.applyNumber)!}" />
+			</td>
+			<td align="right" width="200px">
+				<label class="no-padding-right">${i18n.get('申请状态:')}</label>
+			</td>
+			<td width="200px">
+				<@form.select
+				id="applyStatus_v" name="applyStatus_v"
+				code="PROCESS_STATUS"
+				idKey='code'
+				value ="${(entity.applyStatus)!}"
+				style="width: 160px;"
+				/>
+			</td>
+			<input type="hidden" id="applyStatus" name="applyStatus" value="${(entity.applyStatus)!}">
+		</tr>
+		<tr>
+			<td align="right" width="200px">
+				<label class="no-padding-right">${i18n.get('申请单位:')}</label>
+			</td>
+			<td width="200px">
+				<@form.input name="applyUnitName"
+				type="text"
+				id="applyUnitName"
+				readonly="readonly"
+				value="${(entity.applyUnitName)!}" />
+				<input type="hidden" id="applyUnit" name="applyUnit" value="${(entity.applyUnit)!}">
+			</td>
+			<td align="right" width="200px">
+				<label class="no-padding-right">${i18n.get('折扣(%):')}</label>
+			</td>
+			<td width="200px">
+				<@form.input name="discount"
+				type="text"
+				id="discount"
+				value="${(entity.discount)!}"
+				readonly="readonly"/>
+			</td>
+			<td align="right" width="200px">
+				<label class="no-padding-right">${i18n.get('申请日期:')}</label>
+			</td>
+			<td width="200px">
+				${(entity.applyDate?date)!}
+				<#--<@form.date name="applyDate"
+					id="applyDate"
+					name="applyDate"
+					value="${(entity.applyDate)!}"
+				/>-->
+			</td>
+		</tr>
+		<tr>
+			<td align="right" width="200px">
+				<label class="no-padding-right">${i18n.get('价目表总金额:')}</label>
+			</td>
+			<td width="200px">
+				<@form.input name="totalPrice"
+				type="text"
+				id="totalPrice"
+				value="${(entity.totalPrice)!}"
+				readonly="readonly"/>
+			</td>
+			<td align="right" width="200px">
+				<label class="no-padding-right">${i18n.get('折扣后总金额:')}</label>
+			</td>
+			<td width="200px">
+				<@form.input name="discountTotalPrice"
+				type="text"
+				id="discountTotalPrice"
+				value="${(entity.discountTotalPrice)!}"
+				readonly="readonly"/>
+			</td>
+			<td align="right" width="200px">
+				<label class="no-padding-right">${i18n.get('特价有效期至:')}</label>
+			</td>
+			<td width="200px">
+				<@form.date name="validDate"
+					id="validDate"
+					value="${(entity.validDate)!}"
+				/>
+			</td>
+		</tr>
+		<tr>
+			<td align="right" width="200px">
+				<label class="no-padding-right">${i18n.get('说明:')}</label>
+			</td>
+			<td align="left" colspan="5">
+				<@form.textArea id="explanation"
+					name="explanation"
+					placeholder="${i18n.get('说明')}"
+					width="159px"
+					height="2"
+					value="${(entity.explanation)!}" />
+			</td>
+		</tr>
+	</table>
+    </div>
+	<div class="form-group">
+		<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('申请明细')}</p>
+			<table>
+		    <tr>
+			<td>
+				<div class="col-xs-12" style="width: 900px;">
+
+					<#if (permission['P03SpecialPriceProdAbstractOppo'])??>
+						<#assign P03SpecialPriceProdAbstractOppo='true'>
+					</#if>
+					<@form.table id="productInfo"
+								class="col-xs-12"
+					title="${i18n.get('产品信息')}"
+					url = "${ctx}/spePrice/line/page.html?spId=${(entity.id)!}"
+					rowNum = "10"
+					colModel = "[
+						{name:'id',label:'ID',index:'id',hidden:true,width:100,sortable:true,align:'center' },
+						{name:'spePriceId',label:'${i18n.get('特价申请id')}',hidden:true},
+						{name:'sourceBizIds',label:'${i18n.get('商机配置项id')}',hidden:true},
+						{name:'bizOppId',label:'${i18n.get('商机id')}',hidden:true,width:100},
+						{name:'productId',label:'${i18n.get('产品id')}',hidden:true,width:100,key:true},
+						{name:'productModel',label:'${i18n.get('型号')}',hidden:false,width:100,sortable:true,align:'center' },
+						{name:'materialName',label:'${i18n.get('物料名称')}',hidden:false,width:100,sortable:true,align:'center' },
+						{name:'catalogePrice',label:'${i18n.get('目录价')}',hidden:false,width:100,sortable:true,align:'center' },
+						{name:'count',label:'${i18n.get('数量')}',hidden:false,width:100,sortable:true,align:'center' },
+						{name:'applyCount',label:'${i18n.get('申请数量')}',hidden:true,width:100,align:'center',editable:true },
+						{name:'applyDiscount',label:'${i18n.get('申请折扣%')}',hidden:false,width:100,align:'center',editable:true },
+						{name:'approvedDiscount',label:'${i18n.get('批复折扣%')}',hidden:false,width:100,sortable:true,align:'center',editable:true },
+						{name:'discountPrice',label:'${i18n.get('折扣价')}',hidden:false,width:100,sortable:true,align:'center' },
+						{name:'discountTotal',label:'${i18n.get('折扣总额')}',hidden:false,width:100,sortable:true,align:'center' },
+						{name:'remark',label:'${i18n.get('备注')}',hidden:false,width:100,sortable:true,align:'center' }
+						]"
+
+					buttons = "[
+						{id:'deliveryLinesForm_addRowBatch',
+						label : '${i18n.get('提取商机配置')}',
+						icon : 'icon-save',
+						own : ${P03SpecialPriceProdAbstractOppo!'false'},
+							handler : function(e,rowData){
+								$('#multiSelectProduct').click();
+							}
+						}
+					]"
+					onSelectRow= "function(selectedData){
+						$('#bizIds').val(selectedData.sourceBizIds);
+						$('#productId').val(selectedData.productId);
+						reload_contactPerson();
+					}"
+					ondblClickRow = "function(id){
+						var rowData = $('#productInfo').jqGrid('getRowData',id);
+
+						$('#productInfo input[id='+id+'_approvedDiscount]').bind('input',function(event){
+							var approvedDiscount = $(this).val();
+							var discountAfterTotal = 0;
+							var priceTotal = 0;
+							var totalDiscount = 0;
+							if(approvedDiscount){
+								var re = /^[0-9]+$/ ;
+								if(re.test(approvedDiscount)){
+									var rowDiscountPrice = 0;
+									var rowDiscountTotal = 0;
+									if(rowData.catalogePrice != null && rowData.catalogePrice !=''
+										&& rowData.count != null && rowData.count !=''){
+										rowDiscountPrice = parseFloat(rowData.catalogePrice)*parseFloat(approvedDiscount)/100;
+										rowDiscountTotal = parseFloat(rowData.catalogePrice)*(1-parseFloat(approvedDiscount)/100)*parseFloat(rowData.count);
+									}
+									$('#productInfo').jqGrid('setRowData', id, {discountPrice:rowDiscountPrice,discountTotal:rowDiscountTotal});
+
+									var rows = $('#productInfo').jqGrid('getRowData');
+
+									$.each(rows, function (index, row) {
+										console.log(row);
+										var _approvedDiscount = 0;
+										if(isNaN(row.approvedDiscount)){
+											_approvedDiscount = approvedDiscount;
+										}else{
+											_approvedDiscount = row.approvedDiscount;
+										}
+										priceTotal = parseFloat(priceTotal) + parseFloat(row.catalogePrice);
+										discountAfterTotal = parseFloat(discountAfterTotal) + parseFloat(row.catalogePrice) * parseFloat(_approvedDiscount)/100;
+										totalDiscount = parseFloat(discountAfterTotal)/parseFloat(priceTotal)*100;
+									});
+
+									$('#discount').val(totalDiscount.toFixed(2));
+									$('#discountTotalPrice').val(discountAfterTotal.toFixed(2));
+									$('#totalPrice').val(priceTotal.toFixed(2));
+
+								}else{
+									alert('${i18n.get('产品数量必须为正整数！')}');
+									$(this).val(approvedDiscount);
+								}
+							}else{
+								$('#orderLinesForm').jqGrid('setRowData', id, rowData);
+							}
+						});
+					}"
+							>
+					</@form.table>
+				</div>
+			</td>
+			<td align="right" width="610px">
+				<div class="col-xs-12" style="width: 400px">
+					<@form.table id="contactPerson"
+					class="col-xs-12"
+					title="${i18n.get('商机信息')}"
+					url = "${ctx}/spePrice/bizs.html"
+					shrinkToFit = "true"
+					rowNum = "10"
+					colModel = "[
+						{name:'biz',label:'${i18n.get('商机名称')}',hidden:false,width:300,sortable:true,align:'center' },
+						{name:'product',label:'${i18n.get('产品')}',hidden:false,width:200,sortable:true,align:'center' },
+						{name:'planCount',label:'${i18n.get('数量')}',hidden:false,width:100,sortable:true,align:'center' },
+						{name:'bidResult',label:'${i18n.get('招标结果')}',hidden:false,width:100,sortable:true,align:'center' },
+						{name:'',label:'',hidden:false,width:1,sortable:true,align:'center' },
+						]"
+						buttons = "[]" >
+					<input id="bizIds" name= "_bizIds" type="hidden"  />
+					<input id="productId" name= "_productId" type="hidden"  />
+					</@form.table>
+				</div>
+			</td>
+		</tr>
+	    </table>
+	</div>
+
+</@form.form>
+</@form.panel>
+<div style="visibility: hidden;" >
+		<@biz.picker_product id="multiSelectProduct" url="${ctx}/spePrice/multiSelectList.html"
+				button="${i18n.get('批量选择产品')}"
+				callback="function(datas){
+					if(datas){
+						if(window.confirm('${i18n.get('你确定选择该产品？')}')){
+                 			addRowBatch(datas);
+              			}
+					 }
+				}"
+		/>
+</div>
+</@cui.body2>
+<div id="info" style="padding-top: 20px;" class="row">
+	<div class="col-xs-12" style="width: 100%">
+		<input type="hidden" id="selectedId"  />
+		<@plug.tabs tabMain=tabMainInfo>
+	</@plug.tabs>
+</div>
+
+<script src="${ctx}/anne/js/util.js"></script>
+<script type="text/javascript">
+//	$(window).resize(function(){
+//	 	$("#productInfo").setGridWidth($(window).width()-90);
+//	});
+
+	$(document).ready(function() {
+
+		if (!'${(entity.id)!}'){
+			$("#attmDiv").hide();
+		}
+		$("#applyDate_v").attr("disabled","disabled");
+        $("#applyStatus_v").attr("disabled","disabled");
+	});
+
+	//批量增加行
+	function addRowBatch(datas){
+		$.each(datas,function(i,data2){
+            var rows = $('#productInfo').jqGrid('getRowData');
+            var data = new Object();
+            //获得已选的列表所有配置行的数组
+            var maps = new Map();
+            $.each(rows, function (index, row) {
+                maps.put(row.productId, row);
+            });
+
+            if (maps.get(data2.productId)) {
+                var line = maps.get(data2.productId);
+                line.count = parseFloat(line.count) + parseFloat(data2.planCount);
+                $("#productInfo").jqGrid("setRowData", line.productId, line);
+            } else {
+                data.sourceBizIds = data2.id;
+                data.productModel = data2.productModel;
+                data.materialName = data2.productName;
+                data.catalogePrice = data2.planPrice;
+                data.count = data2.planCount;
+                data.productId = data2.productId;
+                data.bizOppId = data2.bizOppId;
+                data.remark = data2.remark;
+
+                $("#productInfo").jqGrid("addRowData", data.productId, data, "first");
+            }
+        })
+	}
+
+
+	
+	function startApplyProcess() {
+        var entityId = "${entity.id?default('')}";
+        if(''===entityId){
+        	alert('${i18n.get('数据未保存，请先保存再提交流程申请。')}'); 
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "${ctx}/spePrice/startProcess.html",
+            async: true,
+            data: "id=" + entityId+"&applyNumber=${(entity.applyNumber)!}",
+            dataType: 'json',
+            success: function (msg) {
+            	alert('${i18n.get('审核流程提交成功')}'); 
+                parent.currentParent2.reload_spePriceTable();
+                api.close();
+            },
+            error: function (e) {
+                var msg = eval("(" + e.responseText + ")");
+                if (msg) {
+                    alert(msg.message);
+                } else {
+                	alert('${i18n.get('操作失败，请联系管理员')}'); 
+                }
+            }
+        });
+    }
+
+</script>
+</#escape>

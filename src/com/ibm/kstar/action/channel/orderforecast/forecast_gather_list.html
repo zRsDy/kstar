@@ -1,0 +1,102 @@
+<@cui.body>
+<#if (permission["P09OrderForecastGatherExport"])??>
+	<#assign exportURL="'${ctx}/orderForecast/exportGather.html'" />
+</#if>
+
+	<div class="col-xs-12">
+		<@form.table id="gather" 
+			class="col-xs-12"
+			title="${i18n.get('下单预测汇总')}"
+			url = "${ctx}/orderForecast/pageGather.html"
+			exportURL = "${exportURL!}"
+			rowNum = "10"
+			colModel = "[
+				{name:'forecastWeek',label:'${i18n.get('预测起始周次')}',hidden:true,width:150,sortable:true,align:'center' }, 
+				{name:'forecastWeekName',label:'${i18n.get('预测起始周次')}',hidden:false,width:150,sortable:true,align:'center' }, 
+				{name:'productSeries',label:'${i18n.get('产品系列')}',hidden:false,width:150,sortable:true,align:'center' }, 
+				{name:'productKind',label:'${i18n.get('产品型号')}',hidden:false,width:150,sortable:true,align:'center' }, 
+				{name:'materielCode',label:'${i18n.get('物料号')}',hidden:false,width:150,sortable:true,align:'center' }, 
+				{name:'firstWeekQuantity',label:'${i18n.get('第一周数量')}',hidden:false,width:150,sortable:true,align:'left' }, 
+				{name:'secondWeekQuantity',label:'${i18n.get('第二周数量')}',hidden:false,width:150,sortable:true,align:'left' }, 
+				{name:'thirdWeekQuantity',label:'${i18n.get('第三周数量')}',hidden:false,width:150,sortable:true,align:'left' }, 
+				{name:'fourthWeekQuantity',label:'${i18n.get('第四周数量')}',hidden:false,width:150,sortable:true,align:'left' }
+			]" 
+			onSelectRow="function(){
+				$('#forecastWeek').val(selected_gather.forecastWeek);
+				$('#materielCode').val(selected_gather.materielCode);
+				reload_detail();
+			}"
+			onComplete="function(){
+				$('#forecastWeek').val('');
+				$('#materielCode').val('');
+				
+				if(${isDealer} == 'true'){
+					$('#gather').jqGrid('hideCol', ['materielCode']);
+				}
+			}"
+			buttons = "[
+			]" > 
+			
+			<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">	
+				<div class="form-group col-xs-2" align="right">${i18n.get('预测起始周次 ：')}</div>
+				<div class="form-group col-xs-4">
+					<select name="forecastWeek">
+						<option value="">${i18n.get('全部')}</option>
+						<#list forecastWeekLst as element>
+							<option value="${element.id}">${element.name}</option>
+						</#list>
+					</select>
+				</div>	
+				<div class="form-group col-xs-2" align="right">${i18n.get('产品系列 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="productSeries" size="30" />
+				</div>	
+				<div class="form-group col-xs-2" align="right">${i18n.get('产品型号 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="productKind" size="30" />
+				</div>
+			</div> 
+		</@form.table>
+		
+		<#if (permission["P09OrderForecastGatherDetailExport"])??>
+			<#assign exportURL_detail="'${ctx}/orderForecast/exportDetail.html'" />
+		</#if>
+		<div id="detailDiv">
+		<@form.table id="detail" 
+			class="col-xs-12"
+			title="${i18n.get('下单预测明细')}"
+			url = "${ctx}/orderForecast/pageGatherDetail.html"
+			exportURL = "${exportURL_detail!}"
+			rowNum = "10"
+			colModel = "[
+				{name:'forecastCode',label:'${i18n.get('预测单号')}',hidden:false,width:100,sortable:true,align:'center' }, 
+				{name:'forecastUnitName',label:'${i18n.get('预测单位')}',hidden:false,width:250,sortable:true,align:'left' }, 
+				{name:'statusName',label:'${i18n.get('状态')}',hidden:false,width:60,sortable:true,align:'center' }, 
+				{name:'forecastDate',label:'${i18n.get('预测日期')}',hidden:false,width:90,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+				{name:'applierName',label:'${i18n.get('提交人')}',hidden:false,width:100,sortable:true,align:'center' }, 
+				{name:'applierPhone',label:'${i18n.get('提交人电话')}',hidden:false,width:100,sortable:true,align:'center' }, 
+				{name:'firstWeekQuantity',label:'${i18n.get('第一周数量')}',hidden:false,width:150,sortable:true,align:'left' }, 
+				{name:'secondWeekQuantity',label:'${i18n.get('第二周数量')}',hidden:false,width:150,sortable:true,align:'left' }, 
+				{name:'thirdWeekQuantity',label:'${i18n.get('第三周数量')}',hidden:false,width:150,sortable:true,align:'left' }, 
+				{name:'fourthWeekQuantity',label:'${i18n.get('第四周数量')}',hidden:false,width:150,sortable:true,align:'left' }
+			]" 
+			buttons = "[
+			]" > 
+			
+			<div class="col-xs-12">	
+				<input type="hidden" id="forecastWeek" name="forecastWeek" />
+				<input type="hidden" id="materielCode" name="materielCode" />
+				
+				<div class="form-group col-xs-2" align="right">${i18n.get('预测单号 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="forecastCode" size="30" />
+				</div>	
+				<div class="form-group col-xs-2" align="right">${i18n.get('预测单位 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="forecastUnit" size="30" />
+				</div>
+			</div> 
+		</@form.table>
+		</div>
+	</div>
+</@cui.body>

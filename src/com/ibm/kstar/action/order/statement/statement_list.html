@@ -1,0 +1,107 @@
+<@cui.body2>
+<style type="text/css">
+
+
+table td {
+	padding:1px;
+	vertical-align: middle;
+	word-break: keep-all;
+	border: solid #ededed;
+	
+	border-width: 0px 0px 0px 0px;
+}
+
+input[type="text"] { width: 180px;}
+input[type="search"] {width: 180px;}
+select {
+	width: 180px;
+}
+</style>
+
+	<#if permission["P06AccountCheckListAdd"]?? >
+		<#assign addURL = "'${ctx}/statement/add.html'"  />
+	</#if>
+	<#if permission["P06AccountCheckListEdit"]??>
+		<#assign editURL = "'${ctx}/statement/edit.html'"  />
+	</#if>
+	<#if permission["P06AccountCheckListDelete"]??>
+		<#assign deleteURL = "'${ctx}/statement/delete.html'"   />
+	</#if>
+
+	<div class="col-xs-12">
+	<@form.table id="statementListForm" 
+		class="col-xs-12"
+		title="${i18n.get('对账申请列表')}"
+		url = "${ctx}/statement/page.html"
+		rowNum = "20"
+		addURL = "${addURL!}"
+		editURL = "${editURL!}"
+		deleteURL= "${deleteURL!}"
+		colModel = "[
+			{name:'id',label:'',hidden:true,width:150,sortable:false,align:'center' }, 
+			{name:'statementCode',label:'${i18n.get('申请编号')}',hidden:false,width:150,sortable:true,align:'center' }, 
+			{name:'proposerName',label:'${i18n.get('申请人')}',hidden:false,width:150,sortable:true,align:'center' }, 
+			{name:'initBalance',label:'${i18n.get('期初余额')}',hidden:false,width:150,sortable:true,align:'center' }, 
+			{name:'period',label:'${i18n.get('对账期间')}',hidden:false,width:150,sortable:true,align:'center' }, 
+			{name:'statusLable',label:'${i18n.get('状态')}',hidden:false,width:150,sortable:false,align:'center'}, 
+			{name:'applyDate',label:'${i18n.get('申请日期')}',hidden:false,width:150,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+			{name:'currentAmount',label:'${i18n.get('本期累计')}',hidden:false,width:150,sortable:true,align:'center' }, 
+			{name:'isPublish',label:'${i18n.get('是否发布')}',hidden:false,width:50,sortable:true,align:'center' }, 
+			{name:'createdAt',label:'${i18n.get('创建日期')}',hidden:false,width:150,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+			{name:'proposerName',label:'${i18n.get('创建人')}',hidden:false,width:150,sortable:true,align:'center' }
+		]" buttons = "[]" > 
+		
+		<div class="col-xs-12" style="padding-top: 20px;">
+			<table border="0" cellpadding="0" cellspacing="0">
+				<tr align="left">
+					<td align="right" width="120px">
+						${i18n.get('申请编号：')}
+					</td>
+					<td align="left" width="220px">
+						<@form.input
+							id="statementCode"  name="statementCode" 
+							placeholder="" 
+							tip="" 
+						/>
+					</td>
+					<td align="right" width="120px">
+						${i18n.get('申请人：')}
+					</td>
+					<td align="left" width="220px">
+						<@form.input
+						id="proposerName"  name="proposerName"
+						placeholder="" 
+						tip="" 
+						/>
+					</td>
+					<td align="right">${i18n.get('申请状态：')}</td>
+					<td align="left">
+						<@form.select id="status" name="status"  
+							code="ORDER_CONTROL_STATUS" 
+							idKey='code' 
+							/> 
+					</td>
+				</tr>
+				<tr>
+					<td align="right">${i18n.get('申请日期从：')}</td>
+					<td align="left">
+						<@form.date   
+							id="applyDateStart"  name="applyDateStart" 
+							placeholder="" 
+							tip="" 
+							/>
+					</td>
+					<td align="right">${i18n.get('申请日期至：')}</td>
+					<td align="left">
+						<@form.date   
+							id="applyDateEnd"  name="applyDateEnd" 
+							placeholder="" 
+							tip="" 
+							/>
+					</td>
+				</tr>
+			</table>
+		</div> 
+	</@form.table>
+</div>
+</@cui.body2>

@@ -1,0 +1,488 @@
+<#escape x as x?html>
+<@pui.body>
+<@form.panel title="${i18n.get('客户基本信息变更')}">
+<@form.form id="entityForm" class="form-horizontal">
+
+<div class="form-group">	
+	<div class="col-md-offset-7 col-md-4">
+		<#if permission["P02CusParChangePage"]?? >
+			<button class="btn btn-info" id="apply" type="button" onclick="applyCustom('apply','50')">
+				<i class="bigger-110"></i>
+				${i18n.get('保存并提交')}
+			</button>
+		</#if>
+		<button class="btn" type="button" onclick="javascript:api.close()">
+			<i class="icon-undo bigger-110"></i>
+			${i18n.get('关闭')}
+		</button>
+		
+	</div>
+</div>
+
+<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('客户变更申请')}</p>
+<div class="form-group">
+	<input id="id" name="id" type="hidden" value="${(entity.id)!}">
+	<input id="customId" name="customId" type="hidden" value="${(entity.customId)!}">
+	<input id="applier" name="applier" type="hidden" value="${(entity.applier)!}" >
+	<input id="applierPos" name="applierPos" type="hidden" value="${(entity.applierPos)!}" >
+	<input id="applierOrg" name="applierOrg" type="hidden" value="${(entity.applierOrg)!}" >
+	<table>
+		<tr>
+			<td align="right" width="200px">
+				<label class="no-padding-right"> ${i18n.get('申请人')}:</label>
+			</td>
+			<td>
+				<@form.input id="applierName" 
+				name="applierName" 
+				readonly="readonly" 
+				value="${(entity.applierName)!}" />
+			</td>
+			
+			<td align="right" width="200px">
+				<label class="no-padding-right">${i18n.get('申请日期')}:</label>
+			</td>
+			<td>
+				<@form.input id="createDate" 
+				name="createDate" 
+				readonly="readonly" 
+				value="${(entity.createDate)!}" />
+			</td>
+			<td align="right" width="200px">
+				<label class="no-padding-right"> ${i18n.get('申请状态')} :</label>
+			</td>
+			<td>
+				<@form.input id="statusName" 
+				name="statusName" 
+				readonly="readonly" 
+				value="${(entity.statusName)!}" />
+			</td>
+		</tr>
+		
+	</table>
+</div>
+<div class="biz_basic_info" id="top02">
+<p style="width: 100%; padding-top: 0px; margin-top: 15px; background-color: #E9E9E9; height: 25px">${i18n.get('客户变更内容')} </p>
+	<div class="m-table">
+		<div class="table-responsive">
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr>
+						<th width="10%" bgcolor="#29629a" style="color:#fff">${i18n.get('序号')}</th>
+						<th width="10%" bgcolor="#29629a" style="color:#fff">${i18n.get('客户属性')}</th>
+						<th width="20%" bgcolor="#29629a" style="color:#fff">${i18n.get('现状')}</th>
+						<th width="60%" bgcolor="#29629a" style="color:#fff">${i18n.get('最新（更新为）')}</th>
+					</tr>
+					<tr>
+						<th width="10%">1</th>
+						<th width="10%">${i18n.get('客户全称')}</th>
+						<th width="20%">${(entity.customFullName)!}</th>
+						<th width="60%">
+							<input id="customFullName" name="customFullName" type="hidden" value="${(entity.customFullName)!}">
+							<@form.input id="tempFullName" 
+							name="tempFullName" 
+							value="${(entity.tempFullName)!}" />
+						</th>
+					</tr>
+					<tr>
+						<th width="10%">2</th>
+						<th width="10%">${i18n.get('公司网址')}</th>
+						<th width="20%">${(entity.customWebAddress)!}</th>
+						<th width="60%">
+						<input id="customWebAddress" name="customWebAddress" type="hidden" value="${(entity.customWebAddress)!}">
+							<@form.input id="tempWebAddress" 
+							name="tempWebAddress" 
+							value="${(entity.tempWebAddress)!}" />
+						</th>
+					</tr>
+					<tr>
+						<th width="10%">3</th>
+						<th width="10%">${i18n.get('客户别名')}</th>
+						<th width="20%">${(entity.customAliasName)!}</th>
+						<th width="60%">
+						<input id="customAliasName" name="customAliasName" type="hidden" value="${(entity.customAliasName)!}">
+							<@form.input id="tempAliasName" 
+							name="tempAliasName" 
+							value="${(entity.tempAliasName)!}" />
+						</th>
+					</tr>
+					<tr>
+						<th width="10%">4</th>
+						<th width="10%">${i18n.get('OEM品牌')}</th>
+						<th width="20%">${(entity.customOem)!}</th>
+						<th width="60%">
+							<input id="customOem" name="customOem" type="hidden" value="${(entity.customOem)!}">
+							<@form.input id="tempOem" 
+							name="tempOem" 
+							value="${(entity.tempOem)!}" />
+						</th>
+					</tr>
+					
+					<tr>
+						<th width="10%">5</th>
+						<th width="10%">${i18n.get('收入规模')}</th>
+						<th width="20%">${(entity.customIncomeScaleName)!}</th>
+						<th width="60%">
+							<input id="customIncomeScale" name="customIncomeScale" type="hidden" value="${(entity.customIncomeScale)!}">
+							<@form.select style="width: 157px;"
+								id="tempIncomeScale" name="tempIncomeScale" 
+								readonly="false"
+								code="INCOMESCALE" 
+								value ="${(entity.tempIncomeScale)!}"
+							/>
+						</th>
+					</tr>
+					<tr>
+						<th width="10%">6</th>
+						<th width="10%">${i18n.get('客户行业')}</th>
+						<th width="20%">${(entity.customCategoryName)!} ${(entity.customCategorySubName)!}</th>
+						<th width="60%">
+							<input id="customCategory" name="customCategory" type="hidden" value="${(entity.customCategory)!}" >
+							<input id="customCategorySub" name="customCategorySub" type="hidden" value="${(entity.customCategorySub)!}" >
+							
+							<!-- 行业大类 -->
+							<#if P_GJORG_B1_0001>
+								<@form.select id="tempCategory"  name="tempCategory"  code="CUSTOMCATEGORY&optTxt1s=I,ACI,AI,BI,ABCI,BCI" level="1"
+								childId="tempCategorySub"
+								required="${i18n.get('不能为空')}" 
+								style="width: 120px;"
+								id="tempCategory"  name="tempCategory" 
+								placeholder="" 
+								value ="${(entity.tempCategory)!}"
+								tip="" 
+								onChange="function(){
+									$('#tempCategorySub').val('');
+									reload_tempCategorySub();
+								}"
+								/>
+							</#if>
+							<#if P_GNORG_B1_0001>
+								<@form.select id="tempCategory"  name="tempCategory"  code="CUSTOMCATEGORY&optTxt1s=A,AI,AC,ACI,ABCI" level="1"
+								childId="tempCategorySub"
+								required="${i18n.get('不能为空')}" 
+								style="width: 120px;"
+								id="tempCategory"  name="tempCategory" 
+								placeholder="" 
+								value ="${(entity.tempCategory)!}"
+								tip="" 
+								onChange="function(){
+									$('#tempCategorySub').val('');
+									reload_tempCategorySub();
+								}"
+								/>
+							</#if>
+							<#if P_GNGFORG_B1_0001>
+								<@form.select id="tempCategory"  name="tempCategory"  code="CUSTOMCATEGORY&optTxt1s=B,BI,ABCI,BCI" level="1"
+								childId="tempCategorySub"
+								required="${i18n.get('不能为空')}" 
+								style="width: 120px;"
+								id="tempCategory"  name="tempCategory" 
+								placeholder="" 
+								value ="${(entity.tempCategory)!}"
+								tip="" 
+								onChange="function(){
+									$('#tempCategorySub').val('');
+									reload_tempCategorySub();
+								}"
+								/>
+							</#if>
+							<#if P_GNQCORG_B1_0001>
+								<@form.select id="tempCategory"  name="tempCategory"  code="CUSTOMCATEGORY&optTxt1s=C,AC,ACI,ABCI,BCI" level="1"
+								childId="tempCategorySub"
+								required="${i18n.get('不能为空')}" 
+								style="width: 120px;"
+								id="tempCategory"  name="tempCategory" 
+								placeholder="" 
+								value ="${(entity.tempCategory)!}"
+								tip="" 
+								onChange="function(){
+									$('#tempCategorySub').val('');
+									reload_tempCategorySub();
+								}"
+								/>
+							</#if>
+							
+							<!-- 行业小类 -->
+							<#if P_GJORG_B1_0001>
+								<@form.select id="tempCategorySub"  name="tempCategorySub"  code="CUSTOMCATEGORY&optTxt1s=I,ACI,AI,BI,ABCI,BCI"  level="2"
+								style="width: 120px;"
+								level="2"
+								parentId="tempCategory"
+								required="${i18n.get('不能为空')}" 
+								value ="${(entity.tempCategorySub)!}"
+								/>
+							</#if>
+							<#if P_GNORG_B1_0001>
+								<@form.select id="tempCategorySub"  name="tempCategorySub"  code="CUSTOMCATEGORY&optTxt1s=A,AI,AC,ACI,ABCI"  level="2"
+								style="width: 120px;"
+								level="2"
+								parentId="tempCategory"
+								required="${i18n.get('不能为空')}" 
+								value ="${(entity.tempCategorySub)!}"
+								/>
+							</#if>
+							<#if P_GNGFORG_B1_0001>
+								<@form.select id="tempCategorySub"  name="tempCategorySub"  code="CUSTOMCATEGORY&optTxt1s=B,BI,ABCI,BCI"  level="2"
+								style="width: 120px;"
+								level="2"
+								parentId="tempCategory"
+								required="${i18n.get('不能为空')}" 
+								value ="${(entity.tempCategorySub)!}"
+								/>
+							</#if>
+							<#if P_GNQCORG_B1_0001>
+								<@form.select id="tempCategorySub"  name="tempCategorySub"  code="CUSTOMCATEGORY&optTxt1s=C,AC,ACI,ABCI,BCI"  level="2"
+								style="width: 120px;"
+								level="2"
+								parentId="tempCategory"
+								required="${i18n.get('不能为空')}" 
+								value ="${(entity.tempCategorySub)!}"
+								/>
+							</#if>
+									
+						</th>
+					</tr>
+					<tr>
+						<th width="10%">7</th>
+						<th width="10%">${i18n.get('客户概况')}</th>
+						<th width="20%">${(entity.customProfile)!}</th>
+						<th width="60%">
+							<input id="customProfile" name="customProfile" type="hidden" value="${(entity.customProfile)!}" >
+							<@form.input id="tempProfile" 
+							name="tempProfile" 
+							value="${(entity.tempProfile)!}" />
+						</th>
+					</tr>
+					<tr>
+						<th width="10%">8</th>
+						<th width="10%">${i18n.get('法定代表人')}</th>
+						<th width="20%">${(entity.corpRepresentative)!}</th>
+						<th width="60%">
+							<input id="corpRepresentative" name="corpRepresentative" type="hidden" value="${(entity.corpRepresentative)!}" >
+							<@form.input id="tempRepresentative" 
+							name="tempRepresentative" 
+							value="${(entity.tempRepresentative)!}" />
+						</th>
+					</tr>
+					<tr>
+						<th width="10%">9</th>
+						<th width="10%">${i18n.get('注册地址')}</th>
+						<th width="20%">${(entity.customAreaName)!} ${(entity.customAreaSub1Name)!} ${(entity.customAreaSub2Name)!} ${(entity.customAreaSub3Name)!} ${(entity.corpRegAddress)!}</th>
+						<th width="60%">
+							<input id="addressId" name="addressId" type="hidden" value="${(entity.addressId)!}" >
+							<input id="customArea" name="customArea" type="hidden" value="${(entity.customArea)!}" >
+							<input id="customAreaSub1" name="customAreaSub1" type="hidden" value="${(entity.customAreaSub1)!}" >
+							<input id="customAreaSub2" name="customAreaSub2" type="hidden" value="${(entity.customAreaSub2)!}" >
+							<input id="customAreaSub3" name="customAreaSub3" type="hidden" value="${(entity.customAreaSub3)!}" >
+							<input id="corpRegAddress" name="corpRegAddress" type="hidden" value="${(entity.corpRegAddress)!}" >
+							
+							<@form.select 
+								code="ADDRESSREGION"
+								level="1"
+								childId="tempAreaSub1"
+								id="tempArea"  name="tempArea" 
+								style="width: 100px"
+								placeholder="" 
+								tip="" 
+								value="${(entity.tempArea)!}"
+								required="${i18n.get('不能为空')}"
+								onChange="function(){
+									$('#tempAreaSub1').val('');
+									reload_tempAreaSub1();
+									
+									$('#tempAreaSub2').val('');
+									reload_tempAreaSub2();
+									
+									$('#tempAreaSub3').val('');
+									reload_tempAreaSub3();
+								}"
+								/>
+								
+							<@form.select 
+								code="ADDRESSREGION"
+								level="2"
+								parentId="tempArea"
+								childId="tempAreaSub2"
+								style="width: 100px"
+								id="tempAreaSub1" name="tempAreaSub1" 
+								placeholder="" 
+								tip="" 
+								value="${(entity.tempAreaSub1)!}"
+								onChange="function(){
+									$('#tempAreaSub2').val('');
+									reload_tempAreaSub2();
+									
+									$('#tempAreaSub3').val('');
+									reload_tempAreaSub3();
+								}"
+								/>
+								
+							<@form.select 
+								code="ADDRESSREGION"
+								level="3"
+								parentId="tempAreaSub1"
+								childId="tempAreaSub3"
+								style="width: 100px"
+								id="tempAreaSub2" name="tempAreaSub2" 
+								placeholder="" 
+								tip="" 
+								value="${(entity.tempAreaSub2)!}"
+								onChange="function(){
+									$('#tempAreaSub3').val('');
+									reload_tempAreaSub3();
+								}"
+								/>
+								
+							<@form.select 
+								code="ADDRESSREGION"
+								level="4"
+								parentId="tempAreaSub2"
+								style="width: 100px"
+								id="tempAreaSub3" name="tempAreaSub3" 
+								placeholder="" 
+								tip="" 
+								value="${(entity.tempAreaSub3)!}"
+								/>
+			
+							<@form.input id="tempRegAddress" 
+							name="tempRegAddress" 
+							value="${(entity.tempRegAddress)!}" /> 
+						</th>
+					</tr>
+					<tr>
+						<th width="10%">10</th>
+						<th width="10%">${i18n.get('一般纳税人资格')}</th>
+						<th width="20%">${(entity.corpOrdinaryFlgName)!}</th>
+						<th width="60%">
+							<input id="corpOrdinaryFlg" name="corpOrdinaryFlg" type="hidden" value="${(entity.corpOrdinaryFlg)!}" >
+							<@form.select style="width: 161px;"
+							id="tempOrdinaryFlg" 
+							name="tempOrdinaryFlg" 
+							code="ORDINARY" 
+							value ="${(entity.tempOrdinaryFlg)!}"
+						/>
+						</th>
+					</tr>
+					<tr>
+						<th width="10%">11</th>
+						<th width="10%">${i18n.get('纳税登记号')}</th>
+						<th width="20%">${(entity.corpTrn)!}</th>
+						<th width="60%">
+							<input id="corpTrn" name="corpTrn" type="hidden" value="${(entity.corpTrn)!}" >
+							<@form.input id="tempTrn" 
+							name="tempTrn" 
+							value="${(entity.tempTrn)!}" />
+						</th>
+					</tr>
+					<tr>
+						<th width="10%">12</th>
+						<th width="10%">${i18n.get('开票名称')}</th>
+						<th width="20%">${(entity.corpInvoiceName)!}</th>
+						<th width="60%">
+							<input id="corpInvoiceName" name="corpInvoiceName" type="hidden" value="${(entity.corpInvoiceName)!}" >
+							<@form.input id="tempInvoiceName" 
+							name="tempInvoiceName" 
+							value="${(entity.tempInvoiceName)!}" />
+						</th>
+					</tr>
+					<tr>
+						<th width="10%">13</th>
+						<th width="10%">${i18n.get('开票地址')}</th>
+						<th width="20%">${(entity.accountAddress)!}</th>
+						<th width="60%">
+							<input id="accountAddress" name="accountAddress" type="hidden" value="${(entity.accountAddress)!}" >
+							<@form.input id="tempAccountAddress" 
+							name="tempAccountAddress" 
+							value="${(entity.tempAccountAddress)!}" />
+						</th>
+					</tr>
+					<tr>
+						<th width="10%">14</th>
+						<th width="10%">${i18n.get('开户行')}</th>
+						<th width="20%">${(entity.accountBank)!}</th>
+						<th width="60%">
+							<input id="accountBank" name="accountBank" type="hidden" value="${(entity.accountBank)!}" >
+							<@form.input id="tempAccountBank" 
+							name="tempAccountBank" 
+							value="${(entity.tempAccountBank)!}" />
+						</th>
+					</tr>
+					<tr>
+						<th width="10%">15</th>
+						<th width="10%">${i18n.get('开票电话')}</th>
+						<th width="20%">${(entity.accountTel)!}</th>
+						<th width="60%">
+							<input id="accountTel" name="accountTel" type="hidden" value="${(entity.accountTel)!}" >
+							<@form.number id="tempAccountTel" 
+							name="tempAccountTel" 
+							value="${(entity.tempAccountTel)!}" />
+						</th>
+					</tr>
+					<tr>
+						<th width="10%">16</th>
+						<th width="10%">${i18n.get('开户账号')}</th>
+						<th width="20%">${(entity.accountNo)!}</th>
+						<th width="60%">
+							<input id="accountNo" name="accountNo" type="hidden" value="${(entity.accountNo)!}" >
+							<@form.number id="tempAccountNo" 
+							name="tempAccountNo" 
+							value="${(entity.tempAccountNo)!}" />
+						</th>
+					</tr>
+					<tr>
+						<th width="10%">17</th>
+						<th width="10%">${i18n.get('开票注意事项')}</th>
+						<th width="20%">${(entity.corpInvoiceComment)!}</th>
+						<th width="60%">
+							<input id="corpInvoiceComment" name="corpInvoiceComment" type="hidden" value="${(entity.corpInvoiceComment)!}" >
+							<@form.input id="tempInvoiceComment" 
+							name="tempInvoiceComment" 
+							value="${(entity.tempInvoiceComment)!}" />
+						</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+	</div>
+</div>
+<div id="info1" style="padding-top: 20px;" class="row">
+	<div class="col-xs-12">
+		<input type="hidden" id="selectedId1"  />
+			<@plug.tabs tabMain=tabMainInfo1></@plug.tabs>
+    </div>
+</div>
+</@form.form>
+</@form.panel>
+</@pui.body>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		if ('${(entity.status)!}' === 'CUSTOM_NORMAL_STATUS_20'
+			|| '${(entity.status)!}' === 'CUSTOM_NORMAL_STATUS_40'){
+			$("#apply").attr("disabled","true");
+		}
+	});
+	
+	function applyCustom(operate,status){
+		var msg = "${i18n.get('确定启动变更流程吗？')}";
+		var formDatas = $('#form_entityForm').serialize();
+		bootbox.confirm(msg, function(result) {
+			if(result) {
+				$.ajax({
+					type : "POST",
+					url : "${ctx}/custom/change/" + operate + ".html",
+					async: true,
+					data : formDatas, 
+					dataType : 'json',
+					success : function(msg) {
+						alert(msg.message);
+						javascript:api.close();
+					},
+					error: function(e) {
+						alert(e.responseJSON.message);
+					} 
+				});
+			}
+		});
+	}
+</script>
+</#escape>

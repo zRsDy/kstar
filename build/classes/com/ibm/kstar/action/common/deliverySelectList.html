@@ -1,0 +1,177 @@
+<@pui.body>
+<div class="row col-xs-12" style="width: 1000px;margin-right: 0px; margin-left: 0px;" >
+
+<table style="width: 1000px">
+<tr>
+<td style="width: 1000px">
+	<@form.table id="all_table"
+		title="${i18n.get('全部出货单')}"
+		url = "${ctx}/common/delivery/page.html?customerCode=${customerCode}"
+		rowNum = "10"
+		colModel = "[
+			{name:'id',label:'id',hidden:true,width:1,sortable:false,align:'center'},
+			{name:'deliveryCode',label:'${i18n.get('出货单编号')}',hidden:false,width:150,sortable:false,align:'center'},
+			{name:'orderId',label:'${i18n.get('订单ID')}',hidden:true,width:150,sortable:false,align:'center'},
+			{name:'orderCode',label:'${i18n.get('订单编号')}',hidden:false,width:150,sortable:false,align:'center'},
+			{name:'isErpDelivery',label:'${i18n.get('发货状态')}',formatter:function(cell, options, data){if('No'==cell){return '<span style=\"color:red;\">未发货</span>'}else{return '已发货'}},hidden:false,width:80,sortable:false,align:'center'},
+			{name:'orderLineNo',label:'${i18n.get('订单行号')}',hidden:false,width:50,sortable:false,align:'center'},
+			{name:'orderType',label:'${i18n.get('订单类型ID')}',hidden:true,width:150,sortable:false,align:'center'},
+			{name:'orderTypeLable',label:'${i18n.get('订单类型')}',hidden:false,width:120,sortable:false,align:'center'},
+			{name:'singleCustCode',label:'${i18n.get('下单客户编号')}',hidden:false,width:100,sortable:false,align:'center'},
+			{name:'singleCustName',label:'${i18n.get('下单客户名称')}',hidden:false,width:150,sortable:false,align:'center'},
+			{name:'deliveryAddressId',label:'${i18n.get('客户地址ID')}',hidden:true,width:150,sortable:false,align:'center'},
+			{name:'deliveryAddress',label:'${i18n.get('客户地址')}',hidden:false,width:150,sortable:false,align:'center'},
+			{name:'singleCustPO', label:'${i18n.get('客户PO')}',width:100,sortable : false,editable : false,align:'center'}, 
+			{name:'notInvoiceQty',label:'${i18n.get('未开票数量')}',hidden:false,width:80,sortable:false,align:'center'},
+			{name:'cInvoiceQty',label:'${i18n.get('本次开票数量')}',hidden:false,width:80,sortable:false,align:'center',editable : true},
+			{name:'proModel',label:'${i18n.get('产品型号')}',hidden:false,width:150,sortable:false,align:'center'},
+			{name:'materielCode',label:'${i18n.get('物料编码')}',hidden:false,width:150,sortable:false,align:'center'},
+			{name:'materielName',label:'${i18n.get('物料名称')}',hidden:false,width:150,sortable:false,align:'center'},
+			{name:'price',label:'${i18n.get('产品单价')}',hidden:false,width:80,sortable:false,align:'center'},
+			{name:'unit',label:'${i18n.get('单位')}',hidden:true,width:60,sortable:false,align:'center'},
+			{name:'unitLable', label:'${i18n.get('单位')}',width : 60,sortable : false, editable : false, align:'center'},  
+			{name:'deliveryQty',label:'${i18n.get('出货数量')}',hidden:false,width:80,sortable:false,align:'center'},
+			{name:'deliveryAmount',label:'${i18n.get('出货金额')}',hidden:false,width:100,sortable:false,align:'center'},
+			{name:'invoiceQty',label:'${i18n.get('开票数量')}',hidden:true,width:80,sortable:false,align:'center'},
+			{name:'orderDate',label:'${i18n.get('下单日期')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+			{name:'arrivalDate',label:'${i18n.get('客户要货日期')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+			{name:'promiseDate',label:'${i18n.get('工厂承诺日期')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+			{name:'planStatus',label:'${i18n.get('计划状态')}',hidden:false,width:80,sortable:false,align:'center'},
+			{name:'externalNo',label:'${i18n.get('出货单编号(外部)')}',hidden:false,width:150,sortable:false,align:'center'},
+			{name:'printTime',label:'${i18n.get('出货单打印日期（外部）')}',hidden:false,width:150,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+			{name:'lineNum',label:'${i18n.get('发货行号')}',hidden:false,width:50,sortable:false,align:'center'},
+			{name:'remarks',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:false,align:'center'}
+		  ]"
+		 buttons = "[]"
+		 onSelectRow = "function(data,status){
+		 	if(status){
+		 		selectedData = data ;
+		 	}
+		 }"
+		 
+		 ondblClickRow = "function(id){
+			$('#all_table input[id='+id+'_cInvoiceQty]').bind('input',function(event){
+				var rowData = $('#all_table').jqGrid('getRowData',id);
+				
+				var re = /^[0-9].*$/ ;
+				if(!re.test($(this).val())){
+					alert('${i18n.get('本次开票数量必须为数字')}'); 
+					$(this).val(rowData.notInvoiceQty);
+				}
+				if(rowData.deliveryQty){
+					//本次开票数量不能大于未开票数量 
+					if(parseFloat($(this).val()) < 0 || parseFloat($(this).val()) > parseFloat(rowData.notInvoiceQty)){
+						$(this).val(rowData.notInvoiceQty);
+					}
+				}
+		 	});
+		}"
+		
+		 onComplete = "function() { 
+				var ids = $('#all_table').jqGrid('getDataIDs');
+		 		$.each(ids,function(i,id){
+					var deliveryQty = $('#all_table').jqGrid('getCell', id, 'deliveryQty');
+					if(deliveryQty == null ){
+						deliveryQty = 0
+					}
+					var invoiceQty = $('#all_table').jqGrid('getCell', id, 'invoiceQty');
+					if(invoiceQty == null){
+						invoiceQty= 0;
+					}
+					var notInvoiceQty =  parseFloat(deliveryQty) -parseFloat(invoiceQty);
+					$('#all_table').jqGrid('setRowData', id, { notInvoiceQty:notInvoiceQty, cInvoiceQty:notInvoiceQty});
+		 		});
+			
+			}"
+		>
+		
+		<input  id="contractCode" name="contractCode" type="hidden"  value="${(contractCode)!}"/>
+		<input  id="businessEntity" name="businessEntity" type="hidden" value="${(businessEntity)!}"/>
+		<input  id="isAdvanceBilling" name="isAdvanceBilling" type="hidden" value="${(isAdvanceBilling)!}"/>
+		<div class="col-xs-12" style="padding-top: 10px;padding-bottom: 10px;">
+			<table border="0" cellpadding="2" cellspacing="2" >
+		    	<tr align="left">
+		  			<td align="right" width="100px">
+		  				 ${i18n.get('客户名称： ')}
+		            </td>
+		            <td align="left" width="210px" >
+		            	<@form.input  id="customerName" name="customerName" readonly="readonly" style="width: 200px;"  value="${(customerName)!}"/>
+		            </td>
+		            <td align="right" width="100px">
+		  				 ${i18n.get('出货日期从： ')}
+		            </td>
+		            <td align="left" width="210px" >
+		            	 <@form.date    
+							id="deliveryDateStart"  name="deliveryDateStart" 
+							style="width: 150px;"
+							placeholder="" 
+							tip="" 
+							/>
+		            </td>
+		            <td align="right" width="100px">
+		  				  ${i18n.get('订单编码从： ')} 
+		            </td>
+		             <td align="left" width="210px" >
+		            	<@form.input  id="orderCodeStart" name="orderCodeStart"  style="width: 200px;" />
+		            </td>
+		        </tr>
+		    	<tr>
+		            <td align="right">
+		  				  ${i18n.get('客户PO：')} 
+		            </td>
+		             <td align="left">
+		            	 <@form.input  id="singleCustPO" name="singleCustPO" style="width: 200px;" />
+		            </td>
+		            <td align="right">
+		  				 ${i18n.get('出货日期至： ')} 
+		            </td>
+		            <td align="left">
+		            	   <@form.date    
+							id="deliveryDateEnd"  name="deliveryDateEnd" 
+							style="width: 150px;"
+							placeholder="" 
+							tip="" 
+							/>
+		            </td>
+		             <td align="right">
+		  				 ${i18n.get('订单编码至：  ')} 
+		            </td>
+		             <td align="left">
+		            	<@form.input  id="orderCodeEnd" name="orderCodeEnd"  style="width: 200px;" />
+		            </td>
+		       </tr>
+			</table>
+	  </div>
+	</@form.table>
+</td>
+</tr>
+</table>
+
+<div class="clearfix form-actions">
+	<div class="col-md-offset-5 col-md-7">
+		<button class="btn btn-info" id="selectOK" type="button" >
+			<i class="icon-ok bigger-110"></i>
+			${i18n.get('选择')} 
+		</button>
+		&nbsp; &nbsp; &nbsp;
+		<button class="btn" type="button" onclick="javascript:api.close()">
+			<i class="icon-undo bigger-110"></i>
+			${i18n.get('关闭')} 
+		</button>
+	</div>
+</div>
+<script type="text/javascript">
+	var selectedData ;
+	$('#selectOK').click(function(){
+		$('#all_table').trigger('blur');
+		selectedData = $('#all_table').jqGrid('getRowData',selectedData.id);
+		if(selectedData.cInvoiceQty == null || selectedData.cInvoiceQty=='' || selectedData.cInvoiceQty == 0){
+			alert('${i18n.get('本次开票数量不能为空，且必须大于0')}'); 
+		}else{
+			parent.currentParent.${pickerId}_callback(selectedData);
+			api.close();
+		}
+	})
+</script>
+</div>
+</@pui.body>

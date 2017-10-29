@@ -1,0 +1,66 @@
+<script type="text/javascript">
+	$(window).resize(function(){  
+	 	$("#logisticsReceiptsLinesForm").setGridWidth($(window).width()-120);
+	});
+</script>
+<@form.table id="logisticsReceiptsLinesForm" 
+	class="col-xs-12" 
+	title="${i18n.get('签收单明细行')}" 
+	url ="${ctx}/logistics/queryDeliveryReceiptLines.html?receiptCode=${receiptCode}"
+	rowNum = "10"
+	search = "false"
+	exportURL =  "'${ctx}/logistics/exportReceiptList.html'" 
+	colModel = "[
+		{name:'id',label:'id',hidden:true,width:150,sortable:false,align:'center'},
+		{name:'deliveryLinesNum',label:'${i18n.get('出货明细行号')}',hidden:true,width:150,sortable:false,align:'center'},
+		{name:'receiptCode',label:'${i18n.get('签收单编号')}',hidden:true,width:150,sortable:false,align:'center'},
+		{name:'deliveryCode',label:'${i18n.get('出货申请编号')}',hidden:false,width:150,sortable:false,align:'center'},
+		{name:'orderCode',label:'${i18n.get('订单编号')}',hidden:false,width:150,sortable:false,align:'center'},
+		{name:'singleCustName',label:'${i18n.get('下单客户')}',hidden:false,width:150,sortable:false,align:'center'},
+		{name:'materielCode',label:'${i18n.get('物料编码')}',hidden:false,width:80,sortable:false,align:'center'},
+		{name:'proDesc',label:'${i18n.get('产品描述')}',hidden:false,width:150,sortable:true,align:'center'},
+		{name:'deliveryQty',label:'${i18n.get('出货数量')}',hidden:false,width:80,sortable:false,align:'right'},
+		{name:'receiptQty',label:'${i18n.get('签收数量')}',hidden:false,width:80,sortable:false,align:'right', editable:false},
+		{name:'unitLable',label:'${i18n.get('单位')}',hidden:false,width:50,sortable:false,align:'center'},
+		{name:'consignee',label:'${i18n.get('收货人')}',hidden:false,width:100,sortable:false,align:'center', editable : false},
+		{name:'consigneeTel',label:'${i18n.get('收货人电话')}',hidden:false,width:130,sortable:false,align:'center',editable : false},
+		{name:'receAddress',label:'${i18n.get('收货地址')}',hidden:false,width:200,sortable:false,align:'center', editable : false},
+		{name:'remarks',label:'${i18n.get('备注')}',hidden:false,width:200,sortable:false,align:'center',editable : true},
+		{name:'externalNo',label:'${i18n.get('出货单编号(外部)')}',hidden:true,width:150,sortable:false,align:'center'},
+		{name:'invoicePrintTime',label:'${i18n.get('出货单打印日期（外部）')}',hidden:true,width:80,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+		{name:'logisticsCompany',label:'${i18n.get('物流公司ID')}',hidden:true,width:150,sortable:false,align:'center'},
+		{name:'logisticsCompanyLable',label:'${i18n.get('物流公司')}',hidden:true,width:150,sortable:false,align:'center'},
+		{name:'logisticsNo',label:'${i18n.get('物流运单号')}',hidden:true,width:150,sortable:false,align:'center'},
+		{name:'erpOrderCode', label:'${i18n.get('ERP订单编号')}', width : 150, editable : false, hidden : false, align:'center'},
+		{name:'sourceCode', label:'${i18n.get('合同/商机编码')}',hidden:false, width : 150,sortable:true,editable : false, align:'center'},
+		{name:'orderLineNo', label:'${i18n.get('订单行号')}',hidden:false, width : 50,sortable:true,editable : false, align:'center'}
+		]"  
+		buttons = "[
+		
+		]" 
+		ondblClickRow = "function(id){
+			if('${(employeeType)!}' == 'E'){
+				$('#logisticsReceiptsLinesForm input[id='+id+'_receiptQty]').attr('readonly', true);
+				$('#logisticsReceiptsLinesForm input[id='+id+'_remarks]').attr('readonly', true);
+			}
+			$('#logisticsReceiptsLinesForm input[id='+id+'_receiptQty]').bind('input',function(event){
+				var rowData = $('#logisticsReceiptsLinesForm').jqGrid('getRowData',id);
+				if(isNaN($(this).val())){
+					alert('${i18n.get('签收数量必须为数字')}');
+					$(this).val(rowData.deliveryQty);
+				}
+				if(rowData.receiptQty){
+					//签收数量不能大于出货数量
+					if(parseFloat($(this).val()) < 0 || parseFloat($(this).val()) > parseFloat(rowData.deliveryQty)){
+						$(this).val(rowData.deliveryQty);
+					}
+				}
+		 	});
+		}"
+		
+		onComplete = "function(){ 
+			$('#logisticsReceiptsLinesForm').setGridWidth($(window).width()-90);
+			calculateQty();
+		}"
+		> 
+</@form.table>

@@ -1,0 +1,27 @@
+﻿<reports>
+	<report>
+		<code>report1</code>
+		<name>机构盈利性报表</name>
+		<conditions>
+			<condition name="employeeId" defaultValue='${userId}'/>
+			<condition name="year" defaultValue='${nowYear}'/>
+			<condition name="currency" defaultValue='CNY'/>
+		</conditions>
+		<page>/report/report1</page>
+		<sqls>
+		<sql name="sql1">
+			<![CDATA[
+				select t.group_code,t.count_num , '${year}' ,'${employeeId}' from (
+					select m.group_code, count(1) as count_num from sys_t_lov_member m group by m.group_code 
+				) t
+				where t.count_num > 10 and t.count_num < 200
+			]]>
+		</sql>
+		<sql name="sql2">
+			<![CDATA[
+				select p.c_pro_model,count(1) as count_num from crm_t_product_basic p  where p.c_pro_model is not null and p.c_pro_model!=' ' group by p.c_pro_model
+			]]>
+		</sql>
+	</sqls>
+	</report>
+</reports>

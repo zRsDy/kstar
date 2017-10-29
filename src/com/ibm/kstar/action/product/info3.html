@@ -1,0 +1,140 @@
+<#if (permission["P01-1ProductDocAdd"])??>
+	<#assign addURL_t3="'${ctx}/product/docAdd.html?productID=${id}'" />
+</#if>
+<#if (permission["P01-1ProductDocEdit"])??>
+	<#assign editURL_t3="true" />
+</#if>
+<#if (permission["P01-1ProductDocDelete"])??>
+	<#assign deleteURL_t3="'${ctx}/product/docDelete.html'" />
+</#if>
+<#if (permission["P01-1ProductDocUpload"])??>
+	<#assign uploadURL_t3="true" />
+</#if>
+<#if (permission["P01-1ProductDocSubmit"])??>
+	<#assign submitURL_t3="true" />
+</#if>
+
+<@form.table id="t3" class="col-xs-12" 
+	shrinkToFit="true"  title="${i18n.get('产品文档')}" 
+	url ="${ctx}/product/docList.html?id=${id}" 
+	rowNum = "20" 
+	addURL = "${addURL_t3!}"
+	deleteURL = "${deleteURL_t3!}" 
+	search='true'
+	colModel = "[ 
+		{name:'id',label:'',hidden:true,width:60,sortable:false,align:'center' }, 
+		{name:'createdById',label:'${i18n.get('创建人id')}',hidden:true,width:60,sortable:false,align:'center' },
+		{name:'docName',label:'${i18n.get('文档名称')}',hidden:false,width:100,sortable:false,align:'center' }, 
+		{name:'docNote',label:'${i18n.get('文档说明')}',hidden:false,width:160,sortable:false,align:'center' }, 
+		{name:'applyPersonName',label:'${i18n.get('申请人')}',hidden:false,width:120,sortable:false,align:'center' },
+ 		{name:'applyTime',label:'${i18n.get('申请时间')}',hidden:false,width:140,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+ 		{name:'applyStatus',label:'${i18n.get('申请状态')}',hidden:true,width:120,sortable:false,align:'center' }, 
+ 		{name:'applyStatusName',label:'${i18n.get('申请状态')}',hidden:false,width:120,sortable:false,align:'center' }, 
+  		{name:'productID',label:'${i18n.get('产品ID')}',hidden:true,width:160,sortable:false,align:'center' }]" 
+  	onSelectRow="function(){
+		$('#productDocId').val(selected_t3.id);
+		$('.businessId').val(selected_t3.id);//${i18n.get('外部附件文件需要')}
+		if(selected_t3.applyStatusName == '${i18n.get('审批通过')}' && ${uploadURL_t3!}){
+			$('#buttons_add_attachment_productDoc').show();
+			$('#buttons_delete_attachment_productDoc').show();
+		}else{
+			$('#buttons_add_attachment_productDoc').hide();
+			$('#buttons_delete_attachment_productDoc').hide();
+		}
+		try{
+			reload_attachment_productDoc();
+		}catch(e){
+		}
+	}"
+	onComplete="function(){
+		$('#buttons_add_attachment_productDoc').hide();
+		$('#buttons_delete_attachment_productDoc').hide();
+		
+		$('.businessId').val('xx');//${i18n.get('外部附件文件需要')}
+		try{
+			reload_attachment_productDoc();
+		}catch(e){
+		}
+	}"
+ 	buttons = "[
+  		{
+  			id:'edit_t3',
+  			label : '${i18n.get('修改')}',
+  			icon : 'icon-ok',
+  			own : ${editURL_t3!'false'},
+  			handler : function(e,rowData){
+  				if(typeof(rowData) != 'undefined'){
+  					var statusEdit = !canEdit(rowData.applyStatusName);
+					parent.dialog('${i18n.get('产品文档')}','${ctx}/product/docAdd.html?id='+rowData.id+'&statusEdit='+statusEdit,window);
+  				}else{
+  					exalert(e,'${i18n.get('请选择要修改的数据！')}');
+  				}
+				
+  			}
+  		}, 
+  		{
+  			id:'submitProcess',
+  			label : '${i18n.get('提交')}',
+  			icon : 'icon-ok',
+  			own : ${submitURL_t3!'false'},
+  			handler : function(e,rowData){
+  				if(typeof(rowData) != 'undefined'){
+  				     if(!canEdit(rowData.applyStatusName)){
+  				     	 bootbox.confirm('${i18n.get('你确定要开启文档申请审批流程？')}' , function(result) {
+							if(result) {
+								ajax({
+									type:'post',
+									url : '${ctx}/productprocess/startDocApplyProcess.html',
+									data: {id:rowData.id},
+									dataType:'json',
+									success : function(result) {
+										exalert(e,'${i18n.get('文档申请审批流程已开启')}');
+										reload_t3();
+									},
+									error : function(result) {
+										alert(result);
+									}
+								});
+							}
+						}); 
+  				     
+  				     }else{
+  				     		myAlert(e,'${i18n.get('提交')}');
+  				     }
+  				}else{
+  					exalert(e,'${i18n.get('请选择申请的数据！')}');
+  				}
+  			}
+  		}
+  	]"
+	> 
+	<div class="col-xs-12">
+		<div class="form-group col-xs-2" align="right">${i18n.get('文档名称 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="docName" size="30" />
+		</div>	
+	</div>
+</@form.table>
+<input type="hidden" id="productDocId" />
+<div id="attachmentId_t3"></div>
+<script type="text/javascript">
+$(document).ready(function() {
+	showAttachmentPage("attachmentId_t3","${ctx}/common/attachment/attachment.html?businessType=productDoc&unableAdd=true&unableDelete=true");
+});
+function showAttachmentPage(tabId, url){
+	url = url + "&docGroupCode=ProDocType&businessId=xx";
+	$('#applytab a[href="#'+tabId+'"]').tab('show');
+	$('#'+tabId).load(url,function(response,status,xhr){
+		if(status === 'error'){
+			$('#'+tabId).html(url+'<br> ${i18n.get('页面加载失败')}');
+		}
+	});
+}
+
+function canEdit(status){
+	return status != '${i18n.get('新建')}' && status != '${i18n.get('已驳回')}';
+}
+function myAlert(e,type){
+	exalert(e,'${i18n.get('只有新建或已驳回的数据可')}'+type+'!');
+}
+</script>

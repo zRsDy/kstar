@@ -1,0 +1,70 @@
+@charset "utf-8";
+/*--logon--*/
+div#logon{width:100%;position:relative;}
+div#logonheader{background:url(../images/logon_topbg.png) repeat-x 0 0;height:111px; width:100%; position:relative; top:0 }
+div#logonheader b{display:block;background:url(../images/logon_logo.png) no-repeat 0 0;width:570px;height:111px; left:110px; margin-left:50px;}
+div#loginflash{background:none;height:359px;position:relative;margin:0 auto;}
+
+div#news_bg{position:absolute;width:430px;height:40px;background:url(../images/logon_news_bg.png) no-repeat;top:0;left:30px;z-index:999;}
+div#news_bg span{width:50px;height:40px;background:url(../images/news_icon.png) 25px 10px no-repeat;float:left;}
+#news{height:40px;width:360px;padding:7px 0 0 0;}
+#news ul{height:22px;overflow:hidden;margin:0;}
+#news ul li{float:left;display:inline;height:22px;width:100%;margin:0;}
+#news ul li a{color:#fff;display:inline-block;height:22px;line-height:22px;width:300px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+
+div#logonfooter{height:251px; background:url(../images/logon_bottom.png) repeat-x;padding:0 15px;position:relative;top:0;width:100%}
+div#logonfooter span{color:#909090;display:block;height:29px;padding:7px 0 0 0;position:absolute;text-align:center;text-shadow:1px 1px 0 #fff;left:50px;width:400px;background:none;}
+div#logon_wrap{background:url(../images/logon_wrap.png) no-repeat 0 0;width:241px;height:249px;position:absolute;top:110px;right:60px;margin-left:-137px;padding:80px 55px 0 40px;z-index:999;}
+div#logon_wrap ul{display:block;}
+div#logon_wrap ul li{padding:5px;}
+div#logon_wrap ul li span{display:block;height:30px;padding-left:30px;}
+div#logon_wrap ul li span.logon_user{background:url(../images/logon_user.png) no-repeat;}
+div#logon_wrap ul li span.logon_password{background:url(../images/logon_password.png) no-repeat;}
+div#logon_wrap ul li input.input_user{width:182px;height:28px!important;background:url(../images/logon_input.png) no-repeat; border:none;padding-left:10px;line-height:30px;-moz-box-shadow:none;-webkit-box-shadow:none;box-shadow:none;}
+div#logon_wrap ul li input.input_user:focus{background-position:0 -28px;border:none;-moz-box-shadow:none;-webkit-box-shadow:none;box-shadow:none;}
+div#logon_wrap ul li input.input_password{background:url(../images/logon_input.png) no-repeat;width:182px;height:28px!important;padding-left:10px;border:none;line-height:30px;-moz-box-shadow:none;-webkit-box-shadow:none;box-shadow:none;}
+div#logon_wrap ul li input.input_password:focus{background-position:0 -28px;border:none;}
+#error{background:url(../images/logon_error.png) no-repeat 0 0;color:red;height:35px;left:100px;line-height:29px;padding-left:8px;padding-right:8px;position:absolute;top:45px;-moz-box-shadow:none;-webkit-box-shadow:none;box-shadow:none;}
+
+.btn_padding{padding:5px 5px 10px 33px;}
+.btn_margin{margin-right:28px;}
+.btn{font-size:13px;width:182px;height:29px!important;border:none;cursor:pointer;}
+.btn_login{background:url(../images/logon_btn.png) repeat-x 0 0;color:#ffffff;line-height:29px;border:none;-moz-box-shadow:none;-webkit-box-shadow:none;box-shadow:none;}
+.btn_login:hover,.btn_login:focus,.btn_login:active{background-position:100% -29px;color:#ffffff; border:none;-moz-box-shadow:none;-webkit-box-shadow:none;box-shadow:none;}
+
+/*--slide--*/
+#YNews{position:relative;z-index:1;margin:0 auto;width:100%;height:359px;overflow:hidden;}
+#YNews dl{position:absolute;z-index:2;width:100%;height:359px;overflow:hidden;}
+#YNews dl,#YNews dt img{position:absolute;left:0;width:1920px;height:359px;}
+#overlay {
+    background: none repeat scroll 0 0 #FFFFFF;
+    box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+    display: none;
+    padding: 20px;
+    width: 576px;
+}
+#overlay h2 {
+    border-bottom: 1px solid #CCCCCC;
+    color: #666666;
+    font-size: 28px;
+    font-weight: normal;
+    line-height: 32px;
+    margin: 12px 0 16px 0;
+    padding-bottom:12px;
+}
+#overlay p {
+    line-height: 20px;
+    margin-bottom: 8px;
+}
+
+#overlay .close {
+    background-image:url(../images/overlayclose.png);
+    position:absolute; right:-15px; top:-15px;
+    cursor:pointer;
+    height:35px;
+    width:35px;
+}
+#overlay div.contentWrap {
+    height: 340px;
+    overflow-y: auto;
+}

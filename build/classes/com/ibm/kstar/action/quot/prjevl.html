@@ -1,0 +1,346 @@
+
+<script type="text/javascript">
+	var selectedList = [];
+	
+</script>
+
+<#if (permission["P04T6ProReviewAdd"])??>
+	<#assign prjevladdURL="'${ctx}/quot/addPrjevl.html?qid=${qid}&typ=${typ}&checkver=${checkver}&ckevlststatus=${ckevlststatus}'" />
+</#if>
+
+<#if (permission["P04T6ProReviewEdit"])??>
+	<#assign prjevleditURL="'${ctx}/quot/editPrjevl.html?qid=${qid}&typ=${typ}&checkver=${checkver}'" />
+</#if>
+
+<#if (permission["P04T6ProReviewDelete"])??>
+	<#assign prjevldeleteURL="'${ctx}/quot/deletePrjevl.html'" />
+</#if>
+
+<#if (permission["P04T6ProReviewStartReview"])??>
+	<#assign ifprjevlpublish="true" />
+</#if>
+
+<#if (permission["P04T6ProReviewReviewComplete"])??>
+	<#assign ifevlfinButton="true" />
+</#if>
+
+<#if (permission["P04T6ProReviewVersionComparison"])??>
+	<#assign ifcompareButton="true" />
+</#if>
+
+<#if (permission["P04T6ProReviewFlowchart"])??>
+	<#assign ifprjevlview="true" />
+</#if>
+
+<#if (permission["P04T6ProReviewHistory"])??>
+	<#assign ifprjevlprocess="true" />
+</#if>
+
+
+
+
+<@form.table id="prjevl" 
+	class="col-xs-12"
+	title="${i18n.get('工程评审')}" 
+	checkbox="true"
+	url = "${ctx}/quot/prjevlPage.html?qid=${qid}&typ=${typ}&checkver=${checkver}" 
+	rowNum = "10" 
+	addURL = "${prjevladdURL!}" 
+	editURL= "${prjevleditURL!}" 
+	deleteURL = "${prjevldeleteURL!}" 
+	colModel = "[
+		{name:'id',label:'${i18n.get('评审')}ID',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'seqno',label:'${i18n.get('序号')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'evlTyp',label:'${i18n.get('评审类别')}',hidden:false,width:200,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatevlTypArr(cellvalue) } },
+		{name:'evlMm',label:'${i18n.get('评审人')}',hidden:true,width:200,sortable:false,align:'center' },
+		{name:'evlSt',label:'${i18n.get('评审状态')}',hidden:false,width:150,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatevlStArr(cellvalue) } },
+		{name:'sbmDt',label:'${i18n.get('提交时间')}',hidden:false,width:150,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate(cellvalue) } },
+		{name:'evlRs',label:'${i18n.get('评审结论')}',hidden:true,width:150,sortable:false,align:'center' },
+		{name:'evlSg',label:'${i18n.get('评审人意见')}',hidden:true,width:150,sortable:false,align:'center' },
+		{name:'finDt',label:'${i18n.get('评审完成时间')}',hidden:true,width:150,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate(cellvalue) } }
+		]" 
+		onSelectRow = "function(data,status){
+					 	if(status){
+			 		var flag = true;
+			 		$.each(selectedList_prjevl,function(i,item){
+			 			if(item && data.id === item.id){
+			 				flag = false;
+			 				return;
+			 			}
+			 		});
+			 		if(flag){
+				 		selectedList_prjevl.push(data);
+			 		}
+			 	}else{
+			 		
+			 		$.each(selectedList_prjevl,function(i,item){
+			 			if(item && data.id === item.id){
+			 				selectedList_prjevl.splice(i,1);
+			 			}
+			 		});
+			 	}
+			}"
+		buttons = "[
+						{
+				  			id:'publish',
+				  			label : '${i18n.get('启动评审')}',
+				  			own : ${ifprjevlpublish!'false'},
+				  			handler : function(e,rowData){
+				  				var d = {};
+				  				d.ids = '';
+				  				d.qid = '${qid}';
+				  				debugger;
+				  				if(selectedList_prjevl.length > 0){
+				  					$.each(selectedList_prjevl,function(i,o){
+				  						 d.ids = d.ids + o.id + ',';
+				  						 debugger;
+				  					})
+				  					parent.confirm('${i18n.get('你确定要开启工程评审审批流程')}？' , function(result) {
+										if(result) {
+											ajax({
+												type:'post',
+												url : '${ctx}/quotprocess/startQuotPrjAdtProcess.html',
+												data: d,
+												success : function(result) {
+													alert('${i18n.get('工程评审审批流程已开启')}');
+													reload_prjevl();
+													disablebutton();
+												}
+											});
+										}
+									});
+					  				}else{
+					  					alert('${i18n.get('请选择工程评审数据')}！');
+					  				}
+								
+				  			}
+				  		},
+				  		{
+				  			id:'evlfinButton',
+				  			label : '${i18n.get('评审完成')}',
+				  			own : ${ifevlfinButton!'false'},
+				  			handler : function(e,rowData){
+				  				var d = {};
+				  				d.qid = '${qid}';
+				  					parent.confirm('${i18n.get('你确定要完成评审吗')}' , function(result) {
+										if(result) {
+											ajax({
+												type:'post',
+												url : '${ctx}/quotprocess/finQuotPrjAdtProcess.html',
+												data: d,
+												success : function(result) {
+													alert('${i18n.get('工程评审审批流程已完成')}');
+													window.location.reload();
+						
+												}
+											});
+										}
+									});
+				  				
+				  			}
+				  		},
+				  		{
+						  			id:'compareButton',
+						  			label : '${i18n.get('版本比对')}',
+						  			own : ${ifcompareButton!'false'},
+						  			handler : function(e,rowData){
+										bootbox.confirm('${i18n.get('比较当前版本与之前版本吗')}?', function(result) {
+											if(result) {		
+												parent.dialog('${i18n.get('版本比较')}','${ctx}/quot/versioncomp.html?qid=${qid}&typ=${typ}',window);		
+											}
+										});
+									}
+							},
+							{		id:'view',
+					  			label : '${i18n.get('流程图')}',
+					  			own : ${ifprjevlview!'false'},
+					  			handler : function(e,rowData){
+					  				if(!selected_prjevl){
+										alert('${i18n.get('没有选中任何数据')}!');
+										return;
+									}
+									debugger;
+									window.open('${ctx}/quotprocess/prjhistoryview.html?prjid='+selected_prjevl.id);
+					  			}
+					  		},
+					  		{
+					  			id:'process',
+					  			label : '${i18n.get('审批历史')}',
+					  			own : ${ifprjevlprocess!'false'},
+					  			handler : function(e,rowData){
+					  				if(!selected_prjevl){
+										alert('${i18n.get('没有选中任何数据')}!');
+										return;
+									}
+									parent.dialog('${i18n.get('处理流程')}','${ctx}/quotprocess/prjhistoryrows.html?prjid='+selected_prjevl.id,window);
+					  			}
+					  		}
+		]" > 
+	</@form.table> 
+
+<script type="text/javascript">
+
+
+$(document).ready(function(){
+	var checkver='${checkver}';
+	debugger;
+	if(checkver=='N'){
+		$("#compareButton").attr("disabled","disabled");
+	}
+	 
+	var ckevlstatus='${ckevlstatus}';
+	if(ckevlstatus=='N'){
+		$("#evlfinButton").attr("disabled","disabled");
+	}
+	
+	
+	var ckevlststatus='${ckevlststatus}';
+	if(ckevlststatus=='N'){
+		$("#publish").attr("disabled","disabled");
+		$("#edit_prjevl").attr("disabled","disabled");
+		$("#delete_prjevl").attr("disabled","disabled");
+	}else{
+		$("#publish").removeAttr("disabled");
+		$("#edit_prjevl").removeAttr("disabled");
+		$("#delete_prjevl").removeAttr("disabled");
+	}
+	
+	
+ 	if('${processpage}'=="Y"){
+		$("#publish").attr("disabled","disabled");
+		$("#add_prjevl").attr("disabled","disabled");
+		$("#edit_prjevl").attr("disabled","disabled");
+		$("#delete_prjevl").attr("disabled","disabled");
+		$("#evlfinButton").attr("disabled","disabled");
+		$("#compareButton").attr("disabled","disabled");
+		$("#view").attr("disabled","disabled");
+		$("#process").attr("disabled","disabled");
+ 	}
+ 	
+ 	if('${processpage}'=="P3"){
+		$("#publish").attr("disabled","disabled");
+		$("#add_prjevl").attr("disabled","disabled");
+		$("#edit_prjevl").attr("disabled","disabled");
+		$("#delete_prjevl").attr("disabled","disabled");
+		$("#evlfinButton").attr("disabled","disabled");
+		$("#compareButton").attr("disabled","disabled");
+		$("#view").attr("disabled","disabled");
+		$("#process").attr("disabled","disabled");
+ 	}
+ 	
+ 	if('${processpage}'=="P5"){
+ 		debugger;
+		$("#publish").attr("disabled","disabled");
+		$("#add_prjevl").attr("disabled","disabled");
+		$("#edit_prjevl").attr("disabled","disabled");
+		$("#delete_prjevl").attr("disabled","disabled");
+		$("#evlfinButton").attr("disabled","disabled");
+		$("#compareButton").attr("disabled","disabled");
+		$("#view").attr("disabled","disabled");
+		$("#process").attr("disabled","disabled");
+ 	}
+ 	
+ 	if('${processpage}'=="P6"){
+		$("#publish").attr("disabled","disabled");
+		$("#add_prjevl").attr("disabled","disabled");
+		$("#edit_prjevl").attr("disabled","disabled");
+		$("#delete_prjevl").attr("disabled","disabled");
+		$("#evlfinButton").attr("disabled","disabled");
+		$("#compareButton").attr("disabled","disabled");
+		$("#view").attr("disabled","disabled");
+		$("#process").attr("disabled","disabled");
+ 	}
+ 	
+ 	if('${processpage}'=="P7"){
+		$("#publish").attr("disabled","disabled");
+		$("#add_prjevl").attr("disabled","disabled");
+		$("#edit_prjevl").attr("disabled","disabled");
+		$("#delete_prjevl").attr("disabled","disabled");
+		$("#evlfinButton").attr("disabled","disabled");
+		$("#compareButton").attr("disabled","disabled");
+		$("#view").attr("disabled","disabled");
+		$("#process").attr("disabled","disabled");
+ 	}
+ 	
+ 	if('${processpage}'=="P8"){
+		$("#publish").attr("disabled","disabled");
+		$("#add_prjevl").attr("disabled","disabled");
+		$("#edit_prjevl").attr("disabled","disabled");
+		$("#delete_prjevl").attr("disabled","disabled");
+		$("#evlfinButton").attr("disabled","disabled");
+		$("#compareButton").attr("disabled","disabled");
+		$("#view").attr("disabled","disabled");
+		$("#process").attr("disabled","disabled");
+ 	}
+ 	
+ 	if('${processpage}'=="P9"){
+		$("#publish").attr("disabled","disabled");
+		$("#add_prjevl").attr("disabled","disabled");
+		$("#edit_prjevl").attr("disabled","disabled");
+		$("#delete_prjevl").attr("disabled","disabled");
+		$("#evlfinButton").attr("disabled","disabled");
+		$("#compareButton").attr("disabled","disabled");
+		$("#view").attr("disabled","disabled");
+		$("#process").attr("disabled","disabled");
+ 	}
+ 	
+ 	if('${processpage}'=="P10"){
+		$("#publish").attr("disabled","disabled");
+		$("#add_prjevl").attr("disabled","disabled");
+		$("#edit_prjevl").attr("disabled","disabled");
+		$("#delete_prjevl").attr("disabled","disabled");
+		$("#evlfinButton").attr("disabled","disabled");
+		$("#compareButton").attr("disabled","disabled");
+		$("#view").attr("disabled","disabled");
+		$("#process").attr("disabled","disabled");
+ 	}
+ 	
+ 	
+ 	if('${ifProReviewStatus}'=="Y"){
+		$("#add_prjevl").attr("disabled","disabled");
+		$("#edit_prjevl").attr("disabled","disabled");
+		$("#delete_prjevl").attr("disabled","disabled");
+		$("#publish").attr("disabled","disabled");
+		$("#evlfinButton").attr("disabled","disabled");
+ 	}
+	
+
+});
+
+function updateevlststatus(){
+	$("#publish").removeAttr("disabled");
+	$("#edit_prjevl").removeAttr("disabled");
+	$("#delete_prjevl").removeAttr("disabled");
+}
+
+
+function disablebutton(){
+	$("#edit_prjevl").attr("disabled","disabled");
+	$("#delete_prjevl").attr("disabled","disabled");
+}
+
+	var evlTypArr = {
+			"E01" : "${i18n.get('售前评审')}",
+			"E02" : "${i18n.get('售后评审')}",
+			"E03" : "${i18n.get('商务评审')}",
+			"E04" : "${i18n.get('决策评审')}",
+			"E05" : "${i18n.get('价格评审')}"		
+	};
+
+	
+	var evlStArr = {
+			"S01" : "${i18n.get('审批中')}",
+			"S02" : "${i18n.get('已审批')}",
+			"S03" : "${i18n.get('未启动')}",
+			"S04" : "${i18n.get('已驳回')}"	
+	};
+
+	function formatevlTypArr(value){
+		 return evlTypArr[value];
+	}
+	
+	function formatevlStArr(value){
+		 return evlStArr[value];
+	}
+	
+</script>

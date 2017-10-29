@@ -1,0 +1,183 @@
+<#escape x as x?html>
+    <@cui.body>
+    <div class="col-xs-12">
+        <#-- 特价申请列表页面-新增 --> <#if permission["P03SpecialPriceListAdd"]?? > <#assign addURL = "'${ctx}/rebate/add.html'" /></#if>
+
+        <#-- 特价申请列表页面-修改 --> <#if permission["P03SpecialPriceListSave"]?? > <#assign editURL = "'${ctx}/rebate/edit.html'" /></#if>
+
+        <#-- 特价申请列表页面-删除 --> <#if permission["P03SpecialPriceListDelete"]?? > <#assign deleteURL = "'${ctx}/rebate/delete.html'" /></#if>
+
+        <@form.table id="rebateTable"
+        class="col-xs-12"
+        title="${i18n.get('特价申请基本信息列表')}"
+        url = "${ctx}/rebate/page.html"
+        rowNum = "10"
+        addURL = "'${ctx}/rebate/add.html'"
+        editURL= "'${ctx}/rebate/edit.html'"
+        shrinkToFit = "false"
+        colModel = "[
+        {name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+        {name:'no',label:'${i18n.get('申请单号')}',hidden:false,width:200,sortable:false,align:'center' },
+        {name:'name',label:'${i18n.get('申请名称')}',hidden:false,width:200,sortable:false,align:'left' },
+        {name:'type',label:'${i18n.get('申请类型')}',hidden:false,width:80,sortable:false,align:'center' },
+        {name:'createdByIdName',label:'${i18n.get('申请人')}',hidden:false,width:230,sortable:false,align:'center' },
+        {name:'applyAgent',label:'${i18n.get('申请代理商')}',hidden:true,width:220,sortable:false,align:'center' },
+        {name:'applyAgentName',label:'${i18n.get('申请代理商')}',hidden:false,width:220,sortable:false,align:'center' },
+        {name:'rebateAmount',label:'${i18n.get('价目表总金额')}',hidden:false,width:100,sortable:false,align:'right', formatoptions:{decimalPlaces : 2,defaultValue:''} },
+        {name:'statusName',label:'${i18n.get('审核状态')}',hidden:false,width:100,sortable:false,align:'center' },
+        {name:'status',label:'${i18n.get('审核状态')}',hidden:true,width:100,sortable:false,align:'center' },
+        {name:'startDate',label:'${i18n.get('特价生效日期')}',hidden:false,width:100,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+        {name:'endDate',label:'${i18n.get('特价失效日期')}',hidden:false,width:100,sortable:false,align:'center'  ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+        {name : 'version', label:'${i18n.get('特价版本')}', width : 100, editable:false, align:'center'}
+        ]"
+        buttons = "[
+            {
+                id:'deleteLine',
+                label : '${i18n.get('删除')}',
+                icon : 'icon-trash',
+                own : '<#if deleteURL??>true<#else>false</#if>',
+                handler : function(e,rowData){
+
+                    if(!rowData){
+                        exalert(e,'${i18n.get('没有选中任何数据!')}');
+                        return;
+                    }
+
+                    if(rowData.status == 'Processing'){
+                        exalert(e,'${i18n.get('审批中的数据不能删除!')}');
+                        return;
+                    }
+                    
+                    if(rowData.status == 'Completed'){
+                    	exalert(e,'${i18n.get('已审批通过的数据不能删除!')}');
+                        return;
+                    }
+
+                    bootbox.confirm('${i18n.get('你确定要删除该条数据吗?')}', function(result) {
+                        if(result) {
+                            ajax({
+                                type:'post',
+                                url : ${deleteURL},
+                                data: rowData,
+                                success : function(result) {
+                                    reload_rebateTable();
+                                    $('#loading_rebateTable').hide();
+                                },
+                                error : function(result) {
+                                    if(result == 'id is null'){
+                                        $('#rebateTable').jqGrid('delRowData', delid);
+                                    }else {
+                                        exalert(e, result);
+                                    }
+                                    $('#loading_rebateTable').hide();
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        ]" >
+            <div class="col-xs-12" style="padding-top: 20px;">
+
+                <tr align="left">
+                    <td align="right" width="120px">
+                        ${i18n.get('申请单号:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="pageSearch_no_like" type="text"
+                        id="pageSearch_no_like"
+                        />
+                    </td>
+                    <td align="right" width="120px">
+                        ${i18n.get('申请名称:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="pageSearch_name_like" type="text"
+                        id="pageSearch_name_like"
+                        />
+                    </td>
+                    <td align="right" width="120px">
+                       ${i18n.get('审核状态:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.select
+                        code="PROCESS_STATUS"
+                        idKey="code"
+                        id="pageSearch_status"
+                        name="pageSearch_status"
+                        style="width: 158px;"
+                        tip=""
+                        />
+                    </td>
+                </tr>
+                <tr align="left">
+                    <td align="right" width="120px">
+                        ${i18n.get('申请人:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.autocomplete  id="pageSearch_createdById" name="pageSearch_createdById"
+						idKey='id'
+						style="width: 158px;"
+						multiple="false"
+						formatResult="function(data) {return '<div >' +data.name +' | '+ data.no + '</div>';}"
+						url="function(){ return '${ctx}/common/selectEmployeeList.html'; }"
+						/>
+                    </td>
+                    <td align="right" width="120px">
+                        ${i18n.get('申请代理商:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.autocomplete  id="pageSearch_applyAgent" name="pageSearch_applyAgent"
+						idKey='optTxt4'
+						style="width: 158px;"
+						required="${i18n.get('请选择组织')}"
+						formatResult="function(data) {return '<div >' +data.name + '</div>';}"
+						url="function(){ return '${ctx}/common/selectOrgList.html'; }"
+						/>
+                    </td>
+                    <td align="right" width="120px">
+                        ${i18n.get('商务专员:')}
+                    </td>
+                    <td align="left" width="180px">
+                       <@form.autocomplete 
+						id="pageSearch_businessExecutive"
+						idKey='id'
+						style="width: 158px;"
+						value="${(employee)!}"
+						url="function(){
+							return '${ctx}/employee/findList.html?userFlag=Y';
+						}"
+						formatResult="function(data) {
+							return '<div>[' +data.no +']'+data.name+'</div>';
+						}"
+						name="pageSearch_businessExecutive"
+						placeholder="商务专员" 
+						required="${i18n.get('不能为空！')}" 
+						/>
+                    </td>
+                </tr>
+                <tr>
+                 <td align="right" width="120px">
+                        ${i18n.get('商机编号:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="bizId" type="text"
+                        id="bizId"
+                        />
+                    </td>
+                      <td align="right" width="120px">
+                        ${i18n.get('商机名称:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="bizName" type="text"
+                        id="bizName"
+                        />
+                    </td>
+                </tr>
+            </div>
+        </@form.table>
+        <br/>
+    </div>
+</@cui.body>
+<script src="${ctx}/anne/js/util.js"></script>
+</#escape>

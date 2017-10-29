@@ -1,0 +1,140 @@
+<#escape x as x?html>
+<@cui.body>
+<#if permission["P02ReceptionAdd"]?? >
+	<#assign addReceptionURL = "'${ctx}/custom/event/add.html?id=${(customEventInfo.eventCode)!}'"  />
+</#if>
+
+<#if permission["P02ReceptionEdit"]??>
+	<#assign editReceptionURL= "'${ctx}/custom/event/edit.html'"  />
+</#if>
+
+<#if permission["P02ReceptionDelete"]??>
+	<#assign deleteReceptionURL = "'${ctx}/custom/event/delete.html'"   />
+</#if>
+<div class="col-xs-12">
+<@form.table id="tableEventList" 
+class="col-xs-12"
+height="131px"
+title="${i18n.get('活动一览')}" 
+url = "${ctx}/custom/event/page.html?id=${(customEventInfo.eventCode)!}" 
+rowNum = "5" 
+addURL = "${addReceptionURL!}"
+editURL = "${editReceptionURL!}"
+deleteURL= "${deleteReceptionURL!}" 
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'eventCode',label:'${i18n.get('接待活动编号')}',hidden:false,width:160,sortable:true,align:'center' },
+	{name:'applierName',label:'${i18n.get('申请人')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'applierOrgName',label:'${i18n.get('申请部门')}',hidden:false,width:200,sortable:true,align:'center' },
+	{name:'customNameDisp',label:'${i18n.get('来访客户名称')}',hidden:false,width:300,sortable:true,align:'center' },
+	{name:'eventGoal',label:'${i18n.get('来访目的')}来访目的',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'eventArrivalDate',label:'${i18n.get('来访日期')}',hidden:false,width:100,sortable:true,align:'center' ,formatter:dateFmatter },
+	{name:'eventStayDays',label:'${i18n.get('逗留天数')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'eventStatusName',label:'${i18n.get('状态')}',hidden:false,width:100,sortable:true,align:'center' }
+	]" 
+	> 
+	<div class="col-xs-12" style="padding-top: 20px;">
+		<table border="0" cellpadding="0" cellspacing="0" >
+			<tr align="left">
+				<td align="right" width="120px">
+					<label class="no-padding-right" > ${i18n.get('接待活动编号')} :</label>
+				</td>
+				<td align="left"  >
+					<@form.input 
+						id="eventCode"  name="eventCode" 
+						placeholder="" 
+						tip="" 
+					/>
+				</td>
+				<td align="right" width="120px">
+					<label class="no-padding-right" > ${i18n.get('创建日期(FROM)')} :</label>
+				</td>
+				<td align="left"  >
+					<@form.date id="dateFrom"  name="dateFrom" 
+						placeholder="" 
+						tip="" 
+						/>
+				</td>
+				 <td align="right" width="120px">
+					<label class="no-padding-right" > ${i18n.get('创建日期(TO)')} :</label>
+				</td>
+				<td >
+					<@form.date id="dateTo"  name="dateTo" 
+						placeholder="" 
+						tip="" 
+						/>
+				</td>
+			</tr>
+			<tr align="left">
+				<td align="right" width="120px">
+					<label class="no-padding-right" > ${i18n.get('活动创建人')} :</label>
+				</td>
+				<td align="left"  >
+					<input id="applier" name="applier" type="hidden"  >
+					<@form.autocomplete  id="handoverToName" name="handoverToName" 
+						idKey='employeeId'
+						style='width:161px'
+						required="${i18n.get('请选择')}"
+						multiple="false"
+						formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+						url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+						
+						onSelect="function(data){
+							if( data.id != null && data.id !='' && data.id != 'undefined'){
+								$('#applier').val(data.employeeId);
+							}
+						}" 
+					/>
+				</td>
+				<td align="right" width="120px">
+					<label class="no-padding-right" >${i18n.get('状态')}  :</label>
+				</td>
+				<td align="left"  >
+					<@form.select 
+						code="CUSTOM_NORMAL_STATUS"
+						style="width: 161px;"
+						id="eventStatus" name="eventStatus" 
+						placeholder="" 
+						tip="" 
+						/>
+				</td>
+				 <td align="right" width="120px">
+				</td>
+				<td >
+				</td>
+			</tr>
+			<tr align="left">
+				<td align="right" width="120px">
+					<label class="no-padding-right" > ${i18n.get('承担部门')} :</label>
+				</td>
+				<td align="left"  >
+					<input id="eventBearDeaprtment" name="eventBearDeaprtment" type="hidden"  >
+						<@form.autocomplete  id="eventBearDeaprtmentName" name="eventBearDeaprtmentName" 
+							idKey='id'
+							style="width: 160px;"
+							formatResult="function(data) {return '<div >' +data.namePath + '</div>';}"
+							url="function(){ return '${ctx}/lovcustom/autocompleteOrg.html'; }"
+							
+							onSelect="function(data){
+								if( data.id != null && data.id !='' && data.id != 'undefined'){
+									$('#eventBearDeaprtment').val(data.id);
+								}
+							}" 
+						/>
+				</td>
+				<td align="right" width="120px">
+				</td>
+				<td align="left"  >
+				</td>
+				 <td align="right" width="120px">
+				</td>
+				<td >
+				</td>
+			</tr>
+		</table>	
+	</div>
+</@form.table> 
+</div>
+</@cui.body>
+<script src="${ctx}/anne/js/util.js"></script>
+</#escape>

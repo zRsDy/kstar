@@ -1,0 +1,89 @@
+<@cui.body2>
+<div style="margin-top:20px;margin-bottom:20px; padding-left: 40px" >
+	<form>
+			${i18n.get('年份')}：
+			<select name="year">
+				<#list years as y>
+					<option <#if y == year?number> selected="selected" </#if> > ${y}</option>
+				</#list>
+			</select>
+			
+			${i18n.get('币种')}：
+			<select name="currency">
+				<option value="RMB" <#if currency == 'RMB'> selected="selected" </#if>> ${i18n.get('人民币')} </option>
+				<option value="USD" <#if currency == 'USD'> selected="selected" </#if>> ${i18n.get('美元')} </option>
+			</select>
+			
+			${i18n.get('排名组')}：
+			<@form.select  id="rankHeaderId" name="rankHeaderId" 
+					placeholder="${i18n.get('排名组')}"
+					style="width:350px"
+					url="function(){ return '${ctx}/report/param/rankList.html'; }"
+					value="${rankHeaderId!}"
+				/>
+			<button class="btn btn-info">${i18n.get('查询')}</button>
+	</form>
+</div>
+
+
+
+	<div class="col-xs-12" style="padding-left: 1px;padding-right: 1px"> 
+		<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+		<div class="container-fluid">
+			<div class="row" style="margin-left: auto; margin-right: auto;">
+				<div style="float: left;margin-left: auto; margin-right: auto;">
+					<div class="span5" style="float: left; margin-left: 2px; margin-right: auto;">
+						<div class="row-fluid" style="margin-right: 3px;">
+							<div id="info1" style="width: 800px;" class="center"> 
+								&nbsp;&nbsp; 
+							</div>
+							<div id="chart1" style="width: 800px;height:${size}px;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+            // 基于准备好的dom，初始化echarts实例
+            var myChart1 = echarts.init(document.getElementById('chart1'));
+            // 指定图表的配置项和数据
+            option = {
+			    title: {
+			        text: '${i18n.get('业绩排名')}'
+			    },
+			    tooltip: {
+			        trigger: 'axis',
+			        axisPointer: {
+			            type: 'shadow'
+			        }
+			    },
+			    legend: {
+			        data: ['${year}${i18n.get('年')}']
+			    },
+			    grid: {
+			        left: '3%',
+			        right: '4%',
+			        bottom: '3%',
+			        containLabel: true
+			    },
+			    xAxis: {
+			        type: 'value',
+			        boundaryGap: [0, 0.01]
+			    },
+			    yAxis: {
+			        type: 'category',
+			        data: ${orgNameList}
+			    },
+			    series: [ {
+			        name: '${year}${i18n.get('年')}',
+			        type: 'bar',
+			        data: ${orgValueList}
+			    }]
+			};
+            // 使用刚指定的配置项和数据显示图表。
+            myChart1.setOption(option);
+		</script>
+	</div>
+
+</@cui.body2>

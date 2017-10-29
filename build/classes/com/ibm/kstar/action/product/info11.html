@@ -1,0 +1,34 @@
+<@form.table id="t11" shrinkToFit="true" 
+	class="col-xs-12"
+	title="${i18n.get('服务产品')}" 
+	url = "${ctx}/product/serviceProList.html?productID=${id}" 
+	rowNum = "5" 
+	addURL = "" 
+	editURL= "" 
+	deleteURL = "" 
+	colModel = "[
+		{name:'id',label:'${i18n.get('产品ID')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'productCode',label:'${i18n.get('产品编码')}',hidden:false,width:80,sortable:false,align:'center' },
+		{name:'productName',label:'${i18n.get('产品名称')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'proDesc',label:'${i18n.get('产品描述')}',hidden:false,width:400,sortable:false,align:'center' },
+		{name:'publishStatus',label:'${i18n.get('产品状态')}',hidden:true,width:80,sortable:false,align:'center' },
+		{name:'publishStatusName',label:'${i18n.get('产品状态')}',hidden:false,width:80,sortable:false,align:'center' },	
+		{name:'saleStatus',label:'${i18n.get('转销状态')}',hidden:true,width:80,sortable:false,align:'center' },
+		{name:'saleStatusName',label:'${i18n.get('转销状态')}',hidden:false,width:60,sortable:false,align:'center' },
+		{name:'priceStatus',label:'${i18n.get('定价状态')}',hidden:true,width:80,sortable:false,align:'center' },
+		{name:'priceStatusName',label:'${i18n.get('订价状态')}',hidden:false,width:60,sortable:false,align:'center' },
+		{name:'unit',label:'${i18n.get('单位')}',hidden:true,width:50,sortable:false,align:'center' },
+		{name:'unitName',label:'${i18n.get('单位')}',hidden:false,width:50,sortable:false,align:'center' }
+		]" 	 
+		buttons = "[]" >
+	<div class="col-xs-12">
+		<div class="form-group col-xs-2" align="right">${i18n.get('产品编码 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="productCode" size="30" />
+		</div>	
+		<div class="form-group col-xs-2" align="right">${i18n.get('产品名称 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="productName" size="30" />
+		</div> 
+	</div>
+	</@form.table> 

@@ -1,0 +1,324 @@
+<@pui.body>
+	<style type="text/css">
+        table td {
+            width: 200px;
+        }
+        input {
+            width: 190px;
+        }
+        select {
+            width: 190px;
+        }
+    </style>
+    
+    <@form.panel title="${i18n.get('申请信息')}">
+        <@form.form id="customInfo"
+        	success="function(result){
+        				alert(result);
+						parent.currentParent2.reload_tableCustomList();
+					 }" class="form-horizontal">
+            <div class="form-group">
+                <div class="col-md-offset-10 col-md-4">
+                    <button class="btn btn-info submit" id="save" type="button">
+                        <i class="bigger-110"></i>
+                       		${i18n.get('保存')}
+                    </button>
+                    <button class="btn btn-info submit" id="update" type="button">
+                        <i class="bigger-110"></i>
+                       		${i18n.get('提交变更')} 
+                    </button>
+                    <button class="btn" type="button" onclick="javascript:api.close()">
+                        <i class="icon-undo bigger-110"></i>
+                       		${i18n.get(' 关闭')}
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input id="selectedId" type="hidden" value="${(customInfo.id)!}">
+                <table>
+                    <!-- line 1 start -->
+                    <tr>
+                        <td align="right">
+                            <strong style="color: red;">*</strong>
+                            <label class="no-padding-right">${i18n.get('流水号')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="corpSerialNo" name="corpSerialNo" readonly="true" required="${i18n.get('不能为空')}" value="${(customInfo.corpSerialNo)!}"/>
+                        </td>
+                        <td align="right">
+                        	<strong style="color: red;">*</strong>
+                            <label class="no-padding-right">${i18n.get('企业标识')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="clientNo" name="clientNo" value="${(customInfo.clientNo)!}"/>
+                        </td>
+                        <td align="right">
+                        	<strong style="color: red;">*</strong>
+                            <label class="no-padding-right">${i18n.get('保险单号 ')}:</label>
+                        </td>
+                        <td>
+                            <@form.input id="policyNo" name="policyNo" value="${(customInfo.policyNo)!}"/>
+                        </td>
+                        <td align="right">
+                        	<strong style="color: red;">*</strong>
+                            <label class="no-padding-right">${i18n.get('买方客户')} :</label>
+                        </td>
+                        <td>
+                        	<@form.autocomplete  
+                            	id="c_customer_id" 
+                            	name="c_customer_id"
+                            	required="${i18n.get('请选择买方客户')}" 
+				            	idKey='id'
+				            	formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+								url="function(){ return '${ctx}/lovcustom/autocomplete_custom.html'; }"
+				            	value="{id: '${(customInfo.c_customer_id)!}',customFullName:'${(customInfo.shtName)!}'}"
+				            	onSelect="function(data){
+									if(data.id !== null && data.id !== '' && data.id !== undefined){
+										$('#shtName').val(data.customFullName);
+									}
+								}"/>
+                        </td>
+                    </tr>
+                    <!-- line 1 end -->
+                    <!-- line 2 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('买方中文名称')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="chnName" name="chnName" value="${(customInfo.chnName)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('买方英文名称')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="engName" name="engName" value="${(customInfo.engName)!}"/>
+                        </td>
+                        <td align="right">
+                            <strong style="color: red;">*</strong>
+                            <label class="no-padding-right">${i18n.get('国家代码')} :</label>
+                        </td>
+                        <td>
+                        	<@form.select id="countryCode" name="countryCode" required="${i18n.get('请选择国家代码')}" code="ZXBCNTRYCODE" idKey="code" value="${(customInfo.countryCode)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('注册地址')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="regAddress" name="regAddress" value="${(customInfo.regAddress)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 2 end -->
+                    <!-- line 3 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('中文地址 ')}:</label>
+                        </td>
+                        <td>
+                            <@form.input id="chnAddress" name="chnAddress" value="${(customInfo.chnAddress)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('英文地址')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="engAddress" name="engAddress" value="${(customInfo.engAddress)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('注册号')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="regNo" name="regNo" value="${(customInfo.regNo)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('注册区域')} :</label>
+                        </td>
+                        <td>
+                            <@form.select id="areano" name="areano" required="${i18n.get('请选择注册区域')}" code="ZXBAREACODE" idKey="code" value="${(customInfo.areano)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 3 end -->
+                    <!-- line 4 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('买方电话')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="tel" name="tel" value="${(customInfo.tel)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('买方传真')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="fax" name="fax" value="${(customInfo.fax)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('网站地址')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="webAddress" name="webAddress" value="${(customInfo.webAddress)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('电子邮件')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="eMail" name="eMail" value="${(customInfo.eMail)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 4 end -->
+                    <!-- line 5 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('资产净值')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="equity" name="equity" value="${(customInfo.equity)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('年销售额 ')}:</label>
+                        </td>
+                        <td>
+                            <@form.input id="yearSale" name="yearSale" value="${(customInfo.yearSale)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('成立日期')} :</label>
+                        </td>
+                        <td>
+                            <@form.date id="setDate" name="setDate" value="${(customInfo.setDate?date)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('注册年份')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="regyear" name="regyear" value="${(customInfo.regyear)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 5 end -->
+                    <!-- line 6 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('法人代表')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="corporation" name="corporation" value="${(customInfo.corporation)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('申请人')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="applicant" name="applicant" value="${(customInfo.applicant)!}"/>
+                        </td>
+                        <td align="right">
+                            <strong style="color: red;">*</strong>
+                            <label class="no-padding-right">${i18n.get('申请时间')} :</label>
+                        </td>
+                        <td>
+                            <@form.date id="applyTime" name="applyTime" required="${i18n.get('请输入申请时间')}" value="${(customInfo.applyTime?date)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('职员名称')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="employees" name="employees" value="${(customInfo.employees)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 6 end -->
+                    <!-- line 7 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('备注 ')}:</label>
+                        </td>
+                        <td>
+                            <@form.input id="remark" name="remark" value="${(customInfo.remark)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('备用字段1')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="item1" name="item1" value="${(customInfo.item1)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('备用字段2 ')}:</label>
+                        </td>
+                        <td>
+                            <@form.input id="item2" name="item2" value="${(customInfo.item2)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('备用字段3')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="item3" name="item3" value="${(customInfo.item3)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 7 end -->
+                    <!-- line 8 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('申请状态')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="apl_status_desc" name="apl_status_desc" readonly="true" value="${(customInfo.apl_status_desc)!}"/>
+                        	<input id="apply_status"  name="apply_status" type="hidden" value="${(customInfo.apply_status)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('批复状态')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="app_status_desc" name="app_status_desc" readonly="true" value="${(customInfo.app_status_desc)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('不通过原因')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="appr_comments" name="appr_comments" readonly="true" value="${(customInfo.appr_comments)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('批复时间 ')}:</label>
+                        </td>
+                        <td>
+                            <@form.date id="appr_date" name="appr_date" readonly="true" value="${(customInfo.appr_date?date)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 8 end -->
+                    <!-- line 9 start -->
+                    <tr>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('买家代码')} :</label>
+                        </td>
+                        <td>
+                            <@form.input id="zxb_buyer_code" name="zxb_buyer_code" readonly="true" value="${(customInfo.zxb_buyer_code)!}"/>
+                        </td>
+                        <td align="right">
+                            <label class="no-padding-right">${i18n.get('买方简称 ')}:</label>
+                        </td>
+                        <td>
+                            <@form.input id="shtName" name="shtName" readonly="true" required="${i18n.get('不能为空')}"  value="${(customInfo.shtName)!}"/>
+                        </td>
+                    </tr>
+                    <!-- line 9 end -->
+                </table>
+            </div>
+        </@form.form>
+        
+	<script type="text/javascript">
+		$(document).ready(function(){
+			var status = $('#apply_status').val();
+			switch (status){
+				case 'Drfat':
+				  $('#save').removeAttr('disabled');
+				  $('#update').removeAttr('disabled');
+				  break;
+				case 'Sumited':
+				  $('#save').attr({"disabled":"true"});
+				  $('#update').attr({"disabled":"true"});
+				  break;
+				case 'Responded':
+				  $('#save').attr({"disabled":"true"});
+				  $('#update').attr({"disabled":"true"});
+				  break;
+			}
+		}); 
+	</script>
+		
+    </@form.panel>
+</@pui.body>

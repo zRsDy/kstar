@@ -1,0 +1,61 @@
+<#escape x as x?html>
+<@cui.body>
+<div class="col-xs-12">
+
+	<#-- 投标授权申请列表页面-新增 --> <#if permission["P03BidAuthListAdd"]?? > <#assign addURL = "'${ctx}/newbid/add.html'" /></#if>
+
+	<#-- 投标授权申请列表页面-修改 --> <#if permission["P03BidAuthListSave"]?? > <#assign editURL = "'${ctx}/newbid/edit.html'" /></#if>
+
+	<#-- 投标授权申请列表页面-删除 --> <#if permission["P03BidAuthListDelete"]?? > <#assign deleteURL = "'${ctx}/newbid/delete.html'" /></#if>
+
+<@form.table id="bidTable" 
+	class="col-xs-12"
+	title="${i18n.get('业务用章申请信息列表')}" 
+	url = "${ctx}/newbid/page.html" 
+	rowNum = "20"
+	addURL = "${addURL!}"
+	editURL= "${editURL!}"
+	deleteURL = "${deleteURL!}"
+	colModel = "[
+		{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'prjName',label:'${i18n.get('项目名称')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'bizOppName',label:'${i18n.get('商机名称')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'sltType',label:'${i18n.get('申请类型')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'statusName',label:'${i18n.get('状态')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'createdByIdName',label:'${i18n.get('申请人')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'createdAt',label:'${i18n.get('申请日期')}',hidden:false,width:150,sortable:true,align:'center', formatter:function(cellvalue, options){ return formatDate(cellvalue)} },
+		{name:'bidNumber',label:'${i18n.get('申请编号')}',hidden:false,width:200,sortable:true,align:'center' }
+		]"
+		>
+
+		<div class="col-xs-12" style="padding-top: 20px;">
+
+			<tr align="left">
+				<td align="right" width="120px">
+					${i18n.get('申请编号:')}
+				</td>
+				<td align="left" width="180px">
+					<@form.input name="pageSearch_bidNumber_like" type="text"
+					id="pageSearch_number_like"
+					/>
+				</td>
+				<td align="right" width="120px">
+					${i18n.get('商机名称:')}
+				</td>
+				<td align="left" width="180px">
+					<@form.input name="pageSearch_bizOppName_like" type="text"
+					id="pageSearch_opportunityName_like"
+					required="${i18n.get('不能为空')}"/>
+				</td>
+				<td align="right" width="120px">
+				</td>
+				<td align="left" width="180px">
+				</td>
+			</tr>
+		</div>
+
+</@form.table> 
+</div>
+</@cui.body>
+<script src="${ctx}/anne/js/util.js"></script>
+</#escape>

@@ -1,0 +1,113 @@
+<#if (permission["P02HandoverT5ConHandover"]?? && ("${(customHandoverList.handoverStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customHandoverList.handoverStatus)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign conHandoverURL="${(checkDisplay)!}" />
+</#if>
+
+<@form.table id="hoContractsList" 
+	class="col-xs-12"
+height="131px"
+	title="${i18n.get('合同信息列表')}" 
+	url = "${ctx}/custom/handover/contractPage.html?id=${(customHandoverList.id)!}" 
+	checkbox="true"
+	search="false"
+	rowNum = "5" 
+	colModel = "[
+		{name:'id',label:'${i18n.get('合同ID')}',hidden:true,width:60,sortable:true,align:'center' },
+		{name:'checkStatusName',label:'${i18n.get('交接选择')}',hidden:false,width:80,sortable:true,align:'center' },
+		{name:'businessStatus',label:'${i18n.get('交接状态')}',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'businessStatusName',label:'${i18n.get('交接状态')}',hidden:false,width:80,sortable:true,align:'center' },
+		{name:'contrNo',label:'${i18n.get('合同编号')}',hidden:false,width:160,sortable:true,align:'center' },
+		{name:'contrName',label:'${i18n.get('合同名称')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'contrType',label:'${i18n.get('合同类型')}',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'contrTypeName',label:'${i18n.get('合同类型名称')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'projName',label:'${i18n.get('项目名称')}',hidden:false,width:150,sortable:true,align:'center' },
+		{name:'projNo',label:'${i18n.get('项目名称')}',hidden:true,width:150,sortable:true,align:'center' },
+		{name:'custName',label:'${i18n.get('客户名称')}',hidden:false,width:300,sortable:true,align:'center' },
+		{name:'quotNo',label:'${i18n.get('报价单')}',hidden:false,width:100,sortable:true,align:'center'},
+		{name:'pricTable',label:'${i18n.get('价格表')}',hidden:false,width:150,sortable:true,align:'center' },
+		{name:'totalAmt',label:'${i18n.get('合同总金额')}',hidden:false,width:100,sortable:true,align:'center' },		
+		{name:'contrStat',label:'${i18n.get('合同状态')}',hidden:true,width:60,sortable:true,align:'center' },
+		{name:'contrStatName',label:'${i18n.get('合同状态')}',hidden:false,width:160,sortable:true,align:'center' },
+		{name:'contrVer',label:'${i18n.get('合同版本')}',hidden:false,width:60,sortable:true,align:'center' },
+		
+		]"  
+		buttons = "[
+		{
+			id:'publish_checkhoContractsList',
+			label : '${i18n.get('准备交接')}',
+			icon : 'icon-exchange',
+			own : ${conHandoverURL!'false'},
+			handler : function(e,rowData){
+				var selectedIds = [];
+				if(selectedList_hoContractsList.length == 0){
+					exalert(e,'${i18n.get('没有选中任何数据!')}');
+					return;
+				}
+				$.each(selectedList_hoContractsList,function(i,item){
+						selectedIds.push(item.id);
+					});
+				bootbox.confirm('${i18n.get('确认交接选中的数据吗？')}' , function(result) {
+					if(result) {
+						$.ajax({
+							url: '${ctx}/custom/handover/contractHandoverCheck.html',
+							type: 'POST',
+							data: {ids:selectedIds},
+							success : function(msg) {
+								alert(msg.message);
+								reload_hoContractsList();
+							},
+							error: function(e) {
+								alert(e.responseJSON.message);
+								reload_hoContractsList();
+							}
+						});
+					}
+				});
+			}
+		},
+		{
+			id:'publish_uncheckhoContractsList',
+			label : '${i18n.get('交接取消')}',
+			icon : 'icon-exchange',
+			own : ${conHandoverURL!'false'},
+			handler : function(e,rowData){
+				var selectedIds = [];
+				if(selectedList_hoContractsList.length == 0){
+					exalert(e,'${i18n.get('没有选中任何数据!')}');
+					return;
+				}
+				$.each(selectedList_hoContractsList,function(i,item){
+						selectedIds.push(item.id);
+					});
+				bootbox.confirm('${i18n.get('确认交接选中的数据吗？')}' , function(result) {
+					if(result) {
+						$.ajax({
+							url: '${ctx}/custom/handover/contractHandoverUnCheck.html',
+							type: 'POST',
+							data: {ids:selectedIds},
+							success : function(msg) {
+								alert(msg.message);
+								reload_hoContractsList();
+							},
+							error: function(e) {
+								alert(e.responseJSON.message);
+								reload_hoContractsList();
+							}
+						});
+					}
+				});
+			}
+		}
+	]"
+		  	 >  
+			<div class="col-xs-12" style="padding-top: 20px;">
+				<div class="form-group col-xs-3">
+				<input type="text" id="searchKey" name="searchKey" placeholder="${i18n.get('查询关键字')}" size="30" />
+				</div>	
+				<div class="form-group col-xs-2">
+					<button type="submit" class="btn btn-info" > 
+						<i class="icon-search bigger-110"></i>
+						${i18n.get('查询')}
+					</button>
+				</div>
+			</div>
+</@form.table> 

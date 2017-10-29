@@ -1,0 +1,64 @@
+<@pui.body>
+<div class="col-xs-12">
+	<script type="text/javascript">
+		var all = ${all!'[]'};
+		var selected = ${selected!'[]'};
+		for(var j=0 ; j< all.length;j++){
+			for(var i =0; i < selected.length; i++) {
+	  			if(selected[i].orgId == all[j].id){
+		  			all[j].checked = true;
+	  				break;
+	  			}
+			}
+		}
+	</script>
+	<label id="selected">  </label>
+	<@plug.tree 
+		checkbox="true" 
+		id="tree1" 
+		async="false"
+		datas="all"
+		chkboxType="{ 'Y' : '',  'N' : '' }"
+	  	/>
+	  	
+	  	<@form.form id="t1"  
+			before="function(){
+				var treeObj = $.fn.zTree.getZTreeObj('tree1');
+				var nodes = treeObj.getCheckedNodes(true);
+				var html = '';
+				$.each(nodes,function(i,item){
+					html = html + item.id;
+					if(i < nodes.length - 1){
+						html = html + ',';
+					}
+				})
+				$('#orgs').val(html);
+			}"
+			success="function(){ 
+				parent.currentParent.reload_t2();
+			}" 
+			>
+	<input type="hidden" id="orgs" name="orgs" />
+	<div class="clearfix form-actions">
+	<div class="col-md-offset-5 col-md-7">
+		<button class="btn btn-info submit " id="selectOK" type="button">
+			<i class="icon-ok bigger-110"></i>
+			${i18n.get('选择')}
+		</button>
+		&nbsp; &nbsp; &nbsp;
+		<button class="btn" type="button" onclick="javascript:api.close()">
+			<i class="icon-undo bigger-110"></i>
+			${i18n.get('关闭')}
+		</button>
+	</div>
+	
+	</@form.form>
+</div>
+</div>
+<script>
+	$(document).ready(function(){
+		var treeObj = $.fn.zTree.getZTreeObj('tree1');
+		treeObj.expandAll(false);
+	})
+</script>
+</@pui.body>

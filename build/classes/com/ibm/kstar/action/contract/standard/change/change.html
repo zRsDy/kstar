@@ -1,0 +1,37 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.table id="changes" 
+	class="col-xs-12"
+	title="${i18n.get('合同变更信息列表')}" 
+	shrinkToFit = 'true'
+	url = "${ctx}/change/page.html" 
+	rowNum = "15" 	 
+	
+	colModel = "[
+		{name:'id',label:'ID',hidden:true,width:60,sortable:true,align:'center' },
+		{name:'changeNo',label:'${i18n.get('变更编号')}',hidden:false,sortable:true,align:'center' },
+		{name:'contrNo',label:'${i18n.get('原合同号')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'contrName',label:'${i18n.get('原合同名称')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'contrType',label:'${i18n.get('合同类型')}',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'contrTypeName',label:'${i18n.get('合同类型名称')}',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'changeType',label:'${i18n.get('变更类型')}',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'changeTypeDesc',label:'${i18n.get('变更类型')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'changeReason',label:'${i18n.get('变更原因')}',hidden:false,width:100,sortable:true,align:'center'},				
+		{name:'changeStat',label:'${i18n.get('变更状态')}',hidden:true,width:60,sortable:true,align:'center' },
+		{name:'changeStatDesc',label:'${i18n.get('变更状态')}',hidden:false,width:60,sortable:true,align:'center' },		
+		{name:'creator',label:'${i18n.get('申请人')}',hidden:false,width:150,sortable:true,align:'center' },
+		{name:'createTime',label:'${i18n.get('申请时间')}',hidden:false,width:150,sortable:true,align:'center' }
+		
+		]" 
+		ondblClickRow= "function(selectedData){
+			parent.dialog('${i18n.get('合同变更')}','${ctx}/change/tabs.html?id='+selected_changes.id+'&typ=CONTR_CHANGE',window);	
+		}" 
+		buttons = "[]" > 
+		<br>
+		<input type="hidden" id="contrId" name="contrId" value="${(contrId)!}" />
+			
+	</@form.table> 
+	
+</@pui.body>
+
+</#escape>

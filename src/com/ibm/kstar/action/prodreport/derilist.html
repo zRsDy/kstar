@@ -1,0 +1,110 @@
+<@pui.body> 
+	<div class="col-xs-12">
+	<#if permission["PRO-REPORT-BUT-EXPORT"]?? > 
+	<#assign exportURL = "'${ctx}/prodreport/proReportSanshenExport.html'" />
+    </#if> 
+		<@form.table id="prodReport"
+			class="col-xs-12"
+			shrinkToFit = 'true'
+			title="${i18n.get('衍生品研发')}"
+			url = "${ctx}/prodreport/deripage.html"
+			exportURL = "${exportURL!}"
+			rowNum = "25"
+			colModel = "[
+				{ name : 'cid', label : 'ID', width :220,sortable:true},
+			  	{ name : 'projcetDesc', label : '${i18n.get('项目描述')}', width :220,sortable:true},
+				{ name : 'startor', label : '${i18n.get('申请人')}', width :150 ,sortable:true},
+				{ name : 'statime', label : '${i18n.get('申请时间')}', width :160,sortable:true},
+				{ name : 'reqApprovedtime', label : '${i18n.get('申请部门审批时间')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'cpfpUser', label : '${i18n.get('产品分配人')}', width : 160 ,sortable:true},
+				
+				{ name : 'cpfpAstatime', label : '${i18n.get('产品分配开始时间')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'cpfpAendtime', label : '${i18n.get('产品分配结束时间')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'procUser', label : '${i18n.get('接收单位主管')}', width : 160 ,sortable:true},
+				{ name : 'astatime', label : '${i18n.get('接收单位开始时间')}', width : 90 ,sortable:true, hidden : true},
+			 
+				{ name : 'projectNo', label : '${i18n.get('项目编号')}', width : 140 ,sortable:true},
+				{ name : 'cpx', label : '${i18n.get('产品线')}', width :130 ,sortable:true},
+				{ name : 'jspt', label : '${i18n.get('技术平台')}', width :140 ,sortable:true},
+				{ name : 'cpxManager', label : '${i18n.get('产品线负责人')}', width : 160 ,sortable:true},
+				{ name : 'sqdh', label : '${i18n.get('申请单号')}', width : 90 ,sortable:true},
+				 
+				{ name : 'kh', label : '${i18n.get('客户')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'khszd', label : '${i18n.get('客户所在地')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'xlxh', label : '${i18n.get('产品系列或型号')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'khpo', label : '${i18n.get('客户PO号/合同号')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'jhrq', label : '${i18n.get('客户期望交货日期')}', width : 90 ,sortable:true, hidden : true},
+				
+				{ name : 'xqzl', label : '${i18n.get('需求种类')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'xmlx', label : '${i18n.get('项目类型')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'itemcode', label : '${i18n.get('料号')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'wlms', label : '${i18n.get('物料描述 ')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'sl', label : '${i18n.get('首批订单数量')}', width : 90 ,sortable:true, hidden : true},
+				
+				{ name : 'pmkfUser', label : '${i18n.get('平面开发人员')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'pmkfAstatime', label : '${i18n.get('平面开发开始时间')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'pmkfAendtime', label : '${i18n.get('平面开发结束时间')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'jgkfUser', label : '${i18n.get('结构开发人员')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'jgkfAstatime', label : '${i18n.get('结构开发开始时间')}', width : 90 ,sortable:true, hidden : true},
+				
+				{ name : 'jgkfAendtime', label : '${i18n.get('结构开发结束时间')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'yjkfUser', label : '${i18n.get('硬件开发人员')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'yjkfAstatime', label : '${i18n.get('硬件开发开始时间')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'yjkfAendtime', label : '${i18n.get('硬件开发结束时间')} ', width : 90 ,sortable:true, hidden : true},
+				{ name : 'rjkfUser', label : '${i18n.get('软件开发人员')}', width : 90 ,sortable:true, hidden : true},
+				 
+				{ name : 'rjkfAstatime', label : '${i18n.get('软件开发开始时间')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'rjkfAendtime', label : '${i18n.get('软件开发结束时间')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'qtkfUser', label : '${i18n.get('其它任务开发人员')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'qtkfAstatime', label : '${i18n.get('其它任务开发开始时间')} ', width : 90 ,sortable:true, hidden : true},
+				{ name : 'qtkfAendtime', label : '${i18n.get('其它任务开发结束时间')} ', width : 90 ,sortable:true, hidden : true}, 
+				
+				{ name : 'pmqrUser', label : '${i18n.get('平面确认人员')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'pmqrAstatime', label : '${i18n.get('平面确认开始时间')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'pmqrAendtime', label : '${i18n.get('平面确认结束时间')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'jgqrUser', label : '${i18n.get('结构确认人员')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'jgqrAstatime', label : '${i18n.get('结构确认开始时间')} ', width : 90 ,sortable:true, hidden : true}, 
+				
+			 
+				{ name : 'jgqrAendtime', label : '${i18n.get('结构确认结束时间')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'allWbsEndtime', label : '${i18n.get('开发任务及确认完成时间')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'bomOwner', label : 'BOM${i18n.get('制作人')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'bomAstatime', label : '$BOM{i18n.get('制作开始时间')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'bomAendtime', label : 'BOM${i18n.get('制作结束时间')}', width : 90 ,sortable:true, hidden : true}, 
+				
+				{ name : 'bomReleasetime', label : 'BOM${i18n.get('发布时间')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'rdSpendtime', label : '${i18n.get('研发总耗时')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'buyer2', label : '${i18n.get('分配采购、采购维护批准供应商及单价')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'buyerAstatime', label : '${i18n.get('采购作业开始时间')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'buyerAendtime', label : '${i18n.get('采购作业结束时间')}', width : 90 ,sortable:true, hidden : true}, 
+				 
+				{ name : 'seller', label : '${i18n.get('通知申请人（业务员确认及下单）')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'orderOwner', label : '${i18n.get('商务下单员')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'orderAstatime', label : '${i18n.get('商务下单开始时间')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'orderAendtime', label : '${i18n.get('商务下单结束时间')}', width : 90 ,sortable:true, hidden : true},
+				{ name : ' orderNumber', label : '${i18n.get('销售订单号')}', width : 90 ,sortable:true, hidden : true}, 
+				
+				 
+				{ name : 'endtime', label : '${i18n.get('流程结束时间')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'wfSpendtime', label : '${i18n.get('流程总耗时')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'stat', label : '${i18n.get('流程状态')}', width : 90 ,sortable:true, hidden : true},
+				{ name : 'wfname', label : '${i18n.get('流程名称')}', width : 90 ,sortable:true, hidden : true}
+				]" 
+				 
+				>
+		<div class="col-xs-12" style="padding-top: 20px;">
+			<div class="main" id="searchFormDiv" style="padding-top: 10px;padding-bottom:10px; border-top: 1px solid #e9e9e9 ; float: Left; width: 100%;" >
+				<table border="0" cellpadding="0" cellspacing="0" >
+				   <tr>
+			        <td width="100px" align="left">${i18n.get('项目描述:')}</td>
+			        <td width="180px">
+			        <@form.input id="projcetDesc" name="projcetDesc" placeholder="${i18n.get('项目描述')}" tip=""/>
+			        </td>
+		          </tr>
+				</table>
+			</div>
+	   </div>	
+			
+		</@form.table>
+	</div>
+</@pui.body>

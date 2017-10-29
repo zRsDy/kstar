@@ -1,0 +1,72 @@
+<@pui.body>
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="loanattachmentf"
+			success="function(){ alert('${i18n.get('保存成功')}！');parent.currentParent.reload_loanattachmentlst(); }" 
+			class="form-horizontal">
+				<div class="form-group" >
+				
+					<label class="col-sm-3 control-label no-padding-right" for=""> ${i18n.get('借货编号')} : </label>
+					<@form.input
+					id="contrNo"  name="contrNo"  placeholder=""  tip="${i18n.get('借货编号')}"  
+					readonly ="readonly" value="${(contr.contrNo)!}" 
+					/>
+				</div>	 	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for=""> ${i18n.get('文档名称')} : </label>
+					<@form.input
+					id="docNm"  name="docNm" 
+					placeholder="" 
+					tip="${i18n.get('文档名称')}" 
+					required="${i18n.get('不能为空')}！"
+					value="${(attInfo.docNm)!}" 
+					/>
+				</div>		
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for=""> ${i18n.get('文档类型')} : </label>
+             	<@form.select style="width: 160px;" id="docTp" name="docTp" 
+             		code="CONTRACTDOCTYPE"  value ="${(attInfo.docTp)!}"
+             	/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for=""> ${i18n.get('上传人')} : </label>
+					  
+					<@form.input
+					id="updr"  name="updr" 
+					placeholder="" 
+					tip="${i18n.get('上传人')}" 
+					required="${i18n.get('不能为空')}！"
+					value="${(attInfo.updr)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for=""> ${i18n.get('上传时间')} : </label>
+					<@form.date id="updDt"  name="updDt"  placeholder="" 
+					tip="${i18n.get('上传时间')}"  value="${(attInfo.updDt)!}"  />
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for=""> ${i18n.get('备注')} : </label>
+					<@form.input id="cNotes"  name="cNotes"  placeholder=""  tip="${i18n.get('备注')}" 
+						value="${(attInfo.cNotes)!}"  /> 
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for=""> ${i18n.get('上传文件')} : </label>
+					  <input type="file" name="up1" size="50"> 
+				</div>
+	
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+</@pui.body>

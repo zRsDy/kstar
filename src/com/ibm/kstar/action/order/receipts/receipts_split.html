@@ -1,0 +1,146 @@
+<@pui.body>
+<style type="text/css">
+	table {
+	border-collapse: collapse;
+	border-color: #ff0000;
+	}
+	
+	table td {
+		padding:1px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 250px;}
+	input[type="search"] {width: 250px;}
+	select {
+		width: 250px;
+	}
+</style>
+<script type="text/javascript">
+	function splitReceipts(){
+		 var arrivalAmount = parseFloat($("#arrivalAmount").val());
+		 var splitAmount = parseFloat($("#splitAmount").val());
+		 var splitContractCode = $("#splitContractCode").val();
+		 
+		 if(!splitAmount || splitAmount <= 0 || splitAmount >= arrivalAmount){
+			 alert("${i18n.get('拆分金额必须大于零,且不能超过收款金额')}");
+		 }else{
+			 $.ajax({
+				type : "POST",
+				url : "${ctx}/receipts/splitReceiptsSave.html",
+				async: true,
+				data : "id=${(receipts.id)!}&splitContractCode="+ splitContractCode + "&splitAmount="+splitAmount, 
+				dataType : 'json',
+				success : function(msg) {
+					alert("${i18n.get('收款单拆分成功！')}");
+					parent.currentParent.reload_receiptsListFrom();
+					api.close();
+				},
+				error: function(e) {
+					 var msg = eval("("+e.responseText+")");
+					 if(msg !='' && msg != null && msg != 'undefined' && msg.message ){
+						 alert(msg.message);
+					 }else{
+						alert("${i18n.get('操作失败，请联系管理员')}");
+					 }
+					
+				} 
+			});
+		 }
+	}
+</script>
+   <@form.panel title="${i18n.get('拆分收款单')}">
+	 <div align="center" class="form-group">
+		<table border="0" cellpadding="0" cellspacing="0" >
+			<tr align="center">
+				<td align="right" >${i18n.get('收款编号：')}
+				</td>
+				<td align="left" >
+					<@form.input id="receiptsCode" name="receiptsCode"
+						readonly = "readonly"
+						placeholder="" 
+						tip=""
+						value="${(receipts.receiptsCode)!}"
+						/>
+				</td>
+			</tr>
+			<tr align="center">
+				<td align="right" >${i18n.get('合同编号：')}
+				</td>
+				<td align="left" >
+					<@form.input id="contractCode" name="contractCode"
+						readonly = "readonly"
+						placeholder="" 
+						tip=""
+						value="${(receipts.contractCode)!}"
+						/>
+				</td>
+			</tr>
+			<tr align="center">
+				<td align="right">${i18n.get('收款金额：')}
+				</td>
+				<td align="left" >
+					<@form.input id="arrivalAmount" name="arrivalAmount"
+						readonly = "readonly"
+						placeholder="" 
+						tip=""
+						value="${(receipts.arrivalAmount)!}"
+						/>
+				</td>
+			</tr>
+			<tr align="center">
+				<td align="right" >${i18n.get('拆分合同编号：')}
+				</td>
+				<td align="left" >
+					<input id="correctCustId" name="correctCustId" type="hidden"  value="${(receipts.correctCustId)!}" />
+					<input id="paymentCustomerId" name="paymentCustomerId" type="hidden" value="${(receipts.paymentCustomerId)!}" />
+					<input id="businessId" name="businessId" type="hidden" value="${(receipts.businessId)!}" />
+					<@form.select  id="splitContractCode" name="splitContractCode" 
+		             	viewKey='contrNo'
+		             	idKey='contrNo'
+		             	placeholder="${i18n.get('请选择拆分合同')}" 
+		                url="function(){ 
+	                		var customerId = $('#correctCustId').val();
+	                		if(!customerId){
+	                			customerId = $('#paymentCustomerId').val();
+	                		}
+	                		var businessId = $('#businessId').val();
+	                		return '${ctx}/lovcontract/autocompContract.html?customerId='+customerId + '&businessId='+businessId;
+		                }"
+		              />
+				</td>
+			</tr>
+			<tr align="center">
+				<td align="right">${i18n.get('拆分金额：')}
+				</td>
+				<td align="left" >
+					<@form.input id="splitAmount" name="splitAmount"
+						placeholder="" 
+						tip=""
+						/>
+				</td>
+			</tr>
+			</table>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<#if permission["P06OrderT1LineSplitSave"]??>
+						<button class="btn btn-info submit" type="button" onclick="splitReceipts()">
+							<i class="icon-ok bigger-110"></i>
+							${i18n.get('保存')}
+						</button>
+					</#if>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</div>
+			
+	</@form.panel>
+</@pui.body>

@@ -1,0 +1,72 @@
+<@pui.body nav1="${i18n.get('客户编辑')}" nav2="${i18n.get('新增/编辑')}" type="popup">
+<div class="col-xs-12" >
+
+<@form.form id="t7" success="function(){parent.currentParent.reload_t7(); }" class="form-horizontal">
+		<div class="hr hr-18 dotted hr-double"></div>
+
+		
+		<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" for="clientName">${i18n.get('客户名称:')} </label> 
+		<!-- <@form.input id="clientName" name="clientName" placeholder=""  required="${i18n.get('客户名称不能为空')}" tip="" value="${(client.clientName)!}" /> -->
+		
+		<@form.autocomplete  id="clientName" name="clientName" 
+			            	idKey='customFullName'
+			            	style="width: 160px;"
+			            	required="${i18n.get('请选择客户编号')}"
+			            	formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+							url="function(){ return '${ctx}/lovcustom/autoCompleteCustomAll.html'; }"
+			            	value="{customFullName:'${(client.clientName)!}', customCode: '${(client.clientCode)!}'
+				      }"
+			            	
+			            	onSelect="function(data){
+			            		if( data.customCode != null && data.customCode !='' && data.customCode != 'undefined'){
+			            				$('#clientCode').val(data.customCode);
+			            		}
+			            	}" 
+		            	/>
+		
+		</div>
+ 
+ 		<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" for="nearEffectTime">${i18n.get('客户编码 :')}</label> 
+		 <@form.input id="clientCode" readonly='readOnly' required="${i18n.get('客户编码不能为空')}" name="clientCode" placeholder="" tip="" value="${(client.clientCode)!}" />
+		</div>
+		
+		<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" for="clientModel">${i18n.get('客户型号 :')} </label> 
+		  <@form.input id="clientModel" name="clientModel" placeholder="" tip="" value="${(client.clientModel)!}" />
+		</div>
+		
+		<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" for="clientBrand">${i18n.get('客户品牌 :')} </label> 
+ 		<@form.input id="clientBrand" name="clientBrand" placeholder="" tip="" value="${(client.clientBrand)!}" />
+		</div>
+		
+		<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" for="clientRemark">${i18n.get('备注说明 :')}</label> 
+ 		<@form.input id="clientRemark" name="clientRemark" placeholder="" tip="" value="${(client.clientRemark)!}" />
+		</div>
+		
+		<!-- <div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" for="productID">${i18n.get('产品ID:')}</label> 
+ 		 <@form.input id="productID" name="productID" placeholder="" tip="" value="${(client.productID)!}" />
+		</div> -->
+
+		<div class="hr hr-18 dotted hr-double"></div>
+		<div class="clearfix form-actions">
+			<div class="col-md-offset-5 col-md-7">
+				<button class="btn btn-info submit" type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				&nbsp; &nbsp; &nbsp;
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+		</@form.form>
+
+</div>
+</@pui.body>

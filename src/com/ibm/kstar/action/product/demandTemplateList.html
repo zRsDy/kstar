@@ -1,0 +1,43 @@
+<@cui.body>
+	<#if (permission["P01-1ProSeriesDemandTemplateAdd"])??>
+		<#assign fileAddURL_content="true" />
+	</#if>
+	<#if (permission["P01-1ProSeriesDemandTemplateDelete"])??>
+		<#assign fileDeleteURL_content="true" />
+	</#if>
+	<#if (permission["P01-1ProSeriesDemandTemplateEdit"])??>
+		<#assign fileEditURL_content="true" />
+	</#if>
+	<div id="attachmentId"></div>
+</@cui.body>
+<script type="text/javascript">
+$(document).ready(function() {
+	initContent();
+});
+
+function initContent(){
+	var extendUrl_content = '';
+	if(!${fileAddURL_content!'false'}){
+		extendUrl_content += '&unableAdd=true';
+	}
+	if(!${fileDeleteURL_content!'false'}){
+		extendUrl_content += '&unableDelete=true';
+	}
+	if(${fileEditURL_content!'false'}){
+		extendUrl_content += '&editURL=1';
+	}
+	showAttachmentPage("attachmentId","${ctx}/common/attachment/attachment.html?businessType=demandTemplate"+extendUrl_content);
+}
+//${i18n.get('子页面附件用')}
+var activityloadimg="<img src ='${ctx}/assets/img/loading.gif' /> ";
+function showAttachmentPage(tabId, url){
+	url = url + "&docGroupCode=SpeReqTableTempDocType&businessId=1";
+	$('#applytab a[href="#'+tabId+'"]').tab('show');
+	$('#'+tabId).html(url +'<br>'+ activityloadimg +' ${i18n.get('页面加载中，请稍后...')}');
+	$('#'+tabId).load(url,function(response,status,xhr){
+		if(status === 'error'){
+			$('#'+tabId).html(url+'<br> ${i18n.get('页面加载失败')}');
+		}
+	});
+}
+</script>

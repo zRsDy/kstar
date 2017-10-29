@@ -1,0 +1,80 @@
+<@cui.body2>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1" success="function(){ parent.currentParent.reload_detail_2('${(detailInfo.applyId)!}','${(detailInfo.id)!}'); }" class="form-horizontal">	
+			<div align="center" class="form-group">
+				<table>
+					<tr>
+						<td align="right" width="120px">${i18n.get('采购单号 :')}</td>
+						<td width="320px">
+							<@form.input id="purchaseCode" name="purchaseCode" style="width:163px;" tip="${i18n.get('引入单位向转出单位采购的单据编号')}" value="${(detailInfo.purchaseCode)!}" />
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('产品系列 :')}</td>
+						<td width="320px">
+							<@form.select childId="productKind" id="productSeries" name="productSeries" style="width:163px;" required="${i18n.get('不能为空')}" tip="${i18n.get('销售预测产品的系列名称')}" viewKey="name" 
+								idKey='id' url="function(){return '${ctx}/orderForecast/selectProSeries.html'}" value="${(detailInfo.productSeries)!}" />
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('产品型号 :')}</td>
+						<td width="320px">
+							<@form.select parentId="productSeries" childId="materielCode" id="productKind" name="productKind" style="width:163px;" required="${i18n.get('不能为空')}" tip="${i18n.get('销售预测产品的型号')}"
+								 viewKey="name" idKey='id' url="function(){return selectProModel()}" value="${(detailInfo.productKind)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="120px">${i18n.get('物料号 :')}</td>
+						<td width="320px">
+							<@form.select parentId="productKind" id="materielCode" name="materielCode" style="width:163px;" tip="${i18n.get('销售预测产品物料号')}" viewKey="name" idKey='id'
+								 url="function(){return selectMaterCode()}" value="${(detailInfo.materielCode)!}" />
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('引入日期 :')}</td>
+						<td width="320px">
+							<@form.date id="importDate" name="importDate" format="yyyy-mm-dd" style="width:163px;" tip="${i18n.get('销量业务引入的日期')}" required="${i18n.get('不能为空')}" value="${(detailInfo.importDate?date)!}" />
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('引入数量 :')}</td>
+						<td width="320px">
+							<@form.number id="importQuantity" name="importQuantity" style="width:163px;" tip="${i18n.get('引入产品数量')}" required="${i18n.get('不能为空')}" value="${(detailInfo.importQuantity)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('单价 :')}</td>
+						<td width="320px">
+							<@form.number id="importPrice" name="importPrice" style="width:163px;" tip="${i18n.get('引入产品的单价')}" required="${i18n.get('不能为空')}" value="${(detailInfo.importPrice)!}" />
+						</td>
+						<td align="right" width="120px"></td>
+						<td width="320px">
+						</td>
+						<td align="right" width="120px">
+						</td>
+						<td width="320px">
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<#if !detailInfo?? || !detailInfo.id?? || statusEdit>
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					</#if>
+					<button class="btn" type="button" onclick="javascript:frameElement.api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+	</@form.panel>
+</@cui.body2>
+<script>
+function selectProModel(){
+	var proSeries = $("#productSeries").val();
+	return '${ctx}/orderForecast/selectProModel.html?proSeries='+proSeries;
+}
+function selectMaterCode(){
+	var proModel = $("#productKind").val();
+	return '${ctx}/orderForecast/selectMaterCode.html?proModel='+proModel;
+}
+</script>

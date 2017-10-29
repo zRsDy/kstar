@@ -1,0 +1,41 @@
+<@ui.body nav1="${i18n.get('测试功能')}" nav2="DEMO" type="popup"> 
+	<div class="col-xs-12" >
+		<form id="t1" method='post' action='autoCoding2.html'>
+			<input type="hidden" name="className" value='${className}' >
+			<input type="hidden" name="modelName" value='${modelName}' >
+			<div class="form-group col-xs-12">
+				<label class="col-sm-3 control-label no-padding-right" for="name"> ${className} </label>
+			</div>
+			<table class="col-xs-12">
+				<thead>
+					<tr>
+						<th>${i18n.get('数据类型')}</th>
+						<th>${i18n.get('是否显示字段')}</th>
+						<th>${i18n.get('显示名称')}</th>
+						<th>${i18n.get('必须字段')}</th>
+						<th>${i18n.get('值来源（维度代码）')}</th>
+						<th>placeholder</th>
+						<th>tip</th>
+					</tr>
+				</thead>
+				<#list fields as field>
+					<tr>
+						<td>${field.type}</td>
+						<td><input type="checkbox" name="visables" value="${field.name}" />${field.name} </td>
+						<td><input type="text" name="viewName_${field.name}" placeholder="${field.name}" /></td>
+						<td><input type="text" name="required_${field.name}"  /></td>
+						<td><@form.autocomplete url="${ctx}/field/group/fieldGroupCombox.html" style="width: 200px" id="valueSource_${field.name}" name="valueSource_${field.name}" placeholder=" " tip="" /></td>
+						<td><input type="text" name="placeholder_${field.name}" /></td>
+						<td><input type="text" name="tip_${field.name}"  /></td>
+					</tr>
+				</#list>
+			</table>
+			<div class="form-group col-xs-12" >
+				<button type="submit" class="btn btn-info" > 
+					<i class="icon-search bigger-110"></i>
+					${i18n.get('生成代码')}
+				</button>
+			</div>
+		</form>
+	</div>
+</@ui.body>

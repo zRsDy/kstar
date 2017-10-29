@@ -1,0 +1,63 @@
+<#escape x as x?html>
+<@pui.body>
+
+<@form.table id="addrPop" 
+class="col-xs-12"
+title="${i18n.get('地址信息')}" 
+url = "${ctx}/custom/baseinfo/address/page.html?id=${(customId)!}"
+rowNum = "5" 
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'customId',label:'${i18n.get('客户编码')}',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'area',label:'${i18n.get('区域')}',hidden:false,width:250,sortable:true,align:'center' },
+	{name:'customAddress',label:'${i18n.get('地址')}',hidden:false,width:300,sortable:true,align:'center' },
+	{name:'customAddressTypeGrid.name',label:'${i18n.get('类型')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'customAddressPhone',label:'${i18n.get('电话')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'customAddressFax',label:'${i18n.get('传真')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'customAddressUseGrid.name',label:'${i18n.get('用途')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'customAddressValidGrid.name',label:'${i18n.get('有效')}',hidden:false,width:100,sortable:true,align:'center' }
+	]" 
+	onSelectRow = "function(data){
+	 	selected = data;
+	 }"
+	>
+</@form.table> 
+
+	<div class="clearfix form-actions">
+		<div class="col-md-offset-5 col-md-7">
+			<button class="btn btn-info" id="selectOK" type="button">
+				<i class="icon-ok bigger-110"></i>
+				${i18n.get('选择')}
+			</button>
+			&nbsp; &nbsp; &nbsp;
+			<button class="btn" type="button" onclick="javascript:api.close()">
+				<i class="icon-undo bigger-110"></i>
+				${i18n.get('关闭')}
+			</button>
+		</div>
+	</div>
+	
+
+</@pui.body>
+
+<script type="text/javascript">
+
+var selected;
+
+$('#selectOK').click(function(){
+	if (selected === undefined || selected === null || selected.id === null || selected.id ==='') {
+		alert('${i18n.get('请选择一条地址')}'); 
+	} else {
+		parent.currentParent.${pickerId}_callback(selected);
+		api.close();
+	}
+	
+});
+
+
+$(window).resize(function(){  
+ 	$("#addrPop").setGridWidth($(window).width()-90);
+});
+
+</script>
+</#escape>

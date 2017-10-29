@@ -1,0 +1,61 @@
+@charset "utf-8";
+/*--Jquery ui 样式修改--*/
+.ui-tabs .ui-tabs-nav li{border-color:#a2a2a2;}
+.ui-state-default,.ui-widget-content .ui-state-default,.ui-widget-header{background:url(../images/tabselect_current.png) repeat-x scroll 50% 50%;}
+.ui-accordion .ui-accordion-content{border-top:none;overflow:auto;padding:0;}  
+.ui-state-default a,.ui-state-default a:link,.ui-state-default a:visited{color:#666;text-decoration:none;}
+.ui-state-hover .ui-icon,.ui-state-focus .ui-icon{background-image:url(../images/ui-icons_217bc0_256x240.png);}
+.ui-icon{width:16px;height:16px;background-image:url(../images/ui-icons_469bdd_256x240.png);}
+.ui-state-default .ui-icon{background-image:url(../images/ui-icons_6da8d5_256x240.png);}
+.ui-state-hover a,.ui-state-hover a:hover{color:#e40207;text-decoration:none;font-weight:bold;}
+.ui-widget-content{border:1px solid #c2c2c2;background:#FCFDFD url(../images/ui-bg_inset-hard_100_fcfdfd_1x100.png) 50% bottom repeat-x;color:#222;}
+.ui-widget-header{background:url(../images/tiptip_bg.png) 0 100% repeat-x;color:#333333;font-weight:bold;}
+.floatcloseicon{background:url(../images/ui_close.png) 0 0!important;width:24px!important;height:24px!important;position:absolute;top:-18px;right:-18px;}
+.ui-state-hover,.ui-widget-content .ui-state-hover,.ui-widget-header .ui-state-hover,.ui-state-focus,.ui-widget-content .ui-state-focus,.ui-widget-header .ui-state-focus{border:1px solid #ccc;background:#dadada url(../images/ui-bg_glass_75_dadada_1x400.png) repeat-x;font-weight:normal;color:#212121;}
+.ui-state-default,.ui-widget-content .ui-state-default,.ui-widget-header .ui-state-default{color:#333;}
+.ui-widget-header .ui-icon{background-image:url(../images/ui-icons_d8e7f3_256x240.png);}
+.ui-state-active,.ui-widget-content .ui-state-active,.ui-widget-header .ui-state-active{background:url(../images/tabselected_bg.png) repeat-x scroll 50% 50%;border:1px solid #c2c2c2;}
+.ui-state-default, .ui-widget-header .ui-state-default{border:1px solid #c2c2c2;}
+.ui-tabs .ui-tabs-nav li.ui-tabs-active{padding-bottom:0px;}
+.ui-button{border-radius:15px!important;}
+.ui-corner-all{border-radius:4px;-moz-border-radius:4px;}
+.ui-dialog{box-shadow:0 0 5px #5a5a59;-webkit-box-shadow:0 0 5px #5a5a59;-moz-box-shadow:0 0 5px #5a5a59;overflow:visible!important;}
+.ui-state-hover{background:none!important;border:none!important;}
+
+/*--Jquery ui index tab--*/
+.macrohg_bg{background:#fff;font-weight:bold;padding:2px 8px 2px 8px!important;overflow:hidden;display:block!important;}
+ul.macrohg_bg li{border:none!important;background:url(../images/indextab.png) no-repeat 100% -25px!important;cursor:pointer;padding:0 14px 0 0!important;margin:2px 4px!important;margin-bottom:-1px;float:left;white-space:nowrap;}
+ul.macrohg_bg li a{background:url(../images/indextab.png) no-repeat 0 0!important;position:relative;padding:0.3em 0.4em 0.4em 1.7em!important;float: left;text-decoration:none;color:#666666;}
+ul.macrohg_bg li:hover{background-position:100% -75px!important;}
+ul.macrohg_bg li:hover a{background-position:0 -50px!important;color:#808080!important;}
+ul.macrohg_bg li.selected{background:url(../images/indextab.png) no-repeat 100% -125px!important;font-weight:bold;}
+ul.macrohg_bg li.selected a{background:url(../images/indextab.png) no-repeat 0 -100px!important;color:#fff!important;cursor:default!important;}
+
+/*--Jquery ui other tab--*/
+.jqtabs_bg{background:url(../images/tabselect_current.png) repeat-x scroll;font-weight:bold;padding:4px 8px 0px 8px!important;overflow:hidden;}
+ul.jqtabs_bg li{border:none!important;background:url(../images/othertab.png) no-repeat 100% -30px!important;cursor:pointer;padding:0 14px 0 0!important;margin:0px 0px!important; display:inline-block;}
+ul.jqtabs_bg li a{background:url(../images/othertab.png) no-repeat 0 0!important;position:relative;padding:0.3em 0.4em 0.5em 1.7em!important;color:#616161!important; float:left;outline:none;}
+ul.jqtabs_bg li:hover{background-position:100% -109px!important;}
+ul.jqtabs_bg li:hover a{background-position:0 -79px!important;color:#808080!important;}
+ul.jqtabs_bg li.selected{background:url(../images/othertab.png) no-repeat 100% -109px!important;font-weight:bold;}
+ul.jqtabs_bg li.selected a{background:url(../images/othertab.png) no-repeat 0 -79px!important;color:#666666!important;cursor:default!important;font-weight:bold;}
+
+/*index chart bg*/
+#accountrisk div,#marketrisk div,#competitionAnalysis div,#liquidityrisk div,#tabs-macro-ec-st div{background:#fff;}
+
+/*Jqurey弹出层黑色半透明边框样式*/
+.zs-dialog-border{   
+border: 8px solid rgba(0,0,0,0.4); 
+-moz-background-clip: border; /* Firefox 3.6 */    
+-webkit-background-clip: border; /* Safari 4? Chrome 6? */    
+background-clip: border-box; /* Firefox 4, Safari 5, Opera 10, IE 9 */    
+-moz-background-clip: padding; /* Firefox 3.6 */    
+-webkit-background-clip: padding; /* Safari 4? Chrome 6? */    
+background-clip: padding-box; /* Firefox 4, Safari 5, Opera 10, IE 9 */    
+-moz-background-clip: content; /* Firefox 3.6 */    
+-webkit-background-clip: content; /* Safari 4? Chrome 6? */    
+background-clip: content-box; /* Firefox 4, Safari 5, Opera 10, IE 9 */
+border-radius:5px;
+}
+/*--Jquery dataTables--*/
+.fg-toolbar{overflow:hidden;}

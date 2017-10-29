@@ -1,0 +1,53 @@
+<div id="kstarInnerDoc">
+</div> 
+
+<@form.table id="salesOut" 
+class="col-xs-12"
+title="${i18n.get('外部团队')}" 
+url = "${ctx}/salesOut/page.html?systemId=${(id)!}&systemCode=BIZOPPOUTER"
+rowNum = "5" 
+addURL = "'${ctx}/salesOut/add.html?systemId=${(id)!}&systemCode=BIZOPPOUTER'" 
+editURL= "'${ctx}/salesOut/edit.html'" 
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'customId',label:'${i18n.get('外部团队')}',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'markComp',label:'${i18n.get('公司名称')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'markRela',label:'${i18n.get('关系')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'markName',label:'${i18n.get('人员姓名')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'markContactPerson',label:'${i18n.get('主要联系人')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'markRole',label:'${i18n.get('角色')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'markAuth',label:'${i18n.get('权限')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'markValidFrom',label:'${i18n.get('有效日期从')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'markValidTo',label:'${i18n.get('有效日期至')}',hidden:false,width:100,sortable:true,align:'center' }
+	]" 
+	>
+</@form.table> 
+
+<script type="text/javascript">
+	var reportFlgArr = {
+			"0" : '${i18n.get("否")}',  
+			"1" : '${i18n.get("是")}'
+		};
+	 
+		function formatReport(value){
+			if (!value){
+				return '';
+			}
+		    return reportFlgArr[value];
+		}
+		
+		$(function() {
+			showPage1();
+		});
+		
+		function showPage1(){
+			
+			_url = '${ctx}/team/list.html?businessType=BusinessOpportunity&businessId=${id}';
+			
+			$('#kstarInnerDoc').load(_url, function(response,status,xhr){
+				if(status === 'error'){
+					$('#kstarInnerDoc').html(_url +'<br>'+'${i18n.get('页面加载失败')}');
+				}
+			});
+		}
+	</script>

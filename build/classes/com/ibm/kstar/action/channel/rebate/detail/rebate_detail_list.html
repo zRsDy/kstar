@@ -1,0 +1,268 @@
+<@cui.body>
+<#if (permission["P09RebateDetailPublish"])??>
+	<#assign publishURL="true" />
+</#if>
+<#if (permission["P09RebateDetailCheck"])??>
+	<#assign checkURL="true" />
+</#if>
+<#if (permission["P09RebateDetailClose"])??>
+	<#assign closeURL="true" />
+</#if>
+<#if (permission["P09RebateDetailDelete"])??>
+	<#assign deleteURL="true" />
+</#if>
+<#if (permission["P09RebateReturnedLook"])??>
+	<#assign rebateReturnedLook="true" />
+</#if>
+
+	<div class="col-xs-12">
+		<@form.table id="detail"
+			class="col-xs-12"
+			title="${i18n.get('返利明细')}"
+			url = "${ctx}/rebateDetail/page.html"
+			rowNum = "20"
+			checkbox="true"
+			colModel = "[
+				{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+				{name:'policyCode',label:'${i18n.get('返利政策编号')}',hidden:false,width:90,sortable:true,align:'center' }, 
+				{name:'policyName',label:'${i18n.get('返利政策名称')}',hidden:false,width:150,sortable:true,align:'left' }, 
+				{name:'customName',label:'${i18n.get('客户名称')}',hidden:false,width:200,sortable:true,align:'left' }, 
+				{name:'rebateType',label:'${i18n.get('返利类型')}',hidden:false,width:60,sortable:true,align:'center' }, 
+				{name:'accruedMoney',label:'${i18n.get('应计金额')}',hidden:false,width:80,sortable:true,align:'left' }, 
+				{name:'checkMoney',label:'${i18n.get('确认金额')}',hidden:false,width:80,sortable:true,align:'left',formatter:function(cellvalue, options, rowObject){ return editCheckMoney(cellvalue, options, rowObject) } },
+				{name:'differenceReason',label:'${i18n.get('金额差异原因')}',hidden:false,width:150,sortable:true,align:'left',formatter:function(cellvalue, options, rowObject){ return editDifferenceReason(cellvalue, options, rowObject) } },
+				{name:'returnedMoney',label:'${i18n.get('已返金额')}',hidden:false,width:80,sortable:true,align:'left',formatter:function(cellvalue, options){ return returnedMoneyUrl(cellvalue,options) } }, 
+				{name:'nonReturnMoney',label:'${i18n.get('未返金额')}',hidden:false,width:80,sortable:true,align:'left',formatter:function(cellvalue, options){ return lookNonReturnMoney(cellvalue, options) }}, 
+				{name:'status',label:'${i18n.get('状态')}',hidden:false,width:60,sortable:true,align:'center' }, 
+				{name:'createDate',label:'${i18n.get('创建日期')}',hidden:false,width:80,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }}, 
+				{name:'creater',label:'${i18n.get('创建人')}',hidden:false,width:80,sortable:true,align:'center' }, 
+				{name:'salesOrder',label:'${i18n.get('销售订单')}',hidden:false,width:150,sortable:true,align:'center'}, 
+				{name:'productCode',label:'${i18n.get('产品编号')}',hidden:false,width:150,sortable:true,align:'center' }, 
+				{name:'sendQuantity',label:'${i18n.get('发货数量')}',hidden:false,width:80,sortable:true,align:'left' },
+				{name:'orderMoney',label:'${i18n.get('订单金额')}',hidden:false,width:80,sortable:true,align:'left'}, 
+				{name:'sendDate',label:'${i18n.get('发货日期')}',hidden:false,width:80,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }
+			]" 
+			buttons = "[
+				{
+		  			id:'publish_detail',
+		  			label : '${i18n.get('发布')}',
+		  			icon : 'icon-save',
+		  			own : ${publishURL!'false'},
+		  			handler : function(e,rowData){
+						var selectedIds = [];
+		  				var flag = true;
+						if(selectedList_detail.length == 0){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}
+						$.each(selectedList_detail,function(i,item){
+			 				selectedIds.push(item.id);
+			 				if(item.status != '已创建'){
+			 					flag = false;
+				 				exalert(e,'${i18n.get('只有已创建的数据可发布!')}');
+								return;
+				 			}
+				 		});
+				 		if(flag){
+							bootbox.confirm('${i18n.get('确认发布选中的数据吗？')}' , function(result) {
+						    	if(result) {
+						            ajax({
+								        url: '${ctx}/rebateDetail/publish.html',
+								        type: 'POST',
+								        data: {ids:selectedIds},
+								        success : function(result) {
+									        exalert(e,'${i18n.get('发布成功！')}');
+									        reload_detail();
+								        }
+							        });
+	                        	}
+	                        });		
+                        }
+		  			}
+		  		},
+				{
+		  			id:'check_detail',
+		  			label : '${i18n.get('确认')}',
+		  			icon : 'icon-save',
+		  			own : ${checkURL!'false'},
+		  			handler : function(e,rowData){
+		  				var selectedIds = [];
+		  				var flag = true;
+						if(selectedList_detail.length == 0){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}
+						$.each(selectedList_detail,function(i,item){
+			 				selectedIds.push(item.id);
+			 				if(item.status != '已发布'){
+			 					flag = false;
+				 				exalert(e,'${i18n.get('只有已发布的数据可确认!')}');
+								return;
+				 			}
+				 		});
+				 		if(flag){
+							bootbox.confirm('${i18n.get('确认后的返利明细不可再修改，是否继续确认？')}' , function(result) {
+						    	if(result) {
+						            ajax({
+								        url: '${ctx}/rebateDetail/check.html',
+								        type: 'POST',
+								        data: {ids:selectedIds},
+								        success : function(result) {
+									        exalert(e,'${i18n.get('确认成功！')}');
+									        reload_detail();
+								        }
+							        });
+	                        	}
+	                        });		
+                        }
+		  			}
+		  		},
+		  		{
+		  			id:'close_detail',
+		  			label : '${i18n.get('关闭')}',
+		  			icon : 'icon-trash',
+		  			own : ${closeURL!'false'},
+		  			handler : function(e,rowData){
+		  				var selectedIds = [];
+		  				var flag = true;
+						if(selectedList_detail.length == 0){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}
+						$.each(selectedList_detail,function(i,item){
+			 				selectedIds.push(item.id);
+			 				if(item.status != '已确认'){
+			 					flag = false;
+				 				exalert(e,'${i18n.get('只有已确认的数据可关闭!')}');
+								return;
+				 			}
+				 		});
+				 		if(flag){
+							bootbox.confirm('${i18n.get('关闭后的返利明细不可再执行抵扣，并不可以逆转，是否确认需要关闭？')}' , function(result) {
+						    	if(result) {
+						            ajax({
+								        url: '${ctx}/rebateDetail/close.html',
+								        type: 'POST',
+								        data: {ids:selectedIds},
+								        success : function(result) {
+									        exalert(e,'${i18n.get('关闭成功！')}');
+									        reload_detail();
+								        }
+							        });
+	                        	}
+	                        });		
+                        }
+		  			}
+		  		},
+		  		{
+		  			id:'delete_detail',
+		  			label : '${i18n.get('删除')}',
+		  			icon : 'icon-trash',
+		  			own : ${deleteURL!'false'},
+		  			handler : function(e,rowData){
+		  				var selectedIds = [];
+		  				var flag = true;
+						if(selectedList_detail.length == 0){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}
+						var policyCode = selectedList_detail[0].policyCode;
+						$.each(selectedList_detail,function(i,item){
+			 				selectedIds.push(item.id);
+			 				if(item.status != '已创建'){
+			 					flag = false;
+				 				exalert(e,'${i18n.get('只有已创建的数据可删除!')}');
+								return;
+				 			}else if(item.policyCode != policyCode){
+				 				flag = false;
+				 				exalert(e,'${i18n.get('一次只能同时删除一个返利政策的明细!')}');
+								return;
+				 			}
+				 		});
+				 		if(flag){
+							bootbox.confirm('${i18n.get('确认删除选中的数据吗？')}' , function(result) {
+						    	if(result) {
+						            ajax({
+								        url: '${ctx}/rebateDetail/delete.html',
+								        type: 'POST',
+								        data: {ids:selectedIds},
+								        success : function(result) {
+									        exalert(e,'${i18n.get('删除成功！')}');
+									        reload_detail();
+								        }
+							        });
+	                        	}
+	                        });		
+                        }
+		  			}
+		  		}
+			]"
+			> 
+			<div class="col-xs-12">	
+				<div class="form-group col-xs-2" align="right">${i18n.get('政策编号 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="policyCode" size="30" />
+				</div>	
+				<div class="form-group col-xs-2" align="right">${i18n.get('政策名称 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="policyName" size="30" />
+				</div>
+				<div class="form-group col-xs-2" align="right">${i18n.get('客户名称 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="customName" size="30" />
+				</div>
+			</div> 
+		</@form.table>
+	</div>
+</@cui.body>
+<script type="text/javascript">
+function returnedMoneyUrl(value,options){
+	if(value != '0' && ${rebateReturnedLook!}){
+		return '<a onClick="lookDetail(\''+options.rowId+'\')">'+value+'</a>';
+	}else{
+		return value;
+	}
+}
+
+function lookDetail(id){
+	parent.dialog('抵扣明细', '${ctx}/rebateDetail/deductionList.html?rebateDetailId='+id, window);
+}
+
+function editCheckMoney(cellvalue, options, rowObject){
+	if(rowObject.status == '已发布'){
+		return '<input type="number" onBlur="setNonReturnMoneySubmit(\''+options.rowId+'\',\'checkMoney\',this.value,'+rowObject.returnedMoney+')" value="'+cellvalue+'" />';
+	}else{
+		return '<div align="left">'+cellvalue+'</div>';
+	}
+}
+
+function editDifferenceReason(cellvalue, options, rowObject){
+	if(cellvalue == undefined){
+		cellvalue = '';
+	}
+	if(rowObject.status == '已发布'){
+		return '<input type="text" onBlur="submit(\''+options.rowId+'\',\'differenceReason\',this.value)" value="'+cellvalue+'" />';
+	}else{
+		return '<div align="left">'+cellvalue+'</div>';
+	}
+}
+function setNonReturnMoneySubmit(id,column,value,returnedMoney){
+	var nonReturnMoney = value-returnedMoney;
+	$('#non'+id).html(nonReturnMoney);
+	submit(id,column,value)
+}
+function submit(id,column,value){
+	ajax({
+        url: '${ctx}/rebateDetail/submitColumnValue.html',
+        type: 'POST',
+        data: {detailId:id,column:column,value:value},
+        success : function(result) {
+        }
+    });
+}
+
+function lookNonReturnMoney(cellvalue, options){
+	return '<div id="non'+options.rowId+'">'+cellvalue+'</div>';
+}
+</script>
+

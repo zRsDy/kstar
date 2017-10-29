@@ -1,0 +1,85 @@
+
+<#if businessId?? && businessId!='' && businessType?? && businessType!=''>
+	
+
+	<#assign configBtn="if(typeof(parent.dialog) === 'function'){
+	parent.dialog('${i18n.get('团队设置')}','${ctx}/team/config.html?layerId=${layerId!}&orgId=${orgId!}&businessType=${businessType}&businessId=${businessId}&businessId1='+$('#businessId1').val(),window); } else {
+	parent.parent.dialog('${i18n.get('团队设置')}','${ctx}/team/config.html?layerId=${layerId!}&orgId=${orgId!}&businessType=${businessType}&businessId=${businessId}&businessId1='+$('#businessId1').val(),window);	
+	}" />
+<#else>
+	<#assign configBtn="exalert(e,'${i18n.get('请先保存主数据')}');" />
+</#if>
+
+<div class="row">
+		<div class="col-xs-12">
+			<div class="col-xs-6">
+				<@form.table id="teamPositionTable" 
+				class="col-xs-12"
+				shrinkToFit = 'true'
+				title="${i18n.get('岗位')}"
+				url = "${ctx}/common/queryPosition.html?businessType=${businessType!}&businessId=${businessId!}"
+				rowNum = "20" 
+				colModel = "[
+					{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+					{name:'orgName',label:'${i18n.get('部门')}',hidden:false,sortable:false,align:'center' },
+					{name:'positionName',label:'${i18n.get('岗位')}',hidden:false,width:200,sortable:false,align:'center' },
+					{name:'employeeName',label:'${i18n.get('主要负责人')}',hidden:false,width:200,sortable:false,align:'center' }
+					]" 
+				 onSelectRow = "function(selectedData){
+						  	$('#positionId').val(selectedData.id);
+						  	$('#showOutDate').val('false');
+						  	reload_teamMemberTable();
+						  }"
+				buttons = "[{
+							id:'config',
+							label : '${i18n.get('设置')}',
+							icon : 'icon-save',
+							own : true,
+							handler : function(e,rowData){
+								${configBtn}
+							}
+						}]"
+					> 
+				<input type="hidden" name="businessId1" id ="businessId1" />
+				</@form.table>
+			</div>
+			<div class="col-xs-6">
+				<@form.table id="teamMemberTable"
+						shrinkToFit = 'true'
+						title="${i18n.get('成员')}"
+						rowNum = "20"
+						class="col-xs-12"
+						search='false'
+						url = "${ctx}/common/queryEmployee.html"
+						colModel = "[
+						  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:false,align:'center' }, 
+						  { name : 'name', label : '${i18n.get('姓名')}', width : 250 ,sortable:false },
+						  { name : 'no', label : '${i18n.get('工号')}',  width : 150 ,sortable:false },
+						  { name : 'outDate', label : '${i18n.get('是否过期')}',  width : 150 ,sortable:false,formatter:function(cellvalue, options){ return formatEndDate(cellvalue)}}
+						  ]"
+						 buttons = "[{
+							id:'showOutDateBtn',
+							label : '${i18n.get('展示过期员工')}',
+							icon : 'icon-save',
+							own : true,
+							handler : function(e,rowData){
+								$('#showOutDate').val('true');
+								reload_teamMemberTable();
+							}
+						}]"
+						>
+						<input type="hidden" name="positionId" id="positionId" />
+						<input type="hidden" name="showOutDate" id="showOutDate" />
+				</@form.table>	
+			</div>
+		</div> 
+</div>
+<script type="text/javascript">
+	function formatEndDate(cellvalue){
+		if(cellvalue == '是'){
+			return '<font color="red">'+cellvalue+'</font>';
+		}else{
+			return cellvalue
+		}
+	}
+</script>
