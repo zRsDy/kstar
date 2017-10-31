@@ -9,30 +9,6 @@
       
 package com.ibm.kstar.action.quot;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Date;
-import java.util.HashMap;
-import javax.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.xsnake.web.action.PageCondition;
-import org.xsnake.web.page.IPage;
-import org.xsnake.web.ui.TabMain;
-import org.xsnake.web.utils.ActionUtil;
-import org.xsnake.xflow.api.IHistoryService;
-import org.xsnake.xflow.api.IProcessService;
-import org.xsnake.xflow.api.ITaskService;
-import org.xsnake.xflow.api.model.HistoryActivityInstance;
-import org.xsnake.xflow.api.model.ProcessInstance;
-import org.xsnake.xflow.api.model.Task;
-import org.xsnake.web.dao.BaseDao;
-import org.xsnake.web.exception.AnneException;
 import com.alibaba.fastjson.JSON;
 import com.ibm.kstar.action.BaseFlowAction;
 import com.ibm.kstar.action.common.IConstants;
@@ -47,6 +23,27 @@ import com.ibm.kstar.entity.quot.KstarPrjEvl;
 import com.ibm.kstar.entity.quot.KstarPrjLst;
 import com.ibm.kstar.entity.quot.KstarQuot;
 import com.ibm.kstar.interceptor.system.permission.NoRight;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.xsnake.web.action.PageCondition;
+import org.xsnake.web.dao.BaseDao;
+import org.xsnake.web.exception.AnneException;
+import org.xsnake.web.page.IPage;
+import org.xsnake.web.ui.TabMain;
+import org.xsnake.web.utils.ActionUtil;
+import org.xsnake.xflow.api.IHistoryService;
+import org.xsnake.xflow.api.IProcessService;
+import org.xsnake.xflow.api.ITaskService;
+import org.xsnake.xflow.api.model.HistoryActivityInstance;
+import org.xsnake.xflow.api.model.ProcessInstance;
+import org.xsnake.xflow.api.model.Task;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 /** 
  * ClassName:QuotProcessAction <br/> 
@@ -776,6 +773,9 @@ import com.ibm.kstar.interceptor.system.permission.NoRight;
 			IPage p = quotService.queryPrjLst(condition);
 			List<KstarPrjLst> kstarPrjLsts = (List<KstarPrjLst>) p.getList();
 			KstarQuot kstarQuot = quotService.getKstarQuot(id);
+
+			boolean needRebateReview = false;
+
 			if(kstarPrjLsts.size()>0){
 				for (KstarPrjLst kstarPrjLst : kstarPrjLsts) {
 					if(kstarPrjLst.getApplyPrc()!=null&&kstarPrjLst.getGoldPrc()!=null){
@@ -794,6 +794,7 @@ import com.ibm.kstar.interceptor.system.permission.NoRight;
 							model.addAttribute("status","3");
 						}else if(kstarPrjLst.getApplyPrc()<kstarPrjLst.getGoldPrc()){
 							model.addAttribute("status","1");
+							needRebateReview = true;
 						}else{
 							model.addAttribute("status","3");
 						}
@@ -803,6 +804,10 @@ import com.ibm.kstar.interceptor.system.permission.NoRight;
 				model.addAttribute("status","2");
 				applyPrcStatus = "2";
 				model.addAttribute(applyPrcStatus,"2");
+			}
+
+			if (needRebateReview) {
+				model.addAttribute("status", "1");
 			}
 			
 			KstarPrjEvl prjevl = quotService.getKstarPrjEvl(id);

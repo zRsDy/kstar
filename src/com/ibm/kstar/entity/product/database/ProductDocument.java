@@ -19,7 +19,7 @@ public class ProductDocument implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	public ProductDocument(){
-		this.type = "1";
+		
 	}
 	
 	public ProductDocument(ProductDocument pd ,String type){
@@ -151,4 +151,5 @@ public class ProductDocument implements java.io.Serializable {
 		this.type = type;
 	}
 	
+
 }

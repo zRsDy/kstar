@@ -1326,7 +1326,7 @@ public class ReportServiceImpl implements IReportService{
 		return sum.doubleValue();
 	}
 
-	@Scheduled(cron = "0 0 0 * * ?")
+	//@Scheduled(cron = "0 0 0 * * ?")
 	public void updatePositionId() {
 		Exception a = new Exception();
 		BigDecimal count = new BigDecimal(0);
@@ -1356,10 +1356,9 @@ public class ReportServiceImpl implements IReportService{
 			
 			StringBuffer sql = new StringBuffer();
 			sql.append(" update CUX_OA_EXPENSES_CLAIM_DATA  ")
-				.append(" set CRM_POSITION_ID =   lov.row_id, ")
-				.append("     CRM_POSITION_NAME = lov.lov_name, ")
-				.append("     CRM_ORG_ID =  t3.row_id, ")
-				.append("     CRM_ORG_NAME =  t3.lov_name   ")
+				.append(" set (CRM_POSITION_ID,CRM_POSITION_NAME,CRM_ORG_ID,CRM_ORG_NAME) = ( ")
+				.append("    select lov.row_id,lov.lov_name, ")
+				.append("           t3.row_id,t3.lov_name ")
 				.append(" 	  from SYS_T_PERMISSION_EMPLOYEE em, ")
 				.append(" 	       CUX_OA_EXPENSES_CLAIM_DATA oa, ")
 				.append(" 	       SYS_T_LOV_MEMBER lov, ")
@@ -1377,7 +1376,7 @@ public class ReportServiceImpl implements IReportService{
 				.append(" 	    and oa.crm_position_id is null ")
 				.append(" 	    and oa.CRM_POSITION_NAME is null ")
 				.append(" 	    and oa.CRM_ORG_ID is null ")
-				.append(" 	    and oa.CRM_ORG_NAME is null  ");
+				.append(" 	    and oa.CRM_ORG_NAME is null ) ");
 				baseDao.executeSQL(sql.toString());
 		}catch(Exception e) {
 			e.printStackTrace();

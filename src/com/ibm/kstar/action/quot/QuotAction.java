@@ -1808,6 +1808,7 @@ public class QuotAction extends BaseAction {
 		IPage p = quotService.queryPrjLst(condition);
 		List<KstarPrjLst> kstarPrjLsts = (List<KstarPrjLst>) p.getList();
 		KstarQuot kstarQuot = quotService.getKstarQuot(qid);
+		boolean needRebateReview = false;
 		if(kstarPrjLsts.size()>0){
 			for (KstarPrjLst kstarPrjLst : kstarPrjLsts) {
 				if(kstarPrjLst.getApplyPrc()!=null&&kstarPrjLst.getGoldPrc()!=null){
@@ -1826,6 +1827,7 @@ public class QuotAction extends BaseAction {
 						model.addAttribute("status","3");
 					}else if(kstarPrjLst.getApplyPrc()<kstarPrjLst.getGoldPrc()){
 						model.addAttribute("status","1");
+						needRebateReview = true;
 					}else{
 						model.addAttribute("status","3");
 					}
@@ -1835,6 +1837,10 @@ public class QuotAction extends BaseAction {
 			model.addAttribute("status","2");
 			applyPrcStatus = "2";
 			model.addAttribute(applyPrcStatus,"2");
+		}
+
+		if (needRebateReview) {
+			model.addAttribute("status", "1");
 		}
 		
 		TabMain tabMainbgn = new TabMain();
@@ -1874,8 +1880,7 @@ public class QuotAction extends BaseAction {
 		if(this.hasPermission("P04T8Contract1")){
 			tabMainbgn.addTab("合同", "/quot/contract.html?qid="+qid+"&typ="+typ);
 		}
-		
-		
+
 		model.addAttribute("tabMainbgn",tabMainbgn);
 
 		//权限字段

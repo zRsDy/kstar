@@ -260,8 +260,9 @@ public class ProductSelectAction extends BaseAction{
         sql.append(" where lov.LEAF_FLAG = 'Y'");
         
         //公共选择产品组件 增加过滤条件  转销状态为已转销 以及 销售状态为正常销售得产品才显示在列表上
-        sql.append(" and p.C_PRO_SALE_STATUS = 'prodoneconvertsale'")
+        sql.append(" and (p.C_PRO_SALE_STATUS = 'prodoneconvertsale' or p.C_PRO_SALE_STATUS = 'propreconvertsale') ")
         	.append(" and p.C_SALE_STATUS = '89d4488e5a1bc49e015a1c6e43570006'");
+        	
         
         if("Y".equals(categoryperm)){
         	sql.append(" and lov.PARENT_ID = pr.PRODUCT_CATALOG_ID ");

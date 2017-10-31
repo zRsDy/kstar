@@ -475,14 +475,14 @@ public class BizServiceImpl implements IBizBaseService {
         }
 
         //更新流程状态为已发起,记录流程ID
-      xflowProcessServiceWrapper.start(model, application, bidNumber + "_" + ProcessConstants.BIZOPP_BID_AUTHORITY_APPLY_PROC, id, userObject, vmap);
-//      xflowProcessServiceWrapper.start(
-//    		  model, 
-//    		  application, 
-//    		  entity.getProjectName()+"_"+entity.getCreatedByIdName()+"_"+entity.getBidEnterprise()+"_"+entity.getCreatedAt()+"_"+entity.getTerminalClientName(),
-//    		  id, 
-//    		  userObject, 
-//    		  vmap);
+        //xflowProcessServiceWrapper.start(model, application, bidNumber + "_" + ProcessConstants.BIZOPP_BID_AUTHORITY_APPLY_PROC, id, userObject, vmap);
+        xflowProcessServiceWrapper.start(
+    		  model, 
+    		  application, 
+    		  entity.getPrjName()+"_"+entity.getCreatedByIdName()+"_"+entity.getCreatedOrgIdName()+"_"+entity.getCreatedAt()+"_"+entity.getTerminalClientName(),
+    		  id, 
+    		  userObject, 
+    		  vmap);
         processStatusService.updateProcessStatus("Bid", id, "status", ProcessConstants.PROCESS_STATUS_Processing);
     }
 

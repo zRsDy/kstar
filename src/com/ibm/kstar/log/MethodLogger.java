@@ -34,6 +34,12 @@ public class MethodLogger implements Serializable{
 	private String orderNumber;
 
 	/**
+	 * 方法来源
+	 */
+	@Column(name = "FROM_FUNCTION")
+	private String fromFunction;
+	
+	/**
 	 * 接口调用时间
 	 */
 	@Column(name = "INTERFACE_START_DATE")
@@ -420,6 +426,14 @@ public class MethodLogger implements Serializable{
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getFromFunction() {
+		return fromFunction;
+	}
+
+	public void setFromFunction(String fromFunction) {
+		this.fromFunction = fromFunction;
 	}
 	
 	

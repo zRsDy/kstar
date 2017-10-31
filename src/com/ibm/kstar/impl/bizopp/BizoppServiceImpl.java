@@ -150,7 +150,8 @@ public class BizoppServiceImpl extends BaseServiceImpl implements IBizoppService
                 if (entry.getKey().startsWith("pageSearch_") && entry.getValue() != null && !"".equals(entry.getValue())) {
                     String str = entry.getKey();
                     String propName = str.replaceAll("pageSearch_", "");
-                    propName = " and b." + propName;
+                    propName = " and UPPER(b." + propName+")";
+                    String value = (String) entry.getValue();
                     if (entry.getKey().endsWith("_begin")) {
                         sb.append(propName.replaceAll("_begin", "")).append(" >= to_date(?,'yyyy-mm-dd') ");
                         args.add(entry.getValue());
@@ -159,7 +160,7 @@ public class BizoppServiceImpl extends BaseServiceImpl implements IBizoppService
                         args.add(entry.getValue());
                     } else if (entry.getKey().endsWith("_like")) {
                         sb.append(propName.replaceAll("_like", "")).append(" like ? ");
-                        args.add("%" + StringUtil.getSearchString(entry.getValue()) + "%");
+                        args.add("%" + StringUtil.getSearchString(value.toUpperCase()) + "%");
                     } else {
                         sb.append(propName).append(" = ? ");
                         args.add(StringUtil.getSearchString(entry.getValue()));
@@ -1621,7 +1622,7 @@ public class BizoppServiceImpl extends BaseServiceImpl implements IBizoppService
 //        xflowProcessServiceWrapper.start(
 //        		model, 
 //        		application, 
-//        		entity.getOpportunityName()+"_"+entity.getClientName()+"_"+entity.getCreatedByIdName()+"_"+entity.getBidUnit()+"_"+entity.getCreatedAt(),
+//        		entity.getOpportunityName()+"_"+entity.getClientName()+"_"+entity.getCreatedByIdName()+"_"+entity.getCreatedOrgIdName()+"_"+entity.getCreatedAt(),
 //        		id, 
 //        		userObject, 
 //        		vmap);
@@ -1644,7 +1645,7 @@ public class BizoppServiceImpl extends BaseServiceImpl implements IBizoppService
 
     @Override
     public void saveChange(BizOppChange boc, String number, UserObject userObject) {
-        baseDao.saveOrUpdate(boc);
+    	baseDao.saveOrUpdate(boc);
 
         //删除变更单中原有权限数据
         List<Integrator> oldIntegrators = getBizOppIntegratorList(boc.getId());

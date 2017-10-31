@@ -7,6 +7,7 @@ import org.xsnake.web.page.IPage;
 import org.xsnake.web.upload.IUploadFile;
 
 import com.ibm.kstar.api.system.lov.entity.LovMember;
+import com.ibm.kstar.entity.product.database.CatalogPermissionRel;
 
 public interface IProductDatabaseService {
 
@@ -27,5 +28,7 @@ public interface IProductDatabaseService {
 	void configPermission(String productCatalogId, String[] permissions , String type);
 
 	List<LovMember> getMyProductCatalog(String positionId, String orgId);
+
+	List<CatalogPermissionRel> selectPersionById(String catalogId,String positionId);
 	
 }

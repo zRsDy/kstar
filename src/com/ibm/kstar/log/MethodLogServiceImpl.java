@@ -63,10 +63,11 @@ public class MethodLogServiceImpl  extends MessageAdapter<MethodLogger> implemen
 	}
 
 	@Override
-	public MethodLogger getMethodLogger() {
+	public MethodLogger getMethodLogger(String fromFunction,String orderNumber) {
 		MethodLogger methodLogger = new MethodLogger();
 		UserObject user = getUserObject();
 		methodLogger.setId(UUID.randomUUID().toString().replaceAll("\\-", ""));
+		methodLogger.setOrderNumber(orderNumber);
 		methodLogger.setInterfaceStartDate(new Date());
 		methodLogger.setUserOrgId(user.getOrg().getId());
 		methodLogger.setUserOrgName(user.getOrg().getName());
@@ -75,6 +76,7 @@ public class MethodLogServiceImpl  extends MessageAdapter<MethodLogger> implemen
 		methodLogger.setUserEmployeeId(user.getEmployee().getId());
 		methodLogger.setUserPosition(user.getPosition().getName());
 		methodLogger.setUserPositionId(user.getPosition().getId());
+		methodLogger.setFromFunction(fromFunction);
 		return methodLogger;
 	}
 
@@ -100,36 +102,36 @@ public class MethodLogServiceImpl  extends MessageAdapter<MethodLogger> implemen
 	public void setFunctionNameAndParameter(MethodLogger methodLogger,String functionName,int i,Object ...objects) {
 		switch(i) {
 			case 1:
-				methodLogger.setInterfaceParameter1(JSON.toJSONString(objects));
 				methodLogger.setInterfaceName1(functionName);
+				methodLogger.setInterfaceParameter1(JSON.toJSONString(objects));
 				break;
 			case 2:
-				methodLogger.setInterfaceParameter2(JSON.toJSONString(objects));
 				methodLogger.setInterfaceName2(functionName);
+				methodLogger.setInterfaceParameter2(JSON.toJSONString(objects));
 				break;
 			case 3:
-				methodLogger.setInterfaceParameter3(JSON.toJSONString(objects));
 				methodLogger.setInterfaceName3(functionName);
+				methodLogger.setInterfaceParameter3(JSON.toJSONString(objects));
 				break;
 			case 4:
-				methodLogger.setInterfaceParameter4(JSON.toJSONString(objects));
 				methodLogger.setInterfaceName4(functionName);
+				methodLogger.setInterfaceParameter4(JSON.toJSONString(objects));
 				break;
 			case 5:
-				methodLogger.setInterfaceParameter5(JSON.toJSONString(objects));
 				methodLogger.setInterfaceName5(functionName);
+				methodLogger.setInterfaceParameter5(JSON.toJSONString(objects));
 				break;
 		}
 	}
 
 	/**
-	 * 设置接口名称与接口参数
+	 * 保存返回值并记录成功与失败
 	 * MethodLogger日志对象
 	 * i设置参数1/2/3/4/5
 	 * objects参数不固定数组
 	 */
 	@Override
-	public void setReturnData(MethodLogger methodLogger,int i,Object ...objects) {
+	public void setReturnDataNotes(boolean continueOrEnd,MethodLogger methodLogger, Exception exception,int i,Object ...objects) {
 		if(objects.length>0) {
 			switch(i) {
 				case 1:
@@ -149,21 +151,34 @@ public class MethodLogServiceImpl  extends MessageAdapter<MethodLogger> implemen
 					break;
 			}
 		}
-	}
-	
-	@Override
-	public void exceptionLog(MethodLogger methodLogger, Exception exception) {
+		
 		if(StringUtil.isNullOrEmpty(exception.getMessage())) {
-			log(methodLogger);
 			methodLogger.setProcessingStatus("SUCCESS");
 			methodLogger.setInterfaceReportDate(new Date());
 		}else {
 			methodLogger.setProcessingStatus("ERROR");
 			methodLogger.setProcessingReport(getExceptionMessage(exception));
 			methodLogger.setInterfaceReportDate(new Date());
+			continueOrEnd = true;
+		}
+		if(continueOrEnd) {
 			log(methodLogger);
 		}
 	}
+	
+	/*@Override
+	public void exceptionLog(MethodLogger methodLogger, Exception exception) {
+		if(StringUtil.isNullOrEmpty(exception.getMessage())) {
+			methodLogger.setProcessingStatus("SUCCESS");
+			methodLogger.setInterfaceReportDate(new Date());
+			log(methodLogger);
+		}else {
+			methodLogger.setProcessingStatus("ERROR");
+			methodLogger.setProcessingReport(getExceptionMessage(exception));
+			methodLogger.setInterfaceReportDate(new Date());
+			log(methodLogger);
+		}
+	}*/
 	
 	private String getExceptionMessage(Exception ex) {
         ByteArrayOutputStream buf = null;

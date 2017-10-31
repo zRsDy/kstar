@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.SQLQuery;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +39,9 @@ import com.ibm.kstar.api.system.permission.entity.Employee;
 import com.ibm.kstar.conf.Configuration;
 import com.ibm.kstar.entity.pdm.PdmFlowHistory;
 
+import net.sf.ehcache.hibernate.HibernateUtil;
+
+
 @Service
 @Transactional(readOnly = false, rollbackFor = Exception.class)
 public class DemoServiceImpl implements IDemoService{
@@ -60,6 +67,9 @@ public class DemoServiceImpl implements IDemoService{
 	@Autowired
 	BaseDao baseDao;
 	
+	@Autowired
+	SessionFactory sessionFactory;
+		
 	private void chooseNext(String taskId,String transitionId,Participant participant,String comment,Map<String,String> varmap){
 		Task task = taskService.getTask(taskId);
 		ProcessInstance pi = processService.get(task.getProcessInstanceId());
@@ -232,6 +242,9 @@ public class DemoServiceImpl implements IDemoService{
 	 */
 	@Override
 	public IPage pdmTaskList(UserObject user,int size,int pageno) {
+		Session session = null;
+		Transaction tx = null;
+		SQLQuery query = null;
 		try{
 			StringBuffer sb = new StringBuffer();
 				sb.append(" select b.* from V_WF_FOR_CRM b ");
@@ -247,7 +260,12 @@ public class DemoServiceImpl implements IDemoService{
 				sb.append(" ) ");
 				sb.append(" and b.needconfirm = 2 ");
 				sb.append(" and b.STAT = 4 ");
-			List<Object[]> list = baseDao.findBySql(sb.toString());
+			
+			session = sessionFactory.openSession();
+			tx = session.beginTransaction();
+			query = session.createSQLQuery(sb.toString());
+			//List<Object[]> list = baseDao.findBySql(sb.toString());
+			List<Object[]> list = query.list();
 			List<PdmFlowHistory> pdms = new ArrayList<PdmFlowHistory>();
 			for(Object[] objects : list){
 				PdmFlowHistory pdmFlowHistory = new PdmFlowHistory();
@@ -272,9 +290,16 @@ public class DemoServiceImpl implements IDemoService{
 				pdms.add(pdmFlowHistory);
 			}
 			IPage page = new PageImpl(pdms, pageno, size, list.size());
+			tx.commit();
 			return page;
 		}catch(Exception e){
+			tx.rollback();
 			System.out.println("PDM任务异常："+e.getMessage());
+		}finally {
+			String closeDBlink = " alter session close database link TO_PDM_VIEW ";
+			query = session.createSQLQuery(closeDBlink);
+			query.executeUpdate();
+			session.close();
 		}
 		return null;
 	}

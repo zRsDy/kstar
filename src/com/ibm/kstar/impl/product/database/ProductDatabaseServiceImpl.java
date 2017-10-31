@@ -18,6 +18,7 @@ import com.ibm.kstar.api.product.database.IProductDatabaseService;
 import com.ibm.kstar.api.system.lov.entity.LovMember;
 import com.ibm.kstar.entity.product.database.CatalogPermissionRel;
 import com.ibm.kstar.entity.product.database.ProductDocument;
+import com.sun.crypto.provider.RSACipher;
 
 @Service
 @Transactional(readOnly=false,rollbackFor=Exception.class)
@@ -77,7 +78,25 @@ public class ProductDatabaseServiceImpl implements IProductDatabaseService{
 			args.add("%"+searchKey+"%");
 		}
 		sql.append(" order by pd.name ");
-		return baseDao.search(sql.toString(),args.toArray(), condition.getRows(), condition.getPage());
+		
+		//根据下载/查看权限，重新组装分页List
+		List<ProductDocument> lists = new ArrayList<ProductDocument>();
+		List<ProductDocument> list = baseDao.findEntity(sql.toString(),args.toArray());
+		if(list != null && list.size() > 0){			
+			for(ProductDocument pd:list){
+				List<CatalogPermissionRel> crs = this.selectPersionById(pd.getCatalogId(),positionId);
+				String types = "";
+				if(crs != null && crs.size() > 0){
+					for(CatalogPermissionRel cr:crs){
+						types += cr.getType() + ",";
+					}
+				}
+				pd.setType(types);
+				lists.add(pd);
+			}
+		}
+		IPage page = new PageImpl(lists, condition.getPage(), condition.getRows(), lists.size());
+		return page;
 	}
 
 	@Override
@@ -130,5 +149,13 @@ public class ProductDatabaseServiceImpl implements IProductDatabaseService{
 			saveFile(catalogId, uf, employeeId);
 		}
 	}
+
+	@Override
+	public List<CatalogPermissionRel> selectPersionById(String catalogId,String positionId) {
+		// TODO Auto-generated method stub
+		String sql = " from CatalogPermissionRel where productCatalogId = ? and  orgId = ? ";
+		return baseDao.findEntity(sql, new Object[]{catalogId,positionId});
+	}
+	
 	
 }

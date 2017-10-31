@@ -6,11 +6,9 @@ public interface IMethodLogService{
 	
 	void log(MethodLogger methodLogger); 
 	
-	MethodLogger getMethodLogger();
+	MethodLogger getMethodLogger(String from,String orderNumber);
 	
 	void setFunctionNameAndParameter(MethodLogger methodLogger,String functionName,int i,Object ...objects); 
 	
-	void exceptionLog(MethodLogger methodLogger,Exception exception);
-	
-	void setReturnData(MethodLogger methodLogger,int i,Object ...objects);
+	void setReturnDataNotes(boolean continueOrEnd,MethodLogger methodLogger,Exception exception,int i,Object ...objects);
 }

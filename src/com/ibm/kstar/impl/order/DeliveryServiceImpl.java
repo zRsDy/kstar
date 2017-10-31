@@ -13,6 +13,8 @@ import com.ibm.kstar.entity.contract.ContrPay;
 import com.ibm.kstar.entity.contract.Contract;
 import com.ibm.kstar.entity.custom.vo.DeliveryHeaderWithAmount;
 import com.ibm.kstar.entity.order.*;
+import com.ibm.kstar.log.IMethodLogService;
+import com.ibm.kstar.log.MethodLogger;
 import com.ibm.kstar.message.service.MessageAdapter;
 import com.ibm.kstar.permission.utils.PermissionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +58,8 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 	ILovMemberService lovMemberService;
 	@Autowired
 	IProcessService processService;
-
+	@Autowired
+    IMethodLogService methodLogService;
     @Autowired
     IContractReceiptDetailService receiptDetailService;
 
@@ -631,24 +634,46 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 		if(userObject != null){
 			deliveryHeader.setUpdatedById(userObject.getEmployee().getId());
 		}
+		
+		MethodLogger methodLogger = methodLogService.getMethodLogger("com.ibm.kstar.impl.order.DeliveryServiceImpl.updateDeliveryStatus",deliveryHeader.getDeliveryCode());
+		Exception exception = new Exception();
 		if(IConstants.ORDER_CONTROL_STATUS_30.equals(status)){
+			Map<String, String> retMap = new HashMap<String, String>();
+			methodLogService.setFunctionNameAndParameter(methodLogger, "this.deliveryAuditAfter(deliveryHeader.getDeliveryCode())",1, deliveryHeader.getDeliveryCode());
+			
 			try {
-				Map<String, String> retMap  = this.deliveryAuditAfter(deliveryHeader.getDeliveryCode());
-				if(!"S".equals(retMap.get("status"))){
-					deliveryHeader.setSyncErpLog(retMap.get("msg"));
+				try {
+					retMap  = this.deliveryAuditAfter(deliveryHeader.getDeliveryCode());
+					if(!"S".equals(retMap.get("status"))){
+						deliveryHeader.setSyncErpLog(retMap.get("msg"));
+					}
+				} catch (Exception e) {
+					String msg = e.getMessage();
+					if(msg != null && msg.length() >= 3000){
+						msg = e.getMessage().substring(0, 2990);
+					}
+					deliveryHeader.setSyncErpLog(msg);
+					e.printStackTrace();
 				}
-			} catch (Exception e) {
-				String msg = e.getMessage();
-				if(msg != null && msg.length() >= 3000){
-					msg = e.getMessage().substring(0, 2990);
-				}
-				deliveryHeader.setSyncErpLog(msg);
-				e.printStackTrace();
-			}
+			}catch(Exception e) {
+	    		e.printStackTrace();
+	    		exception = e;
+	    		throw e;
+	    	}finally {
+	    		methodLogService.setReturnDataNotes(false,methodLogger,exception,1,retMap);
+	    	}	
 		}
 		
-		baseDao.update(deliveryHeader);
-		
+		try {
+			methodLogService.setFunctionNameAndParameter(methodLogger, "baseDao.update(deliveryHeader)",2, deliveryHeader);
+			baseDao.update(deliveryHeader);
+		}catch(Exception e) {
+    		e.printStackTrace();
+    		exception = e;
+    		throw e;
+    	}finally {
+    		methodLogService.setReturnDataNotes(false,methodLogger,exception,2,"void");
+    	}	
 		
 		if(IConstants.ORDER_CONTROL_STATUS_20.equals(status)){
 			List<DeliveryReceipt> receipts = this.getDeliveryReceiptListByDCode(deliveryHeader.getDeliveryCode());
@@ -657,25 +682,34 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 			}
 			//如果是审核中-20 启动发货单提交审核流
 			if(userObject != null){
-				Map<String, String> varmap = new HashMap<String, String>();
-				varmap.put("title", "发货申请审批 - " + deliveryHeader.getDeliveryCode()+"|"+userObject.getEmployee().getName()+"|"+ sdf.format(new Date()));
-				varmap.put("app", IConstants.ORDER_AUDIT_FLOW_APP_DELIVERY_AUDIT);
-				String salesCenter = lovMemberService.getSaleCenter(deliveryHeader.getCreatedOrgId());
-				varmap.put("SalesCenter",salesCenter);
-				varmap.put("DTComfirmed",this.isDTComfirmed(deliveryHeader.getId()));
-				varmap.put("employeeIdInForm",deliveryHeader.getBusinessManagerId());
-				varmap.put("employeeNameInForm",deliveryHeader.getBusinessManagerName());
-				varmap.put("positionCode", userObject.getPosition().getCode());
-				
-				String employeeType ="";
-				if(userObject != null && userObject.getOrg() != null){
-					employeeType = userObject.getOrg().getOptTxt3();
-				}
-				varmap.put("parentOrgId", userObject.getOrg().getParentId());
-				varmap.put("EmployeeType", employeeType);
-				
-				String delivery_audit_app = lovMemberService.getFlowCodeByAppCode(IConstants.ORDER_AUDIT_FLOW_APP_DELIVERY_AUDIT);
-				xflowProcessServiceWrapper.start(delivery_audit_app, id, userObject, varmap);
+				try {
+					Map<String, String> varmap = new HashMap<String, String>();
+					varmap.put("title", "发货申请审批 - " + deliveryHeader.getDeliveryCode()+"|"+userObject.getEmployee().getName()+"|"+ sdf.format(new Date()));
+					varmap.put("app", IConstants.ORDER_AUDIT_FLOW_APP_DELIVERY_AUDIT);
+					String salesCenter = lovMemberService.getSaleCenter(deliveryHeader.getCreatedOrgId());
+					varmap.put("SalesCenter",salesCenter);
+					varmap.put("DTComfirmed",this.isDTComfirmed(deliveryHeader.getId()));
+					varmap.put("employeeIdInForm",deliveryHeader.getBusinessManagerId());
+					varmap.put("employeeNameInForm",deliveryHeader.getBusinessManagerName());
+					varmap.put("positionCode", userObject.getPosition().getCode());
+					
+					String employeeType ="";
+					if(userObject != null && userObject.getOrg() != null){
+						employeeType = userObject.getOrg().getOptTxt3();
+					}
+					varmap.put("parentOrgId", userObject.getOrg().getParentId());
+					varmap.put("EmployeeType", employeeType);
+					
+					String delivery_audit_app = lovMemberService.getFlowCodeByAppCode(IConstants.ORDER_AUDIT_FLOW_APP_DELIVERY_AUDIT);
+					methodLogService.setFunctionNameAndParameter(methodLogger, "xflowProcessServiceWrapper.start(delivery_audit_app, id, userObject, varmap)",3,delivery_audit_app, id, userObject, varmap);
+					xflowProcessServiceWrapper.start(delivery_audit_app, id, userObject, varmap);
+				}catch(Exception e) {
+		    		e.printStackTrace();
+		    		exception = e;
+		    		throw e;
+		    	}finally {
+		    		methodLogService.setReturnDataNotes(true,methodLogger,exception,3,"void");
+		    	}		
 			}
 		}
 	}

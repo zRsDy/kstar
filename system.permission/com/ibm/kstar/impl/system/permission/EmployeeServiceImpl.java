@@ -249,9 +249,7 @@ public class EmployeeServiceImpl implements IEmployeeService{
 		List<LovMember> lovMemberList = baseDao.findEntity(hql,args2.toArray());
 	
 		for(int i=0;i<lovMembers.size();i++){
-			if(lovMembers.size()>=lovMemberList.size()){
-				lovMembers.set(i, lovMembers.get(i)).setName(lovMemberList.get(i).getName());
-			}
+			lovMembers.set(i, lovMembers.get(i)).setName(lovMemberList.get(i).getName());
 		}
 		return lovMembers;
 	}

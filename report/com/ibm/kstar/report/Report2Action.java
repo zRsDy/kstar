@@ -282,7 +282,7 @@ public class Report2Action extends BaseAction{
 			last = reportService.getOrgActual(String.valueOf((Integer.parseInt(year) - 1)), orgId, currency);
 			actual = reportService.getOrgActual(year, orgId, currency);
 			target = reportService.getOrgTarget(year, orgId, currency);
-			receivableList = reportService.getOrgPlanReceivable(orgId, currency);
+			receivableList = reportService.getOrgPlanReceivable(orgId, currency);//以出货计算的应收歀
 			receivableList2 = reportService.getOrgPlanReceivable2(orgId, currency);
 			receivable = reportService.getOrgReceivable(year,orgId, currency);
 			planReceivable = reportService.getOrgTotalPlanReceivable(year,orgId, currency);

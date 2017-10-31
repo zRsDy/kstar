@@ -22,6 +22,8 @@ import com.ibm.kstar.entity.order.OrderLines;
 import com.ibm.kstar.entity.order.vo.OrderVO;
 import com.ibm.kstar.entity.product.ProductPriceHead;
 import com.ibm.kstar.interceptor.system.permission.NoRight;
+import com.ibm.kstar.log.IMethodLogService;
+import com.ibm.kstar.log.MethodLogger;
 import com.ibm.kstar.service.IDemoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -73,6 +75,8 @@ public class OrderAction extends BaseFlowAction {
 	ICustomInfoService service;
 	@Autowired
     IDemoService demoService;
+	@Autowired
+    IMethodLogService methodLogService;
 
     @NoRight
 	@LogOperate(module="订单管理模块",notes="${user}页面：订单列表")
@@ -217,8 +221,13 @@ public class OrderAction extends BaseFlowAction {
 		if(lov != null){
 			prefix = lov.getName();
 		}
+		
 		code = orderService.getSequenceCode("gen_order_code",prefix);
+	
+		
 		OrderHeader orderHeader = new OrderHeader();
+		String employeeType = "" ;
+		String addUrl = "order_add_internal" ;
 		orderHeader.setOrderCode(code);
 		
 		//订单初始版本1
@@ -270,8 +279,6 @@ public class OrderAction extends BaseFlowAction {
 			}
 		}
 		
-		String employeeType = "" ;
-		String addUrl = "order_add_internal" ;
 		//如果是外部用户
 		if(userObject != null && !userObject.isInner()){
 			employeeType = "E";
@@ -625,13 +632,25 @@ public class OrderAction extends BaseFlowAction {
 	@RequestMapping("/splitLineCheck")
 	public String splitLineCheck(String op ,String id,Model model) throws Exception {
 		OrderLines orderLine = baseDao.get(OrderLines.class, id);
+		OrderHeader orderHeader = baseDao.get(OrderHeader.class, orderLine.getOrderId());
 		String ret = "S";
 		if(orderLine != null ){
-			Map<String, String> retMap =  orderService.checkOrderSplitLine(orderLine.getOrderCode(), orderLine.getLineNo(),orderLine.getProQty());
-			ret = retMap.get("status");
-			if(!"S".equals(ret)){
-				ret = retMap.get("msg");
-			}
+			MethodLogger methodLogger = methodLogService.getMethodLogger("com.ibm.kstar.action.order.OrderAction.splitLineCheck",orderHeader.getOrderCode());
+			Exception exception = new Exception();
+			methodLogService.setFunctionNameAndParameter(methodLogger, "orderService.checkOrderSplitLine(orderLine.getOrderCode(), orderLine.getLineNo(),orderLine.getProQty())", 1, orderLine.getOrderCode(), orderLine.getLineNo(),orderLine.getProQty());
+			try {
+				Map<String, String> retMap =  orderService.checkOrderSplitLine(orderLine.getOrderCode(), orderLine.getLineNo(),orderLine.getProQty());
+				ret = retMap.get("status");
+				if(!"S".equals(ret)){
+					ret = retMap.get("msg");
+				}
+			}catch(Exception e) {
+	    		e.printStackTrace();
+	    		exception = e;
+	    		throw e;
+	    	}finally {
+	    		methodLogService.setReturnDataNotes(true,methodLogger,exception,1,ret);
+	    	}	
 		}
 		return sendSuccessMessage(ret);
 	}

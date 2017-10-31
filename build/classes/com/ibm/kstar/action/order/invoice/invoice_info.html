@@ -64,62 +64,63 @@
 			return;
 		}
 		
-		//提交检查金税发票明细字段是否为空
-		var ids = $("#goldenTaxListForm").jqGrid('getDataIDs');
-		if(ids == null||ids == '' || ids == undefined){
-			alert('${i18n.get('金税发票明细不能为空！')}');
-			return;
-		}else{
-			var flag = true;
-	 		$.each(ids,function(i,id){
-				var rowData = $("#goldenTaxListForm").jqGrid("getRowData",id);
-				if(!rowData.invoiceNo){
-					alert('${i18n.get('金税发票明细-开票单号不能为空！')}');
-					flag = false;
-					return;
-				}
-				if(!rowData.custName){
-					alert('${i18n.get('金税发票明细-客户名称不能为空！')}');
-					flag = false;
-					return;
-				}
-				if(!rowData.materielDesc){
-					alert('${i18n.get('金税发票明细-品名不能为空！')}');
-					flag = false;
-					return;
-				}
-				if(!rowData.proModel){
-					alert('${i18n.get('金税发票明细-规格型号不能为空！')}');
-					flag = false;
-					return;
-				}
-				if(!rowData.unit){
-					alert('${i18n.get('金税发票明细-单位不能为空！')}');
-					flag = false;
-					return;
-				}
-				if(!rowData.invoiceQty){
-					alert('${i18n.get('金税发票明细-数量不能为空！')}');
-					flag = false;
-					return;
-				}
-				if(!rowData.invoicePrice){
-					alert('${i18n.get('金税发票明细-单价不能为空！')}');
-					flag = false;
-					return;
-				}
-				if(!rowData.invoiceAmount){
-					alert('${i18n.get('金税发票明细-金额不能为空！')}');
-					flag = false;
-					return;
-				}
-	 		});
-	 		if(!flag){
-	 			return;
-	 		}
-		}
 		
 		if('${(center)!}' != 'int' ){
+			//提交检查金税发票明细字段是否为空
+			var ids = $("#goldenTaxListForm").jqGrid('getDataIDs');
+			if(ids == null||ids == '' || ids == undefined){
+				alert('${i18n.get('金税发票明细不能为空！')}');
+				return;
+			}else{
+				var flag = true;
+		 		$.each(ids,function(i,id){
+					var rowData = $("#goldenTaxListForm").jqGrid("getRowData",id);
+					if(!rowData.invoiceNo){
+						alert('${i18n.get('金税发票明细-开票单号不能为空！')}');
+						flag = false;
+						return;
+					}
+					if(!rowData.custName){
+						alert('${i18n.get('金税发票明细-客户名称不能为空！')}');
+						flag = false;
+						return;
+					}
+					if(!rowData.materielDesc){
+						alert('${i18n.get('金税发票明细-品名不能为空！')}');
+						flag = false;
+						return;
+					}
+					if(!rowData.proModel){
+						alert('${i18n.get('金税发票明细-规格型号不能为空！')}');
+						flag = false;
+						return;
+					}
+					if(!rowData.unit){
+						alert('${i18n.get('金税发票明细-单位不能为空！')}');
+						flag = false;
+						return;
+					}
+					if(!rowData.invoiceQty){
+						alert('${i18n.get('金税发票明细-数量不能为空！')}');
+						flag = false;
+						return;
+					}
+					if(!rowData.invoicePrice){
+						alert('${i18n.get('金税发票明细-单价不能为空！')}');
+						flag = false;
+						return;
+					}
+					if(!rowData.invoiceAmount){
+						alert('${i18n.get('金税发票明细-金额不能为空！')}');
+						flag = false;
+						return;
+					}
+		 		});
+		 		if(!flag){
+		 			return;
+		 		}
+			}
+			
 			var invoiceAmount = $("#invoiceAmount").val();
 			var gt_amount = calGoldenTaxAmount(); 
 			if(parseFloat(gt_amount) != parseFloat(invoiceAmount)){

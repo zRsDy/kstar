@@ -58,14 +58,6 @@ public class CatelogMatchServiceImpl extends BaseServiceImpl implements ICatelog
 
     @Override
     public List<LovMember> queryByDirectID(String directID) {
-//		StringBuffer sb = new StringBuffer("select distinct b.c_pid,b.c_pro_name, b.C_PRO_DESC,t.c_pid as matchId");
-//		sb.append(" from crm_t_product_catalog_match t,CRM_T_PRODUCT_LINE l, CRM_T_PRODUCT_BASIC b");
-//		sb.append(" where t.c_pro_category = l.c_pro_category");
-//		sb.append(" and l.c_pid = b.c_pro_line_id  and nvl(t.c_pro_model,b.c_pro_model) = b.c_pro_model");
-//		sb.append(" and t.c_effective= 'Y'");
-//		sb.append(" and t.c_direct_id='").append(directID).append("'");
-//		sb.append(" and t.dt_start_time <= sysdate and nvl(t.dt_end_time,sysdate+1) >= sysdate");
-//		sb.append(" order by b.c_pid ");
 
         //language=SQL
         StringBuilder sb = new StringBuilder(
@@ -73,11 +65,14 @@ public class CatelogMatchServiceImpl extends BaseServiceImpl implements ICatelog
                         "  pb.c_pid,\n" +
                         "  pb.c_pro_name,\n" +
                         "  pb.C_PRO_DESC,\n" +
-                        "  pcm.c_pid AS matchId\n" +
+                        "  pcm.c_pid AS matchId,\n" +
+                        "  pcm.DT_START_TIME AS startDt,\n" +
+                        "  pcm.DT_END_TIME AS endDt\n" +
                         "FROM CRM_T_PRODUCT_CATALOG_MATCH pcm, CRM_T_PRODUCT_BASIC pb left JOIN CRM_T_PRODUCT_LINE pl on pl.c_pid = pb.c_pro_line_id \n" +
                         "WHERE pcm.C_MATCH_TYPE='Productized' \n" +
                         "      AND pcm.C_CRM_CATEGORY = pb.C_PRO_CRM_CATEGORY\n" +
-                        "      AND nvl(pcm.c_pro_category, pb.c_pro_model) = pl.C_PRO_CATEGORY AND nvl(pcm.c_pro_model, pb.c_pro_model) = pb.c_pro_model\n" +
+                        "      AND (pcm.c_pro_category IS NULL OR (pcm.c_pro_category = pl.C_PRO_CATEGORY)) " +
+                        "      AND (pcm.C_PRO_MODEL is NULL or (pcm.c_pro_model=pb.c_pro_model))\n" +
                         "      AND pcm.c_effective = 'Y'\n" +
                         "      AND pcm.c_direct_id = ? \n" +
                         "      AND pcm.dt_start_time <= sysdate\n" +
@@ -87,7 +82,9 @@ public class CatelogMatchServiceImpl extends BaseServiceImpl implements ICatelog
                         "  pb.c_pid,\n" +
                         "  pb.c_pro_name,\n" +
                         "  pb.C_PRO_DESC,\n" +
-                        "  pcm.c_pid AS matchId\n" +
+                        "  pcm.c_pid AS matchId,\n" +
+                        "  pcm.DT_START_TIME AS startDt,\n" +
+                        "  pcm.DT_END_TIME AS endDt\n" +
                         "FROM CRM_T_PRODUCT_CATALOG_MATCH pcm, CRM_T_PRODUCT_BASIC pb LEFT JOIN CRM_T_PRODUCT_LINE pl on pl.c_pid = pb.c_pro_line_id,CRM_T_PRODUCT_DEMAND pd,CRM_T_PRODUCT_DEMAND_REL pdr\n" +
                         "WHERE pcm.C_MATCH_TYPE='Department' and pd.C_PID=pdr.C_DEMAND_ID and pdr.C_PRODUCT_ID=pb.C_PID\n" +
                         "      AND pcm.C_CRM_CATEGORY = pb.C_PRO_CRM_CATEGORY AND nvl(pcm.C_DEPARTMENT, pd.C_CREATED_ORG_ID) = pd.C_CREATED_ORG_ID\n" +
@@ -105,6 +102,10 @@ public class CatelogMatchServiceImpl extends BaseServiceImpl implements ICatelog
             lov.setLeafFlag("Y");
             lov.setParentId(directID);
             lov.setGroupId("procatalog");
+
+            lov.setStartDate((Date) obj[4]);
+            lov.setEndDate((Date) obj[5]);
+
             lov.setName(String.valueOf(obj[1]));
             lov.setMemo(String.valueOf(obj[2]));
 
@@ -175,13 +176,11 @@ public class CatelogMatchServiceImpl extends BaseServiceImpl implements ICatelog
 
             lov.setStartDate(startTime);
             lov.setEndDate(endTime);
-            lov.setStartDate(startTime);
 
             lov.setOptTxt1(String.valueOf(matchId));
             lov.setOptTxt5(String.valueOf(productId));
             lovMemberService.saveProduct(lov);
         }
-
     }
 
     @Override

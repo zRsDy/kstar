@@ -44,7 +44,7 @@
 						reload_tree1();
 					}
 				}"
-				asyncUrl='${ctx}/lov/member/tree.html?groupId=PRODUCT_DATABASE'
+				asyncUrl='${ctx}/lov/member/tree.html?groupId=PRODUCT_DATABASE&&opType=2'
 			  	
 			  	onClick=" function(event, treeId, treeNode){
 			  		$('#parentId').val(treeNode.id);
@@ -108,10 +108,21 @@
 			   		var view = '?view=Y';
 			   		var viewAction = '${i18n.get('不支持在线查看')}';
 			   		var ft = item.fileType.toUpperCase();
-			   		if(ft == '.DOC' || ft == '.DOCX' || ft == '.PDF' || ft == '.MP4' || ft == '.JPG' || ft == '.JPEG'){
+			   		var types = item.type.split(',');
+			   		var isLooked = false;
+			   		var isDownLoad = false;
+			   		$.each(types,function(i,e){
+			   			if('1' == e){
+			   				isDownLoad = true;
+			   			}
+			   			if('2' == e){
+			   				isLooked = true;
+			   			}
+			   		})
+			   		if(isLooked == true && (ft == '.DOC' || ft == '.DOCX' || ft == '.PDF' || ft == '.MP4' || ft == '.JPG' || ft == '.JPEG')){
 			   			viewAction = '<a target=_blank href= ' +cellvalue+ view +' > ${i18n.get('查看')} </a>';
 			   		}
-			   		if(item.type == '1' && (ft != '.MP4' || ft != '.JPG' || ft != '.JPEG')){
+			   		if(isDownLoad == true && (ft != '.MP4' || ft != '.JPG' || ft != '.JPEG')){
 			   			return '<a target=_blank href= ' +cellvalue+ '> ${i18n.get('下载')} </a> ' + viewAction
 			   		}else{
 			   			return viewAction;

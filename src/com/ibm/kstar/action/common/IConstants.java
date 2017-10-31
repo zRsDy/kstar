@@ -370,4 +370,12 @@ public interface IConstants {
 	public static final String MAIL_SERVICE_ADDR = CacheData.getInstance().getMember("MailServiceConfig","MailServiceAddr") !=null 
 			&& ((LovMember)CacheData.getInstance().getMember("MailServiceConfig","MailServiceAddr")).getOptTxt1() != null? 
 					((LovMember)CacheData.getInstance().getMember("MailServiceConfig","MailServiceAddr")).getOptTxt1():"10.2.1.25";
+					
+	public static final String PROD_INFO_MAINTAIN  = "ProdInfoMaintain";
+	
+	public static final String PROD_INFO_MAINTAIN_PROC  = "PROD_INFO_MAINTAIN_PROC"  ; //产品维护申请
+	public static final String PROD_INFO_MAINTAIN_PROC_STUTAS_10 = "10";//新建
+	public static final String PROD_INFO_MAINTAIN_PROC_STUTAS_20 = "20";//审核中
+	public static final String PROD_INFO_MAINTAIN_PROC_STUTAS_30 = "30";//驳回
+	public static final String PROD_INFO_MAINTAIN_PROC_STUTAS_40 = "40";//审核通过
 }
