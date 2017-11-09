@@ -31,6 +31,10 @@ public interface IProductPermissionService {
 	IPage getOptPermissionPage(PageCondition condition);
 	
 	List<LovMember> getJobSelectPermissionList(String id); 
+	
+	List<LovMember> getReportSelectPermissionList(String id); 
 
 	void updateProductPermission(String rightzTreeId,String leftzTreeId)throws AnneException;
+
+	void updateReportPermission(String rightzTreeId,String leftzTreeId)throws AnneException;
 }

@@ -115,6 +115,7 @@ public class BizSupportApplyAction extends BaseAction {
 
 		TabMain tabMainInfo = new TabMain();
 		model.addAttribute("P_GNGFORG_B1_0001", this.P_GNGFORG_B1_0001(this.getUserObject().getOrg().getId()));
+		model.addAttribute("P_GNORG_B1_0001", this.P_GNORG_B1_0001(this.getUserObject().getOrg().getId()));
 		model.addAttribute("tabMainInfo",tabMainInfo);
 
 		return forward("supportApplyAdd");
@@ -142,6 +143,7 @@ public class BizSupportApplyAction extends BaseAction {
 			throw new AnneException("没有找到需要修改的数据");
 		}
 		model.addAttribute("P_GNGFORG_B1_0001", this.P_GNGFORG_B1_0001(this.getUserObject().getOrg().getId()));
+		model.addAttribute("P_GNORG_B1_0001", this.P_GNORG_B1_0001(this.getUserObject().getOrg().getId()));
 		model.addAttribute("entity", entity);
 		TabMain tabMainInfo = new TabMain();
 		tabMainInfo.setInitAll(false);

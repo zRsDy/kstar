@@ -67,6 +67,7 @@
 						rowNum = "20"
 						search="false"
 						colModel = "[
+						  { name : 'rowid', label : 'rowid', hidden : true , width : 60,sortable:true,align:'center' },
 						  { name : 'id', label : 'id', hidden : true , width : 60,sortable:true,align:'center' }, 
 						  { name : 'name', label : '${i18n.get('流程名称')}', width : 400 ,sortable:true},
 						  { name : 'procId', label : 'procId', hidden : true , width : 60,sortable:true,align:'center' },
@@ -77,24 +78,8 @@
 						  { name : 'endTime', label : '${i18n.get('结束时间')}',align:'center', width : 100 ,sortable:true,formatter:function(cellvalue, options){ return formatDate(cellvalue) }}
 						  ]"
 						 ondblClickRow = "function(rowid,iRow,iCol,e){
-					  			parent.dialog('${i18n.get('处理流程')}','${ctx}/flow/pdmProcess.html?id='+selected_t2.id+'&procId='+selected_t2.procId+'&formNo='+selected_t2.formNo,window);
-					  		}"
-						 buttons = "[
-					  		{
-					  			id:'process',
-					  			label : '${i18n.get('处理流程')}',
-					  			icon : 'icon-trash',
-					  			own : true,
-					  			handler : function(e,rowData){
-					  				if(!selected_t1){
-										alert('${i18n.get('没有选中任何数据!')}');
-										return;
-									}
-									parent.dialog('${i18n.get('处理流程')}','${ctx}/flow/pdmProcess.html?id='+selected_t2.id+'&procId='+selected_t2.procId+'&formNo='+selected_t2.formNo,window);
-					  			}
-					  		}
-					  	]" 
-
+				  			parent.dialog('${i18n.get('处理流程')}','${ctx}/flow/pdmProcess.html?id='+selected_t2.rowid+'&procId='+selected_t2.procId+'&formNo='+selected_t2.formNo,window);
+				  		 }"
 						>
 						</@form.table>
 					</td>
@@ -103,7 +88,7 @@
 		</div>
 		<script type="text/javascript">
 			$(function(){
-				window.reload_t2 = reload_t2;
+				window.reload_t2 = reload_t2; 
 			})
 		</script>
 </@pui.body>

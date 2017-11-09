@@ -1,14 +1,15 @@
 package com.ibm.kstar.impl.order;
 
 
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.ibm.kstar.action.common.IConstants;
+import com.ibm.kstar.api.order.IDeliveryService;
+import com.ibm.kstar.api.order.IInvoiceService;
+import com.ibm.kstar.api.order.IOrderService;
+import com.ibm.kstar.api.system.lov.ILovMemberService;
+import com.ibm.kstar.api.system.lov.entity.LovMember;
+import com.ibm.kstar.api.system.permission.UserObject;
+import com.ibm.kstar.api.team.ITeamService;
+import com.ibm.kstar.entity.order.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,18 +28,9 @@ import org.xsnake.xflow.api.IProcessService;
 import org.xsnake.xflow.api.Participant;
 import org.xsnake.xflow.api.workflow.IXflowProcessServiceWrapper;
 
-import com.ibm.kstar.action.common.IConstants;
-import com.ibm.kstar.api.order.IDeliveryService;
-import com.ibm.kstar.api.order.IInvoiceService;
-import com.ibm.kstar.api.order.IOrderService;
-import com.ibm.kstar.api.system.lov.ILovMemberService;
-import com.ibm.kstar.api.system.lov.entity.LovMember;
-import com.ibm.kstar.api.system.permission.UserObject;
-import com.ibm.kstar.api.team.ITeamService;
-import com.ibm.kstar.entity.order.InvoiceDetail;
-import com.ibm.kstar.entity.order.InvoiceGoldenTax;
-import com.ibm.kstar.entity.order.InvoiceMaster;
-import com.ibm.kstar.entity.order.OrderLines;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 @Remote
@@ -91,6 +83,8 @@ public class InvoiceServiceImpl implements IInvoiceService {
 		invoiceMaster.setUpdatedById(userObject.getEmployee().getId());
 		invoiceMaster.setUpdatedAt(new Date());
 		baseDao.save(invoiceMaster);
+		//已发货开票校验
+		checkInvoice(invoiceMaster.getId());
 		//更新所有行
 		this.saveOrUpdateInvoiceLines(invoiceMaster,userObject);
 		//保存金税明细行
@@ -144,7 +138,6 @@ public class InvoiceServiceImpl implements IInvoiceService {
 		if(IConstants.ORDER_CONTROL_STATUS_20.equals(status)){
 			this.updateStatus(oldInvoiceMaster.getId(), oldInvoiceMaster.getStatus(), userObject);
 		}
-		
 		//更新所有行
 		this.saveOrUpdateInvoiceLines(invoiceMaster,userObject);
 		//保存金税明细行
@@ -463,6 +456,9 @@ public class InvoiceServiceImpl implements IInvoiceService {
 			if(sb.toString().length()>0){
 				throw new AnneException("提交失败，ERP未过账，不允许提交！未过帐的订单行号如下:"+sb.toString());
 			}
+			//已发货开票校验
+			checkInvoice(id);
+			
 			//如果是审核中-20 启动 开票申请审批 工作流
 			if(userObject != null){
 				Map<String, String> varmap = new HashMap<String, String>();
@@ -522,14 +518,13 @@ public class InvoiceServiceImpl implements IInvoiceService {
 	 * @since JDK 1.7
 	 */
 	@Override
-	public boolean checkInvoiceStatus(String orderLineId) {
+	public boolean checkInvoiceErpStatusForOrderSplitLine(String orderLineId) {
 		List<InvoiceDetail> invoiceDetails = this.getInvoiceDetailListByOrderLineId(orderLineId);
 		if(invoiceDetails == null || invoiceDetails.size() <= 0){
 			return true;
 		}
 		for(InvoiceDetail detail : invoiceDetails){
-			InvoiceMaster invoiceMaster = baseDao.get(InvoiceMaster.class, detail.getInvoiceId());
-			if(!IConstants.ORDER_CONTROL_STATUS_30.equals(invoiceMaster.getStatus())){
+			if(!IConstants.YES_Yes.equals(detail.getErpImportFlag())){
 				return false;
 			}
 		}
@@ -686,7 +681,7 @@ public class InvoiceServiceImpl implements IInvoiceService {
 				continue;
 			}
 			
-			OrderLines orderLines = baseDao.get(OrderLines.class, orderId);
+			OrderLinesView orderLines = baseDao.get(OrderLinesView.class, orderId);
 			if(orderLines==null){
 				continue;
 			}
@@ -698,6 +693,51 @@ public class InvoiceServiceImpl implements IInvoiceService {
 			}
 		}
 		return sb;
+	}
+
+	/**
+	 * 已发货开票校验
+	 * @param id
+	 */
+	@Override
+	public void checkInvoice(String id) {
+		//首先根据businessKey查出CRM开票行得全部数据
+		String sqlToDetail = " from InvoiceDetail t where 1=1 ";
+		 	sqlToDetail += " and t.invoiceType = ? and t.invoiceId = ? ";
+	    List<InvoiceDetail> details = baseDao.findEntity(sqlToDetail,new Object[]{IConstants.INVOICE_TYPE_02,id});
+	    
+	    //第二步根据开票行的订单行id查询对应CRM订单行的数量 
+	    String sqlToOrder = " from OrderLinesView where id = ? ";
+	    Double orderNum = 0d;//订单行总数量
+	    Double inoviceNum = 0d;//开票总数量
+	    
+	    //第三步根据开票行的订单行ID查询出所有总开票数量
+	    String sqlByOrderLine = " select nvl(sum(t.n_invoice_qty),0) from crm_t_invoice_detail t ";
+	    	sqlByOrderLine += " where t.c_order_line_id = ? ";
+	    
+	    //根据开票表头创建人判断是否为国际中心的人，来决定是否校验ERP可开票数量，（国际中心即在仓库没有可开票库存的情况下也能开票）
+    	InvoiceMaster oldInvoiceMaster = baseDao.get(InvoiceMaster.class,id);
+	    if(details != null && details.size() > 0){
+	    	for(InvoiceDetail iDetail : details){
+	    		//获取订单行总数量
+	    		OrderLinesView orderLine = baseDao.findUniqueEntity(sqlToOrder,new Object[]{iDetail.getOrderLineId()});
+	    		orderNum = orderLine.getProQty();
+	    		//获取同订单id下开票行的总开票数量
+	    		BigDecimal sum = baseDao.findUniqueBySql(sqlByOrderLine,new Object[]{iDetail.getOrderLineId()});
+	    		inoviceNum = sum.doubleValue();
+	    		
+	    		//CRM校验已发货开票行总数
+	    		if(inoviceNum  > orderNum){
+	    			throw new AnneException("订单编号为："+iDetail.getOrderCode()+"的物料号为："+iDetail.getMaterielCode()+" 的累计开票数量已大于订单数量，请联系系统管理员！");
+	    		}
+	    		//ERP校验已发货开票数量必须小于等于仓库实际可开票库存数量
+	    		//获取当前登录人员销售中心
+				//String center =lovMemberService.getSaleCenter(oldInvoiceMaster.getCreatedOrgId());
+	    		if((iDetail.getInvoiceQty() > orderLine.getRequestedQty())){
+	    			throw new AnneException("订单编号为："+iDetail.getOrderCode()+"的物料号为："+iDetail.getMaterielCode()+" 的本次开票数量已大于ERP可开票数量，请联系系统管理员！");
+	    		}
+	    	}
+	    }		
 	}
 
 }

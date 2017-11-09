@@ -6,6 +6,7 @@ import java.util.Date;
 import com.ibm.kstar.entity.order.DeliveryHeader;
 import com.ibm.kstar.entity.order.DeliveryLines;
 import com.ibm.kstar.entity.order.OrderLines;
+import com.ibm.kstar.entity.order.OrderLinesView;
 
 /** 
  * ClassName:DeliveryVo <br/> 
@@ -107,6 +108,10 @@ public class DeliveryVO {
     	init(header,lines);
 	}
     public DeliveryVO(DeliveryHeader header,DeliveryLines lines,OrderLines orderLines) {
+    	init(header,lines);
+    	this.isErpDelivery = orderLines.getIsErpDelivery();
+	}
+    public DeliveryVO(DeliveryHeader header,DeliveryLines lines,OrderLinesView orderLines) {
     	init(header,lines);
     	this.isErpDelivery = orderLines.getIsErpDelivery();
 	}

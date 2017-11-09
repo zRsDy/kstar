@@ -265,7 +265,7 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 	
 	@Override
 	public IPage queryDeliveryLines(PageCondition condition) {
-		FilterObject filterObject = condition.getFilterObject(DeliveryLines.class);
+		FilterObject filterObject = condition.getFilterObject(DeliveryLinesView.class);
 		filterObject.addOrderBy("updatedAt", "desc");
 		HqlObject hqlObject = HqlUtil.getHqlObject(filterObject);
 		return baseDao.search(hqlObject.getHql(),hqlObject.getArgs(), condition.getRows(), condition.getPage());
@@ -277,7 +277,7 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 		List<Object> args = new ArrayList<Object>();
 		
 		StringBuffer hql =  new StringBuffer("select distinct new com.ibm.kstar.entity.order.vo.DeliveryVO(header,lines,ol) "
-				+ "from DeliveryHeader header , DeliveryLines lines , OrderLines ol, OrderHeader o , LovMember lov ");
+				+ "from DeliveryHeader header , DeliveryLines lines , OrderLinesView ol, OrderHeader o , LovMember lov ");
 		hql.append(" where header.id = lines.deliveryId ");
 		hql.append(" and lines.orderCode = o.orderCode ");
 		hql.append(" and lines.orderId = ol.id ");
@@ -498,11 +498,13 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 	public void saveOrUpdateDeliveryReceipt(DeliveryHeader  deliveryHeader,UserObject userObject) throws Exception  {
 		List<Map<Object, Object>> receiptList = deliveryHeader.getReceiptList();
 		List<Object> list = new ArrayList<Object>();
+		List<String> receiptCodeIsMainList = new ArrayList<String>();
 		if(receiptList != null ){
 			for(Map<Object, Object> map  :  receiptList){
 				list.add(map.get("id"));
 			}
 		}
+		
 		String hql = " from DeliveryReceipt d where d.deliveryCode = ? and deleteFlag != ? ";
 	    Object[] args = {deliveryHeader.getDeliveryCode(),IConstants.YES};
 		List<DeliveryReceipt> receipts = baseDao.findEntity(hql, args);
@@ -515,6 +517,9 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 				if(userObject != null){
 					receipt.setUpdatedById(userObject.getEmployee().getId());
 				}
+				if("1".equals(receipt.getIsMain())) {
+					receiptCodeIsMainList.add(receipt.getReceiptCode());
+				}
 				baseDao.update(receipt);
 			}
 		}
@@ -525,23 +530,13 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 				DeliveryReceipt receipt = (DeliveryReceipt) BeanUtils.convertMap(DeliveryReceipt.class, map);
 				if(receipt != null){
 					receipt.setDeliveryCode(deliveryHeader.getDeliveryCode());
-					DeliveryReceipt oldDeliveryReceipt =new DeliveryReceipt(); ;
-					oldDeliveryReceipt.setDeliveryCode(deliveryHeader.getDeliveryCode());
-					if(StringUtils.isEmpty(receipt.getId())){
-						oldDeliveryReceipt = receipt;
-					}else{
-						//查询是否存在发货单行
+					DeliveryReceipt oldDeliveryReceipt = new DeliveryReceipt(); ;
+					if(!StringUtils.isEmpty(receipt.getId())) {
 						oldDeliveryReceipt  = baseDao.get(DeliveryReceipt.class,receipt.getId());
-						if (oldDeliveryReceipt == null) {
-							receipt.setId(null);
-							oldDeliveryReceipt = receipt;
-						}else{
-							//将 deliveryLines的属性复制到 oldDeliveryLines
-							BeanUtils.copyPropertiesIgnoreNull(receipt, oldDeliveryReceipt);
-						}
 					}
-					if(StringUtils.isEmpty(oldDeliveryReceipt.getId())){
-						
+					if(StringUtil.isNullOrEmpty(oldDeliveryReceipt)){
+						receipt.setId(null);
+						oldDeliveryReceipt = receipt;
 						String hql1 = "from DeliveryLines line where line.deliveryCode = ? and line.lineNum = ? and deleteFlag != ?";
 						DeliveryLines deliveryLines = baseDao.findUniqueEntity(hql1, 
 								new Object[]{oldDeliveryReceipt.getDeliveryCode(),oldDeliveryReceipt.getDeliveryLinesNum(),IConstants.YES});
@@ -580,7 +575,18 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 						teamService.addPosition(userObject.getPosition().getId(),userObject.getEmployee().getId(), 
 								IConstants.PERMISSION_BUSINESS_TYPE_DELIVERYRECEIPT,oldDeliveryReceipt.getId());
 					}else {
+						BeanUtils.copyPropertiesIgnoreNull(receipt, oldDeliveryReceipt);
 						// 更新字段
+						if(receiptCodeIsMainList.size()>0) {
+							Iterator<String> receiptCodeIterator = receiptCodeIsMainList.iterator();
+							while (receiptCodeIterator.hasNext()) {    
+								String receiptCode = receiptCodeIterator.next();    
+								if(receiptCode.equals(oldDeliveryReceipt.getReceiptCode())){
+									oldDeliveryReceipt.setIsMain(IConstants.YES);
+									receiptCodeIterator.remove();
+								}
+							}    
+						}
 						oldDeliveryReceipt.setUpdatedById(userObject.getEmployee().getId());
 						oldDeliveryReceipt.setUpdatedAt(new Date());
 						baseDao.update(oldDeliveryReceipt);
@@ -773,6 +779,12 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 		if(StringUtil.isEmpty(code)){
 			throw new AnneException("操作失败，出货单编码不能为空");
 		}
+
+		if (code.startsWith("QC")) {
+			//期初数据不生成回款计划
+			return;
+		}
+
 		DeliveryHeader deliveryHeader =  this.getDeliveryHeaderByCode(code);
 		if(deliveryHeader == null){
 			throw new AnneException("操作失败，没有找到编码为【"+code+"】的出货单");
@@ -1467,6 +1479,16 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 		return deliveryNos;
     }
 
+	/**
+	 * 根据出货单行Id获取出货单行
+	 * @param deliveryLineId
+	 * @return
+	 */
+	@Override
+    public DeliveryLines getDeliveryLine(String deliveryLineId) {
+		return this.baseDao.get(DeliveryLines.class, deliveryLineId);
+	}
+
     private List<DeliveryReceipt> getSelectedContrList(String[] ids) {
 		String idsStr = "";
 		for(String id : ids){
@@ -1526,5 +1548,21 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 		map.put("status", (String) result[2]);
 		map.put("msg", (String) result[3]);
 		return map;
+	}
+
+	@Override
+	public String checkErpStatus(String id) {
+		if(!StringUtil.isNullOrEmpty(id)) {
+			DeliveryLines deliveryLines = baseDao.get(DeliveryLines.class, id);
+			if(deliveryLines!=null) {
+				String sql = "from OrderLinesView line where line.id = ? and line.lineNo = ? and line.materielCode = ? and line.readyFlag = 'Yes' ";
+				List<OrderLinesView> orderLinesViews = baseDao.findEntity(sql, 
+						new Object[]{deliveryLines.getOrderId(),deliveryLines.getOrderLineNo(),deliveryLines.getMaterielCode()});
+				if(orderLinesViews != null&&orderLinesViews.size()>0){
+					return "STOCK";
+				}
+			}
+		}
+		return null;
 	}
 }

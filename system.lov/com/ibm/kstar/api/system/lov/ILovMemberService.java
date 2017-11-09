@@ -143,4 +143,10 @@ public interface ILovMemberService {
 	 * @return
 	 */
 	List<LovMember> getAllCatalogList();
+	
+	/**
+	 * 获取所有组织树
+	 * @return
+	 */
+	List<LovMember> getAllOrgList();
 }

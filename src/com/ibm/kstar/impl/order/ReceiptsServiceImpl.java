@@ -5,6 +5,7 @@ import com.ibm.kstar.action.common.IConstants;
 import com.ibm.kstar.api.common.doc.IKstarAttachmentService;
 import com.ibm.kstar.api.contract.IContractService;
 import com.ibm.kstar.api.custom.ICustomInfoService;
+import com.ibm.kstar.api.order.IContractReceiptDetailService;
 import com.ibm.kstar.api.order.IDeliveryService;
 import com.ibm.kstar.api.order.IOrderService;
 import com.ibm.kstar.api.order.IReceiptsService;
@@ -24,6 +25,8 @@ import com.ibm.kstar.entity.order.vo.ReceiptsListVO;
 import com.ibm.kstar.entity.quot.KstarPrjLst;
 import com.ibm.kstar.entity.team.Team;
 import com.ibm.kstar.permission.utils.PermissionUtil;
+
+import org.apache.commons.math.util.MathUtils;
 import org.datanucleus.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,6 +71,8 @@ public class ReceiptsServiceImpl implements IReceiptsService {
     ICorePermissionService corePermissionService;
     @Autowired
     private IKstarAttachmentService attachmentService;
+    @Autowired
+	IContractReceiptDetailService contractReceiptDetailService;
 
     @Override
     public void saveReceipts(Receipts receipts, UserObject userObject) throws AnneException {
@@ -83,6 +88,28 @@ public class ReceiptsServiceImpl implements IReceiptsService {
 
 //        		teamService.addPosition(receipts.getSalesmanPost(),receipts.getSalesmanId(),
 //        				IConstants.PERMISSION_BUSINESS_TYPE_RECEIPTS,receipts.getId());
+    }
+    
+    private void validateReceiptAmount(Receipts oldReceipts) throws AnneException {
+    	if(StringUtils.isEmpty(oldReceipts.getContractCode())){
+    		return;
+    	}
+    	
+    	Contract contract = contractService.getContractByNoForContrVer(oldReceipts.getContractCode());
+        if (contract == null) {
+            return;
+        }
+        
+        BigDecimal sum = new BigDecimal(0);
+        String hql = " select sum(vd.n_veri_amount) from crm_t_verification_detail vd where vd.c_contract_id=? and vd.c_receipts_id!=?";
+        List<Object[]> objs = baseDao.findBySql(hql, new Object[]{contract.getId(),oldReceipts.getId()});
+        if(objs.size()>0&&objs.get(0)!=null){
+        	sum = (BigDecimal)((Object)objs.get(0));
+        }
+        sum = oldReceipts.getAmount().add(sum);
+        if(sum.compareTo(new BigDecimal(contract.getTotalAmt()))==1){
+        	throw new AnneException("收款单可核销金额不能大于合同未核销金额！");
+        }
     }
 
     @Override
@@ -100,6 +127,7 @@ public class ReceiptsServiceImpl implements IReceiptsService {
         }
         BeanUtils.copyPropertiesIgnoreNull(receipts, oldReceipts);
 
+        /* 徐建2017/11/06注释该部分代码
         if (StringUtil.isNotEmpty(oldReceipts.getContractCode())) {
             Contract contract = contractService.getContractByNoForContrVer(oldReceipts.getContractCode());
             if (contract != null) {
@@ -123,7 +151,17 @@ public class ReceiptsServiceImpl implements IReceiptsService {
                     }
                 }
             }
-        }
+        }*/
+        
+        /* 徐建2017/11/06 增加新的校验规则:收款记录转预收款需判断：收款金额+合同已核销金额<合同金额  */
+        validateReceiptAmount(oldReceipts);
+		if (oldReceipts.getStatus().equals((IConstants.RECEIPT_STATUS_20))
+				|| oldReceipts.getStatus().equals((IConstants.RECEIPT_STATUS_30))) {
+			if (receipts.getAmount().compareTo(new BigDecimal(0)) == 0) {
+				oldReceipts.setStatus(IConstants.RECEIPT_STATUS_40);
+			}
+		}
+        
         oldReceipts.setUpdatedAt(new Date());
         oldReceipts.setUpdatedById(userObject.getEmployee().getId());
         baseDao.update(oldReceipts);
@@ -331,6 +369,9 @@ public class ReceiptsServiceImpl implements IReceiptsService {
                     + " publishReceipts : 没有找到要更新的数据");
         }
         receipts.setStatus(IConstants.RECEIPT_STATUS_20);//已发布
+        if(receipts.getAmount().compareTo(new BigDecimal(0))==0){
+        	receipts.setStatus(IConstants.RECEIPT_STATUS_40);
+        }
         receipts.setUpdatedAt(new Date());
         receipts.setUpdatedById(userObject.getEmployee().getId());
 
@@ -1779,6 +1820,7 @@ public class ReceiptsServiceImpl implements IReceiptsService {
         List<List<Object>> lstOut = new ArrayList<List<Object>>();
         addHead(lstOut);
         List<ContractReceiptDetail> lines = getSelectedReceiptList(condition, user, ids, typ);
+        contractReceiptDetailService.searchGatheringDateAndCheckDate(lines);
         for (ContractReceiptDetail receiptDetail : lines) {
             List<Object> lstIn = new ArrayList<Object>();
             lstIn.add(receiptDetail.getBusinessEntityLable());
@@ -1790,10 +1832,14 @@ public class ReceiptsServiceImpl implements IReceiptsService {
             lstIn.add(receiptDetail.getDeliveryCode());
             lstIn.add(receiptDetail.getPlanAmount());
             lstIn.add(receiptDetail.getVeriAmount());
+            lstIn.add(receiptDetail.getGridBalance());
             lstIn.add(receiptDetail.getReceiptsTypeLable());
             lstIn.add(receiptDetail.getPaymentDate());
+            lstIn.add(receiptDetail.getGatheringDate());
+            lstIn.add(receiptDetail.getCheckDate());
             lstIn.add(receiptDetail.getSalesmanCode());
             lstIn.add(receiptDetail.getSalesmanName());
+            lstIn.add(receiptDetail.getSalesmanPosName());
             lstIn.add(receiptDetail.getRemarks());
             lstOut.add(lstIn);
         }
@@ -1811,10 +1857,14 @@ public class ReceiptsServiceImpl implements IReceiptsService {
         lstHead.add("出货申请编号");
         lstHead.add("计划金额");
         lstHead.add("核销金额");
+        lstHead.add("未核销金额");
         lstHead.add("币种");
         lstHead.add("到期日");
+        lstHead.add("收款日期");
+        lstHead.add("核销日期");
         lstHead.add("销售人员编号");
         lstHead.add("销售人员名称");
+        lstHead.add("销售人员岗位");
         lstHead.add("备注");
         lstOut.add(lstHead);
     }
@@ -1857,6 +1907,175 @@ public class ReceiptsServiceImpl implements IReceiptsService {
     	args.add(deliveryCode);
     	
 		return baseDao.findEntity(hql, args.toArray());
+	}
+
+	@Override
+	public List<Receipts> queryReceiptsList(PageCondition condition, UserObject userObject) throws AnneException {
+		FilterObject filterObject = condition.getFilterObject(Receipts.class);
+        filterObject.addOrderBy("receiptsDate", "asc");
+        String type = condition.getStringCondition("type");
+        HqlObject hqlObject = HqlUtil.getHqlObject(filterObject);
+        String hql = hqlObject.getHql();
+
+        //收款核销按岗位上下级进行权限控制
+        String op = condition.getStringCondition("op");
+        if ("verification".equals(op)) {
+            String as = Receipts.class.getSimpleName().toLowerCase();
+            String permissionHQL = " and " + as + ".salesmanId in (";
+            //language=HQL
+            permissionHQL += " select u.id from LovMember o,LovMember p,User u,UserPermission up " +
+                    "where u.id = up.userId and up.type = 'P' and up.memberId=p.id and p.optTxt1=o.id and u.id="+as+".salesmanId";
+            permissionHQL += " and " + PermissionUtil.getPermissionHQL(null, "u.id", "p.id", "o.id", as + ".id", userObject, "ReceiptsList");
+            permissionHQL += ")";
+            int index = hql.indexOf(" order by ");
+            if (index >= 0) {
+                StringBuilder s = new StringBuilder();
+                s.append(hql.substring(0, index))
+                        .append(permissionHQL)
+                        .append(" order by ")
+                        .append(hql.substring(index + 10, hql.length()));
+                hql = s.toString();
+            } else {
+                hql = hql + permissionHQL;
+            }
+        }
+
+        //是否只显示新建和退回状态的数据
+        String onlyNewAndSendback = condition.getStringCondition("onlyNewAndSendback");
+        if (Objects.equals(onlyNewAndSendback, "1")) {
+            int index = hql.indexOf(" order by ");
+            if (index >= 0) {
+                StringBuilder s = new StringBuilder();
+                s.append(hql.substring(0, index))
+                        .append(" and (status=? or status=?) ")
+                        .append(" order by ")
+                        .append(hql.substring(index + 10, hql.length()));
+                hql = s.toString();
+            } else {
+                hql = hql + " and (status=? or status=?) ";
+            }
+
+            hqlObject.addArgs(IConstants.RECEIPT_STATUS_10);
+            hqlObject.addArgs(IConstants.RECEIPT_STATUS_R10);
+        }
+
+        //是否只显示更新用户名称为空的数据
+        String isHaveErpCust = condition.getStringCondition("isHaveErpCust");
+        if (Objects.equals(isHaveErpCust, "1")) {
+            int index = hql.indexOf(" where 1=1 ");
+            StringBuilder s = new StringBuilder();
+            s.append(hql.substring(0, index)).append(" where 1=1 ")
+                    .append(" and correctCustName is null ")
+                    .append(hql.substring(index + 11, hql.length()));
+            hql = s.toString();
+        }
+        
+        //是否只显示更正用户名称是销售人员更正得数据
+        String isHaveChange = condition.getStringCondition("isHaveChange");
+        if (Objects.equals(isHaveChange, "1")) {
+            int index = hql.indexOf(" where 1=1 ");
+            StringBuilder s = new StringBuilder();
+            s.append(hql.substring(0, index)).append(" where 1=1 ")
+                    .append(" and changeCustMember != null ")
+                    .append(hql.substring(index + 11, hql.length()));
+            hql = s.toString();
+        }
+        if (Objects.equals(type, "RECEVICE")) {
+            int index = hql.indexOf(" where ");
+            StringBuilder s = new StringBuilder();
+            s.append(hql.substring(0, index)).append(" where ")
+                    .append(" salesmanId is null and ")
+                    .append(" correctCustId is null and ")
+                    .append(" erpCust = 'No' and ")
+                    .append(" status = '20' and ")
+                    .append(hql.substring(index + 7, hql.length()));
+            hql = s.toString();
+        }
+
+        return baseDao.findEntity(hql, hqlObject.getArgs());
+	}
+
+	@Override
+	public List<List<Object>> mappageExport(PageCondition condition, UserObject userObject) {
+		List<List<Object>> lstOut = new ArrayList<List<Object>>();
+		lstOut.add(buildHead());
+		
+		List<Receipts> list = queryReceiptsList(condition, userObject);
+		if(list != null && list.size() > 0){
+			for(Receipts receipts : list){
+				List<Object> lstIn = new ArrayList<Object>();
+				lstIn.add(receipts.getBusinessName());
+				lstIn.add(receipts.getReceiptsCode());
+				lstIn.add(receipts.getReceiptsDate());
+				lstIn.add(receipts.getVeriAmount());
+				lstIn.add(receipts.getNotVeriAmount());
+				lstIn.add(receipts.getPaymentCustomerName());
+				lstIn.add(receipts.getErpCust());
+				lstIn.add(receipts.getCorrectCustName());
+				lstIn.add(receipts.getSalesCenterLable());
+				lstIn.add(receipts.getBizDeptLable());
+				lstIn.add(receipts.getSalesmanName());
+				lstIn.add(receipts.getSalesmanPostLabel());
+				lstIn.add(receipts.getArrivalAmount());
+				lstIn.add(receipts.getCurrency());
+				lstIn.add(receipts.getIsAdvancesReceived());
+				lstIn.add(receipts.getAmount());
+				lstIn.add(receipts.getPoundage());
+				lstIn.add(receipts.getFreight());
+				lstIn.add(receipts.getContractCode());
+				lstIn.add(receipts.getRemarks());
+				lstIn.add(receipts.getPic());
+				lstIn.add(receipts.getPicSaleCenterLable());
+				lstIn.add(receipts.getRespDeptLable());
+				lstIn.add(receipts.getErpImpLable());
+				lstIn.add(receipts.getReceiptsTypeLable());
+				lstIn.add(receipts.getReceiptsBank());
+				lstIn.add(receipts.getBankAccount());
+				lstIn.add(receipts.getStatusLable());
+				lstIn.add(receipts.getCreator());
+				lstIn.add(receipts.getCreatedPositionName());
+				lstIn.add(receipts.getCreatedAt());
+				lstOut.add(lstIn);
+			}
+		}
+		
+		return lstOut;
+	}
+
+	private List<Object> buildHead() {
+		List<Object> lstHead = new ArrayList<Object>();
+		lstHead.add("业务实体名称");
+		lstHead.add("收款单号");
+		lstHead.add("收款日期");
+		lstHead.add("已核销金额");
+		lstHead.add("未核销金额");
+		lstHead.add("付款客户");
+		lstHead.add("是否ERP客户");
+		lstHead.add("更正客户名称");
+		lstHead.add("营销中心");
+		lstHead.add("业务部门");
+		lstHead.add("销售人员");
+		lstHead.add("销售人员岗位");
+		lstHead.add("到账金额");
+		lstHead.add("币种");
+		lstHead.add("是否预收款");
+		lstHead.add("合计");
+		lstHead.add("手续费");
+		lstHead.add("代垫运费收款");
+		lstHead.add("合同编号");
+		lstHead.add("备注");
+		lstHead.add("负责人");
+		lstHead.add("负责人营销中心");
+		lstHead.add("负责部门");
+		lstHead.add("ERP已导入");
+		lstHead.add("收款分类");
+		lstHead.add("收款银行");
+		lstHead.add("银行账号");
+		lstHead.add("状态");
+		lstHead.add("创建人");
+		lstHead.add("创建人岗位");
+		lstHead.add("创建时间");
+		return lstHead;
 	}
 
     

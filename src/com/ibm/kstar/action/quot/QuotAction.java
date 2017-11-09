@@ -52,6 +52,7 @@ import org.xsnake.web.upload.UploadUtils;
 import org.xsnake.web.utils.ActionUtil;
 import org.xsnake.web.utils.ExcelUtil;
 import org.xsnake.web.utils.StringUtil;
+import org.xsnake.xflow.api.model.HistoryProcessInstance;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -593,6 +594,13 @@ public class QuotAction extends BaseAction {
 		model.addAttribute("sprvmrkstatus",sprvmrkstatus);
 		model.addAttribute("quotsubmitstatus",quotsubmitstatus);
 		model.addAttribute("applyPrcStatus",applyPrcStatus);
+		
+		KstarQuot quot = quotService.getKstarQuot(qid);
+		String ifbidresult = "Y";
+		if(quot.getIsValid().equals("0")){
+			ifbidresult = "N";
+		}
+		model.addAttribute("ifbidresult",ifbidresult);
 		
 		return forward("prjLst");
 	}
@@ -1494,6 +1502,22 @@ public class QuotAction extends BaseAction {
 			throw new AnneException("没有找到数据");
 		}
 		KstarQuot quot = quotService.getKstarQuot(qid);
+		
+		//是否投标项目字段判断 如果非投标项目则只允许申请特价审批一次
+		if("0".equals(quot.getIsBidPro())){
+			String processName = "特价审批流程";
+			List<KstarProductWorkFlow> wfs;
+			wfs = quotService.getKstarProductWorkFlowList(qid, processName);
+			if(wfs.size()>0){
+				for(KstarProductWorkFlow wf: wfs){
+					String processid = wf.getProcessID();
+					List<HistoryProcessInstance> his = quotService.getHistoryProInstance(processid);
+					if(his != null && his.size() > 0){
+						throw new AnneException("报价单已申请过特价审批,非投标项目只能特价审批一次！");
+					}
+				}
+			}
+		}
 		
 		quot.setSpUlkstatus("Y");
 		

@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.xsnake.web.action.BaseAction;
 import org.xsnake.web.action.PageCondition;
 import org.xsnake.web.exception.AnneException;
+import org.xsnake.web.log.LogOperate;
 import org.xsnake.web.page.IPage;
 import org.xsnake.web.ui.TabMain;
 import org.xsnake.web.utils.ActionUtil;
@@ -692,6 +693,7 @@ public class ReceiptsAction extends BaseAction {
 		String receiptsDate_start = condition.getStringCondition("receiptsDate_start");
 		String receiptsDate_end = condition.getStringCondition("receiptsDate_end");
 //		String correctCustName = condition.getStringCondition("correctCustName");
+		String isAdvancesReceived = condition.getStringCondition("isAdvancesReceived");
 //		
 //		if(StringUtil.isNotEmpty(correctCustName)){
 //			correctCustName = new String(correctCustName.getBytes("iso-8859-1"),"utf-8");
@@ -748,6 +750,10 @@ public class ReceiptsAction extends BaseAction {
 		if(StringUtil.isNotEmpty(bizDept)){
 			condition.getFilterObject().addCondition("bizDept", "eq", bizDept);
 		}
+		
+		if(StringUtil.isNotEmpty(isAdvancesReceived)){
+			condition.getFilterObject().addCondition("isAdvancesReceived", "eq", isAdvancesReceived);
+		}
 
 		//收款核销列表不能查询新建收款计划
 		String op = condition.getStringCondition("op");
@@ -780,5 +786,13 @@ public class ReceiptsAction extends BaseAction {
 				condition.getFilterObject().addCondition("respDept",  "eq" , respDept);
 			}
 		}
+	}
+	
+	@RequestMapping("/mappageExport")
+	public void mappageExport(PageCondition condition,HttpServletRequest request,HttpServletResponse response){
+		ActionUtil.requestToCondition(condition, request);
+		List<List<Object>> dataList = receiptsService.mappageExport(condition,getUserObject());
+		SimpleDateFormat sdf = new SimpleDateFormat(IConstants.YMDHMS_FORMAT_1);
+		ExcelUtil.exportExcel(response, dataList, "收款核销列表-"+sdf.format(new Date()));
 	}
 }

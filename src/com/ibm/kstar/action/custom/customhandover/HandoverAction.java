@@ -113,6 +113,10 @@ public class HandoverAction extends BaseAction {
 		
 		customHandoverList.setHandoverStatus(IConstants.CUSTOM_NORMAL_STATUS_10);
 		
+		customHandoverList.setHandoverFrom(getUserObject().getEmployee().getId());
+		customHandoverList.setHandoverFromOrg(getUserObject().getOrg().getId());
+		customHandoverList.setHandoverFromPos(getUserObject().getPosition().getId());
+		
 		TabMain tabMain = new TabMain();
 		tabMain.setInitAll(false);
 		

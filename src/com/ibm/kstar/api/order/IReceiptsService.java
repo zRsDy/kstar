@@ -204,4 +204,21 @@ public interface IReceiptsService {
 	List<List<Object>> exportSelectedReceiptLists(PageCondition condition,UserObject user,String[] ids,String typ) throws AnneException;
 
 	List<ContractReceiptDetail> checkedReceiptsPlan(String contrNo, String deliveryCode);
+	
+	/**
+	 * 查询收款核销列表
+	 * @param condition
+	 * @param userObject
+	 * @return
+	 * @throws AnneException
+	 */
+	List<Receipts> queryReceiptsList(PageCondition condition, UserObject userObject) throws AnneException;
+	
+	/**
+	 * 收款核销列表导出
+	 * @param condition
+	 * @param userObject
+	 * @return
+	 */
+	List<List<Object>> mappageExport(PageCondition condition, UserObject userObject);
 }

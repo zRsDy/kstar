@@ -3,7 +3,9 @@ package com.ibm.kstar.report;
 import com.alibaba.fastjson.JSON;
 import com.ibm.kstar.api.contract.IContractLoanService;
 import com.ibm.kstar.api.report.IReportService;
+import com.ibm.kstar.api.system.lov.ILovGroupService;
 import com.ibm.kstar.api.system.lov.ILovMemberService;
+import com.ibm.kstar.api.system.lov.entity.LovGroup;
 import com.ibm.kstar.api.system.lov.entity.LovMember;
 import com.ibm.kstar.api.system.permission.ICorePermissionService;
 import com.ibm.kstar.api.system.permission.IEmployeeService;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.xsnake.web.action.BaseAction;
 import org.xsnake.web.action.Condition;
 import org.xsnake.web.action.PageCondition;
+import org.xsnake.web.exception.AnneException;
 import org.xsnake.web.page.IPage;
 import org.xsnake.web.utils.ActionUtil;
 import org.xsnake.web.utils.StringUtil;
@@ -48,7 +51,10 @@ public class Report2Action extends BaseAction{
 
 	@Autowired
 	IContractLoanService loanService;
-
+	
+	@Autowired
+	protected ILovGroupService lovGroupService;
+	
 	@RequestMapping("/planReceivableDetail")
 	public String planReceivableDetail(String reportType, String prType , String orgIdOrEmployeeId, String currency ,String index,Model model){
 		List<Map<String, Object>> list = reportService.getPlanReceivableDetail(reportType, prType, orgIdOrEmployeeId, index);
@@ -271,6 +277,10 @@ public class Report2Action extends BaseAction{
 		List<Double> invoicedAndUnbilled = null;//财务应收歀（万元）
 		List<Double> advancesReceived = null;//预收歀（万元）
 		Double overDueSum = null;//逾期未发货总计金额
+		Double rebateReportSum = null;//特价逾期未下单
+		Double invoicingSum = null;//提前开票未出货总计金额
+		Double rebateSum = null;//特价逾期未出货总金额
+		Double expireSum = null;//特价逾期未出货总金额
 		int bizoppReportScale = 0;//商机报备授权比例
 		int bizoppOrderReportScale = 0;//报备落单率
 		int reportOrderScale = 0;//已授权落单比例
@@ -282,14 +292,18 @@ public class Report2Action extends BaseAction{
 			last = reportService.getOrgActual(String.valueOf((Integer.parseInt(year) - 1)), orgId, currency);
 			actual = reportService.getOrgActual(year, orgId, currency);
 			target = reportService.getOrgTarget(year, orgId, currency);
-			receivableList = reportService.getOrgPlanReceivable(orgId, currency);//以出货计算的应收歀
+			receivableList = reportService.getOrgPlanReceivable(orgId, currency);
 			receivableList2 = reportService.getOrgPlanReceivable2(orgId, currency);
 			receivable = reportService.getOrgReceivable(year,orgId, currency);
 			planReceivable = reportService.getOrgTotalPlanReceivable(year,orgId, currency);
 			invoiceNo = reportService.getOrgInvoiceNo(year,orgId, currency,getUserObject());
 			invoicedAndUnbilled = reportService.getOrgInvoicedAndUnbilled(year,orgId, currency);
 			advancesReceived = reportService.getOrgAdvancesReceived(year,orgId, currency);
-			overDueSum = reportService.getOverdueSum("ORG",getUserObject().getPosition().getId());
+			overDueSum = reportService.getOverdueSum("ORG",orgId,currency,year);
+			rebateReportSum = reportService.getRebateReportSum("ORG",orgId,currency,year);
+			invoicingSum = reportService.getInvoicingSum("ORG",orgId,currency,year);
+			rebateSum = reportService.getRebateSum("ORG",orgId,currency,year);
+			expireSum = reportService.getExpireSum("ORG",orgId,currency,year);
 			bizoppReportScale = reportService.getBizoppReportScale("ORG",getUserObject().getPosition().getId());
 			bizoppOrderReportScale = reportService.getBizoppOrderReportScale("ORG",getUserObject().getPosition().getId());
 			reportOrderScale = reportService.getReportOrderScale("ORG",getUserObject().getPosition().getId());
@@ -300,19 +314,23 @@ public class Report2Action extends BaseAction{
 			delively = reportService.getEmpDelivly(year, employeeId,positionId,currency);//获取出货的出货金额
 			last = reportService.getEmployeeActual(String.valueOf((Integer.parseInt(year) - 1)), employeeId,positionId,currency);
 			actual = reportService.getEmployeeActual(year, employeeId,positionId, currency);
-			target = reportService.getEmployeeTarget(year, employeeId, currency);
-			receivableList = reportService.getEmployeePlanReceivable(employeeId, currency);
-			receivableList2 = reportService.getEmployeePlanReceivable2(employeeId, currency);
-			receivable = reportService.getEmployeeReceivable(year,employeeId, currency);
-			invoiceNo = reportService.getEmployeeInvoiceNo(year,employeeId, currency);
-			planReceivable = reportService.getEmployeeTotalPlanReceivable(year,employeeId, currency);
-			invoicedAndUnbilled = reportService.getEmployeeInvoicedAndUnbilled(year,orgId, currency);
-			advancesReceived = reportService.getEmployeeAdvancesReceived(year,orgId, currency);
-			overDueSum = reportService.getOverdueSum("Employee",employeeId);
-			bizoppReportScale = reportService.getBizoppReportScale("Employee",employeeId);
-			bizoppOrderReportScale = reportService.getBizoppOrderReportScale("Employee",employeeId);
-			reportOrderScale = reportService.getReportOrderScale("Employee",employeeId);
-			bidReportScale = reportService.getBidReportScale("Employee",employeeId);
+			target = reportService.getEmployeeTarget(year, positionId, currency);
+			receivableList = reportService.getEmployeePlanReceivable(positionId, currency);
+			receivableList2 = reportService.getEmployeePlanReceivable2(positionId, currency);
+			receivable = reportService.getEmployeeReceivable(year,positionId, currency);
+			invoiceNo = reportService.getEmployeeInvoiceNo(year,positionId, currency);
+			planReceivable = reportService.getEmployeeTotalPlanReceivable(year,positionId, currency);
+			invoicedAndUnbilled = reportService.getEmployeeInvoicedAndUnbilled(year,positionId, currency);
+			advancesReceived = reportService.getEmployeeAdvancesReceived(year,positionId, currency);
+			overDueSum = reportService.getOverdueSum("Employee",positionId,currency,year);
+			rebateReportSum = reportService.getRebateReportSum("Employee",positionId,currency,year);
+			invoicingSum = reportService.getInvoicingSum("Employee",positionId,currency,year);
+			rebateSum = reportService.getRebateSum("Employee",positionId,currency,year);
+			expireSum = reportService.getExpireSum("Employee",positionId,currency,year);
+			bizoppReportScale = reportService.getBizoppReportScale("Employee",positionId);
+			bizoppOrderReportScale = reportService.getBizoppOrderReportScale("Employee",positionId);
+			reportOrderScale = reportService.getReportOrderScale("Employee",positionId);
+			bidReportScale = reportService.getBidReportScale("Employee",positionId);
 		}
 		rate = getRate(target,actual);
 		rateContact = getRateContact(contact, contactVeri);//合同回款率(%)
@@ -357,6 +375,7 @@ public class Report2Action extends BaseAction{
 		model.addAttribute("receivableList",receivableList);
 		model.addAttribute("receivableList2",receivableList2);
 		model.addAttribute("receivable",receivable);
+		model.addAttribute("rebateReportSum",rebateReportSum);
 		model.addAttribute("invoiceNo",invoiceNo);
 		model.addAttribute("invoiceNoContact",invoiceNoContact);
 		model.addAttribute("invoiceNoDelively",invoiceNoDelively);
@@ -364,6 +383,9 @@ public class Report2Action extends BaseAction{
 		model.addAttribute("advancesReceived",advancesReceived);
 		model.addAttribute("planReceivable",planReceivable);
 		model.addAttribute("overDueSum", overDueSum);
+		model.addAttribute("invoicingSum", invoicingSum);
+		model.addAttribute("rebateSum", rebateSum);
+		model.addAttribute("expireSum", expireSum);
 		model.addAttribute("bizoppReportScale", bizoppReportScale);
 		model.addAttribute("bizoppOrderReportScale", bizoppOrderReportScale);
 		model.addAttribute("reportOrderScale", reportOrderScale);		
@@ -548,21 +570,91 @@ public class Report2Action extends BaseAction{
 	/**
 	 * 逾期未发货明细
 	 */
+	@NoRight
 	@RequestMapping("/reportOverdueList")
-	public String reportOverdueList(String reportType, String orgIdOrEmployeeId,Model model){
+	public String reportOverdueList(String reportType, String orgIdOrEmployeeId,String currency,String year,Model model){
 		model.addAttribute("reportType", reportType);
 		model.addAttribute("orgIdOrEmployeeId", orgIdOrEmployeeId);
+		model.addAttribute("currency", currency);
+		model.addAttribute("year", year);
 		return forward("reportOverdue");
 	}
 	
+	@NoRight
+	@ResponseBody
 	@RequestMapping("/reportOverdue")
-	public String reportOverdue(PageCondition condition,String reportType, String orgIdOrEmployeeId, HttpServletRequest request){
+	public String reportOverdue(PageCondition condition,String reportType, String orgIdOrEmployeeId,String currency,String year, HttpServletRequest request){
 		ActionUtil.requestToCondition(condition, request);
-		IPage p = reportService.getReportOverdue(condition,reportType,orgIdOrEmployeeId);
+		IPage p = reportService.getReportOverdue(condition,reportType,orgIdOrEmployeeId,currency,year);
+		return sendSuccessMessage(p);
+	}
+	
+	/**
+	 * 提前开票未出货明细
+	 */
+	@NoRight
+	@RequestMapping("/reportInvoicingList")
+	public String reportInvoicingList(String reportType, String orgIdOrEmployeeId,String currency,String year,Model model){
+		model.addAttribute("reportType", reportType);
+		model.addAttribute("orgIdOrEmployeeId", orgIdOrEmployeeId);
+		model.addAttribute("currency", currency);
+		model.addAttribute("year", year);
+		return forward("reportInvoicing");
+	}
+	
+	@NoRight
+	@ResponseBody
+	@RequestMapping("/reportInvoicing")
+	public String reportInvoicing(PageCondition condition,String reportType, String orgIdOrEmployeeId,String currency,String year, HttpServletRequest request){
+		ActionUtil.requestToCondition(condition, request);
+		IPage p = reportService.getReportInvoicing(condition,reportType,orgIdOrEmployeeId,currency,year);
 		return sendSuccessMessage(p);
 	}
 
-
+	/**
+	 * 特价逾期未出货明细
+	 */
+	@NoRight
+	@RequestMapping("/reportRebateList")
+	public String reportRebateList(String reportType, String orgIdOrEmployeeId,String currency,String year,Model model){
+		model.addAttribute("reportType", reportType);
+		model.addAttribute("orgIdOrEmployeeId", orgIdOrEmployeeId);
+		model.addAttribute("currency", currency);
+		model.addAttribute("year", year);
+		return forward("reportRebate");
+	}
+	
+	@NoRight
+	@ResponseBody
+	@RequestMapping("/reportRebate")
+	public String reportRebate(PageCondition condition,String reportType, String orgIdOrEmployeeId,String currency,String year, HttpServletRequest request){
+		ActionUtil.requestToCondition(condition, request);
+		IPage p = reportService.getReportRebate(condition,reportType,orgIdOrEmployeeId,currency,year);
+		return sendSuccessMessage(p);
+	}
+	
+	/**
+	 * 7天到期订单
+	 */
+	@NoRight
+	@RequestMapping("/reportExpireList")
+	public String reportExpireList(String reportType, String orgIdOrEmployeeId,String currency,String year,Model model){
+		model.addAttribute("reportType", reportType);
+		model.addAttribute("orgIdOrEmployeeId", orgIdOrEmployeeId);
+		model.addAttribute("currency", currency);
+		model.addAttribute("year", year);
+		return forward("reportExpire");
+	}
+	
+	@NoRight
+	@ResponseBody
+	@RequestMapping("/reportExpire")
+	public String reportExpire(PageCondition condition,String reportType, String orgIdOrEmployeeId,String currency,String year, HttpServletRequest request){
+		ActionUtil.requestToCondition(condition, request);
+		IPage p = reportService.getReportExpire(condition,reportType,orgIdOrEmployeeId,currency,year);
+		return sendSuccessMessage(p);
+	}
+	
 	/**
 	 * 借货未核销页面
 	 */
@@ -778,5 +870,199 @@ public class Report2Action extends BaseAction{
 		ActionUtil.requestToCondition(condition, request);
 		IPage p = reportService.getBidReportScale(condition,reportType,orgIdOrEmployeeId);
 		return sendSuccessMessage(p);
+	}
+
+	/**
+	 * 特价逾期未下单
+	 */
+	@NoRight
+	@RequestMapping("/reportRebateOverOrderList")
+	public String reportRebateOverOrderList(String reportType, String orgIdOrEmployeeId,Model model){
+		model.addAttribute("reportType", reportType);
+		model.addAttribute("orgIdOrEmployeeId", orgIdOrEmployeeId);
+		return forward("reportRebateOverOrder");
+	}
+
+	/**
+	 * 特价逾期未下单明细
+	 */
+	@NoRight
+	@ResponseBody
+	@RequestMapping("/reportRebateOverOrder")
+	public String reportRebateOverOrder(PageCondition condition,String reportType, String orgIdOrEmployeeId, HttpServletRequest request){
+		ActionUtil.requestToCondition(condition, request);
+		IPage p = reportService.getReportRebateOverOrder(condition,reportType,orgIdOrEmployeeId);
+		return sendSuccessMessage(p);
+	}
+	
+	/**
+	 * 占比分析
+	 */
+	@NoRight
+	@RequestMapping("/proportionAnalysis")
+	public String proportionAnalysis(String reportType,String year,String orgId,String employeeId,String positionId,String currency,String flag,Model model){
+		if(StringUtil.isEmpty(year)){
+			year = new SimpleDateFormat("yyyy").format(new Date());
+		}
+		if(StringUtil.isEmpty(orgId)){
+			orgId = getUserObject().getOrg().getId();
+		}
+		if(StringUtil.isEmpty(currency)){
+			currency = "RMB";
+		}
+		if(StringUtil.isEmpty(flag)){
+			flag = "0";
+		}
+		if(StringUtil.isEmpty(employeeId)){
+			employeeId = getUserObject().getEmployee().getId();
+		}
+		if(StringUtil.isEmpty(positionId)){
+			positionId =  getUserObject().getPosition().getId();
+		}
+		if(StringUtil.isEmpty(reportType)){
+			reportType = "EMPLOYEE";
+		}
+		report(null,reportType,year, orgId,employeeId,positionId, currency, flag,model);
+		
+		List<TypeValue>	orgList = null;
+		if(reportType != null && "ORG".equals(reportType.toUpperCase())){
+			orgList = reportService.getOrgActualByCustomType4Charts(year, orgId,currency);
+		}else{
+			orgList = reportService.getEmployeeActualByCustomType4Charts(year, employeeId,positionId,currency);
+		}
+		
+		List<TypeValue> employeeList = null;
+		if(reportType != null && "ORG".equals(reportType.toUpperCase())){
+			employeeList = reportService.getOrgActualByProductType(year, orgId,currency,flag);
+		}else{
+			employeeList = reportService.getEmployeeActualByProductType(year, employeeId,positionId,currency,flag);
+		}
+		
+		List<String> orgTypeList = new ArrayList<String>();
+		List<Map<String,Object>> orgValueList = new ArrayList<Map<String,Object>>();
+		
+		List<String> employeeTypeList = new ArrayList<String>();
+		List<Map<String,Object>> employeeValueList = new ArrayList<Map<String,Object>>();
+		
+		for(TypeValue tv : orgList){
+			orgTypeList.add(tv.getCustomClass());
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("value", tv.getTotle());
+			map.put("name", tv.getCustomClass());
+			orgValueList.add(map);
+		}
+		
+		for(TypeValue tv : employeeList){
+			employeeTypeList.add(tv.getCustomType());
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("value", tv.getTotle());
+			map.put("name", tv.getCustomType());
+			employeeValueList.add(map);
+		}
+		
+		model.addAttribute("orgTypeList",JSON.toJSONString(orgTypeList));
+		model.addAttribute("orgValueList",JSON.toJSONString(orgValueList));
+		model.addAttribute("employeeTypeList",JSON.toJSONString(employeeTypeList));
+		model.addAttribute("employeeValueList",JSON.toJSONString(employeeValueList));
+		
+		return forward("proportionAnalysis");
+	}
+	
+	/**
+	 * 接单量
+	 * @param treeOrgId
+	 * @param reportType
+	 * @param year
+	 * @param orgId
+	 * @param positionId
+	 * @param employeeId
+	 * @param currency
+	 * @param model
+	 * @return
+	 */
+	@NoRight
+	@RequestMapping("/orderQuantity")
+	public String orderQuantity(String reportType,String year,String orgId,String positionId,String employeeId,String currency,Model model){
+		if(StringUtil.isEmpty(year)){
+			year = new SimpleDateFormat("yyyy").format(new Date());
+		}
+		if(StringUtil.isEmpty(orgId)){
+			orgId = getUserObject().getOrg().getId();
+		}
+		
+		
+		if(StringUtil.isEmpty(employeeId)){
+			employeeId = getUserObject().getEmployee().getId();
+		}
+		if(StringUtil.isEmpty(positionId)){
+			positionId = getUserObject().getPosition().getId();
+		}
+		if(StringUtil.isEmpty(currency)){
+			currency = "RMB";
+		}
+		if(StringUtil.isEmpty(reportType)){
+			reportType = "EMPLOYEE";
+		}
+		
+		Value orderQuantity = null;//接单量
+		Value delivery = null;//已出货
+		Value notDelivery = null;//未出货
+		if(reportType != null && "ORG".equals(reportType.toUpperCase())){
+			orderQuantity = reportService.getOrderQuantityByOrg(year, orgId, currency);
+			delivery = reportService.getDeliveryByOrg(year, orgId, currency);
+			notDelivery = reportService.getNotDelivery(orderQuantity,delivery);
+		}else{
+			orderQuantity = reportService.getOrderQuantityByEmployee(year, positionId,currency);
+			delivery = reportService.getDeliveryByEmployee(year, positionId,currency);
+			notDelivery = reportService.getNotDelivery(orderQuantity,delivery);
+		}
+
+		model.addAttribute("orderQuantity",JSON.toJSONString(orderQuantity.toList()));
+		model.addAttribute("delivery",JSON.toJSONString(delivery.toList()));
+		model.addAttribute("notDelivery",JSON.toJSONString(notDelivery.toList()));
+		model.addAttribute("currency",currency);
+		return forward("orderQuantity");
+	}
+	
+	@NoRight
+	@RequestMapping("/selectLovTree")
+	public String selectLovTree(String pickerId,String groupId,String leafFlag,String rootId,String opType,Model model){
+		model.addAttribute("pickerId",pickerId);
+		model.addAttribute("groupId",groupId);
+		model.addAttribute("leafFlag",leafFlag);
+		model.addAttribute("rootId",rootId);
+		model.addAttribute("opType",opType);
+		return forward("lovTree");
+	}
+	
+	@NoRight
+	@ResponseBody
+	@RequestMapping("/tree")
+	public String tree(Condition condition, HttpServletRequest request) {
+		return contructTree(condition,request,2);
+	}
+	
+	private String contructTree(Condition condition, HttpServletRequest request,int optType){
+		ActionUtil.requestToCondition(condition, request);
+		String groupCode = condition.getStringCondition("groupCode");
+		String groupId = condition.getStringCondition("groupId");
+		String leafFlag = condition.getStringCondition("leafFlag");
+		if (StringUtil.isEmpty(groupId) && StringUtil.isEmpty(groupCode)) {
+			throw new AnneException("无效的参数访问");
+		}
+		if (StringUtil.isEmpty(groupId)) {
+			LovGroup group = lovGroupService.getByCode(groupCode);
+			if (group == null) {
+				throw new AnneException("无效的参数访问");
+			}
+			groupId = group.getId();
+		}
+		String parentId = condition.getStringCondition("id");
+		String rootId = condition.getStringCondition("rootId");
+
+		List<LovMember> list = null;
+		
+		list = reportService.getLovList(rootId,groupId,leafFlag,parentId);
+		return sendSuccessMessage(list);
 	}
 }

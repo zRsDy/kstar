@@ -1,16 +1,15 @@
 package com.ibm.kstar.api.order;
 
-import java.util.List;
-
+import com.ibm.kstar.api.system.permission.UserObject;
+import com.ibm.kstar.entity.order.InvoiceDetail;
+import com.ibm.kstar.entity.order.InvoiceGoldenTax;
+import com.ibm.kstar.entity.order.InvoiceMaster;
 import org.xsnake.web.action.PageCondition;
 import org.xsnake.web.exception.AnneException;
 import org.xsnake.web.page.IPage;
 import org.xsnake.xflow.api.Participant;
 
-import com.ibm.kstar.api.system.permission.UserObject;
-import com.ibm.kstar.entity.order.InvoiceDetail;
-import com.ibm.kstar.entity.order.InvoiceGoldenTax;
-import com.ibm.kstar.entity.order.InvoiceMaster;
+import java.util.List;
 
 public interface IInvoiceService {
 
@@ -98,14 +97,14 @@ public interface IInvoiceService {
 	List<InvoiceDetail> getInvoiceDetailListByOrderLineId(String orderLineId);
 	/**
 	 * 
-	 * checkInvoiceStatus:检查开票申请是否已经审核通过. <br/> 
+	 * checkInvoiceStatus:检查开票申请是否已经导入ERP通过. <br/>
 	 * 
 	 * @author liming 
 	 * @param orderLineId
 	 * @return 
 	 * @since JDK 1.7
 	 */
-	boolean checkInvoiceStatus(String orderLineId);
+	boolean checkInvoiceErpStatusForOrderSplitLine(String orderLineId);
 	
 	/**
 	 * 已发货未开票明细Excel导出
@@ -127,5 +126,5 @@ public interface IInvoiceService {
 	//设置流程参数
 	public void setBusinessVariable(String businessKey,String processInstanceId,Participant participant );
 	
-
+	void checkInvoice(String id);
 }

@@ -169,6 +169,9 @@
 	<#if permission["P06ReceiptsListFromSplit"]?? >
 		<#assign splitReceipts= "true"   />
 	</#if>
+	<#if permission["P06ReceiptExport"]?? >
+		<#assign exportURL = "'${ctx}/receipts/mappageExport.html?op=verification'" />
+	</#if> 
 
 	<div class="col-xs-12" >
 		<@form.form id="recriptsVerificationForm"
@@ -194,6 +197,7 @@
 		<input type="hidden" id="receiptsId" name="receiptsId" />
 		<button id="save" style="display: none" class="btn btn-info submit" type="button" ></button>
 		</@form.form>
+		
 		<@form.table id="receiptsListFrom"
 			class="col-xs-12"
 			title="${i18n.get('收款记录')}"
@@ -201,6 +205,7 @@
 			rowNum = "10"
 			rowNumList = "[10,100,200,300,400,500,1000]"
 			editURL= "'${ctx}/receipts/edit.html?op=verification'"
+			exportURL = "${exportURL!}"
 			colModel = "[
 				{name:'id',label:'',hidden:true,width:100,sortable:false,align:'center' }, 
 				{name:'businessName',label:'${i18n.get('业务实体名称')}',hidden:false,width:230,sortable:true,align:'center' },
@@ -399,7 +404,7 @@
 								value=""
 								/>
 						</td>
-						<td align="right"></td>
+						<td align="right">ERP是否导入</td>
 						<td align="left">
 							<@form.select
 								id="erpImp"  name="erpImp"
@@ -422,6 +427,15 @@
 						<td><@form.select id="bizDept" name="bizDept" url="function(){return '${ctx}/lov/member/getBizDeptList.html';}"/></td>
 					</tr>
 					<tr>
+						<td align="right">是否预收款</td>
+						<td align="left">
+							<@form.select id="isAdvancesReceived"  name="isAdvancesReceived" code="YesOrNo" idKey='code' placeholder="${i18n.get('请选择')}"/>
+						</td>
+						<td align="right"></td>
+						<td align="left"></td>
+						<td align="right"></td>
+						<td align="left"></td>
+					</tr>
 					<!--
 					<td align="right" width="80px">${i18n.get('更正客户名称：')}</td>
 						<td align="left" width="250px">

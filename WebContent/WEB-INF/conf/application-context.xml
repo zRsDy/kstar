@@ -177,51 +177,6 @@
 		<property name="sessionFactory" ref="sessionFactory2" />
 	</bean>
 	
-	
-	
-     <!--PDM数据源  begin  xiaoyifei-->
-	<bean id="dataSourcePDM" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-		<property name="driverClass" value="${jdbcPDM.driverClassName}" />
-		<property name="jdbcUrl" value="${jdbcPDM.url}" />
-		<property name="user" value="${jdbcPDM.username}" />
-		<property name="password" value="${jdbcPDM.password}" />
-		<property name="autoCommitOnClose" value="true"/>
-		<property name="initialPoolSize" value="${cpool.minPoolSize}"/>
-		<property name="minPoolSize" value="${cpool.minPoolSize}"/>
-		<property name="maxPoolSize" value="${cpool.maxPoolSize}"/>
-		<property name="maxIdleTime" value="${cpool.maxIdleTime}"/>
-		<property name="acquireIncrement" value="${cpool.acquireIncrement}"/>
-		<property name="maxIdleTimeExcessConnections" value="${cpool.maxIdleTimeExcessConnections}"/>
-	</bean>
-	<bean id="sessionFactoryPDM" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
-		<property name="dataSource" ref="dataSourcePDM"/>
-		<property name="packagesToScan" value="com.ibm.kstar" />
-		<property name="hibernateProperties">
-			<value>
-			hibernate.dialect=org.hibernate.dialect.OracleDialect
-			hibernate.show_sql=true
-			hibernate.format_sql=true
-			hibernate.query.substitutions=true 1, false 0
-			hibernate.jdbc.batch_size=20
-			hibernate.connection.release_mode=after_transaction
-			</value>
-		</property>
-	</bean>
-	
-	<bean id="hibernateTemplatePDM" class="org.springframework.orm.hibernate3.HibernateTemplate" >
-		<property name="sessionFactory">
-			<ref bean="sessionFactoryPDM" />
-		</property>
-	</bean>
-	<bean id="transactionManagerPDM" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-		<property name="sessionFactory" ref="sessionFactoryPDM" />
-	</bean>
-    <bean id="baseDaoPDM" class="org.xsnake.web.dao.BaseDaoImpl" >
-		<property name="hibernateTemplate" ref="hibernateTemplatePDM" />
-		<property name="sessionFactory" ref="sessionFactoryPDM" />
-	</bean>
-	<!--PDM数据源  end-->
-	
 	<bean id="cacheData" class="com.ibm.kstar.cache.CacheData" init-method="init">
 		<property name="conf" value="10.2.1.229:11211"/>
 		<property name="env" value="SIT"/>
@@ -342,6 +297,8 @@
 				<prop key="PRODUCT_ECR_PROC">productEcrFlowCallBack</prop>
 				<prop key="PRODUCT_DOC_PROC">productDocFlowCallBack</prop>
 				<prop key="PRODUCT_DEMAND_PROC">productDemandFlowCallBack</prop>
+				
+				<prop key="PROD_INFO_MAINTAIN_PROC">prodInfoMaintainFlowCallBack</prop>
 			</props>
 		</property>
 		<property name="serverAddress" value="http://10.2.1.228:7777/crm" />

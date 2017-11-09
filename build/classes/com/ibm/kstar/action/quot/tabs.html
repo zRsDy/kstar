@@ -221,13 +221,13 @@ ${applycont!}
 			</button>
 			</#if>
 
-			<#if (quotInf.isProReview)?? && quotInf.isProReview == '1' && (quotInf.isBidPro)?? && quotInf.isBidPro == '1' >
+	  	<!--	<#if (quotInf.isProReview)?? && quotInf.isProReview == '1' && (quotInf.isBidPro)?? && quotInf.isBidPro == '1' >
 				<#if (permission["P04ParFeedBack"])??>
 				<button id="button6" class="btn btn-info" type="button" onclick="startbrProcess()" align="right">
 					<i class="bigger-110"></i> ${i18n.get('投标反馈')}
 				</button>
 				</#if>
-			</#if>
+			</#if>  -->
 			
 		</div>
 	</div>
@@ -487,6 +487,14 @@ ${applycont!}
 			<td width="180px">
  				<@form.select  id="bidRstatt" name="bidRstatt" code="NY" idKey='code' style="width:170px;" value="${(quotInf.bidRstatt)!}" /> 
 			</td>
+			<td>
+			<#if (permission["P04ParTechConfirm"])??>
+				<button id="btn01"  class="btn btn-info submit" type="button" style="margin-left: 60px;">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('确认结果')}
+				</button>
+			</#if>
+			</td>
 				
 		</tr>
 		<tr>
@@ -572,11 +580,16 @@ ${applycont!}
 				onLoadSuccess="function(){
 					debugger;
 					if($('#isBidPro').val()=='1'){
-						if($('#bidAuditStatus').val()!='B02'){	
+						if($('#bidAuditStatus').val()=='B03'){	
 							$('#bidResults').attr('disabled','disabled');
 						}
 					}else{
 						$('#bidResults').removeAttr('disabled');
+					}
+					if($('#bidAuditStatus').val()!='B01'){
+							$('#btn01').attr('disabled','disabled');
+						}else{
+							$('#btn01').removeAttr('disabled');
 					}		
 				}"
 				
@@ -795,7 +808,14 @@ ${applycont!}
 	 	}
 	 	
 	 	if('${ifbidresult}'=="N"){
-	 		$("#button2").attr("disabled","disabled");
+	 		$("#button1").attr("disabled","disabled");
+		 	$("#button2").attr("disabled","disabled");
+		 	$("#button3").attr("disabled","disabled");
+		 	$("#button4").attr("disabled","disabled");
+		 	$("#button5").attr("disabled","disabled");
+		 	$("#button6").attr("disabled","disabled");
+		 	$("#applycnt").attr("disabled","disabled");
+		 	$("#applyloancnt").attr("disabled","disabled");
 	 	}
 	 	
 	 	if('${ifsubmitted}'=="Y"){
@@ -907,6 +927,14 @@ ${applycont!}
 					data: d,
 					success : function(result) {
 						<!--alert('${i18n.get('请在工程清单中填写申请价格后，点击“提交特价申请”按钮发起特价申请流程')}!');-->
+						ajax({
+							type:'post',
+							url : '${ctx}/quotprocess/startSpProcess.html',  
+							data: d,
+							success : function(result) {
+								alert('${i18n.get('报价已经提交')}！');  
+							}
+						});
 						window.location.reload();
 					}
 				});

@@ -1,15 +1,9 @@
 package com.ibm.kstar.log;
 
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.UUID;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
+import com.alibaba.fastjson.JSON;
+import com.ibm.kstar.api.system.permission.UserObject;
+import com.ibm.kstar.message.service.MessageAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,9 +12,12 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.xsnake.web.dao.BaseDao;
 import org.xsnake.web.utils.StringUtil;
 
-import com.alibaba.fastjson.JSON;
-import com.ibm.kstar.api.system.permission.UserObject;
-import com.ibm.kstar.message.service.MessageAdapter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Date;
+import java.util.UUID;
 @Service
 @Transactional(readOnly=false,rollbackFor=Exception.class)
 public class MethodLogServiceImpl  extends MessageAdapter<MethodLogger> implements IMethodLogService {
@@ -151,16 +148,22 @@ public class MethodLogServiceImpl  extends MessageAdapter<MethodLogger> implemen
 					break;
 			}
 		}
-		
-		if(StringUtil.isNullOrEmpty(exception.getMessage())) {
+
+		if (exception == null) {
 			methodLogger.setProcessingStatus("SUCCESS");
 			methodLogger.setInterfaceReportDate(new Date());
-		}else {
-			methodLogger.setProcessingStatus("ERROR");
-			methodLogger.setProcessingReport(getExceptionMessage(exception));
-			methodLogger.setInterfaceReportDate(new Date());
-			continueOrEnd = true;
+		} else {
+			if(StringUtil.isNullOrEmpty(exception.getMessage())) {
+				methodLogger.setProcessingStatus("SUCCESS");
+				methodLogger.setInterfaceReportDate(new Date());
+			}else {
+				methodLogger.setProcessingStatus("ERROR");
+				methodLogger.setProcessingReport(getExceptionMessage(exception));
+				methodLogger.setInterfaceReportDate(new Date());
+				continueOrEnd = true;
+			}
 		}
+
 		if(continueOrEnd) {
 			log(methodLogger);
 		}

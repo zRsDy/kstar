@@ -1,24 +1,15 @@
 package com.ibm.kstar.entity.order;
 
 
-import java.util.Date;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Column;
-import javax.persistence.Transient;
-
-import java.math.BigDecimal;
-
-import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
-import org.xsnake.web.utils.BeanUtils;
-
 import com.ibm.kstar.action.common.IConstants;
 import com.ibm.kstar.api.system.lov.entity.LovMember;
 import com.ibm.kstar.cache.CacheData;
+import org.hibernate.annotations.GenericGenerator;
+import org.xsnake.web.utils.BeanUtils;
+
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 开票明细表(CRM_T_INVOICE_DETAIL)
@@ -134,8 +125,12 @@ public class InvoiceDetail implements java.io.Serializable {
     /** 更新时间 */
     @Column(name = "dt_updated_at")
     private Date updatedAt;
-    
-    @Transient
+
+	/** 是否导入ERP */
+	@Column(name = "c_erp_import_flag")
+	private String erpImportFlag;
+
+	@Transient
     private String invoiceTypeLable;
     
    /** 单位 显示名称*/
@@ -368,5 +363,13 @@ public class InvoiceDetail implements java.io.Serializable {
 
 	public void setUnitLable(String unitLable) {
 		this.unitLable = unitLable;
+	}
+
+	public String getErpImportFlag() {
+		return erpImportFlag;
+	}
+
+	public void setErpImportFlag(String erpImportFlag) {
+		this.erpImportFlag = erpImportFlag;
 	}
 }

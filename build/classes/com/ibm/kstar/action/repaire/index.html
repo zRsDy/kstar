@@ -3,6 +3,15 @@
 		<script src='${ctx}/assets/js/jquery-1.10.2.min.js'></script>
 		<script>
 		$(document).ready(function(){
+			$("#callbackButton").on("click",function(){
+				var url = "${ctx}/repaire/doCallback.html";
+				var data = {processInstanceIds:$("#processInstanceIds").val()};
+				$("#callbackButton").attr("disabled",true);
+				$.post(url,data,function(result){
+				    alert(result.message);
+				    $("#callbackButton").attr("disabled",false);
+				});
+			});
 			$("#demandButton").on("click",function(){
 				var url = "${ctx}/repaire/sendProductDemandsToPDM.html";
 				var data = {codes:$("#codes").val()};
@@ -36,6 +45,13 @@
 		</script>
 	</head>
 	<body>
+		<h3>${i18n.get('流程重新触发回调')}</h3>
+		<div style="padding-bottom:10px;line-height:18px;font-size:12px;">${i18n.get('如果流程审批通过之后,回调方法没有触发,可以通过该程序重新进行触发操作,在下方文本域输入流程实例id,如果有多个中间用','分开')}</div>
+		<div>
+			<textarea id="processInstanceIds" style="width:90%;height:60px;"></textarea>
+			<input type="button" id="callbackButton" value="${i18n.get('')}开始触发回调" />
+		</div>
+		<div style="line-height:30px;"></div>
 		<h3>${i18n.get('产品需求单同步到')}PDM</h3>
 		<div style="padding-bottom:10px;line-height:18px;font-size:12px;">${i18n.get('如果需求申请单审批通过后,数据没有进入PDM系统,可以通过该程序将需求单同步到PDM,在下方文本域输入申请单号,如果有多个中间用','分开')}</div>
 		<div>

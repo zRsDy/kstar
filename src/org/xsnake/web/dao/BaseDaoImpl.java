@@ -9,16 +9,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.persistence.Column;
-import javax.persistence.Table;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -31,10 +27,6 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.xsnake.web.page.IPage;
 import org.xsnake.web.page.PageImpl;
-import org.xsnake.web.utils.StringUtil;
-
-import com.ibm.kstar.api.system.permission.UserObject;
-import com.ibm.kstar.conf.ApplicationContextUtil;
 
 @SuppressWarnings("unchecked")
 public class BaseDaoImpl implements BaseDao {
@@ -330,6 +322,24 @@ public class BaseDaoImpl implements BaseDao {
 	@Override
 	public void executeSQL(final String sql, final Object args) {
 		executeSQL(sql, new Object[] { args });
+	}
+	
+	//提供一个新会话执行SQL
+	public void executeSQLX(final String sql, final Object[] args) {
+		HibernateCallback<Object> callback = new HibernateCallback<Object>() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException {
+				Session newSession = session.getSessionFactory().openSession();
+				try{
+					SQLQuery query = createSQLQuery(newSession, sql, args);
+					return query.executeUpdate();
+				}finally{
+					newSession.close();
+					session.close();
+				}
+			}
+		};
+		getHibernateTemplate().execute(callback);
 	}
 
 	@Override

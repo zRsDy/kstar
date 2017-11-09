@@ -23,7 +23,7 @@ import com.ibm.kstar.cache.CacheData;
  * @author 张钧鑫 and rights.userId = :userId 2016年12月14日 下午1:12:35
  */
 @Entity
-@Table(name = "kstat_order_report_v")
+@Table(name = "kstart_order_delivery_report_v")
 public class ReportOverdueVO implements Serializable{
 	private static final long serialVersionUID = -8658308573164369043L;
 	
@@ -46,6 +46,14 @@ public class ReportOverdueVO implements Serializable{
 	/** 视图销售人员 ID*/
 	@Column(name = "c_salesman_id")
 	private String salesmanId;
+	
+	/** 视图销售人员岗位*/
+	@Column(name = "c_salesman_position")
+	private String salesmanPos;
+	
+	/** 销售人员岗位名称*/
+	@Transient
+	private String salesmanPosName;
 	
 	/** 视图客户名称 */
 	@Column(name = "c_customer_name")
@@ -99,9 +107,15 @@ public class ReportOverdueVO implements Serializable{
 	private BigDecimal erpSettPrice;
 
 	/** 视图金额 */
-	@Column(name = "n_amount")
+	@Transient
 	private BigDecimal amount;
 
+	@Column(name = "rmb_order_amount")
+	private BigDecimal rmbAmount;
+	
+	@Column(name = "usd_order_amount")
+	private BigDecimal usdAmount;
+	
 	/** 视图承诺日期 */
 	@Column(name = "dt_promise_date")
 	private Date promiseDate;
@@ -119,7 +133,7 @@ public class ReportOverdueVO implements Serializable{
 	private String isAdvanceBilling;
 
 	/** 视图发货数量 */
-	@Column(name = "n_delivery_quantity")
+	@Column(name = "order_line_del_qty")
 	private double deliveryQty;
 
 	/** 视图开票数量 */
@@ -142,6 +156,59 @@ public class ReportOverdueVO implements Serializable{
     @Column(name = "c_is_erp_delivery")
     private String isErpDelivery;
 
+    /** 销售人员名称*/
+	@Column(name = "c_salesman_name")
+	private String salesmanName;
+
+	 /** 特价编号 */
+    @Column(name = "c_special_price_code")
+    private String spCode;
+    
+
+	/** 视图出货单表行出货单打印日期（外部） */
+	@Column(name = "dt_print_time")
+	private Date printTime;
+	
+	/** 视图出货单表行发货产品金额 */
+	@Column(name = "del_amont")
+	private BigDecimal deliveryAmount;
+	
+	/** 视图出货单表行数量 */
+	@Column(name = "del_qty")
+	private double delQty;
+	
+	/** 单价 */
+	@Transient
+	private BigDecimal price;
+	
+	/** 单价-RMB */
+	@Column(name = "rmb_del_price")
+	private BigDecimal rmbPrice;
+	
+	/** 单价 -USD*/
+	@Column(name = "usd_del_price")
+	private BigDecimal usdPrice;
+	
+	/** 订购日期 */
+	@Column(name = "order_date")
+	private Date orderDate;
+	
+	 /** 订购日期(年) */
+    @Column(name = "order_year")
+    private String year;
+    
+    /** 订购日期(月) */
+    @Column(name = "order_month")
+    private String month;
+    
+    /** ERP状态 */
+    @Column(name = "c_erp_status")
+    private String erpStatus;
+
+    /** ERP订单行状态显示名称 */
+   	@Transient
+   	private String erpStatusLable;
+   	
 	public String getId() {
 		return id;
 	}
@@ -174,6 +241,14 @@ public class ReportOverdueVO implements Serializable{
 		this.salesmanId = salesmanId;
 	}
 
+	public String getSalesmanPos() {
+		return salesmanPos;
+	}
+
+	public void setSalesmanPos(String salesmanPos) {
+		this.salesmanPos = salesmanPos;
+	}
+    
 	public String getCustomerName() {
 		return customerName;
 	}
@@ -380,6 +455,144 @@ public class ReportOverdueVO implements Serializable{
 	public void setIsErpDelivery(String isErpDelivery) {
 		this.isErpDelivery = isErpDelivery;
 	}
-    
 
+	public String getSalesmanName() {
+		return salesmanName;
+	}
+
+	public void setSalesmanName(String salesmanName) {
+		this.salesmanName = salesmanName;
+	}
+
+	public String getSpCode() {
+		return spCode;
+	}
+
+	public void setSpCode(String spCode) {
+		this.spCode = spCode;
+	}
+
+	public Date getPrintTime() {
+		return printTime;
+	}
+
+	public void setPrintTime(Date printTime) {
+		this.printTime = printTime;
+	}
+
+	public BigDecimal getDeliveryAmount() {
+		return deliveryAmount;
+	}
+
+	public void setDeliveryAmount(BigDecimal deliveryAmount) {
+		this.deliveryAmount = deliveryAmount;
+	}
+
+	public double getDelQty() {
+		return delQty;
+	}
+
+	public void setDelQty(double delQty) {
+		this.delQty = delQty;
+	}
+
+	public BigDecimal getPrice() {
+		return price;
+	}
+
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+
+	public Date getOrderDate() {
+		return orderDate;
+	}
+
+	public void setOrderDate(Date orderDate) {
+		this.orderDate = orderDate;
+	}
+
+	public String getYear() {
+		return year;
+	}
+
+	public void setYear(String year) {
+		this.year = year;
+	}
+
+	public String getMonth() {
+		return month;
+	}
+
+	public void setMonth(String month) {
+		this.month = month;
+	}
+
+	public String getSalesmanPosName() {
+		LovMember lov = new LovMember();
+		Object obj = CacheData.getInstance().get(this.salesmanPos);
+		if(obj!=null){
+			BeanUtils.copyPropertiesIgnoreNull(obj, lov);
+		}
+		return lov.getName();
+	}
+
+	public void setSalesmanPosName(String salesmanPosName) {
+		this.salesmanPosName = salesmanPosName;
+	}
+
+	public BigDecimal getRmbAmount() {
+		return rmbAmount;
+	}
+
+	public void setRmbAmount(BigDecimal rmbAmount) {
+		this.rmbAmount = rmbAmount;
+	}
+
+	public BigDecimal getUsdAmount() {
+		return usdAmount;
+	}
+
+	public void setUsdAmount(BigDecimal usdAmount) {
+		this.usdAmount = usdAmount;
+	}
+
+	public BigDecimal getRmbPrice() {
+		return rmbPrice;
+	}
+
+	public void setRmbPrice(BigDecimal rmbPrice) {
+		this.rmbPrice = rmbPrice;
+	}
+
+	public BigDecimal getUsdPrice() {
+		return usdPrice;
+	}
+
+	public void setUsdPrice(BigDecimal usdPrice) {
+		this.usdPrice = usdPrice;
+	}
+
+	public String getErpStatus() {
+		return erpStatus;
+	}
+
+	public void setErpStatus(String erpStatus) {
+		this.erpStatus = erpStatus;
+	}
+
+	public String getErpStatusLable() {
+		LovMember lov = new LovMember();
+		Object obj = CacheData.getInstance().getMember("ORDER_ERP_STATUS", erpStatus);
+		if(obj != null ){
+			BeanUtils.copyPropertiesIgnoreNull(obj, lov);
+		}
+		return  lov.getName();
+	}
+
+	public void setErpStatusLable(String erpStatusLable) {
+		this.erpStatusLable = erpStatusLable;
+	}
+	
+	
 }

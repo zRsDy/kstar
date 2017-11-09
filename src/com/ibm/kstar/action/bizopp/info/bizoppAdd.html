@@ -762,6 +762,80 @@
 							</tr>
 						</table>
 				</div>
+				
+				<#if P_GNORG_B1_0001>
+				<div class="biz_basic_info sub_flag_3" id="top12">
+					<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">
+						${i18n.get('投标反馈')}<strong style="color: red;">${i18n.get('（投标必填）')}</strong></p>
+					<table border="0" cellpadding="0" cellspacing="0">
+						<tr>
+							<td width="100px"  align="right">${i18n.get('投标结果:')}</td>
+							<td width="180px">
+							<@form.select  id="bidResults" name="bidResults" code="BDRST" idKey='code' style="width:170px;" 
+							
+								onLoadSuccess="function(){
+									if($('#bidResults').val()=='R01'){
+										$('#status').val('S02');
+									}
+									if($('#bidResults').val()=='R02'){
+										$('#status').val('S03');
+									}	
+								}"
+								
+								onChange="function(){
+									if($('#bidResults').val()=='R01'){
+										$('#status').val('S02');
+									}
+									if($('#bidResults').val()=='R02'){
+										$('#status').val('S03');
+									}	
+								}"
+							
+							value="${(entity.bidResults)!}" /> 
+							</td>
+				
+							<td width="100px" align="right">${i18n.get('赢标/丢标/关闭原因:')}</td>
+							<td width="180px">
+								<@form.input
+								id="bidResReason"  name="bidResReason" style="width:170px;"
+								placeholder=""
+								value="${(entity.bidResReason)!}" 
+								/>
+							</td>
+				
+							<td width="100px" align="right">${i18n.get('反馈投标结果附件:')}</td>
+							<td width="180px">
+				 				<@form.select  id="bidRstatt" name="bidRstatt" code="NY" idKey='code' style="width:170px;"  value="${(entity.bidRstatt)!}" /> 
+							</td>
+							<td>
+								<button  class="btn btn-info submit" type="button" style="margin-left: 60px;">
+									<i class="icon-ok bigger-110"></i>
+									${i18n.get('确认结果')}
+								</button>
+							</td>
+								
+						</tr>
+						<tr>
+							<td width="100px" align="right">${i18n.get('主要竞争对手:')}</td>
+							<td width="180px">
+				 				<@form.select  id="bidCmpr" name="bidCmpr" multiple="true" code="BIDCOMPETITOR" idKey='code' style="width:170px;"  value="${(entity.bidCmpr)!}" /> 
+							</td>
+				
+							<td width="100px" align="right">${i18n.get('中标品牌:')}</td>
+							<td width="180px">
+				 				<@form.select  id="bidBrd" name="bidBrd" multiple="true" code="BIDCOMPETITOR" idKey='code' style="width:170px;" value="${(entity.bidBrd)!}" /> 
+							</td>
+				
+							<td width="100px" align="right">${i18n.get('中标价格:')}</td>
+							<td width="180px"><@form.input id="bidAmount" style="width:170px;"
+								name="bidAmount" placeholder="" tip="" 
+								value="${(entity.bidAmount)!}" /></td>
+							
+						</tr>
+				</table>
+			</div>
+				</#if>
+				
 				<#if P_GNGFORG_B1_0001>
 				<div class="biz_basic_info sub_flag_1" id="top12">
 					<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">

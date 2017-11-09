@@ -362,7 +362,7 @@ function changeContract(){
 	} 
 	
 	var contrNo = $('#contrNo').val();
-	bootbox.confirm('${i18n.get('您确定要变更合同吗')}？' , function(result) {		
+	/* bootbox.confirm('${i18n.get('您确定要变更合同吗')}？' , function(result) {		
 		if(result) {
 			ajax({
 				type:'post',
@@ -384,7 +384,19 @@ function changeContract(){
 				}
 			})
 		}
-	});	
+	});	 */
+	bootbox.confirm('${i18n.get('您确定要变更合同吗')}？' , function(result) {
+		if(result) {
+			ajax({
+				type:'post',
+				url : '${ctx}/standard/change.html',  
+				data: d,
+				success : function(result) {  
+					parent.dialog('${i18n.get('合同变更信息')}' ,'${ctx}/change/add.html?contrId=${id}' );
+				}
+			});
+		}
+	})
 }
 
 function genOrder(){

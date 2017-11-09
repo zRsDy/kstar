@@ -1,23 +1,19 @@
 package com.ibm.kstar.api.order;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
+import com.ibm.kstar.api.system.lov.entity.LovMember;
+import com.ibm.kstar.api.system.permission.UserObject;
+import com.ibm.kstar.entity.order.*;
+import com.ibm.kstar.entity.order.vo.OrderQuantityVo;
+import com.ibm.kstar.entity.order.vo.OrderVO;
+import com.ibm.kstar.entity.quot.KstarPrjLst;
 import org.xsnake.web.action.Condition;
 import org.xsnake.web.action.PageCondition;
 import org.xsnake.web.exception.AnneException;
 import org.xsnake.web.page.IPage;
 
-import com.ibm.kstar.api.system.lov.entity.LovMember;
-import com.ibm.kstar.api.system.permission.UserObject;
-import com.ibm.kstar.entity.order.OrderHeader;
-import com.ibm.kstar.entity.order.OrderHeaderChange;
-import com.ibm.kstar.entity.order.OrderLines;
-import com.ibm.kstar.entity.order.OrderLinesChange;
-import com.ibm.kstar.entity.order.vo.OrderQuantityVo;
-import com.ibm.kstar.entity.order.vo.OrderVO;
-import com.ibm.kstar.entity.quot.KstarPrjLst;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 /**
  * ClassName:IOrderService <br/>
@@ -170,20 +166,6 @@ public interface IOrderService {
 	 */
 	void saveOrder(OrderHeader orderHeader, UserObject userObject)
 			throws Exception;
-	/**
-	 * 
-	 * splitLine:订单行拆分. <br/> 
-	 * 
-	 * @author liming 
-	 * @param orderLineId  订单行ID
-	 * @param deliveryLineId  订单行ID
-	 * @param quantity 拆分数量
-	 * @return
-	 * @throws Exception 
-	 * @since JDK 1.7
-	 */
-	void splitLine(String op, String orderLineId, String deliveryLineId,
-			double quantity, UserObject userObject) throws Exception;
 	/**
 	 * 
 	 * updateOrderLinesStatus:更新订单行状态. <br/> 
@@ -454,7 +436,7 @@ public interface IOrderService {
 	 * @return 
 	 * @since JDK 1.7
 	 */
-	Map<String,String> checkOrderSplitLineSave(String orderCode,String sourceLineNum,String newLineNum,double proQty);
+	Map<String,String> erpOrderSplitLineSave(String orderCode, String sourceLineNum, String newLineNum, double proQty);
 	
 	/**
 	 * 
@@ -543,5 +525,23 @@ public interface IOrderService {
 	 * @since JDK 1.7
 	 */
 	Map<String, String> salesmanChangeG(String orgId);
-	
+
+    OrderLines getOrderLines(String orderLineId);
+
+	/**
+	 * 订单拆行
+	 * @param orderLines
+	 * @param quantity
+	 * @param userObject
+	 */
+    void splitLineByOrder(OrderLines orderLines, double quantity, UserObject userObject);
+
+	/**
+	 * 发货拆行
+	 * @param orderLines
+	 * @param deliveryLine
+	 * @param quantity
+	 * @param userObject
+	 */
+	void splitLineByDelivery(OrderLines orderLines, DeliveryLines deliveryLine, double quantity, UserObject userObject);
 }

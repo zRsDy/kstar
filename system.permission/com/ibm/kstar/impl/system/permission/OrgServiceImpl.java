@@ -130,16 +130,16 @@ public class OrgServiceImpl implements IOrgService {
 
 	@Override
 	public List<LovMember> getOrgGroupList(Condition condition) {
-		String sql = "select  * from apps.cux_sales_dept_v@crm_erp a";
+		String sql = "select  a.lov_code,a.lov_name from sys_t_lov_member a where a.group_code = 'SalesDept'";
 		List<Object[]> list = baseDao.findBySql(sql);
 		List<LovMember> lovMembers = new ArrayList<LovMember>();
 		
 		for(Object[] obj : list){
 			LovMember lovMember = new LovMember();
 			
-			lovMember.setId(StringUtil.strnull(obj[1]));
-			lovMember.setCode(StringUtil.strnull(obj[1]));
-			lovMember.setName(StringUtil.strnull("["+obj[1]+"]"+obj[0]));
+			lovMember.setId(StringUtil.strnull(obj[0]));
+			lovMember.setCode(StringUtil.strnull(obj[0]));
+			lovMember.setName(StringUtil.strnull("["+obj[0]+"]"+obj[1]));
 			
 			lovMembers.add(lovMember);
 		}

@@ -9,17 +9,24 @@
 
 package com.ibm.kstar.impl.quot;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.ibm.kstar.action.common.IConstants;
+import com.ibm.kstar.api.contract.IContractService;
+import com.ibm.kstar.api.order.IOrderService;
+import com.ibm.kstar.api.org.IOrgTeamService;
+import com.ibm.kstar.api.price.IPriceHeadService;
+import com.ibm.kstar.api.product.IProLovService;
+import com.ibm.kstar.api.product.IProductProcesService;
+import com.ibm.kstar.api.product.IProductSerialService;
+import com.ibm.kstar.api.quot.IQuotService;
+import com.ibm.kstar.api.system.lov.ILovGroupService;
+import com.ibm.kstar.api.system.lov.ILovMemberService;
+import com.ibm.kstar.api.system.lov.entity.LovMember;
+import com.ibm.kstar.api.system.permission.UserObject;
+import com.ibm.kstar.api.team.ITeamService;
+import com.ibm.kstar.entity.bizopp.BusinessOpportunity;
+import com.ibm.kstar.entity.product.*;
+import com.ibm.kstar.entity.quot.*;
+import com.ibm.kstar.entity.team.vo.TeamVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,48 +43,14 @@ import org.xsnake.web.utils.StringUtil;
 import org.xsnake.xflow.api.IHistoryService;
 import org.xsnake.xflow.api.IProcessService;
 import org.xsnake.xflow.api.model.HistoryActivityInstance;
+import org.xsnake.xflow.api.model.HistoryProcessInstance;
 import org.xsnake.xflow.api.model.ProcessInstance;
 import org.xsnake.xflow.api.workflow.IXflowProcessServiceWrapper;
 
-import com.ibm.kstar.action.common.IConstants;
-import com.ibm.kstar.api.contract.IContractService;
-import com.ibm.kstar.api.order.IOrderService;
-import com.ibm.kstar.api.org.IOrgTeamService;
-import com.ibm.kstar.api.price.IPriceHeadService;
-import com.ibm.kstar.api.product.IProLovService;
-import com.ibm.kstar.api.product.IProductProcesService;
-import com.ibm.kstar.api.product.IProductSerialService;
-import com.ibm.kstar.api.quot.IQuotService;
-import com.ibm.kstar.api.system.lov.ILovGroupService;
-import com.ibm.kstar.api.system.lov.ILovMemberService;
-import com.ibm.kstar.api.system.lov.entity.LovMember;
-import com.ibm.kstar.api.system.permission.UserObject;
-import com.ibm.kstar.api.team.ITeamService;
-import com.ibm.kstar.entity.bizopp.BusinessOpportunity;
-import com.ibm.kstar.entity.product.KstarProductWorkFlow;
-import com.ibm.kstar.entity.product.PriceLayCompareHeader;
-import com.ibm.kstar.entity.product.PriceLayCompareLine;
-import com.ibm.kstar.entity.product.ProductPriceHead;
-import com.ibm.kstar.entity.product.ProductPriceLine;
-import com.ibm.kstar.entity.quot.KstarAftSale;
-import com.ibm.kstar.entity.quot.KstarAtt;
-import com.ibm.kstar.entity.quot.KstarBaseInf;
-import com.ibm.kstar.entity.quot.KstarBiddcevl;
-import com.ibm.kstar.entity.quot.KstarCntr;
-import com.ibm.kstar.entity.quot.KstarIdm;
-import com.ibm.kstar.entity.quot.KstarIdu;
-import com.ibm.kstar.entity.quot.KstarMemInfo;
-import com.ibm.kstar.entity.quot.KstarPgInf;
-import com.ibm.kstar.entity.quot.KstarPrjEvl;
-import com.ibm.kstar.entity.quot.KstarPrjLst;
-import com.ibm.kstar.entity.quot.KstarQuot;
-import com.ibm.kstar.entity.quot.KstarSngBty;
-import com.ibm.kstar.entity.quot.KstarSngClr;
-import com.ibm.kstar.entity.quot.KstarSngElec;
-import com.ibm.kstar.entity.quot.KstarSngMnt;
-import com.ibm.kstar.entity.quot.KstarSngRck;
-import com.ibm.kstar.entity.quot.KstarSngUps;
-import com.ibm.kstar.entity.team.vo.TeamVo;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 /** 
@@ -316,6 +289,7 @@ public class QuotServiceImpl implements IQuotService,IConstants {
 		String tempName = "KSTAR-BJ" + dateTime + productSerialService.queryProductCBy("BJ", dateTime);
 		if(StringUtil.isNullOrEmpty(quot.getQuotCode())){
 			quot.setQuotCode(tempName);
+			productSerialService.bjSave(quot.getQuotCode(),current_user);
 		}
 		quot.setCreateTime(new Date());
 		
@@ -337,10 +311,7 @@ public class QuotServiceImpl implements IQuotService,IConstants {
 		quot.setCreatedById(StringUtil.isNotEmpty(current_user.getEid())? current_user.getEid(): current_user.getEmployee().getId());
 		quot.setCreatedPosId(StringUtil.isNotEmpty(current_user.getPid())? current_user.getPid(): current_user.getPosition().getId());
 		quot.setCreatedAt(new Date());
-		
-		
-		productSerialService.bjSave(quot.getQuotCode(),current_user);
-		
+
 		baseDao.save(quot);
 
 		teamService.addPosition(
@@ -1027,8 +998,7 @@ public class QuotServiceImpl implements IQuotService,IConstants {
 		KstarIdu idu = baseDao.findUniqueEntity("from KstarIdu where CType = ? and quotCode = ? ", args.toArray());
 		return idu;
 	}
-	
-	
+
 	@Override
 	public KstarBiddcevl getBiddcevl(String quotId,String cType) throws AnneException {
 		List<Object> args = new ArrayList<Object>();
@@ -4539,6 +4509,7 @@ public class QuotServiceImpl implements IQuotService,IConstants {
 		
 
 		quot.setBidAuditStatus("B01");
+		quot.setTchAdtstatus("S01");
 		this.saveQuot(quot, user);
 		
 		
@@ -4765,6 +4736,7 @@ public class QuotServiceImpl implements IQuotService,IConstants {
 	//特价审批流程
 	@Override
 	public void startSpProcess(UserObject user,String qid){
+
 		//prjevl id
 		String businessId = qid;
 		
@@ -4780,18 +4752,18 @@ public class QuotServiceImpl implements IQuotService,IConstants {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date d = new Date();
 		String d_str = sdf.format(d);
-		
-		
+
+
 //		//更新特价审批标志
-//		
+//
 //		List<KstarPrjLst> KstarPrjLsts = this.getKstarPrjLsts(qid);
-//		
+//
 //		if(KstarPrjLsts!=null){
 //			for(KstarPrjLst prjLst : KstarPrjLsts) {
 //				this.updateprjLstSprvmrkstart(user, prjLst);
 //			}
 //		}
-		
+
 		String sql = "select * from sys_t_lov_member a where 1=1 and a.group_Code = 'ORG' and a.opt_Txt3 in('C','B') "
         		+ "and a.leaf_Flag='N' start with a.row_id = ? connect by prior a.parent_Id = a.row_id";
         
@@ -4815,7 +4787,8 @@ public class QuotServiceImpl implements IQuotService,IConstants {
 		varmap.put("V_Approve_Type", approvedType);
 		varmap.put("V_CUR_LEVEL", currentlevel);
 		varmap.put("V_HIGH_LEVEL", highlevel);
-		
+		varmap.put("orgType", user.getOrg().getOptTxt3());
+
 		//ProcessInstance pi = processService.start(module, businessId, new Participant(user.getEmployee().getId(),user.getEmployee().getName(),"EMPLOYEE"),varmap);
 		ProcessInstance pi = processService.start(module, businessId, user, varmap);
 		
@@ -4902,6 +4875,40 @@ public class QuotServiceImpl implements IQuotService,IConstants {
 		
 		
 		
+	}
+	
+	/**
+	 * 通过 KstarProductWorkFlow流程ID获取工作流流程历史
+	 * @param businessKey
+	 * @return
+	 */
+	@Override
+	public List<HistoryProcessInstance> getHistoryProInstance(String processid){
+		String hql = " select * from XFLOW_HISTORY_PROCESS_INSTANCE where 1=1 ";
+			hql += " and ROW_ID = ? ";
+			hql += " and status <> 'close' ";
+		List<Object[]> objects = baseDao.findBySql(hql,new Object[]{processid});
+		List<HistoryProcessInstance> his = new ArrayList<HistoryProcessInstance>();
+		if(objects != null && objects.size() > 0){
+			for(Object[] obj: objects){
+				HistoryProcessInstance hi = new HistoryProcessInstance();
+				hi.setId((String)obj[0]);
+				hi.setBusinessKey((String)obj[1]);
+				hi.setCreatorId((String)obj[2]);
+				hi.setCreatorName((String)obj[3]);
+				hi.setCreatorType((String)obj[4]);
+				hi.setEndTime((Date)obj[5]);
+				hi.setModule((String)obj[6]);
+				hi.setName((String)obj[7]);
+				hi.setParentId((String)obj[8]);
+				hi.setProcessDefinitionId((String)obj[9]);
+				hi.setProcessDefinitionName((String)obj[10]);
+				hi.setStartTime((Date)obj[11]);
+				hi.setStatus((String)obj[12]);
+				his.add(hi);
+			}
+		}
+		return his;
 	}
 	
 	

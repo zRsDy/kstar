@@ -54,7 +54,7 @@ public class XflowProcessServiceWrapperImpl implements IXflowProcessServiceWrapp
 			String app = hpi.getApplication();
 			String beanName = configuration.getAppMap().get(app);
 			IXflowInterface xflowService = (IXflowInterface)MessageContext.getBean(beanName);
-			xflowService.onComplete(hpi.getBusinessKey(), hpi.getModule(), hpi.getId(),"");
+			xflowService.onCompletex(hpi.getBusinessKey(), hpi.getModule(), hpi.getId(),"");
 		}else{
 			List<Task> taskList = taskService.getTaskByProcessInstanceId(pi.getId());
 			for(Task task : taskList){

@@ -24,6 +24,7 @@ import org.xsnake.xflow.api.IHistoryService;
 import org.xsnake.xflow.api.IProcessService;
 import org.xsnake.xflow.api.ITaskService;
 import org.xsnake.xflow.api.Participant;
+import org.xsnake.xflow.api.model.HistoryActivityInstance;
 import org.xsnake.xflow.api.model.HistoryProcessInstance;
 import org.xsnake.xflow.api.model.ProcessInstance;
 import org.xsnake.xflow.api.model.Task;
@@ -31,6 +32,7 @@ import org.xsnake.xflow.api.workflow.IXflowInterface;
 
 import com.ibm.kstar.action.ProcessForm;
 import com.ibm.kstar.action.flow.design.FlowUtils;
+import com.ibm.kstar.api.order.IInvoiceService;
 import com.ibm.kstar.api.system.lov.entity.LovMember;
 import com.ibm.kstar.api.system.permission.ICorePermissionService;
 import com.ibm.kstar.api.system.permission.IEmployeeService;
@@ -38,8 +40,6 @@ import com.ibm.kstar.api.system.permission.UserObject;
 import com.ibm.kstar.api.system.permission.entity.Employee;
 import com.ibm.kstar.conf.Configuration;
 import com.ibm.kstar.entity.pdm.PdmFlowHistory;
-
-import net.sf.ehcache.hibernate.HibernateUtil;
 
 
 @Service
@@ -69,6 +69,9 @@ public class DemoServiceImpl implements IDemoService{
 	
 	@Autowired
 	SessionFactory sessionFactory;
+	
+	@Autowired
+	IInvoiceService invoiceService;
 		
 	private void chooseNext(String taskId,String transitionId,Participant participant,String comment,Map<String,String> varmap){
 		Task task = taskService.getTask(taskId);
@@ -92,7 +95,7 @@ public class DemoServiceImpl implements IDemoService{
 		//TODO 流程代码需要修改为动态值
 		if("P06.15.20.OrderIssue".equalsIgnoreCase(module)){
 			varaiables = new HashMap<String,String>();
-			String sql = "select ol.c_erp_plan_status from CRM_T_DELIVERY_LINES dl,CRM_T_ORDER_LINES ol "
+			String sql = "select ol.c_erp_plan_status from CRM_T_DELIVERY_LINES dl,CRM_V_ORDER_LINES ol "
 					+ "where dl.c_order_id=ol.c_pid and dl.c_delivery_id='"+processInstance.getBusinessKey()+"'  and ol.c_erp_plan_status!='已确认交期' and rownum=1";
 			String status = "N";
 			if(baseDao.findUniqueBySql(sql)==null){
@@ -102,7 +105,7 @@ public class DemoServiceImpl implements IDemoService{
 			varaiables.put("DTComfirmed", status);
 		}else if("P06.25.30.Invoice".equalsIgnoreCase(module)){
 			varaiables = new HashMap<String,String>();
-			String sql = "select ol.c_is_erp_delivery from crm_t_invoice_detail dl,CRM_T_ORDER_LINES ol "
+			String sql = "select ol.c_is_erp_delivery from crm_t_invoice_detail dl,CRM_V_ORDER_LINES ol "
 					+ "where dl.c_order_line_id=ol.c_pid and dl.c_invoice_id='"+processInstance.getBusinessKey()+"' and ol.c_is_erp_delivery!='Yes' and rownum=1";
 			String status = "N";
 			if(baseDao.findUniqueBySql(sql)==null){
@@ -110,8 +113,27 @@ public class DemoServiceImpl implements IDemoService{
 				status = "Y";
 			}
 			varaiables.put("DVComfirmed", status);
+			
+			invoiceService.checkInvoice(processInstance.getBusinessKey());
 		}
 		return varaiables;
+	}
+	
+	public void doCallback(String processInstanceId) throws AnneException{
+		HistoryProcessInstance processInstance = historyService.get(processInstanceId);
+		if(!"end".equals(processInstance.getStatus())){
+			throw new AnneException("流程未结束,不能触发回调");
+		}
+		String app = processInstance.getApplication();
+		String beanName = configuration.getAppMap().get(app);
+		IXflowInterface xflowService = (IXflowInterface)MessageContext.getBean(beanName);
+		
+		String comment = "";
+		List<HistoryActivityInstance> hts = historyService.findHistoryActivityInstance(processInstanceId);
+		if(hts.size()>1){
+			comment = hts.get(hts.size()-2).getComment();
+		}
+		xflowService.onComplete(processInstance.getBusinessKey(), processInstance.getModule(), processInstance.getId(),comment);
 	}
 	
 	private void complete(String taskId, String comment,String submitType,String activityId,Participant p) {
@@ -121,7 +143,7 @@ public class DemoServiceImpl implements IDemoService{
 			throw new AnneException("任务已经被处理");
 		}
 		HistoryProcessInstance processInstance = historyService.get(task.getProcessInstanceId());
-		Map<String,String> varaiables = resetVaraiable(processInstance);
+		
 		String app = processInstance.getApplication();
 		String beanName = configuration.getAppMap().get(app);
 		IXflowInterface xflowService = (IXflowInterface)MessageContext.getBean(beanName);
@@ -129,6 +151,7 @@ public class DemoServiceImpl implements IDemoService{
 			if(task.getToIds()!=null && "Y".equals(task.getIsNormalTask())){
 				//异常情况
 			}else{
+				Map<String,String> varaiables = resetVaraiable(processInstance);
 				boolean isComplete = taskService.complete(taskId, p, comment,varaiables);
 				if(!isComplete){
 					HistoryProcessInstance hpi = historyService.get(processInstance.getId());
@@ -242,30 +265,32 @@ public class DemoServiceImpl implements IDemoService{
 	 */
 	@Override
 	public IPage pdmTaskList(UserObject user,int size,int pageno) {
-		Session session = null;
-		Transaction tx = null;
-		SQLQuery query = null;
-		try{
+//		if(1 == 1){			
+//			List<PdmFlowHistory> pdms = new ArrayList<PdmFlowHistory>();
+//			return new PageImpl(pdms, pageno, size, 0);
+//		}
+//		try{
 			StringBuffer sb = new StringBuffer();
 				sb.append(" select b.* from V_WF_FOR_CRM b ");
 				sb.append(" where 1=1 ");
 				sb.append(" and b.BUSINESSID in ( ");
 				sb.append("  	select a.c_demand_code from CRM_T_PRODUCT_DEMAND a ");
 				sb.append("  	where 1=1 ");
-				sb.append("  	and a.c_created_pos_id in ( ");
-				sb.append("  		select p.ROW_ID from SYS_T_LOV_MEMBER p  ");
-				sb.append("  		where p.GROUP_ID = 'POSITION' ");
-				sb.append("  		and p.LOV_PATH like '%").append(user.getPosition().getId()).append("%' ");
-				sb.append("  	) ");
+				sb.append("  	and a.c_created_pos_id  = '"+user.getPosition().getId()+"'");
+//				sb.append("  	and a.c_created_pos_id in ( ");
+//				sb.append("  		select p.ROW_ID from SYS_T_LOV_MEMBER p  ");
+//				sb.append("  		where p.GROUP_ID = 'POSITION' ");
+//				sb.append("  		and p.LOV_PATH like '%").append(user.getPosition().getId()).append("%' ");
+//				sb.append("  	) ");
 				sb.append(" ) ");
 				sb.append(" and b.needconfirm = 2 ");
 				sb.append(" and b.STAT = 4 ");
 			
-			session = sessionFactory.openSession();
-			tx = session.beginTransaction();
-			query = session.createSQLQuery(sb.toString());
-			//List<Object[]> list = baseDao.findBySql(sb.toString());
-			List<Object[]> list = query.list();
+//			session = sessionFactory.openSession();
+//			tx = session.beginTransaction();
+//			query = session.createSQLQuery(sb.toString());
+			List<Object[]> list = baseDao.findBySql(sb.toString());
+//			List<Object[]> list = query.list();
 			List<PdmFlowHistory> pdms = new ArrayList<PdmFlowHistory>();
 			for(Object[] objects : list){
 				PdmFlowHistory pdmFlowHistory = new PdmFlowHistory();
@@ -275,7 +300,7 @@ public class DemoServiceImpl implements IDemoService{
 				BigDecimal status = (BigDecimal)objects[5];
 				BigDecimal confim = (BigDecimal)objects[10];
 				
-				pdmFlowHistory.setId(id.longValue());
+				pdmFlowHistory.setId(id.toString()+"_"+procId.toString());
 				pdmFlowHistory.setName((String)objects[1]);
 				pdmFlowHistory.setTempId(tempId.longValue());
 				pdmFlowHistory.setProcId(procId.longValue());
@@ -287,20 +312,29 @@ public class DemoServiceImpl implements IDemoService{
 				pdmFlowHistory.setOpinions((String)objects[9]);
 				pdmFlowHistory.setNeedconfirm(confim.longValue());
 				pdmFlowHistory.setFormNo((String)objects[11]);
+				pdmFlowHistory.setRowid(id.longValue());
 				pdms.add(pdmFlowHistory);
 			}
 			IPage page = new PageImpl(pdms, pageno, size, list.size());
-			tx.commit();
+//			tx.commit();
+//			
+//			try{
+//				String closeDBlink = " alter session close database link TO_PDM_VIEW ";
+//				query = session.createSQLQuery(closeDBlink);
+//				query.executeUpdate();	
+//			}catch(Exception ex){
+//				ex.printStackTrace();
+//				throw new AnneException(ex.getMessage());
+//			}
+			
 			return page;
-		}catch(Exception e){
-			tx.rollback();
-			System.out.println("PDM任务异常："+e.getMessage());
-		}finally {
-			String closeDBlink = " alter session close database link TO_PDM_VIEW ";
-			query = session.createSQLQuery(closeDBlink);
-			query.executeUpdate();
-			session.close();
-		}
-		return null;
+//		}catch(Exception e){
+////			tx.rollback();
+//			e.printStackTrace();
+//			throw new AnneException(e.getMessage());
+//		}finally {
+////			if(session!=null&&session.isOpen())
+////				session.close();
+//		}
 	}
 }

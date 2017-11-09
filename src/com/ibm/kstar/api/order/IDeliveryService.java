@@ -158,6 +158,14 @@ public interface IDeliveryService {
 	 * @since JDK 1.7
 	 */
 	String checkIsErpDelivery(String id, String op);
+	
+	/**
+	 * 即时连接视图查询ERP是否已备货
+	 * @param id
+	 * @return
+	 */
+	String checkErpStatus(String id);
+	
 	String checkHasReceipt(String id,String op);
 	/**
 	 * 
@@ -238,4 +246,11 @@ public interface IDeliveryService {
 	 * @return
 	 */
     List<String> getNeedDetailDeliveryCodeByExternalNo(String externalNo);
+
+	/**
+	 * 根据出货单行Id获取出货单行
+	 * @param deliveryLineId
+	 * @return
+	 */
+	DeliveryLines getDeliveryLine(String deliveryLineId);
 }

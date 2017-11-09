@@ -252,7 +252,7 @@
 				                		var c = "onclick="+m;
 				                		html = html + "<li><a href='#' "+c+" >"+item.title+"</a></li>";
 				                	}else{
-				                		var url = "${ctx}/flow/pdmProcess.html?procId="+item.procId+"&id="+item.id+"&formNo="+item.formNo;
+				                		var url = "${ctx}/flow/pdmProcess.html?procId="+item.procId+"&id="+item.rowid+"&formNo="+item.formNo;
 				                		var m = "parent.dialog('处理非标PDM流程','"+url+"',window)";
 				                		var c = "onclick="+m;
 				                		var title = item.name+' - '+item.procName+' - '+item.statusName

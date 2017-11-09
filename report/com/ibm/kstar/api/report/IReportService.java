@@ -6,6 +6,7 @@ import java.util.Map;
 import org.xsnake.web.action.PageCondition;
 import org.xsnake.web.page.IPage;
 
+import com.ibm.kstar.api.system.lov.entity.LovMember;
 import com.ibm.kstar.api.system.permission.UserObject;
 import com.ibm.kstar.impl.report.HistoryAnalysisValue;
 import com.ibm.kstar.impl.report.TotalValue;
@@ -95,9 +96,9 @@ public interface IReportService {
 
 	List<HistoryAnalysisValue> getEmployeeActualHistory(String year, String historyYear,String employeeId,String currency,String flag);
 
-	IPage getReportOverdue(PageCondition condition, String reportType, String orgIdOrEmployeeId);
+	IPage getReportOverdue(PageCondition condition, String reportType, String orgIdOrEmployeeId, String currency, String year);
 
-	Double getOverdueSum(String type,String id);
+	Double getOverdueSum(String type,String id,String currency,String year);
 
 	int getBizoppReportScale(String string, String id);
 
@@ -119,5 +120,35 @@ public interface IReportService {
 
 	Value getOrgContactVeri(String year, String orgId, String currency);
 
-	Value getEmpContactVeri(String year, String employeeId, String positionId, String currency); 
+	Value getEmpContactVeri(String year, String employeeId, String positionId, String currency);
+
+	Double getInvoicingSum(String string, String orgId,String currency,String year);
+
+	IPage getReportInvoicing(PageCondition condition, String reportType, String orgIdOrEmployeeId, String currency, String year);
+
+	Double getRebateSum(String string, String orgId, String currency, String year);
+
+	IPage getReportRebate(PageCondition condition, String reportType, String orgIdOrEmployeeId, String currency,
+			String year);
+
+	Double getExpireSum(String string, String orgId, String currency, String year);
+
+	IPage getReportExpire(PageCondition condition, String reportType, String orgIdOrEmployeeId, String currency,
+			String year); 
+	
+	Value getOrderQuantityByOrg(String year, String orgId,String currency);
+
+	Value getDeliveryByOrg(String year, String orgId,String currency);
+	
+	Value getNotDelivery(Value orderQuantity,Value delivery);
+	
+	Value getOrderQuantityByEmployee(String year, String employeeId,String currency);
+
+	Value getDeliveryByEmployee(String year, String employeeId,String currency);
+	
+	IPage getReportRebateOverOrder(PageCondition condition, String reportType, String orgIdOrEmployeeId);
+	
+	Double getRebateReportSum(String type,String id,String currency,String year);
+
+	List<LovMember> getLovList(String rootId, String groupId, String leafFlag, String parentId);
 }

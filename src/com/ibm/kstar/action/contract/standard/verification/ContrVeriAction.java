@@ -81,7 +81,7 @@ public class ContrVeriAction extends BaseAction {
 		model.addAttribute("amt",amt);
 		Contract contract = contractService.get(contrId);
 		if (contract != null) {
-			Date createdDt = contract.getCreatedAt();
+			Date createdDt = contract.getCreateTime();
 			model.addAttribute("createDt", createdDt);
 		}
 		return forward("contrVeri");

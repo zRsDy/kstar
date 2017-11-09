@@ -363,7 +363,7 @@ public class CustomLovInfoServiceImpl implements ICustomLovInfoService{
 	@Override
 	public List<Custom> getCustomInfoListNoAuth(PageCondition condition) {
 		String search = "%" + condition.getStringCondition("search") + "%";
-		return baseDao.findEntity("from CustomInfo where customFullName like ? or customAliasName like ? or customCode like ?",
+		return baseDao.findEntity("from CustomInfo where customFullName like ? or customAliasName like ? or customCode like ? order by customFullName asc",
 				new Object[]{search,search,search},0,20);
 	}
 

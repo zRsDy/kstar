@@ -40,6 +40,21 @@
 	</script>
 </#macro>
 
+<#macro picker_report_tree id callback groupId rootId='' opType='' button="选择" defaultSelect='[]' leafFlag='' >
+	<button class="btn btn-info" id='${id}' type="button" > <i class="icon-undo bigger-110"></i> ${button} </button>
+	<script type="text/javascript">
+		var selectedDatas_${id} = ${defaultSelect};
+		$('#${id}').click(function(){
+			parent.dialog2("选择","${ctx}/report/selectLovTree.html?leafFlag=${leafFlag!}&pickerId=${id}&groupId=${groupId}&rootId=${rootId!}&opType=${opType}",selectedDatas_${id},window);
+		})
+		function ${id}_callback(datas){
+		debugger;
+			var callback = ${callback};
+			callback(datas);
+		}
+	</script>
+</#macro>
+
 
 <!-- 产品选择组件-->
 <#macro picker_product id  callback url ="" urlFunction="''" button="选择" defaultSelect='[]' >

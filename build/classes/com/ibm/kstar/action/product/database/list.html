@@ -199,8 +199,19 @@
 	</tr>
 	<#if productManager == "true">
 	<tr>
+		<#if (permission["P01-1DatabaseManagerDownload"])??>
+			<#assign productManagerDownload="true" />
+		<#else>
+			<#assign productManagerDownload="false" />
+		</#if>
+		<#if (permission["P01-1DatabaseManagerView"])??>
+			<#assign productManagerView="true" />
+		<#else>
+			<#assign productManagerView="false" />
+		</#if>
 		<td></td>
 		<td>
+		<#if productManagerDownload =="true" || productManagerView="true">
 			<@form.table id="t2"
 			class="col-xs-12"
 			shrinkToFit = 'true'
@@ -219,7 +230,7 @@
 			  			id:'config',
 			  			label : '${i18n.get('设置下载权限')}',
 			  			icon : 'icon-save',
-			  			own : ${productManager},
+			  			own : ${productManagerDownload!'false'},
 			  			handler : function(e,rowData){
 			  				var selectedId = $('#productCatalogId').val();
 							parent.dialog('${i18n.get('设置权限')}','${ctx}/product/database/config.html?type=1&productCatalogId='+selectedId,window);
@@ -229,7 +240,7 @@
 			  			id:'config2',
 			  			label : '${i18n.get('设置在线查看权限')}',
 			  			icon : 'icon-save',
-			  			own : ${productManager},
+			  			own : ${productManagerView!'false'},
 			  			handler : function(e,rowData){
 			  				var selectedId = $('#productCatalogId').val();
 							parent.dialog('${i18n.get('设置权限')}','${ctx}/product/database/config.html?type=2&productCatalogId='+selectedId,window);
@@ -239,6 +250,7 @@
 			>
 			<input type="hidden" name="productCatalogId" id="productCatalogId" />
 			</@form.table>
+		</#if>
 		</td>
 	</tr>	
 	</#if>

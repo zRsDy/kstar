@@ -1,9 +1,8 @@
 package com.ibm.kstar.impl.product.permission;
 
-import com.ibm.kstar.api.product.permission.IProductPermissionService;
-import com.ibm.kstar.api.system.lov.entity.LovMember;
-import com.ibm.kstar.entity.product.permission.PermissionOptRel;
-import com.ibm.kstar.entity.product.permission.PermissionRel;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,8 +13,11 @@ import org.xsnake.web.page.IPage;
 import org.xsnake.web.page.PageImpl;
 import org.xsnake.web.utils.StringUtil;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.ibm.kstar.api.product.permission.IProductPermissionService;
+import com.ibm.kstar.api.system.lov.entity.LovMember;
+import com.ibm.kstar.entity.product.permission.PermissionOptRel;
+import com.ibm.kstar.entity.product.permission.PermissionRel;
+import com.ibm.kstar.entity.report.KstarPositionDep;
 
 @Service
 @Transactional(readOnly=false,rollbackFor=Exception.class)
@@ -63,6 +65,13 @@ public class ProductPermissionServiceImpl implements IProductPermissionService{
 	@Override
 	public List<LovMember> getJobSelectPermissionList(String id) {
 		String hql = " select p from PermissionRel r , LovMember o ,LovMember p where r.productCatalogId = p.id and r.orgId = o.id and p.groupId = 'procatalog' and o.groupId='ORG' and o.deleteFlag = 'N' and r.orgId = ? ";
+		List<LovMember> list = baseDao.findEntity(hql,new Object[]{id});
+		return list;
+	}
+	
+	@Override
+	public List<LovMember> getReportSelectPermissionList(String id) {
+		String hql = " select p from KstarPositionDep r , LovMember o ,LovMember p where r.depId = p.id and r.posId = o.id and p.groupId = 'ORG' and o.groupId='ORG' and o.deleteFlag = 'N' and r.posId = ? ";
 		List<LovMember> list = baseDao.findEntity(hql,new Object[]{id});
 		return list;
 	}
@@ -174,4 +183,22 @@ public class ProductPermissionServiceImpl implements IProductPermissionService{
 		}
 	}
 
+	/**
+	 * 更新报表权限
+	 */
+	@Override
+	public void updateReportPermission(String rightzTreeId, String leftzTreeId) throws AnneException{
+		if(StringUtil.isNullOrEmpty(leftzTreeId)) {
+			throw new AnneException("缺失岗位ID");
+		}
+		String[] rightzTreeIds = rightzTreeId.split(",");
+		String hql = "delete from KstarPositionDep p where p.posId = ? and  p.depId in (select lov.id from LovMember lov where  lov.groupId = 'ORG') "; 
+		baseDao.executeHQL(hql,new Object[]{leftzTreeId});
+		for(String id:rightzTreeIds) {
+			KstarPositionDep kstarPositionDep = new KstarPositionDep();
+			kstarPositionDep.setPosId(leftzTreeId);
+			kstarPositionDep.setDepId(id);
+			baseDao.save(kstarPositionDep);
+		}
+	}
 }

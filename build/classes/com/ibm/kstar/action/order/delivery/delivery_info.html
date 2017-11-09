@@ -244,10 +244,10 @@
 		    			 alert('${i18n.get('出货明细行【')}'+deliveryData.lineNum+'${i18n.get('】已经发货,不允许删除！')}');
 		    			 return;
 		    		 }
-		    		 if(deliveryData.erpStatus == 'STOCK'){
+		    		 /* if(deliveryData.erpStatus == 'STOCK'){
 		    			 alert('${i18n.get('出货明细行【')}'+deliveryData.lineNum+'${i18n.get('】在ERP已备货,不允许删除！')}');
 		    			 return;
-		    		 }
+		    		 } */
 		    		 $.ajax({
 						 	type : 'POST',
 							url : '${ctx}/delivery/checkStatus.html',
@@ -281,6 +281,8 @@
 							    	 	});
 									    $('#deliveryLinesForm').jqGrid('delRowData', id);
 							     }
+							}else if(msg && msg.message == 'STOCK'){
+								alert('${i18n.get('出货明细行【')}'+deliveryData.lineNum+'${i18n.get('】在ERP已备货,不允许删除！')}');
 							}else{
 								alert('${i18n.get('出货单已开票或者ERP已发货，不允许删除')}');
 							}
@@ -347,6 +349,31 @@
 	    		});
 	    	}
 	    }
+	}
+	
+	function getLogisticsCompany(){
+		var str="";
+		$.ajax({
+			type:"post",
+			async:false,
+			url:"${ctx}/lov/member/select.html?code=TRANSPORT_CO",
+			success:function(data){
+				if (data != null) {
+					debugger;
+					var jsonobj = eval(data.message);
+					var length = jsonobj.length;
+					for(var i=0;i<length;i++){
+						if(i != length-1 ){
+							// 这里是option里面的 value:label
+							str += jsonobj[i].code + ":" + jsonobj[i].name + ";";
+						}else{
+							str += jsonobj[i].code + ":" + jsonobj[i].name;
+						}
+		         	}   
+		     	}
+			}
+		});
+		return str;
 	}
 	
 	function updateDeliveryLine(quantity){
@@ -437,11 +464,11 @@
 		{name:'orderLineNo',label:'${i18n.get('订单行号')}',hidden:false,width:60,sortable:false,align:'center'},
 		{name:'externalNo',label:'${i18n.get('出货单编号(外部)')}',hidden:false,width:150,sortable:false,align:'center'},
 		{name:'printTime',label:'${i18n.get('出货单打印日期（外部）')}',hidden:false,width:120,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue)} },
-		{name:'invoiceQty',label:'${i18n.get('开票数量')}',hidden:false,width:80,sortable:false,align:'center'},
 		{name:'erpOrderCode', label:'${i18n.get('ERP订单编号')}', width : 150, editable : false, hidden : false,align:'center', sortable : false},
+		{name:'invoiceQty',label:'${i18n.get('开票数量')}',hidden:false,width:80,sortable:false,align:'center'},
+		{name:'erpStatus',label:'${i18n.get('ERP备货完成状态')}',hidden:false,width:150,sortable:false,align:'center'},
 		{name:'sourceCode', label:'${i18n.get('来源编码')}',hidden:false, width : 150, sortable : false,editable : false,align:'center'}, 
 		{name:'remarks',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:false,align:'center'},
-		{name:'erpStatus',label:'${i18n.get('ERP状态')}',hidden:true,width:150,sortable:false,align:'center'},
 		
 		]" 
 		buttons = "[
@@ -631,7 +658,7 @@
 		{name:'invoicePrintTime',label:'${i18n.get('签收单打印日期（外部）')}',hidden:false,width:80,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
 		{name:'receiptQty',label:'${i18n.get('签收数量')}',hidden:false,width:80,sortable:false,align:'right'},
 		{name:'logisticsCompany',label:'${i18n.get('物流公司')}',hidden:true,width:150,sortable:false,align:'center'},
-		{name:'logisticsCompanyLable',label:'${i18n.get('物流公司')}',hidden:false,width:150,sortable:false,align:'center'},
+		{name:'logisticsCompanyLable',label:'${i18n.get('物流公司')}',hidden:false,width:150,sortable:false,align:'center',editable : true, edittype:'select',editoptions:{value:getLogisticsCompany()}},
 		{name:'erpOrderCode', label:'${i18n.get('ERP订单编号')}', width : 150, editable : false, hidden : false,align:'center', sortable : false},
 		{name:'sourceCode', label:'${i18n.get('合同/商机编码')}',hidden:false, width : 150, sortable : false,editable : false,align:'center'}, 
 		{name:'orderLineNo',label:'${i18n.get('订单行号')}',hidden:false,width:50,sortable:false,align:'center'},
@@ -674,7 +701,24 @@
 				}
 			}
 		]" 
-		
+		ondblClickRow = "function(id){
+		debugger;
+			var logisticsCompany =  $('#logisticsCompany').val();
+			if(logisticsCompany != '' && logisticsCompany !=null){
+				if(rowData.logisticsCompany == '' || rowData.logisticsCompany == null){
+					$('#receiptsListForm select[id='+id+'_logisticsCompanyLable]').val(logisticsCompany);
+					$('#receiptsListForm').jqGrid('setRowData', id, { logisticsCompany : logisticsCompany});
+				}
+			}else{
+				var _logisticsCompany = $('#receiptsListForm select[id='+id+'_logisticsCompanyLable]').children('option:selected').val();
+				$('#receiptsListForm').jqGrid('setRowData', id, { logisticsCompany : _logisticsCompany});
+			}
+			
+			$('#receiptsListForm select[id='+id+'_logisticsCompanyLable]').change(function(){
+				var _logisticsCompany = $(this).children('option:selected').val();
+				$('#receiptsListForm').jqGrid('setRowData', id, { logisticsCompany : _logisticsCompany});
+			});
+		}"
 		onComplete = "function() {
 			$('#receiptsListForm').setGridWidth($(window).width()-90);
 			reload_deliveryLinesForm();

@@ -1616,7 +1616,7 @@ public class ContractLoanServiceImpl implements IContractLoanService {
 
 		//新需求：待借货核销列表，过滤掉创建时间大于该合同创建时间的借货单
         if (createDt != null) {
-            hql.append(" and okc.createdAt <= to_date(?,'YYYY-MM-DD HH24:MI:SS')");
+            hql.append(" and okc.createTime <= to_date(?,'YYYY-MM-DD HH24:MI:SS')");
 			args.add(createDt);
 		}
 

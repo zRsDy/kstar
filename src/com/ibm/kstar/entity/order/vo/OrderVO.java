@@ -10,6 +10,7 @@ import com.ibm.kstar.api.system.lov.entity.LovMember;
 import com.ibm.kstar.cache.CacheData;
 import com.ibm.kstar.entity.order.OrderHeader;
 import com.ibm.kstar.entity.order.OrderLines;
+import com.ibm.kstar.entity.order.OrderLinesView;
 
 /**
  * 
@@ -186,6 +187,55 @@ public class OrderVO{
 	private OrderLines orderLines;
 	
 	public OrderVO(OrderHeader orderHeader, OrderLines orderLines){
+		this.id = orderLines.getId();
+		this.businessEntity = orderHeader.getBusinessEntity();
+		this.orderCode = orderHeader.getOrderCode();
+		this.orderType = orderHeader.getOrderType();
+		this.customerId = orderHeader.getCustomerId();
+		this.customerCode = orderHeader.getCustomerCode();
+		this.customerName = orderHeader.getCustomerName();
+		this.customerPO = orderHeader.getCustomerPo();
+		this.deliveryAddressId = orderHeader.getDeliveryAddressId();
+		this.deliveryAddress = orderHeader.getDeliveryAddress();
+		this.sourceType = orderHeader.getSourceType();
+		this.sourceName = orderHeader.getSourceName();
+		this.orderDate = orderHeader.getOrderDate();
+		this.erpOrderCode = orderHeader.getErpOrderCode();
+		this.salesmanCenter = orderHeader.getSalesmanCenter();
+		this.salesmanDep = orderHeader.getSalesmanDep();
+		this.salesmanName = orderHeader.getSalesmanName();
+		this.businessManagerName = orderHeader.getBusinessManagerName();
+	
+		this.proId =orderLines.getProId();
+		this.price = orderLines.getErpSettPrice();
+		this.proModel = orderLines.getProModel();
+		this.materielCode = orderLines.getMaterielCode();
+		this.itemDescription = orderLines.getItemDescription();
+		this.proDesc = orderLines.getProDesc();
+		this.unit = orderLines.getUnit();
+		this.proQty = orderLines.getProQty();
+		this.deliveryQty = orderLines.getDeliveryQty();
+		this.nonDeliveryQty =  orderLines.getProQty() - orderLines.getDeliveryQty();
+		this.billingQty = orderLines.getBillingQty();
+		this.requestDate = orderLines.getRequestDate();
+		this.promiseDate = orderLines.getPromiseDate();
+		this.status = orderLines.getStatus();
+		this.lineNo = orderLines.getLineNo();
+		this.amount = orderLines.getAmount();
+		this.shipOrg = orderLines.getShipOrg();
+		this.sourceCode = orderLines.getSourceCode();
+		this.isAdvanceBilling = orderLines.getIsAdvanceBilling();
+		this.confirmDeliveryDate = orderLines.getConfirmDeliveryDate();
+		this.spCode = orderLines.getSpCode();
+		this.isSp = orderLines.getIsSp();
+		this.erpStatus = orderLines.getErpStatus();
+		this.isErpDelivery = orderLines.getIsErpDelivery();
+		this.remark = orderLines.getRemark();
+		this.erpLineNo = orderLines.getErpLineNo();
+		this.cancelQty = orderLines.getCancelQty();
+	}
+	
+	public OrderVO(OrderHeader orderHeader, OrderLinesView orderLines){
 		this.id = orderLines.getId();
 		this.businessEntity = orderHeader.getBusinessEntity();
 		this.orderCode = orderHeader.getOrderCode();

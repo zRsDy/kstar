@@ -17,10 +17,11 @@
 				parent.currentParent.reload_t2();
 			}" 
 			class="form-horizontal">
-					<label> ${i18n.get('意见建议:')} </label>
+					<label> ${i18n.get('意见建议:')}<strong style="color: red;">*</strong> </label>
 					 <@form.textArea 
 						id="opinions" 
 						name="opinions" 
+						required="${i18n.get('意见建议不能为空！')}"
 						placeholder="${i18n.get('请输入意见建议')}"
 						/> 
 			<input type="hidden" id="submitType" name="submitType"  />
@@ -67,6 +68,13 @@
 					
 					$("#query_hint").show();
 					if(type == 'submit'){
+						var opinions = $('#opinions').val();
+						if(null ==opinions || opinions=='' || opinions == undefined){
+							$("#query_hint").hide();
+							$('#argee').attr("disabled",false);
+							$('#regect').attr("disabled",false);
+							return;
+						}
 						$('#argee').attr("disabled",true);
 						$('#regect').attr("disabled",true);
 						$.ajax({
@@ -81,11 +89,11 @@
 				            	//alert(JSON.stringify(msg.message));
 				            	if('true' == msg.message.result){
 				            		alert('${i18n.get('确认成功！')}');
-				            		parent.currentParent.reload_t2();
+				            		//parent.currentParent.reload_t2();
 				            		api.close();
 				            	}else{
 				            		alert('${i18n.get('PDM接口异常提示：')}'+msg.message.errinfo);
-				            		parent.currentParent.reload_t2();
+				            		//parent.currentParent.reload_t2();
 				            		api.close();
 				            	} 
 				            	$("#query_hint").hide();
@@ -98,8 +106,16 @@
 					}
 					
 					if(type == 'reject'){
+						var opinions = $('#opinions').val();
+						if(null ==opinions || opinions=='' || opinions == undefined){
+							$("#query_hint").hide();
+							$('#argee').attr("disabled",false);
+							$('#regect').attr("disabled",false);
+							return;
+						}
 						$('#argee').attr("disabled",true);
 						$('#regect').attr("disabled",true);
+						
 						$.ajax({
 				            type: "POST",
 				            url: "${ctx}/flow/doPdmProcess.html",
@@ -107,13 +123,13 @@
 				            data: data,
 				            dataType: 'json',
 				            success: function (msg) {
-				            	if(true == msg.message.result){
+				            	if('true' == msg.message.result){
 				            		alert('${i18n.get('驳回成功！')}');
-				            		parent.currentParent.reload_t2();
+				            		//parent.currentParent.reload_t2();
 				            		api.close();
 				            	}else{
 				            		alert('${i18n.get('PDM接口异常提示：')}'+msg.message.errinfo);
-				            		parent.currentParent.reload_t2();
+				            		//parent.currentParent.reload_t2();
 				            		api.close();
 				            	} 
 				            	$("#query_hint").hide();

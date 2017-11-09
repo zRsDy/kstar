@@ -449,6 +449,9 @@ public class DeliveryAction extends BaseAction {
 		if("Yes".equals(deliveryService.checkIsErpDelivery(id,op))||"Yes".equals(deliveryService.checkHasReceipt(id,op))){
 			ret = "Yes";
 		}
+		if("STOCK".equals(deliveryService.checkErpStatus(id))) {
+			ret = "STOCK";
+		}
 		return sendSuccessMessage(ret);
 	}
 	@NoRight

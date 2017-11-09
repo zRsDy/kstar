@@ -68,6 +68,8 @@ public interface BaseDao {
 
 	public void executeSQL(String sql, Object[] args);
 	
+	void executeSQLX(final String sql, final Object[] args);
+	
 	public static abstract class ProcedureParam{
 		public ProcedureParam (int type,Object value){
 			this.type = type;

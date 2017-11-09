@@ -802,4 +802,11 @@ public class LovMemberServiceImpl extends BaseServiceImpl implements ILovMemberS
 		List<LovMember> lovCatalogList = baseDao.findEntity(hql);
 		return lovCatalogList;
 	}
+	
+	@Override
+	public List<LovMember> getAllOrgList() {
+		String hql = "select lov from LovMember lov where deleteFlag='N' and groupId='ORG' and leafFlag='N' ";
+		List<LovMember> lovCatalogList = baseDao.findEntity(hql);
+		return lovCatalogList;
+	}
 }

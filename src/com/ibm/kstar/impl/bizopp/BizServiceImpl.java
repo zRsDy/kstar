@@ -13,7 +13,6 @@ import com.ibm.kstar.api.org.IOrgTeamService;
 import com.ibm.kstar.api.price.IPriceHeadService;
 import com.ibm.kstar.api.product.IProductService;
 import com.ibm.kstar.api.system.lov.ILovMemberService;
-import com.ibm.kstar.api.system.lov.entity.LovMember;
 import com.ibm.kstar.api.system.permission.UserObject;
 import com.ibm.kstar.api.system.permission.entity.Employee;
 import com.ibm.kstar.api.team.ITeamService;
@@ -1054,7 +1053,7 @@ public class BizServiceImpl implements IBizBaseService {
         			minApproveRebate = rl.getApproveRebate();
         		}
         	}
-            if (rl.getProductModel().startsWith("YDC") || rl.getProductModel().startsWith("YDE")) {
+            if (rl.getProductModel() != null && (rl.getProductModel().startsWith("YDC") || rl.getProductModel().startsWith("YDE"))) {
                 DISTRIBUTE_SERIES = "Y";
                 //break;
             }

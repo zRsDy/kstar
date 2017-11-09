@@ -17,6 +17,7 @@ import org.xsnake.web.action.PageCondition;
 import org.xsnake.web.exception.AnneException;
 import org.xsnake.web.page.IPage;
 import org.xsnake.xflow.api.model.HistoryActivityInstance;
+import org.xsnake.xflow.api.model.HistoryProcessInstance;
 
 import com.ibm.kstar.api.system.lov.entity.LovMember;
 import com.ibm.kstar.api.system.permission.UserObject;
@@ -350,6 +351,8 @@ public interface IQuotService {
 	KstarPrjLst getKstarPrjLst(String prjlstID) throws AnneException;
 
 	void saveLinesb(List<KstarPrjLst> lines,String quotID,String typ,UserObject userObject) throws AnneException;
+
+	List<HistoryProcessInstance> getHistoryProInstance(String processid);
 	
 }
   

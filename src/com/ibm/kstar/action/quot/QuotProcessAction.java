@@ -39,6 +39,7 @@ import org.xsnake.xflow.api.IHistoryService;
 import org.xsnake.xflow.api.IProcessService;
 import org.xsnake.xflow.api.ITaskService;
 import org.xsnake.xflow.api.model.HistoryActivityInstance;
+import org.xsnake.xflow.api.model.HistoryProcessInstance;
 import org.xsnake.xflow.api.model.ProcessInstance;
 import org.xsnake.xflow.api.model.Task;
 
@@ -240,6 +241,23 @@ import java.util.*;
 //			baseDao.save(prjevl);
 			
 			KstarQuot quot = quotService.getKstarQuot(qid);
+			
+			//是否投标项目字段判断 如果非投标项目则只允许申请价格审批一次
+			if("0".equals(quot.getIsBidPro())){
+				String processName = "报价价格工程评审流程";
+				List<KstarProductWorkFlow> wfs;
+				wfs = quotService.getKstarProductWorkFlowList(qid, processName);
+				if(wfs.size()>0){
+					for(KstarProductWorkFlow wf: wfs){
+						String processid = wf.getProcessID();
+						List<HistoryProcessInstance> his = quotService.getHistoryProInstance(processid);
+						if(his != null && his.size() > 0){
+							throw new AnneException("报价单已申请过价格审批,非投标项目只能价格审批申请一次！");
+						}
+					}
+				}
+			}
+			
 			quot.setPrcAdtstatus("S01");
 			quotService.updateQuot(quot);
 			
@@ -323,10 +341,6 @@ import java.util.*;
 		@ResponseBody
 		@RequestMapping(value = "/startbiddocProcess", method = RequestMethod.POST)
 		public String startbiddocProcess(String qid,HttpServletRequest request) throws Exception{
-			//流程合并，更新技术评审状态
-			KstarQuot quot = quotService.getKstarQuot(qid);
-			quot.setTchAdtstatus("S01");
-			quotService.updateQuot(quot);
 			quotService.startBiddcAdtProcess(getUserObject(), qid);			
 			return sendSuccessMessage();
 		}

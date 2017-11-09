@@ -63,8 +63,8 @@ public class ChangeAction extends BaseAction {
 			List<CustomInfoChange> entitys = service.getCustomInfoChangeByCustomId(id);
 			if(entitys.size() > 0){
 				model.addAttribute("entity", entitys.get(0));
+				this.initModel(entitys.get(0).getId(), entitys.get(0).getStatus(), model);
 			}
-			this.initModel(entitys.get(0).getId(), entitys.get(0).getStatus(), model);
 			
 			model.addAttribute("P_GJORG_B1_0001", this.isP_GJORG_B1_0001(this.getUserObject().getOrg().getId()));
 			model.addAttribute("P_GNORG_B1_0001", this.P_GNORG_B1_0001(this.getUserObject().getOrg().getId()));

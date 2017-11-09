@@ -6,6 +6,7 @@ import com.ibm.kstar.action.ProcessForm;
 import com.ibm.kstar.action.common.IConstants;
 import com.ibm.kstar.api.common.customlov.ICustomLovInfoService;
 import com.ibm.kstar.api.custom.ICustomInfoService;
+import com.ibm.kstar.api.order.IDeliveryService;
 import com.ibm.kstar.api.order.IOrderService;
 import com.ibm.kstar.api.price.IPriceHeadService;
 import com.ibm.kstar.api.system.lov.ILovMemberService;
@@ -16,6 +17,7 @@ import com.ibm.kstar.api.system.permission.entity.Employee;
 import com.ibm.kstar.entity.custom.CustomAddressInfo;
 import com.ibm.kstar.entity.custom.CustomInfo;
 import com.ibm.kstar.entity.custom.CustomRelaContact;
+import com.ibm.kstar.entity.order.DeliveryLines;
 import com.ibm.kstar.entity.order.OrderHeader;
 import com.ibm.kstar.entity.order.OrderHeaderChange;
 import com.ibm.kstar.entity.order.OrderLines;
@@ -54,7 +56,12 @@ import java.util.*;
 @Controller
 @RequestMapping("/order")
 public class OrderAction extends BaseFlowAction {
-	
+
+	//来源类型 - 订单
+	private static String FROM_TYPE_ORDER_LINE = "order";
+	//来源类型 - 出货
+	private static String FROM_TYPE_DELIVERY_LINE = "delivery";
+
 	@Autowired
 	ITaskService taskService;
 	@Autowired
@@ -77,6 +84,9 @@ public class OrderAction extends BaseFlowAction {
     IDemoService demoService;
 	@Autowired
     IMethodLogService methodLogService;
+
+	@Autowired
+	IDeliveryService deliveryService;
 
     @NoRight
 	@LogOperate(module="订单管理模块",notes="${user}页面：订单列表")
@@ -698,12 +708,40 @@ public class OrderAction extends BaseFlowAction {
 	@ResponseBody
 	@RequestMapping(value = "/splitLineSave", method = RequestMethod.POST)
 	public String splitLineSave(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		String orderLineId = request.getParameter("id");
-		String op = request.getParameter("op");
-		String deliveryLineId = request.getParameter("deliveryLineId");
+
 		double quantity = request.getParameter("quantity") == null ? 0 : Double.parseDouble(request.getParameter("quantity"));
-		//拆分订单
-		orderService.splitLine(op,orderLineId, deliveryLineId, quantity, getUserObject());
+
+		String orderLineId = request.getParameter("id");
+		OrderLines orderLines = this.orderService.getOrderLines(orderLineId);
+
+		String op = request.getParameter("op");
+		if (FROM_TYPE_ORDER_LINE.equals(op)) {
+			if (StringUtil.isEmpty(orderLineId)) {
+				return sendErrorMessage("订单行Id不能为空");
+			}
+
+			if (orderLines == null) {
+				return sendErrorMessage("订单行不存在");
+			}
+
+			orderService.splitLineByOrder(orderLines, quantity, getUserObject());
+		} else if (FROM_TYPE_DELIVERY_LINE.equals(op)) {
+			String deliveryLineId = request.getParameter("deliveryLineId");
+			if (StringUtil.isEmpty(deliveryLineId)) {
+				return sendErrorMessage("出货行Id不能为空");
+			}
+			DeliveryLines deliveryLine = deliveryService.getDeliveryLine(deliveryLineId);
+			if (deliveryLine == null) {
+				return sendErrorMessage("出货行不存在");
+			}
+			if (!Objects.equals(deliveryLine.getOrderCode(), orderLines.getOrderCode()) || !Objects.equals(deliveryLine.getOrderLineNo(), orderLines.getLineNo())) {
+				return sendErrorMessage("出货行与订单行关联错误");
+			}
+			orderService.splitLineByDelivery(orderLines, deliveryLine,quantity, getUserObject());
+		} else {
+			return sendErrorMessage("错误的参数:op");
+		}
+
 		return sendSuccessMessage("订单拆分成功");
 	}
 	

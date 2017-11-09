@@ -63,20 +63,10 @@
             search="false"
 
             ondblClickRow= "function(id){
-                var rowData = $('#prjlst').jqGrid('getRowData',id);
-
-                //判断是否有核销数量,有核销数量则不能修改。
-                if(checkHasVeriedNum(rowData)){
-                    $(grid_selector).restoreRow(id, false);
-                    exalert(null,'${i18n.get('请取消核销关系之后才可变更')}。');
-                    return;
-                }
-
 				var rowData = $('#prjlst').jqGrid('getRowData',id);
-				
+
 				if(rowData['prdCtg'] && rowData['prdCtg'] !=''){
-			
-			
+
 				var old_prc = $('#prjlst input[id=\\''+id + '_newPrdPrc\\']').val();
 				var old_amt = $('#prjlst input[id=\\''+id+'_newAmt\\']').val();
 				var cur_prc = old_prc;
@@ -84,7 +74,7 @@
 				$('#prjlst input[id=\\''+id+'_newPrdPrc\\']').bind('input',function(event){
 					var prc = $(this).val();
 					cur_prc=prc;
-					if(prc){ 
+					if(prc){
 						var re = /^[0-9].*$/ ;
 						var ttlU = 0;
 						if(!isNaN(prc) && re.test(prc)){
@@ -104,6 +94,7 @@
 				$('#prjlst input[id=\\''+id+'_newAmt\\']').bind('input',function(event){
 					var qty = $(this).val();
 					cur_amt = qty;
+
 					if(qty){
 						var re = /^[0-9]+$/ ;
 						var re1 = /^[0-9].*$/ ;
@@ -122,9 +113,12 @@
 					}
 		 		});
 
-		 		$('#prjlst input[id=\\''+id+'_newAmt\\']').bind('change',function(event){
+		 		$('#prjlst input[id=\\''+id+'_newAmt\\']').bind('change',function(e){
                     var $qty = $('#prjlst input[id=\\''+id+'_newAmt\\']');
                     var qty = $qty.val()
+
+
+
                     var numberPattent = /^[0-9].*$/ ;
                     if(!isNaN(qty) && numberPattent.test(qty)){
                         var fixedQty = parseFloat(qty).toFixed(3);
@@ -140,17 +134,16 @@
                         }
                     }
 		 		});
-			
+
 			}else{
 				$('#prjlst').trigger('blur');
-			
-			}
-				
-			}"
 
+			}
+
+			}"
             onLineEditAfter = "function(id){
 				var rowData = $('#prjlst').jqGrid('getRowData',id);
-				
+
 				var isChange = isChangeFun(rowData);
 			
 				if(isChange === '1'){
@@ -219,7 +212,7 @@
 		  			label : '${i18n.get('保存')}',
 		  			own : 'true',
 		  			handler : function(e,rowData){
-		  				submitLines();
+		  				submitLines(e);
 					}
 				},  
 				{
@@ -301,11 +294,21 @@ function chekFlag(rowData) {
 
 }
 
-//判断是否核销数量大于0
-function checkHasVeriedNum(row) {
-
-    if (row.veriedNum == 0) {
+//校验变更逻辑是否正确
+function checkVeried(row) {
+    debugger;
+    var veriedNum = (row.veriedNum && parseFloat(row.veriedNum)) || 0;
+    var newAmt = (row.newAmt && parseFloat(row.newAmt)) || 0;
+    if (veriedNum > newAmt) {
         return false;
+    }
+
+    if (veriedNum > 0) {
+        var prdPrc = (row.prdPrc && parseFloat(row.prdPrc)) || 0;
+        var newPrdPrc = (row.newPrdPrc && parseFloat(row.newPrdPrc)) || 0;
+        if (newPrdPrc != prdPrc) {
+            return false;
+        }
     }
 
     return true;
@@ -565,7 +568,7 @@ function chgPrjlstExport(e, rowData) {
     });
 }
 
-function submitLines() {
+function submitLines(e) {
     $('#prjlst').trigger('blur');
     var ids = $('#prjlst').jqGrid('getDataIDs');
     if (ids.length < 1) {
@@ -573,13 +576,21 @@ function submitLines() {
         return;
     }
 
-
     var d = {};
     var datas = [];
     var flg = true;
     var curid = '';
+
+    var errorVeried = [];
     $.each(ids, function (i, id) {
         var line = $('#prjlst').jqGrid('getRowData', id);
+
+        //判断核销数量是否大于产品数量。
+        if(!checkVeried(line)){
+            errorVeried.push(i + 1);
+            return ;
+        }
+
         var updtFlag = isChangeFun(line);
         var updatType =  formatUpdTypeFlag(line);
         if (line && line['prdCtg']) {
@@ -594,6 +605,12 @@ function submitLines() {
             }
         }
     })
+
+    if (errorVeried.length > 0) {
+        exalert(e,"${i18n.get('第')}" + errorVeried.join("${i18n.get(',')}") + "${i18n.get('行')}" + '${i18n.get('错误，有核销关系的行，价格不允许变更，核销数量必须小于变更后数量')}。');
+        return false;
+    }
+
     if (flg == false) {
         alert('${i18n.get('新单价 和 新数量  不能为空')}');
         $('#prjlst').editRow(id, true);

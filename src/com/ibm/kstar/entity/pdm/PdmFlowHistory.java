@@ -17,8 +17,8 @@ import javax.persistence.Transient;
 @Table(name = "V_WF_FOR_CRM",schema = "CPCBASE")
 public class PdmFlowHistory {
 
-    /** 流程ID  */
-    private Long id;
+	@Transient
+    private String id;
 
     /** 流程名称  */
     private String name;
@@ -56,6 +56,8 @@ public class PdmFlowHistory {
     /** 表单编码  */
     private String formNo;
     
+    /** 流程ID  */
+    private Long rowid;
     
     @Transient
     public String getStatusName() {
@@ -79,13 +81,11 @@ public class PdmFlowHistory {
 		this.statusName = statusName;
 	}
 
-	@Id
-    @Column(name = "WFID")
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -188,4 +188,16 @@ public class PdmFlowHistory {
     public void setFormNo(String formNo) {
         this.formNo = formNo;
     }
+
+    @Id
+    @Column(name = "WFID")
+	public Long getRowid() {
+		return rowid;
+	}
+
+	public void setRowid(Long rowid) {
+		this.rowid = rowid;
+	}
+    
+    
 }

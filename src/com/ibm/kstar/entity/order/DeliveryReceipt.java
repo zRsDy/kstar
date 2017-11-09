@@ -505,7 +505,7 @@ public class DeliveryReceipt extends BaseEntity implements java.io.Serializable 
 	}
 	public String getUnitLable() {
 		LovMember lov = new LovMember();
-		Object obj = CacheData.getInstance().get(unit);
+		Object obj = CacheData.getInstance().getMember("UNIT", unit);
 		if(obj != null ){
 			BeanUtils.copyPropertiesIgnoreNull(obj, lov);
 		}

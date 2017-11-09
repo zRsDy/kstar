@@ -53,6 +53,7 @@ import org.xsnake.web.utils.StringUtil;
 import org.xsnake.xflow.api.IProcessService;
 import org.xsnake.xflow.api.workflow.IXflowProcessServiceWrapper;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
@@ -91,7 +92,19 @@ public class OrderServiceImpl implements IOrderService {
     IProductService productService;
     @Autowired
     IMethodLogService methodLogService;
-    
+
+
+    @Override
+    public OrderLines getOrderLines(String orderLineId) {
+        OrderLinesView orderLineView = this.baseDao.get(OrderLinesView.class, orderLineId);
+        if (orderLineView != null) {
+            OrderLines orderLine = new OrderLines();
+            BeanUtils.copyProperties(orderLineView, orderLine);
+            return orderLine;
+        }
+        return null;
+    }
+
     @Override
     public void saveOrder(OrderHeader orderHeader, UserObject userObject) throws Exception {
         if (orderHeader.getCustomerErpCode() != null) {
@@ -179,7 +192,7 @@ public class OrderServiceImpl implements IOrderService {
     public void saveOrderChange(OrderHeader orderHeader, UserObject userObject) throws Exception {
     	MethodLogger methodLogger = methodLogService.getMethodLogger("com.ibm.kstar.impl.order.OrderServiceImpl.saveOrderChange",orderHeader.getOrderCode());
     	Exception exception = new Exception();
-    	
+
         //如果存在在途的变更单
         if (this.checkOrderHeaderChangeInApproval(orderHeader.getOrderCode())) {
             throw new AnneException("该订单存在未审核的变更申请，请审核完以后再申请变更！");
@@ -199,7 +212,7 @@ public class OrderServiceImpl implements IOrderService {
         if (lov != null) {
             prefix = lov.getName();
         }
-        
+
         try {
         	methodLogService.setFunctionNameAndParameter(methodLogger, "baseDao.get(OrderHeader.class, orderId)", 1, "gen_order_change_code", prefix);
         	code = this.getSequenceCode("gen_order_change_code", prefix);
@@ -210,7 +223,7 @@ public class OrderServiceImpl implements IOrderService {
     	}finally {
     		methodLogService.setReturnDataNotes(false,methodLogger,exception,1,code);
     	}
-        
+
         try {
         	methodLogService.setFunctionNameAndParameter(methodLogger, "baseDao.save(orderHeaderChange)||saveOrderLinesChange(orderHeaderChange, userObject,null)", 2,orderHeaderChange);
 	        orderHeaderChange.setChangeCode(code);
@@ -227,7 +240,7 @@ public class OrderServiceImpl implements IOrderService {
 	        orderHeaderChange.setUpdatedById(userObject.getEmployee().getId());
 	        orderHeaderChange.setUpdatedAt(new Date());
 	        baseDao.save(orderHeaderChange);
-	
+
 	        orderHeaderChange.setLinesList(orderHeader.getLinesList());
 	        //保存变更订单行
 	        saveOrderLinesChange(orderHeaderChange, userObject,null);
@@ -238,8 +251,8 @@ public class OrderServiceImpl implements IOrderService {
     	}finally {
     		methodLogService.setReturnDataNotes(false,methodLogger,exception,2,"void");
     	}
-        
-        
+
+
         //启动工作流
         String model = lovMemberService.getFlowCodeByAppCode(IConstants.ORDER_AUDIT_FLOW_APP_ORDER_CHANGE);
         Map<String, String> varmap = new HashMap<>();
@@ -255,8 +268,8 @@ public class OrderServiceImpl implements IOrderService {
             employeeType = userObject.getOrg().getOptTxt3();
         }
         varmap.put("EmployeeType", employeeType);
-        
-        try {    
+
+        try {
         	methodLogService.setFunctionNameAndParameter(methodLogger, "this.updateOrderChangeStatus(orderHeaderChange.getId(), IConstants.ORDER_CONTROL_STATUS_20, userObject)",
         			3,orderHeaderChange.getId(), IConstants.ORDER_CONTROL_STATUS_20, userObject);
 	        xflowProcessServiceWrapper.start(model, orderHeaderChange.getId(), userObject, varmap);
@@ -268,16 +281,16 @@ public class OrderServiceImpl implements IOrderService {
     	}finally {
     		methodLogService.setReturnDataNotes(false,methodLogger,exception,3,"void");
     	}
-        
+
         try {
-	        methodLogService.setFunctionNameAndParameter(methodLogger, "teamService.addPosition(userObject.getPosition().getId(), userObject.getEmployee().getId()," + 
+	        methodLogService.setFunctionNameAndParameter(methodLogger, "teamService.addPosition(userObject.getPosition().getId(), userObject.getEmployee().getId()," +
 	        		"                IConstants.PERMISSION_BUSINESS_TYPE_ORDER_CHANGE, orderHeaderChange.getId())",
 	        		4,userObject.getPosition().getId(), userObject.getEmployee().getId(),
 	                IConstants.PERMISSION_BUSINESS_TYPE_ORDER_CHANGE, orderHeaderChange.getId());
-	        
+
 	        teamService.addPosition(userObject.getPosition().getId(), userObject.getEmployee().getId(),
 	                IConstants.PERMISSION_BUSINESS_TYPE_ORDER_CHANGE, orderHeaderChange.getId());
-	        
+
         }catch(Exception e) {
     		e.printStackTrace();
     		exception = e;
@@ -285,19 +298,19 @@ public class OrderServiceImpl implements IOrderService {
     	}finally {
     		methodLogService.setReturnDataNotes(false,methodLogger,exception,4,"void");
     	}
-        
+
         //销售员添加到销售团队
         List<LovMember> mems = corePermissionService.getUserPositionList(orderHeaderChange.getSalesmanId());
         if (mems != null) {
             for (LovMember lovMember : mems) {
             	try {
-            		methodLogService.setFunctionNameAndParameter(methodLogger, "teamService.addPosition(lovMember.getId(), orderHeaderChange.getSalesmanId(),\r\n" + 
+            		methodLogService.setFunctionNameAndParameter(methodLogger, "teamService.addPosition(lovMember.getId(), orderHeaderChange.getSalesmanId(),\r\n" +
             				"            				IConstants.PERMISSION_BUSINESS_TYPE_ORDER_CHANGE, orderHeaderChange.getId())", 5, lovMember.getId(), orderHeaderChange.getSalesmanId(),
             				IConstants.PERMISSION_BUSINESS_TYPE_ORDER_CHANGE, orderHeaderChange.getId());
-            		
+
             		teamService.addPosition(lovMember.getId(), orderHeaderChange.getSalesmanId(),
             				IConstants.PERMISSION_BUSINESS_TYPE_ORDER_CHANGE, orderHeaderChange.getId());
-            		
+
             	}catch(Exception e) {
             		e.printStackTrace();
             		exception = e;
@@ -317,7 +330,7 @@ public class OrderServiceImpl implements IOrderService {
     	OrderHeader oldOrderHeader = baseDao.get(OrderHeader.class, businessKey);
     	MethodLogger methodLogger = methodLogService.getMethodLogger("com.ibm.kstar.impl.order.OrderServiceImpl.saveCopyOrderChange",oldOrderHeader.getOrderCode());
 		Exception exception = new Exception();
-    	
+
     	OrderHeaderChange orderHeaderChange = new OrderHeaderChange();
     	BeanUtils.copyPropertiesIgnoreNull(oldOrderHeader, orderHeaderChange);
         LovMember lov = lovMemberService.getLovMemberByCode("ORDER_PREFIX_RULE", "ORDER");
@@ -326,7 +339,7 @@ public class OrderServiceImpl implements IOrderService {
         if (lov != null) {
             prefix = lov.getName();
         }
-        
+
         try {
         	methodLogService.setFunctionNameAndParameter(methodLogger, "this.getSequenceCode('gen_order_change_code', prefix)", 1, prefix);
         	code = this.getSequenceCode("gen_order_change_code", prefix);
@@ -337,7 +350,7 @@ public class OrderServiceImpl implements IOrderService {
     	}finally {
     		methodLogService.setReturnDataNotes(false,methodLogger,exception,1,code);
     	}
-        
+
         try {
         	orderHeaderChange.setId(null);
             orderHeaderChange.setChangeCode(code);
@@ -353,7 +366,7 @@ public class OrderServiceImpl implements IOrderService {
     	}finally {
     		methodLogService.setReturnDataNotes(false,methodLogger,exception,2,"void");
     	}
-        
+
 
         List<OrderLines> oldOrderLinesList = getOrderLinesOrderId(businessKey);
         for(OrderLines oldOrderLines:oldOrderLinesList){
@@ -372,17 +385,13 @@ public class OrderServiceImpl implements IOrderService {
         		throw e;
         	}finally {
         		methodLogService.setReturnDataNotes(true,methodLogger,exception,3,"void");
-        	}	
+        	}
         }
 
     };
 
     /**
      * saveOrderLinesChange:保存订单变更行. <br/>
-     * TODO(这里描述这个方法适用条件 – 可选).<br/>
-     * TODO(这里描述这个方法的执行流程 – 可选).<br/>
-     * TODO(这里描述这个方法的使用方法 – 可选).<br/>
-     * TODO(这里描述这个方法的注意事项 – 可选).<br/>
      *
      * @param orderHeaderChange
      * @param userObject
@@ -1229,7 +1238,7 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     public IPage queryOrderLines(PageCondition condition) {
-        FilterObject filterObject = condition.getFilterObject(OrderLines.class);
+        FilterObject filterObject = condition.getFilterObject(OrderLinesView.class);
         filterObject.addOrderBy("erpLineNo", "asc");
         HqlObject hqlObject = HqlUtil.getHqlObject(filterObject);
         return baseDao.search(hqlObject.getHql(), hqlObject.getArgs(), condition.getRows(), condition.getPage());
@@ -1309,40 +1318,41 @@ public class OrderServiceImpl implements IOrderService {
 
         List<Object> args = new ArrayList<Object>();
         StringBuffer hql = new StringBuffer(" select new  com.ibm.kstar.entity.order.vo.OrderVO( ");
-        hql.append(" l.id,");
-        hql.append(" l.proId,");
-        hql.append(" h.businessEntity,");
-        hql.append(" h.orderCode,");
-        hql.append(" h.orderType,");
-        hql.append(" h.customerId,");
-        hql.append(" h.customerCode,");
-        hql.append(" h.customerName,");
-        hql.append(" h.customerPo,");
-        hql.append(" h.deliveryAddressId,");
-        hql.append(" h.deliveryAddress,");
-        hql.append(" h.sourceType,");
-        hql.append(" h.sourceCode,");
-        hql.append(" h.sourceName,");
-        hql.append(" l.erpSettPrice,");//将ERP结算价格作为产品单价
-        hql.append(" l.proModel,");
-        hql.append(" l.materielCode,");
-        hql.append(" l.itemDescription,");
-        hql.append(" l.proDesc,");
-        hql.append(" l.unit,");
-        hql.append(" l.proQty,");
-        hql.append(" l.deliveryQty,");
-        hql.append(" (l.proQty - l.deliveryQty) as nonDeliveryQty,");
-        hql.append(" l.billingQty as billingQty,");
-        hql.append(" l.createTime as orderDate,");
-        hql.append(" l.requestDate ,");
-        hql.append(" l.promiseDate,");
-        hql.append(" l.status,");
-        hql.append(" l.lineNo,");
-        hql.append(" l.amount,");
-        hql.append(" l.shipOrg,");
-        hql.append(" h.erpOrderCode");
+//        hql.append(" l.id,");
+//        hql.append(" l.proId,");
+//        hql.append(" h.businessEntity,");
+//        hql.append(" h.orderCode,");
+//        hql.append(" h.orderType,");
+//        hql.append(" h.customerId,");
+//        hql.append(" h.customerCode,");
+//        hql.append(" h.customerName,");
+//        hql.append(" h.customerPo,");
+//        hql.append(" h.deliveryAddressId,");
+//        hql.append(" h.deliveryAddress,");
+//        hql.append(" h.sourceType,");
+//        hql.append(" h.sourceCode,");
+//        hql.append(" h.sourceName,");
+//        hql.append(" l.erpSettPrice,");//将ERP结算价格作为产品单价
+//        hql.append(" l.proModel,");
+//        hql.append(" l.materielCode,");
+//        hql.append(" l.itemDescription,");
+//        hql.append(" l.proDesc,");
+//        hql.append(" l.unit,");
+//        hql.append(" l.proQty,");
+//        hql.append(" l.deliveryQty,");
+//        hql.append(" (l.proQty - l.deliveryQty) as nonDeliveryQty,");
+//        hql.append(" l.billingQty as billingQty,");
+//        hql.append(" l.createTime as orderDate,");
+//        hql.append(" l.requestDate ,");
+//        hql.append(" l.promiseDate,");
+//        hql.append(" l.status,");
+//        hql.append(" l.lineNo,");
+//        hql.append(" l.amount,");
+//        hql.append(" l.shipOrg,");
+//        hql.append(" h.erpOrderCode");
+        hql.append(" h,l");
         hql.append(" )");
-        hql.append(" from OrderHeader h , OrderLines l ");
+        hql.append(" from OrderHeader h , OrderLinesView l ");
         hql.append(" where h.id = l.orderId ");
         //已登记状态
         hql.append(" and (h.executeStatus = ? or h.executeStatus = ?) ");
@@ -1497,7 +1507,7 @@ public class OrderServiceImpl implements IOrderService {
     	}finally {
     		methodLogService.setReturnDataNotes(false,methodLogger,exception,1,orderHeader);
     	}
-        
+
         if (IConstants.ORDER_EXECUTE_STATUS_BOOKED.equals(status)) {
             //订单登记
         	methodLogService.setFunctionNameAndParameter(methodLogger, "this.checkOrderBook(orderHeader.getOrderCode())", 2, orderHeader.getOrderCode());
@@ -1514,7 +1524,7 @@ public class OrderServiceImpl implements IOrderService {
         	}finally {
         		methodLogService.setReturnDataNotes(false,methodLogger,exception,2,ret);
         	}
-        	
+
         	methodLogService.setFunctionNameAndParameter(methodLogger, "this.updateOrderLinesStatusByHeaderId(orderHeader.getId(), IConstants.ORDER_LINE_STATUS_AWAITING_SHIPPING, userObject)",
         			3, orderHeader.getId(), IConstants.ORDER_LINE_STATUS_AWAITING_SHIPPING, userObject);
         	try {
@@ -1533,7 +1543,7 @@ public class OrderServiceImpl implements IOrderService {
         		throw e;
         	}finally {
         		methodLogService.setReturnDataNotes(false,methodLogger,exception,3,"void");
-        	}    
+        	}
         }
 
         methodLogService.setFunctionNameAndParameter(methodLogger, "this.update(orderHeader, userObject)",
@@ -1546,7 +1556,7 @@ public class OrderServiceImpl implements IOrderService {
     		throw e;
     	}finally {
     		methodLogService.setReturnDataNotes(true,methodLogger,exception,4,"void");
-    	}    
+    	}
     }
 
     /**
@@ -1659,177 +1669,297 @@ public class OrderServiceImpl implements IOrderService {
         }
     }
 
-    @Override
-    public void splitLine(String op, String orderLineId, String deliveryLineId, double quantity, UserObject userObject) throws Exception {
-        if (orderLineId != null) {
-        	MethodLogger methodLogger = new MethodLogger();
-        	Exception exception = new Exception();
-        	OrderLines orderLine = new OrderLines();
-        	try {
-        		orderLine = baseDao.get(OrderLines.class, orderLineId);
-        		OrderHeader orderHeader = baseDao.get(OrderHeader.class, orderLine.getOrderId());
-	            if (orderLine == null) {
-	                throw new AnneException(IOrderService.class.getName()
-	                        + " splitLine : 拆分失败，没有找到拆分订单!");
-	            }
-	            methodLogger = methodLogService.getMethodLogger("com.ibm.kstar.impl.order.OrderServiceImpl.splitLine",orderHeader.getOrderCode());
-	            methodLogService.setFunctionNameAndParameter(methodLogger, "baseDao.get(OrderLines.class, orderLineId)", 1, orderLineId);
-	            if ((orderLine.getProQty() - orderLine.getCancelQty()) <= quantity) {
-	                throw new AnneException(IOrderService.class.getName()
-	                        + " splitLine : 拆分失败，本次拆分数量大于订单行可拆分数量!");
-	            }
-	            if (IConstants.YES_Yes.equals(orderLine.getIsPending())) {
-	                throw new AnneException(IOrderService.class.getName()
-	                        + " splitLine : 拆分失败，订单行已暂挂不允许拆分!");
-	            }
-	            if (IConstants.YES_Yes.equals(orderLine.getIsErpDelivery())) {
-	                throw new AnneException(IOrderService.class.getName()
-	                        + " splitLine : 拆分失败，订单ERP已发货不允许拆分!");
-	            }
-	            /*if("delivery".equals(op) && (IConstants.YES_Yes.equals(orderLine.getIsAdvanceBilling()) || orderLine.getBillingQty() > 0) ){
-	                throw new AnneException(IOrderService.class.getName()
-							+ " splitLine : 拆分失败，订单已经开票，不允许拆分!");
-				}*/
-	            if ("order".equals(op) && !IConstants.ORDER_LINE_STATUS_ENTERED.equals(orderLine.getStatus())
-	                    && !IConstants.ORDER_LINE_STATUS_AWAITING_SHIPPING.equals(orderLine.getStatus())) {
-	                throw new AnneException(IOrderService.class.getName()
-	                        + " splitLine : 拆分失败，订单行当前状态不支持拆分！");
-	            }
-	            if (IConstants.YES_Yes.equals(orderLine.getIsAdvanceBilling()) || orderLine.getBillingQty() > 0) {
-	                if (!invoiceService.checkInvoiceStatus(orderLineId)) {
-	                    throw new AnneException(IOrderService.class.getName()
-	                            + " splitLine : 拆分失败，订单行存在未审核的开票申请，不允许拆分!");
-	                }
-	            }
-        	}catch(Exception e) {
-        		e.printStackTrace();
-        		exception = e;
-        		throw e;
-        	}finally {
-        		methodLogService.setReturnDataNotes(false,methodLogger,exception,1,orderLine);
-        	}
-	            
-            //计算剩余产品数量
-            double proQty = orderLine.getProQty() - quantity;
-            if (proQty > 0) {
-                if (IConstants.ORDER_LINE_STATUS_PICKED.equals(orderLine.getStatus())) {
-                    double deliveryQty = orderLine.getDeliveryQty() - quantity;
-                    orderLine.setDeliveryQty(deliveryQty);
-                    methodLogService.setFunctionNameAndParameter(methodLogger, "deliveryService.updateDeliveryLineQtyByID(deliveryLineId, deliveryQty, userObject)", 2, deliveryLineId, deliveryQty, userObject);
-                    try {
-	                    if (StringUtil.isNotEmpty(deliveryLineId)) {
-	                    		//更新发货单行数量
-		                        deliveryService.updateDeliveryLineQtyByID(deliveryLineId, deliveryQty, userObject);
-	                    }else {
-	                    	List<DeliveryLines> deliveryLinesList = deliveryService.getDeliveryLinesByOrderLineId(orderLineId);
-	                    	if(deliveryLinesList.size()>0) {
-	                    		throw new AnneException("订单拆行失败，所拆行已有出货申请单，请在出货申请单上进行拆行！");
-	                    	}
-	                    }
-                    }catch(Exception e) {
-                		e.printStackTrace();
-                		exception = e;
-                		throw e;
-                	}finally {
-                		methodLogService.setReturnDataNotes(false,methodLogger,exception,2,"void");
-                	}  
-                }
-                
-                methodLogService.setFunctionNameAndParameter(methodLogger, "this.update(orderLine, null)",3,orderLine);
-                BigDecimal erpSettPrice = new BigDecimal(0);
-                try {
-                	erpSettPrice = orderLine.getErpSettPrice() == null ? new BigDecimal(0) : orderLine.getErpSettPrice();
-	                orderLine.setAmount(erpSettPrice.multiply(new BigDecimal(proQty)));
-	                orderLine.setProQty(proQty);
-	                if (IConstants.YES_Yes.equals(orderLine.getIsAdvanceBilling())) {
-	                    orderLine.setBillingQty(orderLine.getProQty());
-	                }
-	                this.update(orderLine, null);
-                }catch(Exception e) {
-            		e.printStackTrace();
-            		exception = e;
-            		throw e;
-            	}finally {
-            		methodLogService.setReturnDataNotes(false,methodLogger,exception,3,"void");
-            	}  
-	            
-                
-                OrderLines newOrderLine = new OrderLines();
-                methodLogService.setFunctionNameAndParameter(methodLogger, " this.save(newOrderLine, null)",4,newOrderLine);
-                try {
-	                BeanUtils.copyPropertiesIgnoreNull(orderLine, newOrderLine);
-	                newOrderLine.setId(null);
-	                newOrderLine.setAmount(erpSettPrice.multiply(new BigDecimal(quantity)).setScale(6, BigDecimal.ROUND_HALF_UP));
-	                newOrderLine.setProQty(quantity);
-	                /**-----------------新单号规则-------------------**/
-	                //					newOrderLine.setOriginalLineId(orderLine.getId());
-	                String OriginalLineId = "";
-	                String rootLineNum = "";
-	                if (StringUtil.isEmpty(orderLine.getOriginalLineId())) {
-	                    OriginalLineId = orderLine.getId();
-	                    rootLineNum = orderLine.getLineNo();
-	                } else {
-	                    OriginalLineId = orderLine.getOriginalLineId();
-	                    rootLineNum = orderLine.getRootLineNum();
-	                }
-	                newOrderLine.setOriginalLineId(OriginalLineId);
-	                /**-----------------新单号规则-------------------**/
-	                newOrderLine.setLineNo(this.getLineNumber(OriginalLineId, orderLine));
-	
-	                newOrderLine.setParentLineNum(orderLine.getLineNo());
-	                newOrderLine.setRootLineNum(rootLineNum);
-	                /**-----------------订单时间在切换时间之前用原来的规则------------------**/
-	                //初始化值
-	                newOrderLine.setCancelQty(0);
-	                newOrderLine.setDeliveryQty(0);
-	                newOrderLine.setBillingQty(0);
-	
-	                if (IConstants.ORDER_LINE_STATUS_PICKED.equals(newOrderLine.getStatus())) {
-	                    newOrderLine.setStatus(IConstants.ORDER_LINE_STATUS_AWAITING_SHIPPING);
-	                    newOrderLine.setErpStatus(IConstants.ORDER_LINE_STATUS_AWAITING_SHIPPING);
-	                }
-	                newOrderLine.setIsErpDelivery(IConstants.NO_No);
-	
-	                if (IConstants.YES_Yes.equals(newOrderLine.getIsAdvanceBilling())) {
-	                    newOrderLine.setBillingQty(newOrderLine.getProQty());
-	                }
-	
-	                this.save(newOrderLine, null);
-                }catch(Exception e) {
-            		e.printStackTrace();
-            		exception = e;
-            		throw e;
-            	}finally {
-            		methodLogService.setReturnDataNotes(false,methodLogger,exception,4,"void");
-            	}      
-                
-                
-                methodLogService.setFunctionNameAndParameter(methodLogger, " this.checkOrderSplitLineSave(orderLine.getOrderCode(), orderLine.getLineNo(),\r\n" + 
-                		"	                        newOrderLine.getLineNo(), newOrderLine.getProQty())",5,orderLine.getOrderCode(), orderLine.getLineNo(),
-                        newOrderLine.getLineNo(), newOrderLine.getProQty());
-                Map<String, String> ret = new HashMap<String,String>();
-                try {
-	                //保存前校验
-	                ret = this.checkOrderSplitLineSave(orderLine.getOrderCode(), orderLine.getLineNo(),
-	                        newOrderLine.getLineNo(), newOrderLine.getProQty());
-	                
-	                if (!"S".equals(ret.get("status"))) {
-	                    throw new AnneException(IOrderService.class.getName()
-	                            + " splitLine : 拆分失败，ERP操作失败:" + ret.get("msg"));
-	                }
-                }catch(Exception e) {
-            		e.printStackTrace();
-            		exception = e;
-            		throw e;
-            	}finally {
-            		methodLogService.setReturnDataNotes(true,methodLogger,exception,5,ret);
-            	}       
 
-            } else {
-                throw new AnneException(IOrderService.class.getName()
-                        + " splitLine : 拆分失败，本次拆分数量超过订单产品数量！");
+    /**
+     * 订单拆行
+     * @param orderLine
+     * @param quantity
+     * @param userObject
+     */
+    @Override
+    public void splitLineByOrder(final OrderLines orderLine, final double quantity, final UserObject userObject) {
+        final OrderHeader orderHeader = baseDao.get(OrderHeader.class, orderLine.getOrderId());
+
+        MethodLoggerStep loggerStep = MethodLoggerStep.setup(methodLogService, "订单拆行", orderHeader.getOrderCode());
+
+        loggerStep.doLog("订单拆行前校验", new Object[]{orderHeader, orderLine, quantity}, new MethodLoggerStep.IBusinessAction() {
+            @Override
+            public void doAction(List<Object> logedObject) {
+                checkBeforeSplitLineForOrder(orderHeader, orderLine, quantity, userObject);
+            }
+        });
+
+        loggerStep.doLog("订单拆行", new Object[]{orderHeader, orderLine, quantity}, new MethodLoggerStep.IBusinessAction() {
+            @Override
+            public void doAction(List<Object> logedObject) {
+                splitLine(orderHeader, orderLine, quantity, userObject);
+            }
+        });
+
+        loggerStep.end();
+    }
+
+    /**
+     * 出货拆行
+     * @param orderLines
+     * @param deliveryLine
+     * @param quantity
+     * @param userObject
+     */
+    @Override
+    public void splitLineByDelivery(final OrderLines orderLine, final DeliveryLines deliveryLine, final double quantity, final UserObject userObject) {
+        final OrderHeader orderHeader = baseDao.get(OrderHeader.class, orderLine.getOrderId());
+
+        MethodLoggerStep loggerStep = MethodLoggerStep.setup(methodLogService, "出货拆行", deliveryLine.getDeliveryCode());
+
+        loggerStep.doLog("出货拆行前校验", new Object[]{orderHeader, orderLine, deliveryLine, quantity}, new MethodLoggerStep.IBusinessAction() {
+            @Override
+            public void doAction(List<Object> logedObject) {
+                checkBeforeSplitLineForDelivery(orderHeader, orderLine, deliveryLine, quantity, userObject);
+            }
+        });
+        loggerStep.doLog("出货拆行", new Object[]{orderHeader, orderLine, quantity}, new MethodLoggerStep.IBusinessAction() {
+            @Override
+            public void doAction(List<Object> logedObject) {
+                splitLine(orderHeader, orderLine, quantity, userObject);
+            }
+        });
+    }
+
+    /**
+     * 订单拆行前校验是否可以拆行
+     * @param orderHeader
+     * @param orderLine
+     * @param quantity
+     * @param userObject
+     */
+    private void checkBeforeSplitLineForOrder(@NotNull OrderHeader orderHeader,@NotNull final OrderLines orderLine,final double quantity,final UserObject userObject) {
+
+        if (!IConstants.ORDER_LINE_STATUS_ENTERED.equals(orderLine.getStatus())
+                && !IConstants.ORDER_LINE_STATUS_AWAITING_SHIPPING.equals(orderLine.getStatus())) {
+            throw new AnneException(IOrderService.class.getName() + " splitLine : 拆分失败，订单行当前状态不支持拆行操作！");
+        }
+
+        // 判断是否有出货行
+        if (IConstants.ORDER_LINE_STATUS_PICKED.equals(orderLine.getStatus())) {
+            List<DeliveryLines> deliveryLinesList = deliveryService.getDeliveryLinesByOrderLineId(orderLine.getId());
+            if(deliveryLinesList.size()>0) {
+                throw new AnneException("订单拆行失败，所拆行已有出货申请单，请在出货申请单上进行拆行！");
             }
         }
+
+        checkBeforeSplitLine(orderHeader,orderLine, quantity, userObject);
+    }
+
+    /**
+     * 出货拆行前校验是否可以拆行
+     * @param orderHeader
+     * @param orderLine
+     * @param quantity
+     * @param userObject
+     */
+    private void checkBeforeSplitLineForDelivery(@NotNull OrderHeader orderHeader,@NotNull OrderLines orderLines, DeliveryLines deliveryLine, double quantity, UserObject userObject){
+        // 已发货的要更新发货数量
+        if (IConstants.ORDER_LINE_STATUS_PICKED.equals(orderLines.getStatus())) {
+            final double deliveryQty = orderLines.getDeliveryQty() - quantity;
+            orderLines.setDeliveryQty(deliveryQty);
+            // 更新发货单行数量
+            deliveryService.updateDeliveryLineQtyByID(deliveryLine.getId(), deliveryQty, userObject);
+        }
+        checkBeforeSplitLine(orderHeader, orderLines, quantity, userObject);
+    }
+
+
+    /**
+     * 拆行前校验
+     */
+    private void checkBeforeSplitLine(@NotNull OrderHeader orderHeader,@NotNull final OrderLines orderLine,final double quantity,final UserObject userObject){
+        if (!IConstants.ORDER_EXECUTE_STATUS_BOOKED.equals(orderHeader.getExecuteStatus())
+                && !IConstants.ORDER_EXECUTE_STATUS_ENTERED.equals(orderHeader.getExecuteStatus())) {
+            throw new AnneException(IOrderService.class.getName() + " splitLine : 拆分失败，只有已输入和已登记状态下的订单才能进行拆行操作!");
+        }
+
+        if (IConstants.ORDER_LINE_STATUS_CANCELLED.equals(orderLine.getStatus()) || IConstants.ORDER_LINE_STATUS_CLOSED.equals(orderLine.getStatus())) {
+            throw new AnneException(IOrderService.class.getName() + " splitLine : 拆分失败，订单行状态为已取消和已关闭的不允许进行拆行操作!");
+        }
+
+        // 一些拆行前置条件校验
+        if ((orderLine.getProQty() - orderLine.getCancelQty()) <= quantity) {
+            throw new AnneException(IOrderService.class.getName() + " splitLine : 拆分失败，本次拆分数量大于订单行可拆分数量!");
+        }
+        if (IConstants.YES_Yes.equals(orderLine.getIsPending())) {
+            throw new AnneException(IOrderService.class.getName() + " splitLine : 拆分失败，订单行已暂挂不允许拆分!");
+        }
+        if (IConstants.YES_Yes.equals(orderLine.getIsErpDelivery())) {
+            throw new AnneException(IOrderService.class.getName() + " splitLine : 拆分失败，订单ERP已发货不允许拆分!");
+        }
+
+        /*if("delivery".equals(op) && (IConstants.YES_Yes.equals(orderLine.getIsAdvanceBilling()) || orderLine.getBillingQty() > 0) ){
+            throw new AnneException(IOrderService.class.getName()
+                    + " splitLine : 拆分失败，订单已经开票，不允许拆分!");
+        }*/
+
+        // 开票但未成功导入ERP，也不允许拆行
+        if (IConstants.YES_Yes.equals(orderLine.getIsAdvanceBilling()) || orderLine.getBillingQty() > 0) {
+            if (!invoiceService.checkInvoiceErpStatusForOrderSplitLine(orderLine.getId())) {
+                throw new AnneException(IOrderService.class.getName() + " splitLine : 拆分失败，订单行存在未导入ERP的开票申请，不允许拆分!");
+            }
+        }
+
+        // 计算剩余产品数量
+        final double proQty = orderLine.getProQty() - quantity;
+        if (proQty <= 0) {
+            throw new AnneException(IOrderService.class.getName() + " splitLine : 拆分失败，本次拆分数量超过订单产品数量！");
+        }
+    }
+
+
+    /**
+     * 拆行操作
+     * @param orderLine
+     * @param quantity
+     * @param userObject
+     */
+    private void splitLine(@NotNull final OrderHeader orderHeader, @NotNull final OrderLines orderLine, final double quantity, final UserObject userObject) {
+
+        MethodLoggerStep loggerStep = MethodLoggerStep.setup(methodLogService, "com.ibm.kstar.impl.order.OrderServiceImpl.splitLine", orderHeader.getOrderCode());
+
+        //CRM拆行
+        final OrderLines[] newOrderLines = {null};
+        loggerStep.doLog("CRM拆行", new Object[]{orderHeader, orderLine, quantity}, new MethodLoggerStep.IBusinessAction() {
+            @Override
+            public void doAction(List<Object> logedObject) {
+                newOrderLines[0] = splitLineInCrm(orderHeader,orderLine, quantity, userObject);
+                logedObject.add(newOrderLines[0]);
+            }
+        });
+
+        // 清除缓存
+        loggerStep.doLog("清空缓存", new MethodLoggerStep.IBusinessAction() {
+            @Override
+            public void doAction(List<Object> logedObject) {
+                baseDao.getSessionFactory().getCurrentSession().flush();
+            }
+        });
+
+        //只有已登记的订单才需要调用Erp进行行
+        if (IConstants.ORDER_EXECUTE_STATUS_BOOKED.equals(orderHeader.getExecuteStatus())) {
+            //ERP拆行
+            final OrderLines newOrderLine = newOrderLines[0];
+            loggerStep.doLog("ERP拆行", new Object[]{orderLine, newOrderLine}, new MethodLoggerStep.IBusinessAction() {
+                @Override
+                public void doAction(List<Object> logedObject) {
+                    Map<String, String> result = splitLineInErp(orderLine, newOrderLine, userObject);
+                    logedObject.add(result);
+                    if (!"S".equals(result.get("status"))) {
+                        throw new AnneException(IOrderService.class.getName() + " splitLine : 拆分失败，ERP操作失败:" + result.get("msg"));
+                    }
+                }
+            });
+        }
+        loggerStep.end();
+    }
+
+    /**
+     * CRM拆行
+     * @param orderHeader
+     * @param orderLine
+     * @param quantity
+     * @param userObject
+     * @return
+     */
+    private OrderLines splitLineInCrm(OrderHeader orderHeader,@NotNull final OrderLines orderLine, final double quantity, final UserObject userObject){
+
+        final double proQty = orderLine.getProQty() - quantity;
+
+        // 更新当前行的的产品价格，数量，金额
+        final BigDecimal erpSettPrice = orderLine.getErpSettPrice() == null ? new BigDecimal(0) : orderLine.getErpSettPrice();
+        orderLine.setAmount(erpSettPrice.multiply(new BigDecimal(proQty)));
+        orderLine.setProQty(proQty);
+        if (IConstants.YES_Yes.equals(orderLine.getIsAdvanceBilling())) {
+            orderLine.setBillingQty(orderLine.getProQty());
+        }
+        this.update(orderLine, null);
+
+        // 保存拆出的行
+        final OrderLines newOrderLine = new OrderLines();
+        BeanUtils.copyPropertiesIgnoreNull(orderLine, newOrderLine);
+        newOrderLine.setId(null);
+        newOrderLine.setAmount(erpSettPrice.multiply(new BigDecimal(quantity)).setScale(6, BigDecimal.ROUND_HALF_UP));
+        newOrderLine.setProQty(quantity);
+        /**-----------------新单号规则-------------------**/
+        //					newOrderLine.setOriginalLineId(orderLine.getId());
+        String OriginalLineId = "";
+        String rootLineNum = "";
+        if (StringUtil.isEmpty(orderLine.getOriginalLineId())) {
+            OriginalLineId = orderLine.getId();
+            rootLineNum = orderLine.getLineNo();
+        } else {
+            OriginalLineId = orderLine.getOriginalLineId();
+            rootLineNum = orderLine.getRootLineNum();
+        }
+        newOrderLine.setOriginalLineId(OriginalLineId);
+        /**-----------------新单号规则-------------------**/
+        newOrderLine.setLineNo(OrderServiceImpl.this.getLineNumber(OriginalLineId, orderLine));
+
+        newOrderLine.setParentLineNum(orderLine.getLineNo());
+        newOrderLine.setRootLineNum(rootLineNum);
+        /**-----------------订单时间在切换时间之前用原来的规则------------------**/
+        //初始化值
+        newOrderLine.setCancelQty(0);
+        newOrderLine.setDeliveryQty(0);
+        newOrderLine.setBillingQty(0);
+
+        if (IConstants.ORDER_LINE_STATUS_PICKED.equals(newOrderLine.getStatus())) {
+            newOrderLine.setStatus(IConstants.ORDER_LINE_STATUS_AWAITING_SHIPPING);
+            newOrderLine.setErpStatus(IConstants.ORDER_LINE_STATUS_AWAITING_SHIPPING);
+        }
+        newOrderLine.setIsErpDelivery(IConstants.NO_No);
+
+        if (IConstants.YES_Yes.equals(newOrderLine.getIsAdvanceBilling())) {
+            newOrderLine.setBillingQty(newOrderLine.getProQty());
+        }
+
+        OrderServiceImpl.this.save(newOrderLine, null);
+        return newOrderLine;
+    }
+
+    /**
+     * ERP拆行
+     * @param orderLine
+     * @param newOrderLine
+     * @param userObject
+     * @return
+     */
+    private Map<String, String> splitLineInErp(@NotNull final OrderLines orderLine, @NotNull final OrderLines newOrderLine, final UserObject userObject){
+        return this.erpOrderSplitLineSave(orderLine.getOrderCode(), orderLine.getLineNo(), newOrderLine.getLineNo(), newOrderLine.getProQty());
+    }
+
+    /**
+     * 调用ERP拆行
+     * TODO 简单描述该方法的实现功能（可选）.
+     *
+     * @see com.ibm.kstar.api.order.IOrderService#checkOrderSplitLineSave(java.lang.String, java.lang.String)
+     */
+    @Override
+    public Map<String, String> erpOrderSplitLineSave(String orderCode, String sourceLineNum, String newLineNum, double proQty) {
+        Map<String, String> map = new HashMap<>();
+        map.put("status", "S");
+        map.put("msg", "");
+        StringBuffer sql = new StringBuffer();
+        sql.append("{call CUX_CRM_CALL_ERP_PKG.SPLIT_LINE(?,?,?,?,?,?)}");
+        Object[] result = baseDao.executeProcedure(sql.toString(),
+                new BaseDao.ProcedureParam[]{
+                        new BaseDao.InProcedureParam(orderCode),
+                        new BaseDao.InProcedureParam(sourceLineNum),
+                        new BaseDao.InProcedureParam(newLineNum),
+                        new BaseDao.InProcedureParam(proQty),
+                        new BaseDao.OutProcedureParam(Types.VARCHAR),
+                        new BaseDao.OutProcedureParam(Types.VARCHAR)
+                });
+        map.put("status", (String) result[4]);
+        map.put("msg", (String) result[5]);
+        return map;
     }
 
     public String getLineNumber(String getOriginalLineId, OrderLines orderLine) {
@@ -2871,6 +3001,8 @@ public class OrderServiceImpl implements IOrderService {
         return retMap;
     }
 
+
+
     private void initOrderLines(OrderHeader orderHeader,OrderLines orderLines) {
         if (StringUtil.isEmpty(orderLines.getStatus())) {
         	OrderHeader oldOrderHeader = baseDao.get(OrderHeader.class,
@@ -3564,33 +3696,6 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     /**
-     * 拆行保存前校验
-     * TODO 简单描述该方法的实现功能（可选）.
-     *
-     * @see com.ibm.kstar.api.order.IOrderService#checkOrderSplitLineSave(java.lang.String, java.lang.String)
-     */
-    @Override
-    public Map<String, String> checkOrderSplitLineSave(String orderCode, String sourceLineNum, String newLineNum, double proQty) {
-        Map<String, String> map = new HashMap<>();
-        map.put("status", "S");
-        map.put("msg", "");
-        StringBuffer sql = new StringBuffer();
-        sql.append("{call CUX_CRM_CALL_ERP_PKG.SPLIT_LINE(?,?,?,?,?,?)}");
-        Object[] result = baseDao.executeProcedure(sql.toString(),
-                new BaseDao.ProcedureParam[]{
-                        new BaseDao.InProcedureParam(orderCode),
-                        new BaseDao.InProcedureParam(sourceLineNum),
-                        new BaseDao.InProcedureParam(newLineNum),
-                        new BaseDao.InProcedureParam(proQty),
-                        new BaseDao.OutProcedureParam(Types.VARCHAR),
-                        new BaseDao.OutProcedureParam(Types.VARCHAR)
-                });
-        map.put("status", (String) result[4]);
-        map.put("msg", (String) result[5]);
-        return map;
-    }
-
-    /**
      * checkProIsReport:(检查产品的目录是否报备). <br/>
      *
      * @param proId
@@ -3934,21 +4039,5 @@ public class OrderServiceImpl implements IOrderService {
 	            baseDao.update(orderLines);
 		 }
 	}
-	
-	/*private void testMethod(OrderHeader orderHeader,UserObject userObject) {
-		MethodLogger methodLogger = methodLogService.getMethodLogger("test",null);
-    	Exception exception = new Exception();
-    	methodLogService.setFunctionNameAndParameter(methodLogger,"test",1,orderHeader,userObject);
-    	try {
-    		methodLogger.setUserName("B");
-    		int a = 0/0;
-    		methodLogger.setUserName("C");
-    	}catch(Exception e) {
-    		e.printStackTrace();
-    		exception = e;
-    		throw e;
-    	}finally {
-    		//methodLogService.exceptionLog(methodLogger, exception);
-    	}
-	}*/
+
 }

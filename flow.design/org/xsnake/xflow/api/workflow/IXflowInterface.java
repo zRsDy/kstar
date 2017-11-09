@@ -1,8 +1,40 @@
 package org.xsnake.xflow.api.workflow;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.xsnake.web.dao.BaseDao;
 import org.xsnake.xflow.api.Participant;
 
 public abstract class IXflowInterface {
+	
+	@Autowired
+	BaseDao baseDao;
+	
+	public void onCompletex(String businessKey, String flowModule, String processInstanceId, String comment){
+		try{
+			onComplete(businessKey, flowModule, processInstanceId, comment);
+			baseDao.executeSQLX("update XFLOW_CALLBACK set STATUS = 'Y' where process_Instance_Id = ? " , new Object[]{processInstanceId});
+		}catch(Exception e){
+			PrintStream ps = null;
+			try{
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				ps = new PrintStream(out);
+				e.printStackTrace(ps);
+				String errorStackTrace = new String(out.toByteArray());
+				errorStackTrace = errorStackTrace.substring(0,3500);
+				try{
+					baseDao.executeSQLX("update XFLOW_CALLBACK set ERROR_MESSAGE = ? , STATUS = 'E' where process_Instance_Id = ? " , new Object[]{errorStackTrace,processInstanceId});
+				}catch(Exception ex){
+					baseDao.executeSQLX("update XFLOW_CALLBACK set ERROR_MESSAGE = ? , STATUS = 'E' where process_Instance_Id = ? " , new Object[]{e.getMessage(),processInstanceId});
+				}
+				throw e;
+			}finally{
+				ps.close();
+			}
+		}
+	}
 	
 	/**
 	 * 流程审批结束回调方法

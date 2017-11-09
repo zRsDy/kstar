@@ -26,25 +26,38 @@
 	</#if>
 	
 	<#if (permission["P04T1ProjListAddProd"])??>
-		<#assign ifaddstprdButton="true" />
+		<#if ifbidresult == 'Y'>
+			<#assign ifaddstprdButton="true" />
+		</#if>
 	</#if>
 	
 	<#if (permission["P04T1ProjListAddNonStaProd1"])??>
-		<#assign ifaddnprdButton="true" />
+		<#if ifbidresult == 'Y'>
+			<#assign ifaddnprdButton="true" />
+		</#if>
 	</#if>
 	
 	<#if (permission["P04T1ProjListAddOutSouceProd1"])??>
-		<#assign ifaddexprdButton="true" />
+		<#if ifbidresult == 'Y'>
+			<#assign ifaddexprdButton="true" />
+		</#if>
 	</#if>
 			
 	<#if (permission["P04T1ProjListSubmitPrice"])??>
-		<#assign ifquotsubmitButton="true" />
+		<#if ifbidresult == 'Y'>
+			<#assign ifquotsubmitButton="true" />
+		</#if>
 	</#if>
 	
 	<#if (permission["P04T1ProjListSpecialOffer"])??>
-		<#assign ifpriceprocessButton="true" />
+		<#if ifbidresult == 'Y'>
+			<#assign ifpriceprocessButton="true" />
+		</#if>
 	</#if>		
 			
+	<#if ifbidresult == 'Y'>
+		<#assign ifSubmitLines="true" />
+	</#if>
 	
 	<#if (permission["QUOTE_PRO_ENABLE_IN_APP_METHOD"])??>
 		<#assign ifenableUpdate="Y" />
@@ -418,7 +431,7 @@
 						{
 				  			id:'submitLines',
 				  			label : '${i18n.get('保存')}',
-				  			own : 'true',
+				  			own : ${ifSubmitLines!'false'},
 				  			handler : function(e,rowData){
 				  				submitLines();
 							}
@@ -780,7 +793,6 @@ function submitLines(){
 	var datas = [];
 	var optTxt2Flag = true;
 	var flag = true;
-	var approveDiscount;
 	
 	$.each(ids,function(i,id){
 		var line = $('#prjlst').jqGrid('getRowData',id);
@@ -805,7 +817,6 @@ function submitLines(){
 			flag = false;
 		}
 		
-		approveDiscount = line['approveDiscount'];
 		
 	 }
 	})
@@ -827,10 +838,8 @@ function submitLines(){
 		return false;
 	}
 	
-	if(approveDiscount==''){
-		if(checkGoldPrc == null || checkGoldPrc == ''){
-			alert('${i18n.get('存在金牌价为空的产品，请点击【价格评审】按钮发起评审流程')}');  
-		}
+	if(checkGoldPrc == null || checkGoldPrc == ''){
+		alert('${i18n.get('存在金牌价为空的产品，请点击【价格评审】按钮发起评审流程')}');  
 	}
 	
 	if(datas.length<1) return;

@@ -26,6 +26,7 @@ import com.ibm.kstar.api.repaire.IRepaireService;
 import com.ibm.kstar.api.system.lov.entity.LovMember;
 import com.ibm.kstar.api.system.permission.UserObject;
 import com.ibm.kstar.entity.product.KstarProductDemand;
+import com.ibm.kstar.service.IDemoService;
 
 @Controller
 @RequestMapping("/repaire")
@@ -35,11 +36,42 @@ public class RepaireAction extends BaseFlowAction {
 	IDemandService demandService;
 	
 	@Autowired
+	IDemoService demoService;
+	
+	@Autowired
 	IRepaireService repaireService;
 
 	@RequestMapping("/index")
 	public String index(String id,Model model){
 		return forward("index");
+	}
+	
+	@RequestMapping("/doCallback")
+	@ResponseBody
+	public String doCallback(String processInstanceIds,Model model){
+		if(StringUtils.isEmpty(processInstanceIds)){
+			return this.sendErrorMessage("流程实例不能为空");
+		}
+		
+		StringBuffer errorInfo = new StringBuffer();
+		for(String processInstanceId:processInstanceIds.split(",")){
+			if(StringUtils.isEmpty(processInstanceId)){
+				continue;
+			}
+			
+			try{
+				demoService.doCallback(processInstanceId);
+	        }catch(Exception e){
+	        	e.printStackTrace();
+	        	errorInfo.append("流程实例id["+processInstanceId+"]回调错误："+e.getMessage()+";");
+	        }
+		}
+		
+		if(errorInfo.length()==0){
+			return sendSuccessMessage("全部流程触发回调操作成功");			
+		}else{
+			return sendSuccessMessage("触发回调有错误,如下："+errorInfo.toString());	
+		}
 	}
 	
 	@RequestMapping("/sendProductDemandsToPDM")
