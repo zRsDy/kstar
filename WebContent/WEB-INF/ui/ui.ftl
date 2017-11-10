@@ -241,12 +241,13 @@
 		            url: "${ctx}/flow/crmOrPdmPage.html",  
 		            dataType: "json",  
 		            success: function(data) {
+			                debugger;
 		            	if(data.message.count > 0){
 		            		$('#myTaskCount').html(data.message.count);
 		            		var html = "<li class='dropdown-header'> <a href='#' onclick=addTab('待办任务','${ctx}/flow/list.html')>待办流程</a> </li> ";
 			                $.each(data.message.list,function(i,item){
 			                	if(i<10){
-			                		if(item.hasOwnProperty("activityType")&&item.activityType=='task'){
+			                		if(item.hasOwnProperty("activityType")){
 				                		var url = "${ctx}/flow/process.html?taskId="+item.id+"&id="+item.businessKey;
 				                		var m = "parent.dialog('处理流程','"+url+"',window)";
 				                		var c = "onclick="+m;

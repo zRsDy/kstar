@@ -631,6 +631,7 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 	public void updateDeliveryStatus(String id,String status,UserObject userObject) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		DeliveryHeader deliveryHeader = baseDao.get(DeliveryHeader.class,id);
+		String msg ="";
 		if (deliveryHeader == null) {
 			throw new AnneException("没有找到要更新的数据");
 		}
@@ -644,29 +645,16 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 		MethodLogger methodLogger = methodLogService.getMethodLogger("com.ibm.kstar.impl.order.DeliveryServiceImpl.updateDeliveryStatus",deliveryHeader.getDeliveryCode());
 		Exception exception = new Exception();
 		if(IConstants.ORDER_CONTROL_STATUS_30.equals(status)){
-			Map<String, String> retMap = new HashMap<String, String>();
 			methodLogService.setFunctionNameAndParameter(methodLogger, "this.deliveryAuditAfter(deliveryHeader.getDeliveryCode())",1, deliveryHeader.getDeliveryCode());
 			
 			try {
-				try {
-					retMap  = this.deliveryAuditAfter(deliveryHeader.getDeliveryCode());
-					if(!"S".equals(retMap.get("status"))){
-						deliveryHeader.setSyncErpLog(retMap.get("msg"));
-					}
-				} catch (Exception e) {
-					String msg = e.getMessage();
-					if(msg != null && msg.length() >= 3000){
-						msg = e.getMessage().substring(0, 2990);
-					}
-					deliveryHeader.setSyncErpLog(msg);
-					e.printStackTrace();
-				}
+					this.deliveryAuditAfter(deliveryHeader.getDeliveryCode());
 			}catch(Exception e) {
 	    		e.printStackTrace();
 	    		exception = e;
 	    		throw e;
 	    	}finally {
-	    		methodLogService.setReturnDataNotes(false,methodLogger,exception,1,retMap);
+	    		methodLogService.setReturnDataNotes(false,methodLogger,exception,1,msg);
 	    	}	
 		}
 		
@@ -678,7 +666,11 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
     		exception = e;
     		throw e;
     	}finally {
-    		methodLogService.setReturnDataNotes(false,methodLogger,exception,2,"void");
+    		if(IConstants.ORDER_CONTROL_STATUS_30.equals(status)) {
+    			methodLogService.setReturnDataNotes(true,methodLogger,exception,2,"void");
+    		}else {
+    			methodLogService.setReturnDataNotes(false,methodLogger,exception,2,"void");
+    		}
     	}	
 		
 		if(IConstants.ORDER_CONTROL_STATUS_20.equals(status)){
@@ -1532,10 +1524,7 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 	 * @return 
 	 * @since JDK 1.7
 	 */
-	public Map<String, String> deliveryAuditAfter(String deliveryCode) {
-		Map<String, String> map = new HashMap<>();
-		map.put("status", "S");
-		map.put("msg", "");
+	public void deliveryAuditAfter(String deliveryCode) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("{call CUX_CRM_CALL_ERP_PKG.MAIN_PROCESS(?,?,?,?)}");
 		Object[] result = baseDao.executeProcedure(sql.toString(),
@@ -1545,9 +1534,9 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 						new BaseDao.OutProcedureParam(Types.VARCHAR), 
 						new BaseDao.OutProcedureParam(Types.VARCHAR)
 				});
-		map.put("status", (String) result[2]);
-		map.put("msg", (String) result[3]);
-		return map;
+		if(!"S".equals((String) result[2])){
+			throw new AnneException("EPR接口调用错误:"+(String) result[3]);
+		}
 	}
 
 	@Override

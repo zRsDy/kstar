@@ -1724,6 +1724,7 @@ public class OrderServiceImpl implements IOrderService {
                 splitLine(orderHeader, orderLine, quantity, userObject);
             }
         });
+        loggerStep.end();
     }
 
     /**

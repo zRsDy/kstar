@@ -191,9 +191,10 @@ function checkedRightTree(ids){
 	right_zTree = $.fn.zTree.getZTreeObj("tree2");  
 	for(var i=0 ; i< ids.length;i++){
 		var node = right_zTree.getNodeByParam("code",ids[i].code);  
-		if(node){
+		/* if(node){
 			node.checked = true;
-		}
+		} */
+		right_zTree.checkNode(node,true,false,false);
 		right_zTree.updateNode(node);
 	}
 }

@@ -18,7 +18,7 @@
 	</#if>
 	
 	<#if (permission["P04T1ProjListDeleteProd"])??>
-		<#assign deleteURL="'${ctx}/quot/catalog/deletecatalog.html?qid=${qid}&typ=${typ}'" />
+		<#assign ifDeleteLines="true" />
 	</#if>
 	
 	<#if (permission["P04T1ProjListAddProdPackage"])??>
@@ -118,6 +118,7 @@
 				url = "${listUrl!}"
 				rowNum = "500"
 				rowNumList = "[100,200,300,400,500]"
+				checkbox="true" 
 				editURL = "${editURL!}"
 				deleteURL = "${deleteURL!}" 
 				colModel = "[
@@ -433,6 +434,14 @@
 				  			own : ${ifSubmitLines!'false'},
 				  			handler : function(e,rowData){
 				  				submitLines();
+							}
+						},
+						{
+				  			id:'deleteLines',
+				  			label : '${i18n.get('删除')}',
+				  			own : ${ifDeleteLines!'false'},
+				  			handler : function(e,rowData){
+				  				deleteLines();
 							}
 						},
 						{
@@ -762,6 +771,49 @@ function QuotPrjlstExport(e,rowData){
 	});
 }
 
+function deleteLines(){
+	$('#prjlst').trigger('blur');
+	var ids = $('#prjlst').jqGrid('getGridParam','selarrrow');
+	var d={};
+	var datas = [];
+	
+	$.each(ids,function(i,id){
+		datas.push(id);
+	});
+	d.listStr= JSON.stringify(datas);
+	d.quotID = '${qid}';
+	d.typ = '${typ}';
+	
+	bootbox.confirm('${i18n.get('确定删除选中数据吗')}?', function(result) {
+		if(result) {
+			var dialog = bootbox.dialog({
+			    message: '${i18n.get('数据删除中')}......',
+			    closeButton: false
+			});
+			ajax({
+				type:'post',
+				url : '${ctx}/quot/catalog/deleteLinesa.html',  
+				dataType : 'json',
+				data: d,
+				success : function(result) {
+					$('#button1').click();
+					reload_prjlst();
+					dialog.modal('hide');
+					//window.location.reload(); 
+				},
+				error : function(result) {
+					alert(result); 
+					reload_prjlst();
+					dialog.modal('hide');
+					//window.location.reload(); 
+				},
+				
+			});
+		}
+	});
+
+}
+
 function submitLines(){
 	
 	$('#prjlst').trigger('blur');
@@ -770,6 +822,7 @@ function submitLines(){
 	var datas = [];
 	var optTxt2Flag = true;
 	var flag = true;
+	var flagDis = true;
 	
 	$.each(ids,function(i,id){
 		var line = $('#prjlst').jqGrid('getRowData',id);
@@ -794,7 +847,10 @@ function submitLines(){
 			flag = false;
 		}
 		
-		
+		var applyDiscount = line['applyDiscount'];
+		if(isNaN(applyDiscount)){
+			flagDis = false;
+		}
 	 }
 	})
 	
@@ -813,6 +869,11 @@ function submitLines(){
 		alert("${i18n.get('金牌价格不能为空')}");
 		$('#prjlst').editRow(id,true);      
 		return false;
+	}
+	
+	if(flagDis == false){
+		alert("${i18n.get('折扣字段数据校验不通过，折扣值非法')}")
+		return;
 	}
 	
 	if(checkGoldPrc == null || checkGoldPrc == ''){

@@ -99,20 +99,24 @@ public class DemoServiceImpl implements IDemoService{
 					+ "where dl.c_order_id=ol.c_pid and dl.c_delivery_id='"+processInstance.getBusinessKey()+"'  and ol.c_erp_plan_status!='已确认交期' and rownum=1";
 			String status = "N";
 			if(baseDao.findUniqueBySql(sql)==null){
-				//该出货单的订单号全部是"已确认交期"状态;
+				//该出货申请的订单行全部是"已确认交期"状态;
 				status = "Y";
 			}
-			varaiables.put("DTComfirmed", status);
+			//varaiables.put("DTComfirmed", status);
+			if(status.equals("N"))
+				throw new AnneException("该出货申请存在未确认交期的订单行,不能提交");
 		}else if("P06.25.30.Invoice".equalsIgnoreCase(module)){
 			varaiables = new HashMap<String,String>();
 			String sql = "select ol.c_is_erp_delivery from crm_t_invoice_detail dl,CRM_V_ORDER_LINES ol "
 					+ "where dl.c_order_line_id=ol.c_pid and dl.c_invoice_id='"+processInstance.getBusinessKey()+"' and ol.c_is_erp_delivery!='Yes' and rownum=1";
 			String status = "N";
 			if(baseDao.findUniqueBySql(sql)==null){
-				//该出货单的订单号全部是"已确认交期"状态;
+				//该开票申请的订单行全部是"已发货"状态;
 				status = "Y";
 			}
-			varaiables.put("DVComfirmed", status);
+			//varaiables.put("DVComfirmed", status);
+			if(status.equals("N"))
+				throw new AnneException("该开票申请存在未发货的订单行,不能提交");
 			
 			invoiceService.checkInvoice(processInstance.getBusinessKey());
 		}

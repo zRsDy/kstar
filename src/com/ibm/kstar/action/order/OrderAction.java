@@ -728,11 +728,11 @@ public class OrderAction extends BaseFlowAction {
 		} else if (FROM_TYPE_DELIVERY_LINE.equals(op)) {
 			String deliveryLineId = request.getParameter("deliveryLineId");
 			if (StringUtil.isEmpty(deliveryLineId)) {
-				return sendErrorMessage("出货行Id不能为空");
+				return sendErrorMessage("必须先保存出货申请后，才能调整发货数量!");
 			}
 			DeliveryLines deliveryLine = deliveryService.getDeliveryLine(deliveryLineId);
 			if (deliveryLine == null) {
-				return sendErrorMessage("出货行不存在");
+				return sendErrorMessage("出货行不存在,必须先保存出货申请后，才能调整发货数量!");
 			}
 			if (!Objects.equals(deliveryLine.getOrderCode(), orderLines.getOrderCode()) || !Objects.equals(deliveryLine.getOrderLineNo(), orderLines.getLineNo())) {
 				return sendErrorMessage("出货行与订单行关联错误");

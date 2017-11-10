@@ -954,7 +954,29 @@ datatype='json' footerrow='false' gridComplete='' rownumbers = 'false'>
                 if(xhr.status == 401){
                     window.location.href=ctx+data.message;
                 }else{
-                    xalert(data.message);
+                    bootbox.confirm({
+                        title: '${i18n.get('连接服务器失败')}',
+                        message: data.message || "未知错误",
+                        buttons: {
+                            cancel: {
+                                label: '<i class="fa fa-times"></i> 关闭页面'
+                            },
+                            confirm: {
+                                label: '<i class="fa fa-check"></i> 重新连接'
+                            }
+                        },
+                        callback: function (result) {
+                            if(result) {
+                                reload_${id}();
+                            } else {
+                                if (window.api && (typeof window.api.close == "function")) {
+                                    window.api.close();
+                                } else {
+                                    $(parent.document).find('#tabs').find("li.ui-state-active").find("img").click();
+                                }
+                            }
+                        }
+                    });
                 }
             },
 

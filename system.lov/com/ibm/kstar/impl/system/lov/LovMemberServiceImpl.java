@@ -300,7 +300,7 @@ public class LovMemberServiceImpl extends BaseServiceImpl implements ILovMemberS
     }
 
     private List<LovMember> _getList(Condition condition, UserObject user, String entityName) throws AnneException {
-        if ("admin".equalsIgnoreCase(user.getEmployee().getNo())) {
+    	if("ADMIN".equals(user.getPosition().getCode())){
             return this.getList(condition);
         }
         StringBuilder hql = new StringBuilder("select distinct pc from LovMember pc ," + entityName + " pr where pr.productCatalogId = pc.id and pc.deleteFlag = 'N'");
@@ -346,7 +346,7 @@ public class LovMemberServiceImpl extends BaseServiceImpl implements ILovMemberS
         this.addQueryCondition(condition, args, hql, "leafFlag", "pc.leafFlag", "=");
         this.addQueryCondition(condition, args, hql, "optTxt2", "pc.optTxt2", "=");
 
-        if (!"admin".equalsIgnoreCase(user.getEmployee().getNo())) {
+        if(!"ADMIN".equals(user.getPosition().getCode())){
             hql.append(" and (pr.orgId = ? or pr.orgId = ?)  ");
             args.add(user.getPosition().getPositionInOrgId());
             args.add(user.getOrg().getId());

@@ -446,6 +446,7 @@
 		{name:'singleCustName',label:'${i18n.get('下单客户名称')}',hidden:false,width:200,sortable:false,align:'center'},
 		{name:'singleCustPO', label:'${i18n.get('客户PO')}', hidden:true,width:120,sortable : false,editable : false,align:'center'},  
 		{name:'proModel',label:'${i18n.get('产品型号')}',hidden:false,width:100,sortable:false,align:'center'},
+		{name:'shipOrgLable',label:'${i18n.get('发货组织')}',hidden:false,width:80,sortable:false,align:'center'},
 		{name:'materielCode',label:'${i18n.get('物料编码')}',hidden:false,width:80,sortable:false,align:'center'},
 		{name:'materielName',label:'${i18n.get('产品名称')}',hidden:false,width:100,sortable:false,align:'center'},
 		{name:'proDesc',label:'${i18n.get('产品描述')}',hidden:false,width:150,sortable:false,align:'center'},
@@ -545,8 +546,12 @@
 												+ '&deliveryLineId='+rowData.id 
 												+ '&residualQty='+residualQty,'',window,600,400);
 									
+								}else if(msg && msg.message == 'STOCK'){
+									var id = jQuery('#deliveryLinesForm').jqGrid('getGridParam','selrow');
+			    					rowData = $('#deliveryLinesForm').jqGrid('getRowData',id);
+									alert('${i18n.get('出货明细行【')}'+rowData.lineNum+'${i18n.get('】在ERP已备货,不允许删除！')}');
 								}else{
-									alert('${i18n.get('出货单已开票或者ERP已发货，不允许调整数量')}');
+									alert('${i18n.get('出货单已开票，不允许调整数量')}');
 								}
 						},
 						error: function(e) {

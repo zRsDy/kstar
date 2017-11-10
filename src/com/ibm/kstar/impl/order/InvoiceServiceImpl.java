@@ -715,8 +715,8 @@ public class InvoiceServiceImpl implements IInvoiceService {
 	    String sqlByOrderLine = " select nvl(sum(t.n_invoice_qty),0) from crm_t_invoice_detail t ";
 	    	sqlByOrderLine += " where t.c_order_line_id = ? ";
 	    
-	    //根据开票表头创建人判断是否为国际中心的人，来决定是否校验ERP可开票数量，（国际中心即在仓库没有可开票库存的情况下也能开票）
-    	InvoiceMaster oldInvoiceMaster = baseDao.get(InvoiceMaster.class,id);
+//	    //根据开票表头创建人判断是否为国际中心的人，来决定是否校验ERP可开票数量，（国际中心即在仓库没有可开票库存的情况下也能开票）
+//    	InvoiceMaster oldInvoiceMaster = baseDao.get(InvoiceMaster.class,id);
 	    if(details != null && details.size() > 0){
 	    	for(InvoiceDetail iDetail : details){
 	    		//获取订单行总数量

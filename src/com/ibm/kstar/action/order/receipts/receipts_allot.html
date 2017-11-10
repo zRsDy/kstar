@@ -158,9 +158,9 @@ select {
 	<#if permission["P06ReceiptAllocationImport"]?? >
 		<#assign importURL= "'${ctx}/receipts/importReceipts.html'"   />
 	</#if>
-		<#if permission["P06ReceiptAllocationExport"]?? >
-			<#assign exportURL= "'${ctx}/receipts/exportReceipts.html'"   />
-		</#if>
+	<#if permission["P06ReceiptAllocationExport"]?? >
+		<#assign exportURL= "'${ctx}/receipts/exportReceipts.html'"   />
+	</#if>
 	<#if permission["P06ReceiptAllocationPublish"]?? >
 		<#assign publishReceipts= "true"   />
 	</#if>
@@ -412,11 +412,8 @@ select {
 						<td align ="left">	  
 							<@form.select 
 								id="picSaleCenter"  name="picSaleCenter"  
-								code="ORG" 
-								idKey='id' 
 								placeholder="${i18n.get('请选择营销中心')}" 
-								childId = "respDept"
-								level = "2"
+								url="function(){return '${ctx}/lov/member/getSaleCenters.html';}"
 							/>
 						</td>
 						<td align="right">
@@ -425,11 +422,8 @@ select {
 						<td align ="left">
 							<@form.select
 								id="respDept"  name="respDept"  
-								code="ORG" 
 								placeholder="${i18n.get('请选择业务部门')}" 
-								idKey='id' 
-								level = "3"
-								parentId="picSaleCenter"
+								url="function(){return '${ctx}/lov/member/getBizDeptList.html?code=${salesCenter!''}';}"
 							/>
 						</td>
                         <td></td>
@@ -439,16 +433,25 @@ select {
                         </td>
 					</tr>
 					<tr>
+						<td align="right">${i18n.get('销售员营销中心 :')}</td>
+						<td><@form.select 
+								id="salesCenter" 
+								name="salesCenter" 
+								placeholder="${i18n.get('请选择营销中心')}"  
+								url="function(){return '${ctx}/lov/member/getSaleCenters.html';}"/>	
+						</td>
+						<td align="right">${i18n.get('销售员业务部门 :')}</td>
+						<td><@form.select 
+								id="bizDept" 
+								name="bizDept" 
+								parentId="salesCenter"
+								placeholder="${i18n.get('请选择业务部门')}" 
+								url="function(){return '${ctx}/lov/member/getBizDeptList.html?code=${salesCenter!''}';}"/></td>
 						<td align="right" width="120px">${i18n.get('收款单编号')}：
 			            </td>
 			            <td align="left"  >
 				  			<@form.input id="receiptsCode"  name="receiptsCode" placeholder="" tip="" />
 			            </td>
-						<td align="right">${i18n.get('营销中心 :')}</td>
-						<td><@form.select id="salesCenter" name="salesCenter" url="function(){return '${ctx}/lov/member/getSaleCenters.html';}"/>	
-						</td>
-						<td align="right">${i18n.get('业务部门 :')}</td>
-						<td><@form.select id="bizDept" name="bizDept" url="function(){return '${ctx}/lov/member/getBizDeptList.html';}"/></td>
 					</tr>
 					<tr>
 						<!-- <td align="right" width="120px">更正客户名称：</td>

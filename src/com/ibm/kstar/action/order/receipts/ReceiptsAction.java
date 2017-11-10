@@ -437,11 +437,15 @@ public class ReceiptsAction extends BaseAction {
 	 * @return 
 	 * @since JDK 1.7
 	 */
+	@SuppressWarnings("unchecked")
 	@RequestMapping("/exportReceipts")
 	public void exportReceipts(PageCondition condition, HttpServletRequest request,HttpServletResponse response){
 		try{
 			setupQueryCondition(condition, request);
-			List<Receipts> receiptsList = receiptsService.getReceiptsList(condition);
+			condition.setRows(10000000);
+			//List<Receipts> receiptsList = receiptsService.getReceiptsList(condition);
+			IPage p = receiptsService.queryReceipts(condition, getUserObject());
+			List<Receipts> receiptsList = (List<Receipts>)p.getList();
 			List<List<Object>> dataList  = receiptsService.getExcelData(receiptsList);
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
 			ExcelUtil.exportExcel(response, dataList, "CRM收款表_"+sdf.format(new Date()));

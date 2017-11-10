@@ -238,6 +238,8 @@ public class LovMemberAction extends BaseAction {
 		String opType = request.getParameter("opType");
 		if("2".equals(opType)){
 			return contructTree(condition,request,2);
+		}else if("3".equals(opType)){
+			return treeRight(condition, request);
 		}else{
 			return contructTree(condition,request,1);
 		}
@@ -500,7 +502,9 @@ public class LovMemberAction extends BaseAction {
 	@NoRight
 	@ResponseBody
 	@RequestMapping("/getBizDeptList")
-	public String getBizDeptList(HttpServletRequest request) {
+	public String getBizDeptList(Condition condition,HttpServletRequest request) {
+		ActionUtil.requestToCondition(condition, request);
+		String code = condition.getStringCondition("code");
 		List<LovMember> lovMembers = lovMemberService.getBizDeptList();
 		return sendSuccessMessage(lovMembers);
 	}

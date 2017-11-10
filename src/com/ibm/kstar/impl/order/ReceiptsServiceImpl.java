@@ -108,7 +108,7 @@ public class ReceiptsServiceImpl implements IReceiptsService {
         }
         sum = oldReceipts.getAmount().add(sum);
         if(sum.compareTo(new BigDecimal(contract.getTotalAmt()))==1){
-        	throw new AnneException("收款单可核销金额不能大于合同未核销金额！");
+        	throw new AnneException("收款单总金额不能大于合同未核销金额！");
         }
     }
 

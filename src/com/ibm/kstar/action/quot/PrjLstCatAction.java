@@ -227,7 +227,29 @@ public class PrjLstCatAction extends LovMemberAction {
 	}
 	
 	
-	
+	@NoRight
+	@ResponseBody
+	@RequestMapping(value="/deleteLinesa",method=RequestMethod.POST)
+	public String deleteLinesa(String listStr, String quotID,String typ,  HttpServletRequest request){
+		
+		List<String> ids = JSON.parseArray(listStr, String.class);
+		if(ids != null && ids.size() > 0){
+			for(String id : ids){
+				quotService.deletePrjLst(id);
+			}
+			
+			//quotService.deletePrjLst(id);
+			//quotService.updateAllAvgttlByQcode(qid);
+			
+			//总金额
+			String totalAmount = quotService.getTotalamount(quotID);
+			KstarQuot quot = quotService.getKstarQuot(quotID);
+			quot.setAmount(totalAmount);
+			quotService.updateQuot(quot);
+		}
+		
+		return sendSuccessMessage();
+	}
 	
 	
 	
