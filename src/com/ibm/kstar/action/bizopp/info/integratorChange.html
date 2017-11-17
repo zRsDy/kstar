@@ -1,0 +1,98 @@
+
+<#-- 商机界面-集成商-新增 --> <#if permission["P03BizOppoT2IntegratorAdd"]?? > <#assign addURL = "'${ctx}/integrator/add.html?bizOppId_=${(id)!}'" /></#if>
+
+<#-- 商机界面-集成商-修改 --> <#if permission["P03BizOppoT2IntegratorEdit"]?? > <#assign editURL = "'${ctx}/integrator/edit.html'" /></#if>
+
+<#-- 商机界面-集成商-删除 --> <#if permission["P03BizOppoT2IntegratorDelete"]?? > <#assign deleteURL = "'${ctx}/integrator/delete.html'" /></#if>
+
+    <@form.table id="integrator"
+        class="col-xs-12"
+        title="${i18n.get('授权单位')}"
+        url = "${ctx}/integrator/pageChange.html?bizOppId=${(id)!}"
+        height = "100px"
+        <#--addURL = "${addURL!}"-->
+        <#--editURL= "${editURL!}"-->
+        deleteURL = "'${ctx}/integrator/delete.html'"
+        rowNum = "5"
+        search="false"
+        colModel = "[
+            {name:'id',label:'${i18n.get('ID')}',hidden:true,width:100,sortable:true,align:'center' },
+            {name:'integrator',label:'${i18n.get('集成商')}',hidden:false,width:200,sortable:true,align:'center',editable:true },
+            {name:'contact',label:'${i18n.get('联系人')}',hidden:false,width:200,sortable:true,align:'center',editable:true },
+            {name:'phone',label:'${i18n.get('联系电话')}',hidden:false,width:200,sortable:true,align:'center',editable:true },
+            {name:'bizOppId',label:'${i18n.get('商机id')}',hidden:true,width:100,sortable:true,align:'center' }
+        ]"
+        onComplete = "function() {
+            var str = $('#conflictStatus').val();
+            if(str != '00' && str != '20') {
+                $('#buttons_tr_integrator :button').each(function () {
+                    $('#' + this.id).attr('disabled', 'disabled');
+                });
+            }
+        }"
+        buttons = "[    {
+                            id:'integrator_addRow',
+                            label : '${i18n.get('增加行')}',
+                            icon : 'icon-save',
+                            own : true,
+                            handler : function(e,rowData){
+                                addRow();
+                            }
+                        },
+                        {
+                            id:'integrator_saveGridAll',
+                            label : '${i18n.get('保存')}',
+                            icon : 'icon-save',
+                            own : true,
+                            handler : function(e,rowData){
+                                saveGridAll_integrator('${ctx}/integrator/edit2.html');
+                            }
+                        },
+                        {
+                            id:'integrator_reload',
+                            label : '${i18n.get('重置')}',
+                            icon : 'icon-save',
+                            own : true,
+                            handler : function(e,rowData){
+                                reload_integrator();
+                            }
+                        }
+                    ]"
+        ondblClickRow = "function(id){
+                        $('#integrator').editRow(id);
+                    }"
+    >
+    </@form.table>
+<script type="text/javascript">
+    integratorrowid=0;
+    function addRow() {
+        var dataRow = {
+            bizOppId:'${(id)!}'
+        };
+        integratorrowid = integratorrowid+1;
+
+        $("#integrator").jqGrid("addRowData", integratorrowid, {bizOppId:'${(id)!}'}, "first");
+    }
+
+    function saveGridAll_integrator(urlstr){
+        $('#integrator').trigger('blur')
+        var gridVo = {};
+        var integratorArr = $('#integrator').jqGrid('getRowData');
+        gridVo.jsonStr = JSON.stringify(integratorArr);
+        console.log(gridVo);
+        $.ajax({
+            type: "POST",
+            url: urlstr,
+            async: true,
+            data: gridVo,
+            dataType: 'json',
+            success: function (msg) {
+                reload_integrator();
+                alert('${i18n.get('保存成功！')}'); 
+            },
+            error: function (e) {
+            	alert('${i18n.get('操作失败，请联系管理员')}'); 
+            }
+        });
+    }
+</script>

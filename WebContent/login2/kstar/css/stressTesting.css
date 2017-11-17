@@ -1,0 +1,67 @@
+@charset "utf-8";
+.title1,.title2,.title3{text-align:center;border-style:solid;border-width:1px;border-color:#a2a2a2;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFFFFF',endColorstr='#e9e9e9');background:-moz-linear-gradient(top,#ffffff,#e9e9e9);background:-webkit-gradient(linear,left top,left bottom,from(#ffffff),to(#e9e9e9));border-radius:3px;}
+.title1{padding-top:10px;padding-bottom:10px;margin:2px;}
+.title2{padding-top:3px;padding-bottom:3px;margin:2px 2px 1px;}
+.title3{padding-top:3px;padding-bottom:3px;margin:1px 2px 2px;}
+.macroDataTd{text-align:center;vertical-align:middle;cursor:pointer;}
+.changedMacroDataTd{text-align:center;vertical-align:middle;cursor:pointer;background-color:orange;}
+.dataDiv{width:100px;height:30px;background-color:blue;opacity:0.50;dispaly:none;}
+.macroTableDiv{border-style:solid;border-width:1px;border-color:#a2a2a2;margin:0 2px;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFFFFF',endColorstr='#eeeeee');background:-moz-linear-gradient(top,#ffffff,#eeeeee);background:-webkit-gradient(linear,left top,left bottom,from(#ffffff),to(#eeeeee));border-radius:3px;}
+.paramSettingTd{text-align:center;vertical-align:middle;cursor:pointer;}
+.scrnarioSimulationTableDiv{border-style:solid;border-width:0 1px 1px;border-color:#a2a2a2;margin:0 2px;}
+.scrnarioSimulationTableDiv table{background:#fff;}
+.scrnarioSimulationTitle{text-align:center;vertical-align:middle;background-color:#f1f0f1;height:20px;-moz-opacity:0.8;opacity:0.8;border-bottom:1px dotted #bbcbdd;}
+.scrnarioSimulationTableDiv table th.scrnarioSimulationTitle{background:url(../images/lang_form_bg.png) repeat-x scroll 0 0 transparent;border:1px solid #c9c6c6;height:56px;line-height:16px;text-shadow:0 1px 0 #F4F4F4;}
+.scrnarioSimulationData{text-align:center;vertical-align:middle;height:20px;-moz-opacity:0.8;opacity:0.8;border-bottom:1px dotted #bbcbdd;}
+.resultTable .stressTestTitle2{text-align:center;vertical-align:middle;background:#f1f0f1;color:#333333;}
+.resultTable .stressTestTitle3{text-align:center;vertical-align:middle;color:#333333;height:20px;background:none;}
+.stressTestData{text-align:center;vertical-align:middle;height:20px;}
+.message_tittle{background-color:#ededed;padding:5px 0;magin:2px 3px;width:100px;border-radius:3px;}
+.message_tittle2{background-color:#ededed;padding:3px 10px;margin:2px 5px;border-radius:3px;}
+.message_tittle3{background-color:#ededed;padding:3px 5px;margin:5px;border-radius:3px;}
+.blue_remind{background-color:#14b8f3;padding:3px 10px;margin:2px;border-radius:2px;white-space:nowrap;color:#fff;}
+.yellow_remind{background-color:#ff6501;padding:3px 10px;margin:2px;border-radius:2px;white-space:nowrap;color:#fff;}
+.red_remind{background-color:#eb3192;padding:3px 10px;margin:2px;border-radius:2px;white-space:nowrap;color:#fff;}
+.testbuttonbar{height:30px;line-height:30px;}
+.bluetestingbar{width:100px;background:#14b8f3;opacity:0.8;margin-right:2px;text-align:center;}
+.yellowtestingbar{width:100px;background:#ff6501;opacity:0.8;margin-right:2px;text-align:center;}
+.redtestingbar{width:100px;background:#eb3192;opacity:0.8;margin-right:2px;text-align:center;}
+.bluetestingbar span,.yellowtestingbar span,.redtestingbar span{height:32px;line-height:30px;font-weight:bold;}
+.testingset_left{width:300px;height:580px;border-style:solid;border-width:1px;border-color:#bebdbe;margin:2px 2px 5px;background:#fff;}
+.testingset_right{width:710px;height:580px;border-style:solid;border-width:1px;border-color:#bebdbe;margin:2px 0 2px -790px;background:#fff;}
+.paramSettingbody{width:1100px;height:590px;margin-right:-1100px;background:#fff;}
+.testing_moxingset{overflow-x:scroll;width:600px;margin:0 -600px 0 0;border-style:solid;border-width:1px 1px 0;border-color:#a6a6a6;}
+.testingset_leftname{width:100%;text-align:center;margin-top:15px;margin-bottom:10px;font-size:15px;font-weight:bold;}
+.testing_moxingset table{width:1216px;}
+.testing_moxingset table tr{height:18px;}
+.testing_moxingset table td{border-width:1px 1px 1px 0;border-color:#d9d9d9;border-style:solid;}
+.testing_moxingset table th{background:url(../images/form_bg.png) repeat-x scroll 0 100% transparent;border-right:1px solid #d9d9d9;border-bottom:1px solid #a6a6a6;color:#333333;font-size:12px;font-weight:bold;height:27px;line-height:27px;margin:0 6px;padding:0 20px;}
+.testing_tablemenu{width:90px;margin:0 0 0 10px;}
+.testing_tablemenu table th{border-style:solid;border-width:1px 0 1px 1px;border-color:#bebdbe;background:#f1f0f1;font-weight:normal;color:#333333;}
+.testing_colwidth{width:90px;}
+.testing_left01{height:29px;}
+@media screen and -webkit-min-device-pixel-ratio0 {
+.testing_left01{height:28px;}
+}
+.testing_left02{height:54px;}
+.testing_left03{height:18px;}
+.testingset_biaotiname{width:90%;text-align:center;margin-top:15px;margin-bottom:10px;font-size:15px;font-weight:bold;}
+.testing_titlepart_button2{height:40px;text-align:left;line-height:40px;margin-left:100px;}
+.testing_titlepart_button{height:40px;text-align:center;line-height:40px;background:url(../images/tablebutton_bg.png) repeat-x scroll 0 100% transparent;}
+.testing_titlepart_button table{border-collapse:0;border-spacing:0;margin:0;padding:0;height:100%;}
+.testing_titlepart_button input{margin-top:7px;}
+.testing_allpart table#mildness,.testing_allpart table#critical,.testing_allpart table#extreme{margin:5px;}
+.testing_titlelist{margin:5px 0 0;overflow-x:scroll;min-height:418px;margin-bottom:60px;}
+.testing_moxingset colgroup{width:80px;}
+.testing_canshushezhi{padding:20px 2px;}
+.testing_canshushezhi table tr{height:30px;}
+.testing_allpart{background:#fff;width:86em;}
+.macro_selectedcolor{background-color:#fd6464;color:#fff;text-align:center;cursor:pointer;}
+.macro_selectedline{background-color:#fae3e2;text-align:center;}
+.macro_selectedcenter{text-align:center;}
+.testing_tablemargin{background:#fff;margin:5px 0 0 5px;width:auto;}
+.tijiao_button{position:absolute;top:53px;z-index:1;cursor:pointer;}
+.daoru_button{position:absolute;top:94px;left:791px;z-index:1;cursor:pointer;}
+.upfile_button{position:absolute;top:53px;left:745px;height:22px;filter:alpha(opacity:0);opacity:0;width:50px;cursor:pointer;}
+.upfile_button2{position:absolute;top:94px;left:761px;height:22px;filter:alpha(opacity:0);opacity:0;width:50px;cursor:pointer;}
+.zhixingtesting{width:1020px;overflow:scroll;margin-bottom:60px;padding-left:5px;}

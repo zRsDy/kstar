@@ -1,0 +1,428 @@
+<#escape x as x?html>
+<@pui.body>
+
+
+<script type="text/javascript">
+
+//我司先盖章标识
+function checkValIsSealFirst(){	
+	var checked =  $("#isSealFirstBox").is(':checked')	
+	if(checked == true){	
+		$("#pageSearch_isSealFirst").val('1');
+		$("#isSealFirstBox").attr("checked","true"); 
+	}else {
+		$("#pageSearch_isSealFirst").val('0');
+		$("#isSealFirstBox").removeAttr("checked"); 		
+	}
+}
+//有效标识
+function checkValIsValidBox(){
+	var checked =  $("#isValidBox").is(':checked');
+	if(checked == true){	
+		$("#pageSearch_isValid").val('1'); 
+		$("#isValidBox").attr("checked","true"); 
+	}else {
+		$("#pageSearch_isValid").val(''); 
+		$("#isValidBox").removeAttr("checked"); 		
+	}
+}
+//变更标识
+function checkValisChangeBox(){	
+	var checked =  $("#isChangeBox").is(':checked');
+	if(checked == true){	
+		$("#pageSearch_isChange").val('1'); 
+		$("#isChangeBox").attr("checked","true"); 
+	}else {
+		$("#pageSearch_isChange").val('0'); 
+		$("#isChangeBox").removeAttr("checked"); 		
+	}
+}
+
+//高风险标识
+function checkIsHighRiskBox(){//isHighRiskBox
+	var checked =  $("#isHighRiskBox").is(':checked');
+	if(checked == true){	
+		$("#pageSearch_isHighRisk").val('1'); 
+		$("#isHighRiskBox").attr("checked","true"); 
+	}else {
+		$("#pageSearch_isHighRisk").val('0'); 
+		$("#isHighRiskBox").removeAttr("checked"); 		
+	}
+	
+}
+
+//是否已归档
+function checkValIsArchiveBox(){	
+	var checked =  $("#isArchiveBox").is(':checked')	
+	if(checked == true){	
+		$("#pageSearch_isArchive").val('1'); 
+		$("#isArchiveBox").attr("checked","true"); 
+	}else {
+		$("#pageSearch_isArchive").val('0'); 
+		$("#isArchiveBox").removeAttr("checked"); 		
+	}
+}
+
+function chekFlag(cellvalue){
+	var cellvalue = cellvalue;
+	var html="";
+	if(cellvalue=='1'){
+		html="<input type='checkbox' disabled='disabled' checked='checked' />";
+	}else{
+		html="<input type='checkbox' disabled='disabled'  />";
+	}
+	return html;
+}
+
+</script>
+
+	<#if permission["P05ConAdd"]?? >
+		<#assign addURL = "'${ctx}/standard/add.html?genContrBy=CONTR_STAND'" />
+	</#if>
+	
+	<#if permission["P05ConEdit"]??>
+		<#assign editURL = "'${ctx}/standard/tabs.html?typ=CONTR_STAND'" />
+	</#if>
+	
+	<#if permission["P05ConDoubleClick"]??>
+		<#assign dblClickPer='true'>
+	</#if>
+	
+	<#if permission["P05ConDelete"]??>
+		<#assign deleteURL = "'${ctx}/standard/delete.html'" />
+	</#if>
+	
+	<#if permission["P05ConExport"]??>
+		<#assign exportURL = "'${ctx}/standard/stdContrExport.html'" />
+	</#if>
+	
+	<#if permission["P05ConReportExport"]??>
+		<#assign reportExportURL = "'${ctx}/standard/reportExport.html'" />
+	</#if>
+	
+	
+	<#if permission["P05ConExport"]??>
+		<#assign exporBtnPer = 'true' />
+	</#if>
+	
+	<#if permission["P05ConReportExport"]??>
+		<#assign reportExporBtnPer = 'true' />
+	</#if>
+
+	<@form.table id="contracts" 
+	class="col-xs-12"
+	title="${i18n.get('合同信息列表')}" 
+	url = "${ctx}/standard/page.html" 
+	rowNum = "20" 
+	addURL = "${addURL!}"  
+	editURL= "${editURL!}"  
+	deleteURL = "${deleteURL!}"  
+	checkbox = 'true' 
+	rownumbers = 'true'
+	colModel = "[
+		{name:'id',label:'${i18n.get('合同')}ID',hidden:true,width:60,sortable:true,align:'center' },
+		{name:'contrNo',label:'${i18n.get('合同编号')}',sortable:true,align:'center' },
+		{name:'contrType',label:'${i18n.get('合同类型')}',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'contrTypeName',label:'${i18n.get('合同类型名称')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'createdAt',label:'${i18n.get('创建日期')}',hidden:false,width:150,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate(cellvalue) }},
+		{name:'custName',label:'${i18n.get('客户名称')}',hidden:false,width:230,sortable:true,align:'left' },
+		{name:'creator',label:'${i18n.get('销售人员')}',hidden:true,width:60,sortable:true,align:'center' },
+		{name:'creatorName',label:'${i18n.get('销售人员')}',hidden:false,width:60,sortable:true,align:'center' },
+		{name:'org',label:'${i18n.get('销售部门')}',hidden:true,width:150,sortable:true,align:'center' },
+		{name:'orgName',label:'${i18n.get('销售部门')}',hidden:false,width:150,sortable:true,align:'center' },
+		{name:'marketDept',label:'${i18n.get('营销部门')}',hidden:true,width:150,sortable:true,align:'center' },
+		{name:'marketDeptName',label:'${i18n.get('营销部门')}',hidden:false,width:150,sortable:true,align:'center' },		
+		{name:'contrStat',label:'${i18n.get('合同状态')}',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'contrStatName',label:'${i18n.get('合同状态')}',hidden:false,width:60,sortable:true,align:'center' },
+		{name:'totalAmt',label:'${i18n.get('合同总金额')}',hidden:false,width:90,sortable:true,align:'right', formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''} },
+		{name:'contrVer',label:'${i18n.get('合同版本')}',hidden:false,width:60,sortable:true,align:'center' },
+		{name:'isVaild', label :'${i18n.get('有效标识')}', width : 50 ,sortable:false ,editable : false,align:'center', formatter:function(cellvalue, options, rowdata){ return chekFlag(rowdata.isValid)} },
+		{name:'isChange', label :'${i18n.get('变更标识')}', width : 50 ,sortable:false ,editable : false,align:'center', formatter:function(cellvalue, options, rowdata){ return chekFlag(rowdata.isChange)} },
+		{name:'isPass', label :'${i18n.get('业务是否已通过核销流程')}', width : 50 ,sortable:false ,editable : false,align:'center', formatter:function(cellvalue, options, rowdata){ return chekFlag(rowdata.isPass)} },
+		{name:'isHighRisk', label :'${i18n.get('高风险标识')}', width : 50 ,sortable:false ,editable : false,align:'center', formatter:function(cellvalue, options, rowdata){ return chekFlag(rowdata.isHighRisk)} },
+		{name:'tolRecdAmt',label:'${i18n.get('总已收金额')}',hidden:false,width:80,sortable:true,align:'center', formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''} },
+		{name:'notTolRecAmt',label:'${i18n.get('总未收金额')}',hidden:false,width:80,sortable:true,align:'center', formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''} },
+		{name:'frameName',label:'${i18n.get('框架协议编号')}',sortable:true,align:'center' },
+		{name:'projName',label:'${i18n.get('项目名称')}',hidden:false,width:150,sortable:true,align:'center' },
+		{name:'projNo',label:'${i18n.get('项目名称')}',hidden:true,width:150,sortable:true,align:'center' },
+		{name:'contrName',label:'${i18n.get('合同名称')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'custContrNo',label:'${i18n.get('客户合同编号')}',hidden:false,width:120,sortable:true,align:'center' },
+		{name:'isArchive', label :'${i18n.get('原件是否归档')}', width : 50 ,sortable:false ,editable : false,align:'center', formatter:function(cellvalue, options, rowdata){ return chekFlag(rowdata.isArchive)} },
+		{name:'achiveRemark',label:'${i18n.get('归档备注')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'postDate',label:'${i18n.get('合同邮寄日期')}',hidden:false,width:100,sortable:true,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+		{name:'archiveDate',label:'${i18n.get('归档时间')}',hidden:false,width:100,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+		{name:'sysSignDate',label:'${i18n.get('系统签订日期')}',hidden:false,width:100,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+		{name:'bussEnityName',label:'${i18n.get('业务实体')}',hidden:false,width:220,sortable:true,align:'left' },
+		{name:'bussEnity',label:'${i18n.get('业务实体')}',hidden:true,width:150,sortable:true,align:'center' },
+		{name:'erpOrderCustName',label:'ERP${i18n.get('下单客户')}',hidden:false,width:200,sortable:true,align:'left' },
+		{name:'erpOrderCustId',label:'ERP${i18n.get('下单客户')}',hidden:true,width:150,sortable:true,align:'center' },
+		{name:'erpNo',label:'ERP${i18n.get('订单编号')}',hidden:false,width:150,sortable:true,align:'center' },
+		{name:'orderAmount',label:'${i18n.get('已下单金额')}',hidden:false,width:80,sortable:true,align:'center', formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''} },
+		{name:'deliveredAmt',label:'${i18n.get('已发货金额')}',hidden:false,width:80,sortable:true,align:'center', formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''} },
+		{name:'invoicedAmt',label:'${i18n.get('已开票金额')}',hidden:false,width:80,sortable:true,align:'center', formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''} },
+		{name:'ordererName',label:'${i18n.get('下单商务专员')}',hidden:false,width:60,sortable:true,align:'center' },
+		{name:'orderer',label:'${i18n.get('下单商务专员')}',hidden:true,width:80,sortable:true,align:'center' },
+		{name:'payStatDesc',label:'${i18n.get('收款计划维护状态')}',hidden:true,width:120,sortable:true,align:'center' },
+		{name:'payStat',label:'${i18n.get('收款计划维护状态')}',hidden:true,width:150,sortable:true,align:'center' },
+		
+		{name:'quotNo',label:'${i18n.get('报价单')}',hidden:true,width:100,sortable:true,align:'center'},
+		{name:'pricTable',label:'${i18n.get('价格表')}',hidden:true,width:150,sortable:true,align:'center' }
+		
+		]" 
+		ondblClickRow= "function(selectedData){
+			if(${dblClickPer!'false'}){
+				parent.addTab('${i18n.get('合同信息')}-'+selected_contracts.contrNo,'${ctx}/standard/tabs.html?id='+selected_contracts.id+'&typ=CONTR_STAND');
+			}
+		}"
+		buttons = "[
+			{
+				id:'exportContrListBtn',
+				label : '${i18n.get('导出')}',
+				icon : 'icon-save',
+	  			own : ${exporBtnPer!'false'},
+				handler : function(e,rowData){ 
+		  			var da={} ; 
+		  			var prjrows= $('#contracts').jqGrid('getGridParam','selarrrow'); 
+		  			
+		  			var ids=[];
+		  			var idsStr = '';
+		  			//if(prjrows.length>0){	
+				 		$.each(prjrows,function(i,id){
+ 							var item = $('#contracts').jqGrid('getRowData',id);
+				 			ids.push(item.id);
+				 			idsStr +=   item.id +',';
+				 		});	
+				 		idsStr = idsStr.substring(0,idsStr.length-1);
+	  					bootbox.confirm('${i18n.get('您确定要导出选中的数据吗')}？' , function(result) {
+							if(result) {
+								window.location.href = '${ctx}/standard/stdContrExport.html?typ=CONTR_STAND&idsStr='+idsStr+'&'+$('#search_form_contracts').serialize();
+							}
+						});
+	  				//}else{
+	  				//	alert('${i18n.get('请选择数据')}！');
+	  				//}
+				}
+			},{
+				id:'reportExportListBtn',
+				label : '${i18n.get('合同产品明细')}',
+				icon : 'icon-save',
+	  			own : ${reportExporBtnPer!'false'},
+				handler : function(e,rowData){ 
+		  			var da={} ; 
+		  			var prjrows= $('#contracts').jqGrid('getGridParam','selarrrow'); 
+		  			
+		  			var ids=[];
+		  			var idsStr = '';
+		  			//if(prjrows.length>0){	
+				 		$.each(prjrows,function(i,id){
+ 							var item = $('#contracts').jqGrid('getRowData',id);
+				 			ids.push(item.id);
+				 			idsStr +=   item.id +',';
+				 		});	
+				 		idsStr = idsStr.substring(0,idsStr.length-1);
+	  					bootbox.confirm('${i18n.get('您确定要导出选中的明细数据吗')}？' , function(result) {
+							if(result) {
+								window.location.href = '${ctx}/standard/reportExport.html?typ=CONTR_STAND&idsStr='+idsStr+'&'+$('#search_form_contracts').serialize();
+							}
+						});
+	  				//}else{
+	  				//	alert('${i18n.get('请选择数据')}！');
+	  				//}
+				}
+			},
+			{
+				id:'refrashListBtn',
+				label : '${i18n.get('刷新')}',
+				icon : 'icon-save',
+				own : 'true',
+				handler : function(e,rowData){
+					reload_contracts();
+				}
+			}
+		]"
+		  	 >  
+			<div class="col-xs-12" style="padding-top: 20px;">
+				<div class="form-group col-xs-3">
+				<input type="text" id="searchKey" name="searchKey" placeholder='${i18n.get('查询关键字')}' size="30" />
+				</div>	
+				
+				<div class="main" id="searchFormDiv" style="padding-top: 10px;padding-bottom:10px; border-top: 1px solid #e9e9e9 ; float: Left; width: 100%;" >
+	 <table border="0" cellpadding="0" cellspacing="0" >
+				<tr>
+			<td width="100px" align="left">${i18n.get('合同类型')}:</td> 
+			<td width="180px">
+			 <@form.select style="width: 160px;" id="pageSearch_contrType" name="pageSearch_contrType" code="CONTRACTTYPE"  placeholder="${i18n.get('合同类型')}"
+             url="function(){ return '${ctx}/lovcontract/selectContrType.html?contrTpCd=CONTR_STAND';}"	
+              level="3" 	value ="" viewKey='name' viewKey2='' />              			 
+			</td>
+			<td width="100px" align="left">${i18n.get('业务实体')}:</td>
+			<td width="180px">					
+             	<@form.select style="width: 160px;" id="pageSearch_bussEnity" name="pageSearch_bussEnity"  placeholder="${i18n.get('业务实体')}" 
+             		code="OPERATION_UNIT" level="1"   value =""
+             	/>
+			</td>
+			<td width="100px" align="left">${i18n.get('项目名称')}:</td>
+			<td width="180px">			
+           	<@form.autocomplete  id="pageSearch_projNo" name="pageSearch_projNo"  idKey='id' style="width: 160px;" 
+            	formatResult="function(data) {return '<div >' +data.opportunityName + '</div>';}"
+				url="function(){ return '${ctx}/lovcontract/autocompleteproject.html'; }"
+            	value="" placeholder="${i18n.get('输入查询项目名称')}"  
+           	/>	
+           	</td>
+           	<td width="100px" align="left">${i18n.get('合同状态')}:</td>
+			<td width="180px">		
+             	<@form.select style="width: 160px;" id="pageSearch_contrStat" name="pageSearch_contrStat" 
+             		code="CONTRACTSTATUS"  value =""  placeholder=" "  
+             		/>
+			</td> 
+		</tr>
+		<tr>
+			<td width="100px" align="left">${i18n.get('客户名称')}:</td>
+			<td width="180px">		
+           	<@form.autocomplete  id="pageSearch_custCode" name="pageSearch_custCode" idKey='id' style="width: 160px;"   placeholder="${i18n.get('客户')}" 
+            	formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+				url="function(){ return '${ctx}/lovcontract/autocompletecustomer.html'; }"
+            	value=""            	  
+           	/>	
+			</td>
+			<td width="100px" align="left">ERP${i18n.get('下单客户')}:</td>
+			<td width="180px">
+           	<@form.autocomplete  id="pageSearch_erpOrderCustId" name="pageSearch_erpOrderCustId" idKey='id' style="width: 160px;"  
+            	formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"   placeholder=" "  
+				url="function(){ return '${ctx}/lovcontract/autocompletecustomer.html'; }"
+            	value=""            	  
+           	/>	
+			</td>
+			<td width="100px" align="left">${i18n.get('合同名称')}:</td>
+			<td width="180px"><@form.input id="pageSearch_contrName_like" name="pageSearch_contrName_like"   tip="" value="" /></td>
+			<td width="100px" align="left">${i18n.get('合同总金额')}:</td>
+			<td width="180px">	
+             	<@form.input id="pageSearch_totalAmt" name="pageSearch_totalAmt" tip="" value="" />
+			</td>	
+		</tr>
+		<tr>
+			<td width="100px" align="left">${i18n.get('框架协议编号')}:</td>
+			<td width="180px">
+           	<@form.autocomplete  id="pageSearch_frameNo" name="pageSearch_frameNo"  style="width: 160px;"  
+            	formatResult="function(data) {return '<div >' +data.contrNo + '</div>';}"
+				url="function(){ return '${ctx}/lovcontract/autocompleteFrameno.html'; }"
+            	value=""     placeholder="${i18n.get('输入查询框架协议编号')}"        	
+           	/>			
+			</td>
+			<td width="100px" align="left">${i18n.get('下单商务专员')}:</td>
+			<td width="180px">
+			<@form.autocomplete  id="pageSearch_orderPosId" name="pageSearch_orderPosId" style="width: 160px;" 
+            	idKey='id'
+            	 placeholder=" " 
+				multiple="false"
+            	formatResult="function(data) {return ' <div > <li> <i class=icon-bullhorn></i> '+data.orgName +' | '+ data.positionName +' | '+ data.employeeName +' | '+ data.employeeNo +'</li></div>';}"
+            	formatSelection="function(data) { return '<div >' + data.employeeName + '</div>';}"
+				url="function(){ return '${ctx}/common/selectTradeCommisioner.html'; }"
+				value="" 
+           	/>
+			</td>
+			<td width="100px" align="left">${i18n.get('客户合同编号')}:</td>
+			<td width="180px"><@form.input id="pageSearch_custContrNo_like" name="pageSearch_custContrNo_like"  placeholder=" "  tip="" value="" /></td>
+			<td width="100px" align="left">${i18n.get('是否我司先盖章')}:</td>
+			<td width="180px">						
+			<input name="isSealFirstBox" type="checkbox" id="isSealFirstBox" onclick="checkValIsSealFirst()" />
+			<input name="pageSearch_isSealFirst" type="hidden" id="pageSearch_isSealFirst" value=""/>
+			</td>
+			</tr>	
+		<tr>			
+			<td width="100px" align="left">${i18n.get('我司合同编号')}:</td>
+			<td width="180px"><@form.input id="pageSearch_contrNo_like" name="pageSearch_contrNo_like"  placeholder=" "  tip="" value="" /></td>
+			
+			<td width="100px" align="left">${i18n.get('销售人员')}:</td>
+			<td width="180px">	
+				<@form.autocomplete  id="pageSearch_creator" name="pageSearch_creator"
+				idKey='employeeId' placeholder=" "
+				style="width: 160px;"
+				multiple="false"
+				formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+				url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+					/>
+               </td>
+			<td width="100px" align="left">${i18n.get('')}${i18n.get('销售部门')}:</td>
+			<td width="180px">	
+				<@form.autocomplete  id="pageSearch_org" name="pageSearch_org"
+					idKey='id'    placeholder=" " 
+					style="width: 160px;"
+					required="${i18n.get('请选择组织')}"
+					formatResult="function(data) {return '<div >' +data.name + '</div>';}"
+					url="function(){ return '${ctx}/lovcontract/autocompleteOrg.html'; }"
+				/>
+			</td>
+			<td width="100px" align="left">${i18n.get('原件是否已归档')}:</td>
+			<td width="180px">			
+			<input name="isArchiveBox" type="checkbox" id="isArchiveBox" onclick="checkValIsArchiveBox()"/>
+			<input name="pageSearch_isArchive" type="hidden" id="pageSearch_isArchive"  value=""/>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px" align="left">${i18n.get('起始创建时间')}:</td>
+			<td width="180px"> 
+			<@form.date id="pageSearch_createTime_begin" name="pageSearch_createTime_begin"  placeholder=" "  tip="" value="" />
+			</td>
+			<td width="100px" align="left">${i18n.get('起始要货日期')}:</td>
+			<td width="180px">			
+			<@form.date  style="width: 160px;"  id="pageSearch_delivDate_begin"  name="pageSearch_delivDate_begin"    placeholder=" "  
+				 placeholder=" "   tip=""  value="" 
+				/>
+			</td>
+			<td width="100px" align="left">${i18n.get('起始实际签订日期')}:</td>
+			<td width="180px">
+			<@form.date  style="width: 160px;" id="pageSearch_actSignDate_begin"  name="pageSearch_actSignDate_begin" 
+				 placeholder=" "   tip=""  value="" 
+				/>
+			</td> 
+			<td width="100px" align="left">${i18n.get('变更标识')}:</td>
+			<td width="180px">			
+				<input name="isChangeBox" type="checkbox" id="isChangeBox" onclick="checkValisChangeBox()" />
+				<input name="pageSearch_isChange" type="hidden" id="pageSearch_isChange" value=""/>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px" align="left">${i18n.get('截止创建时间')}:</td>
+			<td width="180px"> 
+			<@form.date id="pageSearch_createTime_end" name="pageSearch_createTime_end"  placeholder=" "  tip="" value="" />
+			</td>
+			<td width="100px" align="left">${i18n.get('截止要货日期')}:</td>
+			<td width="180px">			
+			<@form.date  style="width: 160px;"  id="pageSearch_delivDate_end"  name="pageSearch_delivDate_end"    placeholder=" "  
+				 placeholder=" "   tip=""  value="" 
+				/>
+			</td>
+			<td width="100px" align="left">${i18n.get('截止实际签订日期')}:</td>
+			<td width="180px">
+			<@form.date  style="width: 160px;" id="pageSearch_actSignDate_end"  name="pageSearch_actSignDate_end" 
+				 placeholder=" "   tip=""  value="" 
+				/>
+			</td> 	
+			<td width="100px" align="left">${i18n.get('有效标识')}:</td>
+			<td width="180px">
+				<input name="isValidBox" type="checkbox" id="isValidBox"  onclick="checkValIsValidBox()" />
+				<input name="pageSearch_isValid" type="hidden" id="pageSearch_isValid" value=""/>
+			</td>
+			
+		</tr>
+		
+		<tr>
+			<td width="100px" align="left">${i18n.get('产品型号')}:</td>
+			<td width="180px"><@form.input id="prdTyp" name="prdTyp" /></td>
+			<td width="100px" align="left">${i18n.get('物料号')}:</td>
+			<td width="180px"><@form.input id="materCode" name="materCode" /></td>
+			<td width="100px" align="left">${i18n.get('高风险标识')}:</td>
+			<td width="180px">
+				<input name="isHighRiskBox" type="checkbox" id="isHighRiskBox" onclick="checkIsHighRiskBox()" />
+				<input name="pageSearch_isHighRisk" type="hidden" id="pageSearch_isHighRisk" value="" />
+			</td>
+		</tr>
+		
+	</table>
+			</div>
+			</div>
+	</@form.table> 
+	
+</@pui.body>
+</#escape>

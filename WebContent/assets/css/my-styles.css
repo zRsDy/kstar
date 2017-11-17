@@ -1,0 +1,48 @@
+/* Extra small devices (phones, less than 768px) */
+/* No media query since this is the default in Bootstrap */
+
+/*!* Small devices (tablets, 768px and up) *!*/
+/*@media (min-width: 768px) {*/
+
+/*}*/
+
+
+/* Medium devices (desktops, 992px and up) */
+@media (min-width: 620px) {
+    .my-col {
+        width: 50% !important;
+        float: left;
+    }
+}
+
+/* Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+    .my-col {
+        width: 25% !important;
+        float: left;
+    }
+}
+
+
+.my-col > * {
+    width: 100%;
+}
+
+.my-grid > * {
+    border-bottom: dashed 1px lightgrey;
+    padding: 10px 0;
+}
+
+.my-col > *:nth-child(even) {
+    /*border: 1px solid #f0f0f0;*/
+    padding-bottom: 10px;
+}
+
+.dropdown.my-dropdown > * {
+    width: 100%;
+}
+
+.my-label > * {
+    vertical-align: bottom;
+    display: inline-block;
+}

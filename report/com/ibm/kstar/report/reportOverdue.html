@@ -1,0 +1,59 @@
+<@cui.body2>
+<style type="text/css">
+	table {
+	border-collapse: collapse;
+	border-color: #ff0000;
+	}
+	
+	table td {
+		padding:1px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	select {
+		width: 180px;
+	}
+</style>
+<div class="col-xs-12">
+	<@form.table id="reportOverdue" 
+		class="col-xs-12"
+		search="false"
+		title="${i18n.get('逾期未发货明细')}" 
+		url = "${ctx}/report/reportOverdue.html?orgIdOrEmployeeId=${orgIdOrEmployeeId}&reportType=${reportType}&currency=${currency}&year=${year}"
+		rowNum = "20" 
+		colModel = "[
+			 	{name : 'id', label:'id', width : 20, editable : false, hidden : true}, 
+			 	{name : 'customerName', label:'${i18n.get('客户名称')}', width : 250, sortable:false, editable:false, align:'center'}, 
+			 	{name : 'salesmanName', label:'${i18n.get('销售人员')}', width : 100, sortable:false, editable:false, align:'center'},
+			 	{name : 'salesmanPosName', label:'${i18n.get('销售人员岗位')}', width : 100, sortable:false, editable:false, align:'center'},
+			 	{name : 'orderCode', label:'${i18n.get('CRM订单编号')}', width : 110, sortable:false, editable:false, align:'center'},
+			  	{name : 'erpOrderCode', label:'${i18n.get('ERP订单编号')}', width : 150, sortable:false, editable:false, align:'center'},
+			  	{name : 'lineNo', label:'${i18n.get('行号')}', width : 150, editable : false}, 
+			  	{name : 'materielCode', label:'${i18n.get('物料编号')}', width : 150, editable : false}, 
+			  	{name : 'proDesc', label:'${i18n.get('产品说明')}', width : 100, editable:false, align:'center'}, 
+			  	{name : 'proModel', label:'${i18n.get('产品型号')}', width : 100, editable:false, align:'center'},
+			  	{name : 'shipOrgNm',label:'${i18n.get('发货组织')}',hidden:false,width:150,sortable:true,align:'center' }, 
+				{name : 'requestDate', label:'${i18n.get('要货日期')}', width : 250, editable:false ,align:'center',sortable:true,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+				{name : 'proQty', label:'${i18n.get('数量')}', width : 150, editable:false, align:'center',sortable:true}, 
+			  	{name : 'unitLable', label:'${i18n.get('单位')}', width : 150, editable:false, align:'center',sortable:true}, 
+			  	{name : 'erpSettPrice', label:'${i18n.get('ERP结算单价')}', width : 120, editable:false, align:'center',sortable:false}, 
+			  	{name : 'amount', label:'${i18n.get('金额')}', width : 120, editable:false, align:'center',sortable:false}, 
+			  	{name : 'promiseDate', label:'${i18n.get('承诺日期')}', width : 100, editable:false, align:'center',sortable:true,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+			  	{name : 'confirmDeliveryDate', label:'${i18n.get('是否需要启动交期确认')}', width : 100, editable:false, align:'center',sortable:true}, 
+			  	{name : 'isPending', label:'${i18n.get('是否暂挂')}', width : 100, editable:false, align:'center',sortable:false}, 
+			  	{name : 'isAdvanceBilling', label:'${i18n.get('是否提前开票')}', width : 100, editable:false, align:'center',sortable:false}, 
+			  	{name : 'deliveryQty', label:'${i18n.get('发货数量')}', width : 150, sortable:false, editable:false, align:'center',sortable:true}, 
+			  	{name : 'billingQty', label:'${i18n.get('开票数量')}', width : 100, sortable:false, editable:false, align:'center',sortable:true},
+			  	{name : 'statusLable', label:'${i18n.get('CRM状态')}', width : 100, sortable:false, editable:false, align:'center',sortable:false}, 
+			  	{name : 'erpPlanStatus', label:'${i18n.get('ERP计划状态')}', width : 200, sortable:false, editable:false, align:'center',sortable:true},
+			  	{name : 'isErpDelivery', label:'${i18n.get('ERP是否已发货')}', width : 150,hidden:true, sortable:false, editable:false, align:'center',sortable:true}
+			]" 
+			> 
+		</@form.table>
+</div>
+</@cui.body2>

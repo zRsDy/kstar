@@ -1,0 +1,221 @@
+<@pui.body>
+
+	<div class="col-xs-12" >
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1"
+			success="function(){ opener.reload_t1(); }" class="form-horizontal"
+			>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="id"> ID : </label>
+					  
+							<@form.input
+					id="id"  name="id" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.id)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="seriesName"> ${i18n.get('序列号 :')} </label>
+					  
+							<@form.input
+					id="seriesName"  name="seriesName" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.seriesName)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="lastUpdateDate"> ${i18n.get('最后更新时间 :')} </label>
+					<@form.date   
+					id="lastUpdateDate"  name="lastUpdateDate" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.lastUpdateDate)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="receiveNumber"> ${i18n.get('签收单号 :')} </label>
+					  
+							<@form.input
+					id="receiveNumber"  name="receiveNumber" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.receiveNumber)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="anzhuangCompletedDate"> ${i18n.get('实际出货日期 :')} </label>
+					<@form.date   
+					id="anzhuangCompletedDate"  name="anzhuangCompletedDate" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.anzhuangCompletedDate)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="itemMode"> ${i18n.get('产品型号 :')} </label>
+					  
+							<@form.input
+					id="itemMode"  name="itemMode" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.itemMode)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="itemNumber"> ${i18n.get('物料编号 :')} </label>
+					  
+							<@form.input
+					id="itemNumber"  name="itemNumber" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.itemNumber)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="itemDesc"> ${i18n.get('产品描述 :')} </label>
+					  
+							<@form.input
+					id="itemDesc"  name="itemDesc" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.itemDesc)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="uom"> ${i18n.get('单位 :')} </label>
+					  
+							<@form.input
+					id="uom"  name="uom" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.uom)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="receiveQuantity"> ${i18n.get('数量 :')} </label>
+					  
+						<@form.number 
+					id="receiveQuantity"  name="receiveQuantity" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.receiveQuantity)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="seriesCount"> ${i18n.get('已录数量 :')} </label>
+					  
+						<@form.number 
+					id="seriesCount"  name="seriesCount" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.seriesCount)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="zongjianshu"> ${i18n.get('件数 :')} </label>
+					  
+						<@form.number 
+					id="zongjianshu"  name="zongjianshu" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.zongjianshu)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="comments"> ${i18n.get('备注 :')} </label>
+					  
+							<@form.input
+					id="comments"  name="comments" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.comments)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="receivePrtDate"> ${i18n.get('签收单打印日期 :')} </label>
+					<@form.date   
+					id="receivePrtDate"  name="receivePrtDate" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.receivePrtDate)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="shipToCustomer"> ${i18n.get('客户名称 :')} </label>
+					  
+							<@form.input
+					id="shipToCustomer"  name="shipToCustomer" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.shipToCustomer)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="externalShipmentNumber"> ${i18n.get('出货单号 :')} </label>
+					  
+							<@form.input
+					id="externalShipmentNumber"  name="externalShipmentNumber" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.externalShipmentNumber)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="orderNumber"> ${i18n.get('订单编号 :')} </label>
+					  
+						<@form.number 
+					id="orderNumber"  name="orderNumber" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.orderNumber)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="creationDate"> ${i18n.get('创建日期 :')} </label>
+					<@form.date   
+					id="creationDate"  name="creationDate" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.creationDate)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="intMessage"> ${i18n.get('接口信息 :')} </label>
+					  
+							<@form.input
+					id="intMessage"  name="intMessage" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.intMessage)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="intStatus"> ${i18n.get('接口数据状态 :')} </label>
+					  
+						<@form.number 
+					id="intStatus"  name="intStatus" 
+					placeholder="" 
+					tip="" 
+					value="${(intProdSerie.intStatus)!}" 
+					/>
+				</div>	
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info" type="submit">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+	</div>
+</@pui.body>

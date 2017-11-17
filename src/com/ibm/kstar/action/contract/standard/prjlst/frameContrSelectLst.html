@@ -1,0 +1,145 @@
+<@pui.body>
+	<div class="col-xs-12">
+	<@form.table id="framePrdLst"
+		class="col-xs-12"
+			shrinkToFit = "false"
+			title="${i18n.get('工程清单列表')}"
+			url = "${ctx}/standard/prjlst/prjLstPage.html?contrId=${oriContrId}"
+			rowNum = "20"
+			checkbox = 'true' 
+			rownumbers = "true"
+			grouping = "true"
+			groupingView = "{ groupField : ['prdCtg'] }"
+			colModel = "[
+			  { name : 'id', label : 'prjlstID',hidden : true, width : 30 ,sortable:false},
+			  { name : 'lineNum', label : '${i18n.get('行号')}', hidden : false,width : 30 ,sortable:false },
+			  { name : 'proId', label : 'prdId', hidden : true , sortable:false}, 
+			  { name : 'prdNm', label : '${i18n.get('产品名称')}',  sortable:false,hidden : false},
+			  { name : 'prdCtgid', label : 'prdCtgId', hidden : true , sortable:false}, 
+			  { name : 'prdCtg', label : '${i18n.get('产品分类')}', sortable:false ,editable : false,width:80,align:'center' },
+			  { name : 'prdTyp', label : '${i18n.get('产品型号')}', sortable:false ,editable : false },
+			  { name : 'materCode', label : '${i18n.get('物料号')}', hidden : false , sortable:false ,editable : false,width:80,align:'center' },
+			  { name : 'prdUnt', label : '${i18n.get('单位')}', width : 50 ,sortable:false ,editable : false },
+			  { name : 'prdSprc', label : '${i18n.get('公开价格')}', width : 80 ,sortable:false  ,editable : false,align:'right' },
+			  { name : 'goldPrc', label : '${i18n.get('金牌价格')}', width : 80 ,sortable:false ,editable : false,align:'right' },
+			  { name : 'applyDiscount', label : '${i18n.get('申请折扣')}(%)', width : 100 ,sortable:false  ,editable : false,align:'right' },
+			  { name : 'applyPrc', label : '${i18n.get('申请价格')}', width : 120 ,sortable:false ,editable : false ,align:'right'},
+			  { name : 'applyAmt', label : '${i18n.get('申请金额')}', hidden : true , width : 120 ,sortable:false ,editable : false,align:'right', formatter:function(cellvalue, options,rowdata){ return sumApplyAmt(rowdata) }  },
+			  { name : 'approveDiscount', label : '${i18n.get('批复折扣')}(%)', width : 100 ,sortable:false  ,editable : false,align:'right' },
+			  { name : 'approvePrc', label : '${i18n.get('批复价格')}', width : 120 ,sortable:false ,editable : false,align:'right'},
+			  { name : 'approveAmt', label : '${i18n.get('批复金额')}', hidden : true , width : 120 ,sortable:false ,editable : false,align:'right', formatter:function(cellvalue, options,rowdata){ return sumApproveAmt(rowdata) }  },
+			  { name : 'prdPrc', label : '${i18n.get('合同价格')}', width : 120 ,sortable:false ,editable : false,align:'right' },
+			  { name : 'amt', label : '${i18n.get('数量')}', width : 80 ,sortable:false,editable : false,align:'right', formatter:'number',formatoptions:{decimalPlaces : 0,defaultValue:''}  },
+			  { name : 'ttlUnt', label : '${i18n.get('单品总金额')}', width : 120 ,sortable:false ,editable : false,align:'right', formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''} },
+			  { name : 'veriedNum', label : '${i18n.get('核销数量')}', width : 80 ,sortable:false,editable : false,align:'right', formatter:'number',formatoptions:{decimalPlaces : 0,defaultValue:''}  },
+			  { name : 'notVeriNum', label : '${i18n.get('可下单数量')}', width : 80 ,sortable:false,editable : false,align:'right', formatter:'number',formatoptions:{decimalPlaces : 0,defaultValue:''}  },
+			  { name : 'ordNum', label : '${i18n.get('下单数量')}', hidden : true, width : 50 ,sortable:false,editable : false,align:'right' },
+			  { name : 'ordNo', label : '${i18n.get('订单编号')}', hidden : true, width : 80 ,sortable:false ,editable : false },
+			  { name : 'notes', label : '${i18n.get('备注')}', width : 50 ,sortable:false,editable : false }, 
+			  { name : 'proDesc', label : '${i18n.get('产品描述')}', width : 200 ,sortable:false }
+			  ]"
+		  search = "false"
+		 buttons = "[
+		 	{
+				id:'selectButton',
+				label : '${i18n.get('选择')}',
+				icon : 'icon-save',
+				own : 'true',
+				handler : function(e,rowData){
+					var selectedData = [];
+					var ids = $('#framePrdLst').jqGrid('getGridParam', 'selarrrow');
+					$.each(ids,function(i,id){
+						var line = $('#framePrdLst').jqGrid('getRowData',id);
+						selectedData.push(line);
+					}) 
+					parent.currentParent.${pickerId}_callback(selectedData);
+					api.close();
+				}
+			},
+			{
+				id:'close_t1',
+				label : '${i18n.get('关闭')}',
+				icon : 'icon-trash',
+				own : 'true',
+				handler : function(e,rowData){
+					frameElement.api.close();
+				}
+			}
+		 ]"
+		 gridComplete = "function(){
+		 	$('#framePrdLst').setGridWidth($(window).width()-20);
+		 }"
+		>
+			 <div class="col-xs-12" style="padding-top: 10px;">
+				<div class="form-group col-xs-3">
+					<input type="text" id="searchKey" name="searchKey" placeholder="${i18n.get('查询关键字')}" />
+				</div>	
+				<div class="form-group col-xs-2" style="padding-left: 30px;">
+					<button type="submit" class="btn btn-info" > 
+						<i class="icon-search bigger-110"></i>
+						${i18n.get('查询')}
+					</button>
+				</div>
+			</div>
+	</@form.table>
+	</div>
+	
+
+<script type="text/javascript">
+
+function sumApplyAmt(rowData){
+	// 计算申请金额
+	var amt = 0;
+	var prc = 0 ; 
+	var num = 1; 
+	if(rowData && rowData['prjlst']){
+		prc =  rowData['prjlst'].applyPrc;
+		if(rowData['prjlst'].amt!=''){
+			num = rowData['prjlst'].amt;
+		}
+	}else if(rowData && rowData['applyPrc']){
+		prc =  rowData['applyPrc'];
+		if(rowData['amt']!=''){
+			num = rowData['amt'];
+		}
+	}
+	amt = prc*num; 
+	amt = isNaN(amt)?'':amt;
+	return amt;
+	
+}
+
+
+function sumApproveAmt(rowData){
+	// 计算批复金额
+	var amt = 0;
+	var prc = 0 ; 
+	var num = 1; 
+	if(rowData && rowData['prjlst']){
+		if(rowData['prjlst'].approvePrc ==''){
+			prc =  rowData['prjlst'].applyPrc;			
+		}else{
+			prc =  rowData['prjlst'].approvePrc;			
+		}
+		if(rowData['prjlst'].amt!=''){
+			num = rowData['prjlst'].amt;
+		}
+	}else if(rowData && rowData['approvePrc']){
+		if(rowData['approvePrc'] ==''){
+			prc =  rowData['applyPrc'];			
+		}else{
+			prc =  rowData['approvePrc'];			
+		}
+		if(rowData['amt']!=''){
+			num = rowData['amt'];
+		}
+	}
+	amt = prc*num;
+	amt = isNaN(amt)?'':amt; 
+	return amt;
+	
+}
+
+</script>
+</@pui.body>
+

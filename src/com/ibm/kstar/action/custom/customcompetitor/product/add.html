@@ -1,0 +1,62 @@
+<#escape x as x?html>
+<@pui.body >
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="achiForm" success="function(){ parent.currentParent.reload_achiDeepProduct(); }" class="form-horizontal" >
+		<input id="achiPid" name="achiPid" type="hidden"  value="${(customCompAchiProduct.achiPid)!}">
+		<input id="reportPid" name="reportPid" type="hidden"  value="${(customCompAchiProduct.reportPid)!}">
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>${i18n.get('竞争对手主推产品名称')} : 
+			</label>
+			<@form.input
+			id="productCode"  
+			name="productCode" 
+			placeholder="" 
+			required="${i18n.get('不能为空！')}"
+			tip="" 
+			value="${(customCompAchiProduct.productCode)!}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>${i18n.get('去年业绩分解')} : 
+			</label>
+			<@form.input
+			id="result"  
+			name="result" 
+			placeholder="" 
+			required="${i18n.get('不能为空！')}"
+			tip="" 
+			value="${(customCompAchiProduct.result)!}" 
+			/>
+		</div>
+		
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > ${i18n.get('备注')} : </label>
+			<@form.input
+			id="comment"  
+			name="comment" 
+			placeholder="" 
+			tip="" 
+			value="${(customCompAchiProduct.comment)!}" 
+			/>
+		</div>
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+		<div class="clearfix form-actions">
+			<div class="col-md-offset-5 col-md-7">
+				<button class="btn btn-info submit" type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				&nbsp; &nbsp; &nbsp;
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+				${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+	</@form.form>
+	</@form.panel>
+</@pui.body>
+</#escape>

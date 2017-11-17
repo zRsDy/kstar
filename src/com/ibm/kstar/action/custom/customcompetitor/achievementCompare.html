@@ -1,0 +1,104 @@
+<#escape x as x?html>
+<#if (permission["P02CompetitorReportT2ComAdd"]?? && ("${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign addT2ComURL = "'${ctx}/custom/report/analyse/add.html?id=${(customCompetitorReport.id)!}'"    />
+</#if>
+
+<#if (permission["P02CompetitorReportT2ComEdit"]?? && ("${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign editT2ComURL= "'${ctx}/custom/report/analyse/edit.html'"  />
+</#if>
+
+<#if (permission["P02CompetitorReportT2ComDelete"]?? && ("${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign deleteT2ComURL= "'${ctx}/custom/report/analyse/delete.html'"    />
+</#if>
+
+<#if (permission["P02CompetitorReportT2ProdAAdd"]?? && ("${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign addDeepURL = "'${ctx}/custom/report/deep/add.html?achiId=' + $('#achiIdDeep').val() + '&reportId=' + $('#reportIdDeep').val()"    />
+</#if>
+
+<#if (permission["P02CompetitorReportT2ProdAEdit"]?? && ("${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign editDeepURL= "'${ctx}/custom/report/deep/edit.html'" />
+</#if>
+
+<#if (permission["P02CompetitorReportT2ProdADelete"]?? && ("${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign deleteDeepURL= "'${ctx}/custom/report/deep/delete.html'"     />
+</#if>
+
+<table>
+	<tr>
+		<td width="500px">
+			<@form.table id="achiCompare" 
+			class="col-xs-12"
+			height="131px"
+			title="${i18n.get('竞争对手概况')}" 
+			url = "${ctx}/custom/report/analyse/page.html?id=${(customCompetitorReport.id)!}"
+			rowNum = "5" 
+addURL = "${addT2ComURL!}"
+editURL = "${editT2ComURL!}"
+deleteURL= "${deleteT2ComURL!}" 
+			colModel = "[
+				{name:'id',label:'ID',hidden:true,width:0,sortable:true,align:'center' },
+				{name:'reportId',label:'${i18n.get('提报编码')}',hidden:true,width:0,sortable:true,align:'center' },
+				{name:'customCode',label:'${i18n.get('客户编码')}',hidden:true,width:200,sortable:true,align:'center' },
+				{name:'competitorName',label:'${i18n.get('竞争对手名称')}',hidden:false,width:200,sortable:true,align:'center' },
+				{name:'compYearResult',label:'${i18n.get('今年已完成业绩')}',hidden:false,width:200,sortable:true,align:'center' }
+				]" 
+			onSelectRow= "function(selectedData){
+				$('#achiIdDeep').val(selectedData.id);
+				$('#reportIdDeep').val(selectedData.reportId);
+				
+				reload_achiDeepCompare();
+				
+				
+				}"
+				>
+			</@form.table>
+		</td>
+		<td width="800px">
+			
+			<@form.table id="achiDeepCompare" 
+			class="col-xs-12"
+			height="131px"
+			title="${i18n.get('业绩分解')}" 
+			url = "${ctx}/custom/report/deep/page.html?reportIdDeep=${(customCompetitorReport.id)!}"
+			rowNum = "5" 
+addURL = "${addDeepURL!}"
+editURL = "${editDeepURL!}"
+deleteURL= "${deleteDeepURL!}" 
+			colModel = "[
+				{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+				{name:'productCode',label:'${i18n.get('竞争对手主推产品名称')}',hidden:false,width:150,sortable:true,align:'center' },
+				{name:'compPruductSet',label:'${i18n.get('竞争对手主推产品系列')}',hidden:false,width:150,sortable:true,align:'center' },
+				{name:'compPruductUsp',label:'${i18n.get('竞争对手主推产品卖点')}',hidden:false,width:150,sortable:true,align:'center' },
+				{name:'compPruductEqu',label:'${i18n.get('对应科士达产品系列')}',hidden:false,width:150,sortable:true,align:'center' },
+				{name:'compPruductSugg',label:'${i18n.get('科士达对应产品改善建议')} ',hidden:false,width:150,sortable:true,align:'center' }
+				]"
+			
+				>
+			<input id="achiIdDeep" name= "achiIdDeep" type="hidden"  >
+			<input id="reportIdDeep" name= "reportIdDeep" type="hidden"  >
+			</@form.table> 
+			
+		</td>
+	</tr>
+	
+</table>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#add_achiDeepCompare').unbind('click').bind('click', function(){
+			_achiIdDeep = $("#achiIdDeep").val();
+			_reportIdDeep = $("#reportIdDeep").val();
+			if (!_achiIdDeep || !_reportIdDeep) {
+				alert("${i18n.get('请先选择竞争对手')}");
+				return false;
+			}
+			
+		var url = '${ctx}/custom/report/deep/add.html?achiId=' + _achiIdDeep + '&reportId=' + _reportIdDeep;
+		parent.dialog("${i18n.get('新增')}/${i18n.get('编辑')}",url,window);
+		});
+	});
+	
+	
+	
+</script>
+</#escape>

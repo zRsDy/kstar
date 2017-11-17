@@ -1,0 +1,70 @@
+<#escape x as x?html>
+<@pui.body>
+
+	<table style="width: 800px;" >
+	<tr>
+		<td valign="top">
+			<@form.table id="prjlst"
+			class="col-xs-12"
+			shrinkToFit = 'false'
+			title="${i18n.get('工程清单列表')}"
+			url = "${ctx}/standard/prjlst/prjLstPage.html"
+			rowNum = "20"
+			rownumbers = 'true'
+			colModel = "[
+			  { name : 'id', label : 'prjlstID',hidden : true, width : 30 ,sortable:false},
+			  { name : 'lineNum', label : '${i18n.get('行号')}', hidden : true,width : 50 ,sortable:false },
+			  { name : 'proId', label : 'prdId', hidden : true , sortable:false}, 
+			  { name : 'prdNm', label : '${i18n.get('产品名称')}',  sortable:false,hidden : true},
+			  { name : 'act', label : '${i18n.get('产品名称')}', width:120, sortable:false,hidden : false, formatter:function(cellvalue, options,rowdata){ return aFormatName(rowdata) }  },
+			  { name : 'prdCtgid', label : 'prdCtgId', hidden : true , sortable:false}, 
+			  { name : 'prdCtg', label : '${i18n.get('产品分类')}',width:120, align:'center',sortable:false ,editable : false },
+			  { name : 'prdTyp', label : '${i18n.get('产品型号')}', sortable:false ,align:'center',editable : false },
+			  { name : 'materCode', label : '${i18n.get('物料号')}', width:120,align:'center',hidden : false , sortable:false ,editable : false },
+			  { name : 'prdUnt', label : '${i18n.get('单位')}', width : 50 ,sortable:false ,editable : false },
+			  { name : 'prdSprc', label : '${i18n.get('定价')}', width : 100 ,align:'right',sortable:false  ,editable : false },
+			  { name : 'prdPrc', label : '${i18n.get('合同单价')}', width : 120 ,align:'right',sortable:false ,editable : true },
+			  { name : 'amt', label : '${i18n.get('数量')}', width : 100 ,align:'right',sortable:false,editable : true },
+			  { name : 'ttlUnt', label : '${i18n.get('单品总金额')}', width : 120 ,align:'right',sortable:false ,editable : false,formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''} },
+			  { name : 'notVeriNum', label : '${i18n.get('未核销数量')}',align:'center', width : 50 ,sortable:false },
+		   	  { name : 'veriedNum', label : '${i18n.get('已核销数量')}',align:'center', width : 50 ,sortable:false },
+		   	  { name : 'ordNum', label : '${i18n.get('下单数量')}', hidden : true, width : 50 ,sortable:false,editable : false },
+		   	  { name : 'ordNo', label : '${i18n.get('订单编号')}', hidden : true, width : 80 ,sortable:false ,editable : false },
+			  { name : 'notes', label : '${i18n.get('备注')}', width : 200 ,sortable:false }, 
+			  { name : 'proDesc', label : '${i18n.get('产品描述')}', width : 500 ,sortable:false }
+			  ]"
+			  
+		search="false"
+				
+			 buttons = "[]"
+	>
+			<div class="col-xs-12">
+				<input type="hidden" id="parentId" name="parentId" />
+				<@plug.tabs tabMain=tabMain></@plug.tabs>		
+			</div>
+			</@form.table>
+		</td>
+	</tr>
+</table>
+	
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	
+});
+
+
+
+
+
+
+</script>
+
+
+
+
+	
+
+</@pui.body>
+</#escape>

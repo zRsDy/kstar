@@ -1,0 +1,68 @@
+<@pui.body>
+<div class="row col-xs-12" style="width: 1000px;margin-right: 0px; margin-left: 0px;" >
+
+<table style="width: 1000px">
+<tr>
+<td style="width: 1000px">
+	<@form.table id="all_table"
+		title="${i18n.get('全部用户')}"
+		shrinkToFit = 'true'
+		url = "${ctx}/user/page.html"
+		rowNum = "10"
+		colModel = "[
+	     	{ name : 'id',    label : 'id', hidden : true , width : 60,sortable:true,align:'center' }, 
+	  		{ name : 'employee.no', label : '${i18n.get('员工号')}', width : 90 ,sortable:true}, 
+	  		{ name : 'name', label : '${i18n.get('姓名')}', width : 150 ,sortable:true },
+	  		{ name : 'user.endDate', label : '${i18n.get('失效日期')}', width : 90 ,sortable:true ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }}
+	  	]"
+		 buttons = "[]"
+		 onSelectRow = "function(data,status){
+		 	if(status){
+		 		selectedData = data ;
+		 	}
+		 }"
+		>
+		
+		<div class="col-xs-12" style="padding-top: 10px;padding-bottom: 10px;">
+			<table border="0" cellpadding="0" cellspacing="0" >
+		    	<tr align="left">
+		  			<td align="right" width="100px">
+		  				<input type="text" id="searchKey" name="searchKey" placeholder='查询关键字' />
+		            </td>
+		            <td align="left" width="230px" >
+		            	<button type="submit" class="btn btn-info" > 
+							<i class="icon-search bigger-110"></i>
+							${i18n.get('查询')}
+						</button>
+		            </td>
+		    	</tr>
+			</table>
+	  </div>
+	</@form.table>
+</td>
+</tr>
+</table>
+
+<div class="clearfix form-actions">
+	<div class="col-md-offset-5 col-md-7">
+		<button class="btn btn-info" id="selectOK" type="button" onclick="$('#all_table').trigger('blur')" >
+			<i class="icon-ok bigger-110"></i>
+			${i18n.get('选择')}
+		</button>
+		&nbsp; &nbsp; &nbsp;
+		<button class="btn" type="button" onclick="javascript:api.close()">
+			<i class="icon-undo bigger-110"></i>
+			${i18n.get('关闭')}
+		</button>
+	</div>
+</div>
+<script type="text/javascript">
+	var selectedData ;
+	$('#selectOK').click(function(){
+		selectedData = $('#all_table').jqGrid('getRowData',selectedData.id);
+		parent.currentParent.${pickerId}_callback(selectedData);
+		api.close();
+	})
+</script>
+</div>
+</@pui.body>

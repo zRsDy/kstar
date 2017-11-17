@@ -1,0 +1,44 @@
+<@pui.body>
+<div class="row col-xs-12" style="width: 1000px;margin-right: 0px; margin-left: 0px;" >
+	<@form.table id="select" 
+		class="col-xs-12"
+		title="${i18n.get('选择联系人')}"
+		shrinkToFit = 'true'
+		url = "${ctx}/lovcustom/select_contact.html?customId=${customId}"
+		rowNum = "20" 
+		colModel = "[
+			{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+			{name:'contactName',label:'${i18n.get('联系人名称')}',hidden:false,width:200,sortable:true,align:'center' }, 
+			{name:'contactTel',label:'${i18n.get('联系人电话')}',hidden:false,width:200,sortable:true,align:'center' },
+			{name:'contactSex',label:'${i18n.get('性别')}',hidden:false,width:200,sortable:true,align:'center' }
+		]" 
+		ondblClickRow = "function(){
+			parent.currentParent.${pickerId}_callback(selected_select);
+			frameElement.api.close();
+		}"
+		> 
+		<div style="padding-left:10px;">
+			<button class="btn btn-info" id="selectOK" type="button" onclick="$('#price').trigger('blur')" >
+				<i class="icon-ok bigger-110"></i>
+				${i18n.get('选择')}
+			</button>
+			&nbsp; &nbsp;
+			<button class="btn" type="button" onclick="javascript:frameElement.api.close()">
+				<i class="icon-undo bigger-110"></i>
+				${i18n.get('关闭')}
+			</button>
+		</div>	
+	</@form.table> 
+</div>
+</@pui.body>
+<script type="text/javascript">
+	$('#selectOK').click(function(){
+		if(!selected_select || selected_select == ''){
+			exalert(e,'${i18n.get('请选择数据')}');
+			return;
+		}else{
+			parent.currentParent.${pickerId}_callback(selected_select);
+			frameElement.api.close();
+		}
+	})
+</script>

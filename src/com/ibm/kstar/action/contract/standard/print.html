@@ -1,0 +1,234 @@
+<@pui.body>
+<style >
+	body {font-size:14px;}
+	*{padding:0;margin:0;color:#000;}
+	table{border-right:1px #333 solid;border-top:1px #333 solid;}
+	table tr{line-height: 20px;}
+	table td{border-left:1px #333 solid;border-bottom:1px #333 solid;padding:3px;}
+	table.item{border-top:none;}
+</style>
+<script language="javascript">
+$(function(){
+	$(".print").click(function(){
+		$(".print").parent().hide();
+		window.print();
+		//wb.execwb(6,6) 
+	})
+	$(".print").click(function(){
+		$(".print").parent().hide();
+		wb.execwb(7,1);
+	})
+	
+	$("title").html('${(contract.contrNo)!}');
+	
+	var quantity = 0;
+	$(".quantity").each(function(){
+		quantity = quantity + parseInt($(this).html());
+	});
+	$("#quantity").html(quantity);
+
+	$(".amount").html($("#total").html());
+	
+})
+</script>
+
+<div style="margin:10px auto;height:30px; width: 50px;">
+	<input type="button" class="m-btn highlight print" style="float: right;" value=" ${i18n.get('打印')} " />
+</div>
+
+<div style="width: 20cm;margin: 0 auto;">
+	<div><img src="${ctx}/assets/img2/print.png" height="34" /></div>
+	<div style="font-size: 22px; width: 100%; text-align: center;">${i18n.get('合同下单申请单（不含借货明细）')}</div>
+	<div style="width:100%; line-height: 38px;">${i18n.get('备注')}：${i18n.get('以下必填内容需完整')}、${i18n.get('准确')}、${i18n.get('无误的填写')}。${i18n.get('如发多个地址请提供行业配置表')}；${i18n.get('已开票的不允许走借货流程')}。</div>
+	<div style="height: 80%; width: 20cm; /* page-break-after: always; */">
+		<table style="width: 100%;">
+			<tr>
+				<td align="center">${i18n.get('客户名称')}</td>
+				<td colspan="5">${(contract.custName)!}</td>
+			</tr>
+			<tr>
+				<td align="center">ERP${i18n.get('下单客户')}</td>
+				<td colspan="5">${(contract.erpOrderCustName)!}</td>
+			</tr>
+			<tr>
+				<td align="center" width="120">${i18n.get('我司合同编号')}</td>
+				<td width="200">${(contract.contrNo)!}</td>
+
+				<td align="center" width="140">${i18n.get('签约时间')}</td>
+				<td width="150">${(contract.sysSignDate?date)!}</td>
+				
+				<td align="center" width="150">${i18n.get('业务实体')}</td>
+				<td width="200">
+					${(contract.bussEnityName)!}
+				</td>
+			</tr>
+			<tr>
+				<td align="center">${i18n.get('下单专员')}</td>
+				<td>${(contract.ordererName)!}</td>
+
+				<td align="center">${i18n.get('销售人员')}</td>
+				<td>${(contract.creatorName)!}</td>
+				
+				<td align="center">${i18n.get('销售部门')}</td>
+				<td>
+					${(contract.orgName)!}
+				</td>
+			</tr>
+			<#if contract.isConfList??>
+			<tr>
+				<td align="center">${i18n.get('下单总数量')}</td>
+				<td id="quantity"></td>
+
+				<td align="center">${i18n.get('下单总金额')}</td>
+				<td align="left" class="amount"></td>
+				
+				<td align="center">${i18n.get('是否有配置清单')}</td>
+				<td>
+					<#if contract.isConfList == '1'>
+					${i18n.get('是')}
+					<#else>
+					${i18n.get('否')}
+					</#if>
+				</td>
+			</tr>
+			<tr>
+				<td align="center">${i18n.get('是否上门安装')}</td>
+				<td>
+					<#if contract.isHomeInstall == '1'>
+					${i18n.get('是')}
+					<#else>
+					${i18n.get('否')}
+					</#if>
+				</td>
+
+				<td align="center">${i18n.get('是否成套')}</td>
+				<td>
+					<#if contract.isWholeSet == '1'>
+					${i18n.get('是')}
+					<#else>
+					${i18n.get('否')}
+					</#if>
+				</td>
+				
+				<td align="center">${i18n.get('是否提供安装辅材')}</td>
+				<td>
+					<#if contract.isAux == '1'>
+					${i18n.get('是')}
+					<#else>
+					${i18n.get('否')}
+					</#if>
+				</td>
+				
+			</tr>
+			<tr>
+				<td align="center">${i18n.get('是否送货上门')}</td>
+				<td>
+					<#if contract.isDelivHome == '1'>
+					${i18n.get('是')}
+					<#else>
+					${i18n.get('否')}
+					</#if>
+				</td>
+
+				<td align="center">${i18n.get('是否卸货')}</td>
+				<td>
+					<#if contract.isUnload == '1'>
+					${i18n.get('是')}
+					<#else>
+					${i18n.get('否')}
+					</#if>
+				</td>
+				
+				<td align="center">${i18n.get('要货日期')}</td>
+				<td>
+					${(contract.delivDate?date)!}
+				</td>
+			</tr>
+			<#else>
+			<tr>
+				<td align="center">${i18n.get('下单总数量')}</td>
+				<td id="quantity"></td>
+
+				<td align="center">${i18n.get('下单总金额')}</td>
+				<td align="left" class="amount"></td>
+				
+				<td align="center">${i18n.get('要货日期')}</td>
+				<td>
+					${(contract.delivDate?date)!}
+				</td>
+			</tr>
+			</#if>
+			
+			<!-- <tr>
+				<td align="center">收货地址</td>
+				<td colspan="5">${(contract.aaaa)!}</td>
+
+			</tr>
+			<tr>
+				<td align="center">收货人</td>
+				<td>${(contract.aaaa)!}</td>
+
+				<td align="center">手机</td>
+				<td>${(contract.aaaa)!}</td>
+				
+				<td align="center">电话</td>
+				<td>
+					${(contract.aaaa)!}
+				</td>
+			</tr> -->
+			<tr>
+				<td align="center">${i18n.get('备注')}</td>
+				<td colspan="5">${(contract.remark)!}</td>
+			</tr>
+			<tr>
+				<td align="left" colspan="6">${i18n.get('合同产品下单明细')}</td>
+			</tr>
+
+		</table>
+		<table style="width:100%" class="item">
+			<tr>
+				<td class="center" width="40px">${i18n.get('序号')}</td>
+				<td class="center" width="100px">${i18n.get('产品名称')}</td>
+				<td class="center" width="60px">${i18n.get('品牌')}</td>
+				<td class="center" width="80px">${i18n.get('料号')}</td>
+				<td class="center" width="60px">${i18n.get('型号')}</td>
+				<td class="center" width="60px">${i18n.get('下单数量')}</td>
+				<td class="center" width="60px">${i18n.get('单价')}</td>
+				<td class="center" width="60px">${i18n.get('金额')}</td>
+				<td class="center" width="50px">${i18n.get('备注')}</td>
+			</tr>
+			<#assign total = 0 >
+			<#list list as bean>
+			<tr>
+				<td class="center">${bean_index+1}</td>
+				<td class="center">${(bean.prdNm)!}</td>
+				<td align="center">KSTAR</td>
+				<td align="center">${(bean.materCode)!}</td>
+				<td align="center">${(bean.prdTyp)!}</td>
+				<td class="center quantity">
+					<#assign quantity = bean.amt - bean.veriedNum >
+					${(quantity)!}
+				</td>
+				<td align="right">${(bean.prdPrc)!}</td>
+				<td align="right">
+					<#assign sum = quantity * bean.prdPrc >
+					<#assign total = total + sum >
+					${(sum)!}
+				</td>
+				<td class="center">${(bean.notes)!}</td>
+			</tr>
+			</#list>
+			<tr>
+				<td align="center" colspan="2">${i18n.get('合计金额(大写)/元')}</td>
+				<td colspan="3">${(toUpper)!}</td>
+				<td align="center">${i18n.get('合计')}</td>
+				<td colspan="3" class="center">&nbsp;&nbsp;&nbsp;<span id="total">${(total)!'0'}</span>${i18n.get('元')}</td>
+			</tr>
+		</table>
+	</div>
+</div>
+<div style="margin:10px auto;height:30px; width: 50px;">
+	<input type="button" class="m-btn highlight print" style="float: right;" value=" ${i18n.get('打印')} " />
+</div>
+
+</@pui.body>

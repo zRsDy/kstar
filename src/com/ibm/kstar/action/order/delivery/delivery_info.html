@@ -1,0 +1,819 @@
+<script type="text/javascript">
+	$(document).ready(function(){
+		initConsigneeInfo();
+	});
+	
+	var selectId = "";
+	function orderSelect(rowid){
+		 selectId = rowid ;
+		 var receCustomerId =  $('#receCustomerId').val();
+		 var businessEntity =  $('#businessEntity').val();
+		 if(receCustomerId && businessEntity){
+			 $('#selectOrder').click();
+		 }else{
+			 alert('${i18n.get('请先选择业务实体和收货客户')}');
+		 }
+	}
+	
+	var newrowid = 0; 
+	function addRow()  {   
+	  	var lineNums = jQuery("#deliveryLinesForm").jqGrid('getCol','lineNum');  
+	    var maxLineNum = 0 ;
+		if(lineNums != null &&  lineNums != "" ){
+			maxLineNum = Math.max.apply(Math,lineNums);
+		}
+		
+	    newrowid = newrowid+1;
+	    var dataRow = {    
+	        id: newrowid
+	    };      
+	      
+	    //将新添加的行插入到第一列  
+	    $("#deliveryLinesForm").jqGrid("addRowData", newrowid, dataRow, "first");  
+	    //设置grid单元格不可编辑  
+	    $("#deliveryLinesForm").setGridParam({cellEdit:false});  
+	    //设置grid单元格可编辑  
+	    //$("#deliveryLinesForm").jqGrid('editRow', newrowid, false);  
+	    //确定按钮可用    
+	    //给添加的列加选择按钮  
+		var ps = '<input  type=\"button\" value=\"${i18n.get('选择订单')}\" onclick=\"orderSelect(\''+newrowid+'\');\" />'; 
+		jQuery('#deliveryLinesForm').jqGrid('setRowData', newrowid, { act : ps, lineNum:maxLineNum+1}); 
+	}
+	
+	//批量增加行
+	function addRowBatch(datas){
+		$.each(datas,function(i,data){
+			
+			var b = true;
+			var ids = $('#deliveryLinesForm').jqGrid('getDataIDs');
+			$.each(ids,function(i,id){
+    	 	   	var deyData = $('#deliveryLinesForm').jqGrid('getRowData', id); 
+    	 	   	if(deyData.orderId == data.id){
+    	 	   		b = false;
+    	 	   		return;
+    	 	  	}
+    	 	});
+    	 	if(b){
+    	 		data['orderId'] = data.id;
+    			data['orderLineNo'] = data.lineNo;
+    			data['singleCustId'] = data.customerId;
+    			data['singleCustCode'] = data.customerCode;
+    			data['singleCustName'] = data.customerName;
+    			data['residualQty'] = data.proQty;
+    			data['addrDeliveryQty'] = data.proQty;
+    			data['deliveryQty'] = data.proQty;
+    			data['deliveryAmount'] = data.amount;
+    			data['arrivalDate'] = data.requestDate;
+    			data['materielName'] = data.itemDescription;
+    			
+    			delete data.id;
+    			delete data.customerCode;
+    			delete data.customerName;
+    			
+    			var lineNums = jQuery("#deliveryLinesForm").jqGrid('getCol','lineNum');  
+    		    var maxLineNum = 0 ;
+    			if(lineNums != null &&  lineNums != "" ){
+    				maxLineNum = Math.max.apply(Math,lineNums);
+    			}
+    			newrowid = newrowid+1;  
+    		    //将新添加的行插入到第一列  
+    		    $("#deliveryLinesForm").jqGrid("addRowData", newrowid, data, "first");  
+    		    //设置grid单元格不可编辑  
+    		    $("#deliveryLinesForm").setGridParam({cellEdit:false});  
+    		    //设置grid单元格可编辑  
+    		    //$("#deliveryLinesForm").jqGrid('editRow', newrowid, false);  
+    		    //确定按钮可用    
+    		    //给添加的列加选择按钮  
+    			var ps = '<input  type=\"button\" value=\"${i18n.get('选择订单')}\" onclick=\"orderSelect(\''+newrowid+'\');\" />'; 
+    			jQuery('#deliveryLinesForm').jqGrid('setRowData', newrowid, { act : ps, lineNum:maxLineNum+1}); 
+    	 	}
+ 		});
+	}
+	
+	function createReceipts(){
+		$("#deliveryLinesForm").trigger("blur");
+		var ids = jQuery('#deliveryLinesForm').jqGrid('getGridParam','selarrrow'); 
+	
+	     if(!ids || ids.length <= 0 ){
+	      　　	alert('${i18n.get('请选择出货单行')}');
+	      　　	return;
+	     }else{
+	    	 var receiptCodes = jQuery("#receiptsListForm").jqGrid('getCol','receiptCode');  
+ 		     var rcs = [];
+ 		     $.each(receiptCodes,function(i,code){
+ 		    	 if(code.lastIndexOf("-") != -1){
+ 		    		code = code.substring(code.lastIndexOf('-')+1);
+ 	 			 }
+ 		    	rcs.push(parseInt(code))
+ 		    });
+ 		    var maxReceiptCode = "0";
+ 			 if(rcs != null &&  rcs != "" && rcs.length > 0 ){
+ 				 maxReceiptCode = Math.max.apply(Math,rcs);
+ 			 }
+ 			 
+	    	 $.each(ids,function(i,id){
+	    		 
+	    		 newrowid = newrowid + 1 ;
+	    		 var rowData = $('#deliveryLinesForm').jqGrid('getRowData',id);
+	    		 if(!rowData || !rowData.addrDeliveryQty || rowData.addrDeliveryQty <= 0){
+	    			 alert('${i18n.get('送货数量不能为空，且不能小于0')}');
+	    			 return false;
+	    		 }
+	    		 //生成签收单是扣减剩余数量
+	    		 var residualQty = parseFloat(rowData.residualQty) - parseFloat(rowData.addrDeliveryQty) ;
+	    		//设置出货单剩余数量和送货数量
+    			 $('#deliveryLinesForm').jqGrid('setRowData',id,{residualQty: residualQty });
+    			 $('#deliveryLinesForm').jqGrid('setRowData',id,{addrDeliveryQty: residualQty });
+    			 
+    			 initConsigneeInfo();
+    			 rowData['receiptCode'] = parseInt(maxReceiptCode) + 1;
+    			 
+    			 rowData['receAddress'] = $("#receAddressText").val();
+    			 rowData['consignee'] = $("#consigneeText").val();
+    			 rowData['consigneeTel'] = $("#consigneeTelText").val();
+	    		 rowData['deliveryLinesNum'] = rowData.lineNum;
+	    		 rowData['deliveryQty'] = rowData.addrDeliveryQty;
+	    		 
+	    		 var price = rowData.price =='' || rowData.price == null ? 0 : parseFloat(rowData.price);
+	    		 rowData['deliveryAmount'] = parseFloat(rowData.addrDeliveryQty) * parseFloat(price);
+	    		 rowData['id'] = newrowid;
+	    		 $('#receiptsListForm').jqGrid('addRowData',newrowid,rowData);
+	    	 });
+	    	 delete_act_buttun();
+	     } 
+	}
+	//计算剩余数量
+	function calculateResidualQty(){
+ 		$('#deliveryLinesForm').trigger('blur')
+		var ids = $('#deliveryLinesForm').jqGrid('getDataIDs');
+ 		$.each(ids,function(i,id){
+			var rowData = $('#deliveryLinesForm').jqGrid('getRowData', id);
+			var deliveryQty =  parseFloat(rowData.deliveryQty) == null ? 0 : parseFloat(rowData.deliveryQty);
+			var addrDeliveryQty =  parseFloat(rowData.addrDeliveryQty) == null ? 0 : parseFloat(rowData.addrDeliveryQty);
+			$('#deliveryLinesForm').jqGrid('setRowData', id, { residualQty : deliveryQty - addrDeliveryQty });
+ 		});
+ 		
+	}
+	
+	//如果已经存在签收单则，删除出货明细操作按钮
+	function delete_act_buttun(){
+		var ids = $('#deliveryLinesForm').jqGrid('getDataIDs');
+ 		$.each(ids,function(i,id){
+ 			var b = false;
+ 			var rowData = $('#deliveryLinesForm').jqGrid('getRowData',id);
+ 			var rids = $('#receiptsListForm').jqGrid('getDataIDs');
+ 			$.each(rids,function(j,rid){
+ 				var rRowData = $('#receiptsListForm').jqGrid('getRowData',rid);
+ 				if(rRowData.deliveryLinesNum == rowData.lineNum ){
+ 					b = true;
+ 					return b;
+ 				}
+ 			});
+ 			if(b){
+				$('#deliveryLinesForm').jqGrid('setRowData', id, { act : ''});
+ 			}
+ 		});
+	}
+	
+	function initConsigneeInfo(){
+		var receAddressText = $("#receAddressText").val();
+		var consigneeText = $("#consigneeText").val();
+		var consigneeTelText = $("#consigneeTelText").val();
+		if(!receAddressText){
+			$("#receAddressText").val($("#deliveryAddress").val());
+		}
+		if(!consigneeText){
+			$("#consigneeText").val($("#consignee").val());
+		}
+		if(!consigneeTelText){
+			$("#consigneeTelText").val($("#consigneeTel").val());
+		}
+	}
+	
+	function checkIsErpDelivery(id){
+		 $.ajax({
+		 	type : "POST",
+			url : "${ctx}/delivery/checkIsErpDelivery.html",
+			async: true,
+			data : "id="+id,
+			dataType : 'json',
+			success : function(msg) {
+				alert(msg.message);
+			},
+			error: function(e) {
+				 var msg = eval("("+e.responseText+")");
+				 if(msg !='' && msg != null && msg != 'undefined'){
+					 alert(msg.message);
+				 }else{
+					alert('${i18n.get('操作失败，请联系管理员')}');
+				 }
+			} 
+		});
+	}
+	
+	function changeDelivery(){
+		var deliveryCode = '${deliveryCode}';
+		ajax({
+			type:'post',
+			url:'${ctx}/receipts/plan/checkedReceiptsPlan.html',
+			data:{'deliveryCode':deliveryCode},
+			success:function(res){
+				if(true == res){
+					delRowDelivery();
+				}else{
+					alert('${i18n.get('已存在收款核销记录,不允许删除')}');
+				}
+			}
+		})
+	}
+	
+	function delRowDelivery(){
+		var ids = jQuery('#deliveryLinesForm').jqGrid('getGridParam','selarrrow'); 
+		var _ids = [];
+		 $.each(ids,function(i,id){
+			 _ids.push(id);
+		 })
+	     if(!ids || ids.length <= 0 ){
+	      　　	alert('${i18n.get('请选择要删除的行')}');
+	      　　	return;
+	     }else{
+	    	 if(confirm('${i18n.get('是否删除选择的行')}')){
+		    	 $.each(_ids,function(i,id){
+		    		 var deliveryData = $('#deliveryLinesForm').jqGrid('getRowData', id);
+		    		 if(deliveryData.invoiceQty && deliveryData.invoiceQty > 0 ){
+		    			 alert('${i18n.get('出货明细行【')}'+deliveryData.lineNum+'${i18n.get('】已经发货,不允许删除！')}');
+		    			 return;
+		    		 }
+		    		 /* if(deliveryData.erpStatus == 'STOCK'){
+		    			 alert('${i18n.get('出货明细行【')}'+deliveryData.lineNum+'${i18n.get('】在ERP已备货,不允许删除！')}');
+		    			 return;
+		    		 } */
+		    		 $.ajax({
+						 	type : 'POST',
+							url : '${ctx}/delivery/checkStatus.html',
+							async: true,
+							data : 'id='+id+'&op=delivery',
+							dataType : 'json',
+							success : function(msg) {
+								if(msg && msg.message == 'No'){
+									var b = true;
+									var rids = $('#receiptsListForm').jqGrid('getDataIDs');
+									$.each(rids,function(j,rid){
+						    	 	   	var data = $('#receiptsListForm').jqGrid('getRowData', rid); 
+						    	 	   	if(data.deliveryLinesNum == deliveryData.lineNum){
+						    	 	   		b =false;
+						    	 	   		return b;
+						    	 	  	}
+						    	 	});
+									if(!b){
+						    	 		b = confirm('${i18n.get('出货明细行号【')}'+deliveryData.lineNum+'${i18n.get('】已经生成派送签收单，删除后会一并删除签收单！')}');
+						    	 	}
+								   if(b){
+						    			 var _rids = [];
+						    			 $.each(rids,function(j,rid){
+						    				 _rids.push(rid);
+						    			 })
+						    			 $.each(_rids,function(j,_rid){
+							    	 	   		var recedata = $('#receiptsListForm').jqGrid('getRowData', _rid);
+								    	 	   	if(recedata.deliveryLinesNum == deliveryData.lineNum){
+								    	 	   		$('#receiptsListForm').jqGrid('delRowData', _rid);
+								    	 	  	}
+							    	 	});
+									    $('#deliveryLinesForm').jqGrid('delRowData', id);
+							     }
+							}else if(msg && msg.message == 'STOCK'){
+								alert('${i18n.get('出货明细行【')}'+deliveryData.lineNum+'${i18n.get('】在ERP已备货,不允许删除！')}');
+							}else if(msg && msg.message == 'HasLogisticsNo'){
+						   		alert('${i18n.get('签收单已有物流单号，不允许删除')}');
+						   	}else if(msg && msg.message == 'HasInvoiceQty'){
+						   		alert('${i18n.get('出货单已开票，不允许删除')}');
+						   	}else if(msg && msg.message == 'HasReceipt'){
+						   		alert('${i18n.get('存在已核销金额，不允许删除')}');
+						   	}else if(msg && msg.message == 'HasErpDelivery'){
+						   		alert('${i18n.get('ERP已发货，不允许删除')}');
+						   	}else{
+								alert('${i18n.get('出货单已开票或者ERP已发货，不允许删除')}');
+							}
+						},
+						error: function(e) {
+							 var msg = eval('('+e.responseText+')');
+							 if(msg !='' && msg != null && msg != 'undefined'){
+								 alert(msg.message);
+							 }else{
+								alert('${i18n.get('操作失败，请联系管理员')}');
+							 }
+						} 
+					});
+		    	 });
+	    	 }
+	     } 
+	}
+	
+	function delRowReceipts(){
+		var ids = jQuery('#receiptsListForm').jqGrid('getGridParam','selarrrow'); 
+		var _ids = [];
+		$.each(ids,function(i,id){
+			_ids.push(id);
+		});
+	    if(!ids || ids.length <= 0 ){
+	      　		alert('${i18n.get('请选择要删除的行')}');
+	      　　         return;
+	    }else{
+	    	if(confirm('${i18n.get('是否删除选择的行')}')){
+	    		$.each(_ids,function(i,id){
+	    		 	var receiptData = $('#receiptsListForm').jqGrid('getRowData', id);
+		    		$.ajax({
+					 	type : 'POST',
+						url : '${ctx}/delivery/checkIsErpDelivery.html',
+						async: true,
+						data : 'id='+id+'&op=receipt',
+						dataType : 'json',
+						success : function(msg) {
+							if(msg && msg.message == 'No'){
+					    	 	  var dids = $('#deliveryLinesForm').jqGrid('getDataIDs');
+					    	 	   $.each(dids,function(j,did){
+					    	 	   		var ddata = $('#deliveryLinesForm').jqGrid('getRowData', did); 
+					    	 	  		if(parseFloat(ddata.lineNum) == parseFloat(receiptData.deliveryLinesNum)){
+					    	 	  			//设置出货单剩余数量和送货数量
+					    	 	  			 var residualQty = parseFloat(ddata.residualQty) + parseFloat(receiptData.deliveryQty) ;
+							    			 $('#deliveryLinesForm').jqGrid('setRowData',did,{residualQty: residualQty });
+							    			 $('#deliveryLinesForm').jqGrid('setRowData',did,{addrDeliveryQty: residualQty });
+					    	 	  		}
+					    	 	  });
+					    		 $('#receiptsListForm').jqGrid('delRowData', id);
+						   	}else if(msg && msg.message == 'HasLogisticsNo'){
+						   		alert('${i18n.get('签收单已有物流单号，不允许删除')}');
+						   	}else if(msg && msg.message == 'HasInvoiceQty'){
+						   		alert('${i18n.get('出货单已开票，不允许删除')}');
+						   	}else{
+						   		alert('${i18n.get('出货单ERP已发货，不允许删除')}');
+						   	}
+						},
+						error: function(e) {
+							 var msg = eval('('+e.responseText+')');
+							 if(msg !='' && msg != null && msg != 'undefined'){
+								 alert(msg.message);
+							 }else{
+								alert('${i18n.get('操作失败，请联系管理员')}');
+							 }
+						} 
+					});
+	    		});
+	    	}
+	    }
+	}
+	
+	function getLogisticsCompany(){
+		var str="";
+		$.ajax({
+			type:"post",
+			async:false,
+			url:"${ctx}/lov/member/select.html?code=TRANSPORT_CO",
+			success:function(data){
+				if (data != null) {
+					debugger;
+					var jsonobj = eval(data.message);
+					var length = jsonobj.length;
+					for(var i=0;i<length;i++){
+						if(i != length-1 ){
+							// 这里是option里面的 value:label
+							str += jsonobj[i].code + ":" + jsonobj[i].name + ";";
+						}else{
+							str += jsonobj[i].code + ":" + jsonobj[i].name;
+						}
+		         	}   
+		     	}
+			}
+		});
+		return str;
+	}
+	
+	function updateDeliveryLine(quantity){
+		var price = $('#deliveryLinesForm').jqGrid('getCell', selectId, 'price');
+		var deliveryQty = $('#deliveryLinesForm').jqGrid('getCell', selectId, 'deliveryQty');
+		deliveryQty = deliveryQty - quantity;
+		var residualQty = $('#deliveryLinesForm').jqGrid('getCell', selectId, 'residualQty');
+		residualQty = residualQty- quantity
+		var amount = parseFloat(price) * parseFloat(deliveryQty) ;
+		$('#deliveryLinesForm').jqGrid('setRowData', selectId, { deliveryQty : deliveryQty, deliveryAmount: amount.toFixed(6),addrDeliveryQty:residualQty, residualQty: residualQty});
+		save_before();
+	}
+	
+	function colSumDeliveryLines(){
+		$('#deliveryLinesForm').footerData('set',{'act':'${i18n.get('合计')}'});
+		var rowNum = parseInt($('#deliveryLinesForm').getGridParam('records'),10);
+		$('.ui-jqgrid-sdiv').show();
+		var deliveryQty  = $('#deliveryLinesForm').getCol('deliveryQty',false,'sum');
+		var deliveryAmount  = $('#deliveryLinesForm').getCol('deliveryAmount',false,'sum');
+		$('#deliveryLinesForm').footerData('set',{'act':'${i18n.get('合计')}','deliveryQty':deliveryQty, 'deliveryAmount':deliveryAmount});
+	}
+	function colSumReceiptsList(){
+		$('#receiptsListForm').footerData('set',{'receiptCode':'${i18n.get('合计')}'});
+		$('.ui-jqgrid-sdiv').show();
+		var deliveryQty  = $('#receiptsListForm').getCol('deliveryQty',false,'sum');
+		var deliveryAmount  = $('#receiptsListForm').getCol('deliveryAmount',false,'sum');
+		$('#receiptsListForm').footerData('set',{'receiptCode':'${i18n.get('合计')}','deliveryQty':deliveryQty, 'deliveryAmount':deliveryAmount});
+	}
+	
+</script>
+
+<#if permission["P06OrderIssueT1ItemDelete"]?? >
+	<#assign deliveryLines_deleteRow = "true"  />
+</#if>
+<#if permission["P06OrderIssueT1ItemAddOne"]?? >
+	<#assign deliveryLines_addRow = "true"  />
+</#if>
+<#if permission["P06OrderIssueT1ItemAddBatch"]?? >
+	<#assign deliveryLines_addRowBatch = "true"  />
+</#if>
+
+<#if (permission["P06OrderIssueAdjust"]??) && ("${(deliveryHeader.status)!}" == "10" || "${(deliveryHeader.status)!}" =="40" ) >
+	<#assign splitLine="true" />
+</#if>
+
+<#if (permission["P06OrderIssueAdjustBizz"]??) && ("${(deliveryHeader.status)!}" == "10" || "${(deliveryHeader.status)!}" =="20" || "${(deliveryHeader.status)!}" =="30")>
+	<#assign splitLine="true" />
+</#if>
+
+
+<@form.table id="deliveryLinesForm" 
+	class="col-xs-12" 
+	title="${i18n.get('出货明细')}" 
+	url ="${ctx}/delivery/deliveryLines.html?deliveryCode=${deliveryCode}" 
+	checkbox="true" 
+	rowNum = "500" 
+	search = "false"
+	rowNumList = "[500]"
+	exportURL = "'${ctx}/delivery/exportDeliveryLines.html'"
+	colModel = "[
+		{name:'id',label:'id',hidden:true,width:1,sortable:false,align:'center'},
+		{name:'deliveryCode',label:'deliveryCode',hidden:true,width:1,sortable:false,align:'center'},
+		{name:'orderId',label:'${i18n.get('订单行ID')}',hidden:true,width:150,sortable:false,align:'center'},
+		{name:'act',label:'${i18n.get('选择订单')}',hidden:false,width:70,sortable:false,align:'center'},
+		{name:'orderCode',label:'${i18n.get('订单编号')}',hidden:false,width:150,sortable:false,align:'center'},
+		{name:'orderType',label:'${i18n.get('订单类型')}',hidden:true,width:150,sortable:false,align:'center'},
+		{name:'orderTypeLable', label:'${i18n.get('订单类型')}', width : 120, sortable:false, editable:false, align:'center'},
+		{name:'singleCustId',label:'${i18n.get('下单客户ID')}',hidden:true,width:150,sortable:false,align:'center'},
+		{name:'singleCustCode',label:'${i18n.get('下单客户编号')}',hidden:true,width:150,sortable:false,align:'center'},
+		{name:'singleCustName',label:'${i18n.get('下单客户名称')}',hidden:false,width:200,sortable:false,align:'center'},
+		{name:'singleCustPO', label:'${i18n.get('客户PO')}', hidden:true,width:120,sortable : false,editable : false,align:'center'},  
+		{name:'proModel',label:'${i18n.get('产品型号')}',hidden:false,width:100,sortable:false,align:'center'},
+		{name:'shipOrgLable',label:'${i18n.get('发货组织')}',hidden:false,width:80,sortable:false,align:'center'},
+		{name:'materielCode',label:'${i18n.get('物料编码')}',hidden:false,width:80,sortable:false,align:'center'},
+		{name:'materielName',label:'${i18n.get('产品名称')}',hidden:false,width:100,sortable:false,align:'center'},
+		{name:'proDesc',label:'${i18n.get('产品描述')}',hidden:false,width:150,sortable:false,align:'center'},
+		{name:'price',label:'${i18n.get('产品单价')}',hidden:false,width:80,sortable:false,align:'right'},
+		{name:'deliveryQty',label:'${i18n.get('出货数量')}',hidden:false,width:80,sortable:false,align:'right'},
+		{name:'unit', label:'${i18n.get('单位')}',width : 50,sortable : false, editable : false, align:'center',hidden : true},  
+		{name:'unitLable', label:'${i18n.get('单位')}',width : 60,sortable : false, editable : false, align:'center'},  
+		{name:'deliveryAmount',label:'${i18n.get('出货金额')}',hidden:false,width:100,sortable:false,align:'right'},
+		{name:'addrDeliveryQty',label:'${i18n.get('签收单数量')}',hidden:false,width:80,sortable:false,align:'center', editable : true},
+		{name:'residualQty',label:'${i18n.get('剩余数量')}',hidden:false,width:80,sortable:false,align:'center'},
+		{name:'orderDate',label:'${i18n.get('下单日期')}',hidden:false,width:80,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue)} },
+		{name:'arrivalDate',label:'${i18n.get('客户要货日期')}',hidden:false,width:80,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue)} },
+		{name:'promiseDate',label:'${i18n.get('工厂承诺日期')}',hidden:false,width:80,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue)} },
+		{name:'planStatus',label:'${i18n.get('计划状态')}',hidden:false,width:100,sortable:false,align:'center'},
+		{name:'lineNum',label:'${i18n.get('出货行号')}',hidden:true,width:60,sortable:false,align:'center'},
+		{name:'orderLineNo',label:'${i18n.get('订单行号')}',hidden:false,width:60,sortable:false,align:'center'},
+		{name:'externalNo',label:'${i18n.get('出货单编号(外部)')}',hidden:false,width:150,sortable:false,align:'center'},
+		{name:'printTime',label:'${i18n.get('出货单打印日期（外部）')}',hidden:false,width:120,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue)} },
+		{name:'erpOrderCode', label:'${i18n.get('ERP订单编号')}', width : 150, editable : false, hidden : false,align:'center', sortable : false},
+		{name:'invoiceQty',label:'${i18n.get('开票数量')}',hidden:false,width:80,sortable:false,align:'center'},
+		{name:'erpStatus',label:'${i18n.get('ERP备货完成状态')}',hidden:false,width:150,sortable:false,align:'center'},
+		{name:'sourceCode', label:'${i18n.get('来源编码')}',hidden:false, width : 150, sortable : false,editable : false,align:'center'}, 
+		{name:'remarks',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:false,align:'center'},
+		
+		]" 
+		buttons = "[
+			{id:'deliveryLines_deleteRow', 
+				label : '${i18n.get('删除')}', 
+				icon : 'icon-remove',
+				own : ${deliveryLines_deleteRow!'false'},
+				handler : function(e,rowData){
+					changeDelivery();
+				}
+			},
+			{id:'deliveryLines_addRow',
+				label : '${i18n.get('增加一行')}', 
+				icon : 'icon-save',
+				own : ${deliveryLines_addRow!'false'},
+				handler : function(e,rowData){
+					addRow();
+				}
+			},
+			{id:'deliveryLines_addRowBatch', 
+				label : '${i18n.get('批量增加')}', 
+				icon : 'icon-save',
+				own : ${deliveryLines_addRowBatch!'false'},
+				handler : function(e,rowData){
+				debugger;
+				 	 var receCustomerId =  $('#receCustomerId').val();
+					 var businessEntity =  $('#businessEntity').val();
+					 if(receCustomerId && businessEntity){
+						 $('#multiSelectOrder').click();
+					 }else{
+						 alert('${i18n.get('请先选择业务实体和收货客户')}');
+					 }
+				}
+			},{
+				id:'splitLine',
+				label : '${i18n.get('调整发货数量')}',
+				icon : 'icon-save',
+				own : ${splitLine!'false'},
+				handler : function(e,rowData){
+				 	if(!rowData){
+				      　　	alert('${i18n.get('请选择要拆分的行')}');
+				      　　	return;
+				    }
+					 $.ajax({
+						 	type : 'POST',
+							url : '${ctx}/delivery/checkStatus.html',
+							async: true,
+							data : 'id='+rowData.id+'&op=delivery',
+							dataType : 'json',
+							success : function(msg) {
+								if(msg && msg.message == 'No'){
+									var ids = jQuery('#deliveryLinesForm').jqGrid('getGridParam','selarrrow'); 
+									var id = jQuery('#deliveryLinesForm').jqGrid('getGridParam','selrow');
+			    					rowData = $('#deliveryLinesForm').jqGrid('getRowData',id);
+								    if(ids && ids.length > 1 ){
+								      　　	alert('${i18n.get('只能选择一行拆分！')}');
+								      　　	return;
+								    }
+								    if(parseFloat(rowData.deliveryQty) <= 1){
+								     	alert('${i18n.get('拆分失败,出货数量必须大于1')}');
+								     	return;
+								    }
+								    if(parseFloat(rowData.residualQty) <= 1){
+								     	alert('${i18n.get('拆分失败,剩余数量必须大于1')}');
+								     	return;
+								    }
+								    selectId = ids[0];
+								    var residualQty = rowData.residualQty;
+								    var deliveryQty = rowData.deliveryQty;
+								    if(residualQty == deliveryQty){
+								    	residualQty = residualQty - 1 ;
+								    }
+									parent.dialog2('${i18n.get('订单拆分')}','${ctx}/order/splitLine.html?op=delivery&id='+rowData.orderId 
+												+ '&deliveryLineId='+rowData.id 
+												+ '&residualQty='+residualQty,'',window,600,400);
+									
+								}else if(msg && msg.message == 'STOCK'){
+									var id = jQuery('#deliveryLinesForm').jqGrid('getGridParam','selrow');
+			    					rowData = $('#deliveryLinesForm').jqGrid('getRowData',id);
+									alert('${i18n.get('出货明细行【')}'+rowData.lineNum+'${i18n.get('】在ERP已备货,不允许删除！')}');
+								}else{
+									alert('${i18n.get('出货单已开票，不允许调整数量')}');
+								}
+						},
+						error: function(e) {
+							 var msg = eval('('+e.responseText+')');
+							 if(msg !='' && msg != null && msg != 'undefined'){
+								 alert(msg.message);
+							 }else{
+								alert('${i18n.get('操作失败，请联系管理员')}');
+							 }
+						} 
+					});
+				}
+			}
+		]" 
+		
+		ondblClickRow = "function(id){
+			$('#deliveryLinesForm input[id='+id+'_addrDeliveryQty]').bind('input',function(event){
+				var rowData = $('#deliveryLinesForm').jqGrid('getRowData',id);
+				if(isNaN($(this).val())){
+					alert('${i18n.get('送货数量必须为数字')}');
+					$(this).val(rowData.deliveryQty);
+				}
+				if(rowData.deliveryQty){
+					//送货数量不能大于剩余数量 
+					if(parseFloat($(this).val()) < 0 || parseFloat($(this).val()) > parseFloat(rowData.residualQty)){
+						$(this).val(rowData.residualQty);
+					}
+				}
+		 	});
+		}"
+		
+		onComplete = "function() {
+			$('#deliveryLinesForm').setGridWidth($(window).width()-90);
+			var ids = $('#deliveryLinesForm').jqGrid('getDataIDs');
+	 		$.each(ids,function(i,id){
+	 			var cl = ids[i]; 
+				var ps = '<input style=\\'height:22px;width:70px;\\' type=\\'button\\' value=\\'${i18n.get('选择订单')}\\' onclick=orderSelect(\\''+cl+'\\'); />';
+				$('#deliveryLinesForm').jqGrid('setRowData', cl, { act : ps});
+	 		});
+	 		delete_act_buttun();
+		}"
+		footerrow = "true"
+		gridComplete = "function() {
+			colSumDeliveryLines();
+		}"
+		onLineEditAfter = "function(id,rowData){
+			colSumDeliveryLines();
+		}"
+	> 
+</@form.table>
+<br>
+
+<div class="col-xs-12">
+	<table>
+		<tr>
+			<td align="right">${i18n.get('收货地址：')}</td>
+			<td><input type="text" id="receAddressText" name="receAddressText"  size="30px;" /></td>
+		</tr>
+		<tr>
+			<td align="right">${i18n.get('收货人：')}</td>
+			<td><input type="text" id="consigneeText" name="consigneeText"  size="30px;"/></td>
+		</tr>
+		<tr>
+			<td align="right">${i18n.get('收货人电话：')}</td>
+			<td><input type="text" id="consigneeTelText" name="consigneeTelText"  size="30px;"/>
+				<#if permission["P06OrderIssueT1CreateDelivery"]?? >
+					<button type="button" class="btn btn-info" onclick="createReceipts()">${i18n.get('生成派送签收单')}</button>
+				</#if>
+			</td>
+			
+		</tr>
+	</table>
+</div> 
+
+
+<#if permission["P06OrderIssueT1DeliveryDelete"]?? >
+	<#assign receiptsList_deleteRow = "true"  />
+</#if>
+
+<@form.table id="receiptsListForm" 
+	class="col-xs-12" 
+	title="${i18n.get('签收单')}" 
+	url ="${ctx}/delivery/receipts.html?deliveryCode=${deliveryCode}" 
+	rowNum = "500" 
+	checkbox="true" 
+	search = "false"
+	rowNumList = "[500]"
+	importURL = "'${ctx}/delivery/importDeliveryReceipt.html?deliveryCode=${deliveryCode}'"
+	importTempletURL = "exportDeliveryLines.html?code=${deliveryCode}"
+	colModel = "[
+		{name:'id',label:'id',hidden:true,width:150,sortable:false,align:'center'},
+		{name:'deliveryLinesNum',label:'${i18n.get('出货明细行号')}',hidden:true,width:150,sortable:false,align:'center'},
+		{name:'receiptCode',label:'${i18n.get('签收单编号')}',hidden:false,width:150,sortable:false,align:'center'},
+		{name:'deliveryCode',label:'${i18n.get('出货申请编号')}',hidden:false,width:150,sortable:false,align:'center'},
+		{name:'orderId',label:'${i18n.get('订单行ID')}',hidden:true,width:150,sortable:false,align:'center'},
+		{name:'orderCode',label:'${i18n.get('订单编号')}',hidden:false,width:150,sortable:false,align:'center'},
+		{name:'singleCustName',label:'${i18n.get('下单客户')}',hidden:false,width:150,sortable:false,align:'center'},
+		{name:'materielCode',label:'${i18n.get('物料编码')}',hidden:false,width:80,sortable:false,align:'center'},
+		{name:'proDesc',label:'${i18n.get('产品描述')}',hidden:false,width:150,sortable:false,align:'center'},
+		{name:'deliveryQty',label:'${i18n.get('出货数量')}',hidden:false,width:80,sortable:false,align:'right'},
+		{name:'unit', label:'${i18n.get('单位')}',width : 50,sortable : false, editable : false, align:'center',hidden : true},  
+		{name:'unitLable', label:'${i18n.get('单位')}',width : 50,sortable : false, editable : false, align:'center'}, 
+		{name:'deliveryAmount',label:'${i18n.get('出货金额')}',hidden:false,width:100,sortable:false,align:'right'},
+		{name:'consignee',label:'${i18n.get('收货人')}',hidden:false,width:100,sortable:false,align:'center', editable : true},
+		{name:'consigneeTel',label:'${i18n.get('收货人电话')}',hidden:false,width:120,sortable:false,align:'center',editable : true},
+		{name:'receAddress',label:'${i18n.get('收货地址')}',hidden:false,width:200,sortable:false,align:'center', editable : true},
+		{name:'remarks',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:false,align:'center',editable : true},
+		{name:'externalNo',label:'${i18n.get('出货单编号(外部)')}',hidden:false,width:150,sortable:false,align:'center'},
+		{name:'invoicePrintTime',label:'${i18n.get('签收单打印日期（外部）')}',hidden:false,width:80,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+		{name:'receiptQty',label:'${i18n.get('签收数量')}',hidden:false,width:80,sortable:false,align:'right'},
+		{name:'logisticsCompany',label:'${i18n.get('物流公司')}',hidden:true,width:150,sortable:false,align:'center'},
+		{name:'logisticsNo',label:'${i18n.get('物流运单号')}',hidden:true,width:150,sortable:false,align:'center'},
+		{name:'logisticsCompanyLable',label:'${i18n.get('物流公司')}',hidden:false,width:150,sortable:false,align:'center',editable : true, edittype:'select',editoptions:{value:getLogisticsCompany()}},
+		{name:'erpOrderCode', label:'${i18n.get('ERP订单编号')}', width : 150, editable : false, hidden : false,align:'center', sortable : false},
+		{name:'sourceCode', label:'${i18n.get('合同/商机编码')}',hidden:false, width : 150, sortable : false,editable : false,align:'center'}, 
+		{name:'orderLineNo',label:'${i18n.get('订单行号')}',hidden:false,width:50,sortable:false,align:'center'},
+		{name:'singleCustId',label:'${i18n.get('下单客户ID')}',hidden:true,width:150,sortable:false,align:'center'},
+		{name:'singleCustCode',label:'${i18n.get('下单客户编号')}',hidden:true,width:120,sortable:false,align:'center'}
+		]"  
+		buttons = "[
+			{id:'receiptsList_deleteRow', 
+				label : '${i18n.get('删除')}', 
+				icon : 'icon-remove',
+				own : ${receiptsList_deleteRow!'false'},
+				handler : function(e,rowData){
+					delRowReceipts();
+				}
+			},
+			{id:'receiptsList_exportRow',
+				label : '${i18n.get('导出')}',
+				icon : 'icon-save',
+				own : true,
+				handler : function(e,rowData){
+					var da={} ; 
+		  			var prjrows= $('#receiptsListForm').jqGrid('getGridParam','selarrrow');  
+		  			var ids=[];
+		  			var idsStr = '';
+		  			if(prjrows.length>0){	
+				 		$.each(prjrows,function(i,id){
+ 							var item = $('#receiptsListForm').jqGrid('getRowData',id);
+				 			ids.push(item.id);
+				 			idsStr +=   item.id +',';
+				 		});	
+				 		idsStr = idsStr.substring(0,idsStr.length-1);
+	  					bootbox.confirm('${i18n.get('您确定要导出选中的数据吗？')}' , function(result) {
+						if(result) {
+							window.location.href = '${ctx}/delivery/exportDeliveryReceipt.html?idsStr='+idsStr;
+							}
+						});
+	  				}else{
+	  					alert('${i18n.get('请选择数据！')}');
+	  				}
+				}
+			}
+		]" 
+		ondblClickRow = "function(id){
+		debugger;
+			var logisticsCompany =  $('#logisticsCompany').val();
+			if(logisticsCompany != '' && logisticsCompany !=null){
+				if(rowData.logisticsCompany == '' || rowData.logisticsCompany == null){
+					$('#receiptsListForm select[id='+id+'_logisticsCompanyLable]').val(logisticsCompany);
+					$('#receiptsListForm').jqGrid('setRowData', id, { logisticsCompany : logisticsCompany});
+				}
+			}else{
+				var _logisticsCompany = $('#receiptsListForm select[id='+id+'_logisticsCompanyLable]').children('option:selected').val();
+				$('#receiptsListForm').jqGrid('setRowData', id, { logisticsCompany : _logisticsCompany});
+			}
+			
+			$('#receiptsListForm select[id='+id+'_logisticsCompanyLable]').change(function(){
+				var _logisticsCompany = $(this).children('option:selected').val();
+				$('#receiptsListForm').jqGrid('setRowData', id, { logisticsCompany : _logisticsCompany});
+			});
+		}"
+		onComplete = "function() {
+			$('#receiptsListForm').setGridWidth($(window).width()-90);
+			reload_deliveryLinesForm();
+			delete_act_buttun();
+		}"
+		footerrow = "true"
+		gridComplete = "function() {
+			colSumReceiptsList();
+		}"
+		onLineEditAfter = "function(id,rowData){
+			colSumReceiptsList();
+		}"
+		> 
+</@form.table>
+
+
+	<div style="display: none;" >
+		<@biz.picker_product id="selectOrder"
+				urlFunction="function(){
+					return '${ctx}/common/order/selectList.html?customerId=' + $('#receCustomerId').val()
+						+ '&customerName='+$('#receCustomerName').val()
+						+ '&lineStatus=AWAITING_SHIPPING'
+						+ '&businessEntity='+$('#businessEntity').val();
+				}" 
+				button="${i18n.get('选择订单')}"
+				callback="function(data){
+					if(data){
+						data['orderId'] = data.id;
+						data['orderLineNo'] = data.lineNo;
+						data['singleCustId'] = data.customerId;
+						data['singleCustCode'] = data.customerCode;
+						data['singleCustName'] = data.customerName;
+						data['residualQty'] = data.proQty;
+						data['addrDeliveryQty'] = data.proQty;
+						data['deliveryQty'] = data.proQty;
+						data['deliveryAmount'] = data.amount;
+						data['arrivalDate'] = data.requestDate;
+						data['materielName'] = data.itemDescription;
+						
+						delete data.id;
+						delete data.customerCode;
+						delete data.customerName;
+						
+						var b = true;
+						var ids = $('#deliveryLinesForm').jqGrid('getDataIDs');
+						$.each(ids,function(i,id){
+			    	 	   	var deyData = $('#deliveryLinesForm').jqGrid('getRowData', id); 
+			    	 	   	if(deyData.orderId == data.orderId){
+			    	 	   		alert('${i18n.get('该订单已添加到出货明细，不能重复添加！')}');
+			    	 	   		b = false;
+			    	 	   		return b;
+			    	 	  	}
+			    	 	});
+			    	 	if(b){
+			    	 		$('#deliveryLinesForm').jqGrid('setRowData',selectId,data);
+			    	 		colSumDeliveryLines();
+			    	 	}
+					 }
+				}"
+		/>
+	</div>
+	
+	<div style="display: none;" >
+		<@biz.picker_product id="multiSelectOrder"
+				urlFunction="function(){return '${ctx}/common/order/multiSelectList.html?customerId='+ $('#receCustomerId').val()
+										+'&customerName='+$('#receCustomerName').val()
+										+ '&lineStatus=AWAITING_SHIPPING'
+										+ '&businessEntity='+$('#businessEntity').val();
+				}" 
+				button="${i18n.get('批量选择订单')}" 
+				callback="function(datas){
+					if(datas){
+                 		addRowBatch(datas);
+                 		colSumDeliveryLines();
+					 }
+				}"
+		/>
+	</div>
+
+

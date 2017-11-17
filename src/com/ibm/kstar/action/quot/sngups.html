@@ -1,0 +1,203 @@
+<div>
+
+ <script type="text/javascript">
+
+ $(document).ready(function(){	
+	 
+	 if('${ifProReviewStatus}'=="Y"){
+		debugger;
+	 	$("#save_sngups").attr("disabled","true");
+	 	$("#support_sngups").attr("disabled","true");
+ 	}
+  
+	 if('${processpage}'=="Y"){
+			debugger;
+		 	$("#save_sngups").attr("disabled","true");
+		 	$("#support_sngups").attr("disabled","true");
+	 } 
+	 
+	 if('${processpage}'=="P1"){
+		 	$("#save_sngups").attr("disabled","true");
+		 	$("#support_sngups").attr("disabled","true");
+	 } 
+	 
+	 if('${processpage}'=="P3"){
+		 	$("#save_sngups").attr("disabled","true");
+		 	$("#support_sngups").attr("disabled","true");
+	 } 
+	 
+	 if('${processpage}'=="P5"){
+		 	$("#save_sngups").attr("disabled","true");
+		 	$("#support_sngups").attr("disabled","true");
+	 } 
+	 
+	 if('${processpage}'=="P6"){
+		 	$("#save_sngups").attr("disabled","true");
+		 	$("#support_sngups").attr("disabled","true");
+	 }
+	 
+	 if('${processpage}'=="P7"){
+		 	$("#save_sngups").attr("disabled","true");
+		 	$("#support_sngups").attr("disabled","true");
+	 }
+	 
+	 if('${processpage}'=="P8"){
+		 	$("#save_sngups").attr("disabled","true");
+		 	$("#support_sngups").attr("disabled","true");
+	 }
+	 
+	 if('${processpage}'=="P9"){
+		 	$("#save_sngups").attr("disabled","true");
+		 	$("#support_sngups").attr("disabled","true");
+	 }
+	 
+	 if('${processpage}'=="P10"){
+		 	$("#save_sngups").attr("disabled","true");
+		 	$("#support_sngups").attr("disabled","true");
+	 }
+	 
+  
+});
+
+ </script>
+
+
+
+	<@form.form id="sngups" action="${ctx}/quot/sngups.html?typ=${typ}" 
+	autoClose="false"
+	upload ="true"
+	success="function(){
+		alert('${i18n.get('保存成功')}！');
+		}" 
+	class="form-horizontal">
+	<@form.input id="id" name="id" placeholder="" tip="" type="hidden"
+	value="${(sngupsInf.id)!}" />
+
+	<h5 style="background-color: #E9E9E9;">IT${i18n.get('设备信息')}</h5>
+	
+	<div style="height: 15px;">
+		<div style="padding-right: 20px; float: right;padding-top: 3px;" >
+		
+			<#if (permission["P04T2ProjFormT3PresaleT3UPSSave"])??>
+			<button id="save_sngups" class="btn btn-info submit" type="button" align="right">
+				<i class="icon-ok bigger-110"></i> ${i18n.get('保存')}
+			</button>
+			</#if>
+			
+		</div>
+		<div style="padding-right: 20px; float: right;padding-top: 3px;" >
+		
+			<#if (permission["P04T2ProjFormT3PresaleT3UPSSubmitSupport"])??>
+			<button id="support_sngups" class="btn btn-info" type="button" align="right" onclick="javascript:parent.dialog('${i18n.get('售前支持界面')}','${ctx}/supportApply/add.html?bid=${bocode}',window)">
+				<i class="icon-ok bigger-110"></i> ${i18n.get('提交售前支持')}
+			</button>
+			</#if>
+			
+		</div>
+		&nbsp; &nbsp; &nbsp;
+	</div>
+	
+	<table>
+		<tr>
+			<td width="100px">${i18n.get('配电系统图纸')}:</td>
+			<td width="180px">
+				<div>
+					<input type="file" id="sngupsDoc1" name="sngupsDoc1"  size="50" value="${(sngupsInf.elecDrf)!}" >
+					<a target="_blank" href='${(sngupsInf.elecDrf)!}'> 
+						<button id="doc_sngups1" type="button" align="right" >
+							<i></i> ${i18n.get('下载文档')}:${(sngupsInf.elecDrfnm)!}
+						</button>					
+					</a>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('项目技术要求')}:</td>
+			<td width="180px">
+				<div>
+					<input type="file" id="sngupsDoc2" name="sngupsDoc2"  size="50" value="${(sngupsInf.prjtchRq)!}" >
+					<a target="_blank" href='${(sngupsInf.prjtchRq)!}'> 
+						<button id="doc_sngups2" type="button" align="right" >
+							<i></i> ${i18n.get('下载文档')}:${(sngupsInf.prjtchRqnm)!}
+						</button>					
+					</a>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('进出线方式')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="intlnTyp" value="ud"
+							selectValue="${(sngupsInf.intlnTyp)!'N'}" /> <span class="lbl">${i18n.get('上进下出')}</span>
+						</label> 
+						<label><@form.radio name="intlnTyp" value="uu"
+							selectValue="${(sngupsInf.intlnTyp)!'N'}" /> <span class="lbl">${i18n.get('上进上出')}</span>
+						</label>
+						<label><@form.radio name="intlnTyp" value="dd"
+							selectValue="${(sngupsInf.intlnTyp)!'N'}" /> <span class="lbl">${i18n.get('下进下出（默认）')}</span>
+						</label>
+						<label><@form.radio name="intlnTyp" value="du"
+							selectValue="${(sngupsInf.intlnTyp)!'N'}" /> <span class="lbl">${i18n.get('下进上出')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">UPS${i18n.get('系统组成')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="upsCnst" value="a"
+							selectValue="${(sngupsInf.upsCnst)!'N'}" /> <span class="lbl">${i18n.get('单机')}</span>
+						</label> 
+						<label><@form.radio name="upsCnst" value="b"
+							selectValue="${(sngupsInf.upsCnst)!'N'}" /> <span class="lbl">${i18n.get('并机')}</span>
+						</label>
+						<label><@form.radio name="upsCnst" value="c"
+							selectValue="${(sngupsInf.upsCnst)!'N'}" /> <span class="lbl">2N</span>
+						</label>
+						<label><@form.radio name="upsCnst" value="d"
+							selectValue="${(sngupsInf.upsCnst)!'N'}" /> <span class="lbl">2（N+1）</span>
+						</label>
+						<label><@form.radio name="upsCnst" value="e"
+							selectValue="${(sngupsInf.upsCnst)!'N'}" /> <span class="lbl">${i18n.get('双总线')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('后备时间')}:</td>
+			<td width="180px"><@form.input id="bckupTm" name="bckupTm"
+				placeholder="" tip="" value="${(sngupsInf.bckupTm)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('监控要求、协议要求')}:</td>
+			<td width="180px"><@form.input id="mntRq" name="mntRq"
+				placeholder="" tip="" value="${(sngupsInf.mntRq)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">IP${i18n.get('等级')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="ipLvl" value="a"
+							selectValue="${(sngupsInf.ipLvl)!'N'}" /> <span class="lbl">IP20(${i18n.get('默认')})</span>
+						</label> 
+						<label><@form.radio name="ipLvl" value="b"
+							selectValue="${(sngupsInf.ipLvl)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="ipLvlRq" name="ipLvlRq" placeholder="" tip=""
+							value="${(sngupsInf.ipLvlRq)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('其他特殊需求')}:</td>
+			<td width="180px"><@form.input id="otrsRq" name="otrsRq"
+				placeholder="" tip="" value="${(sngupsInf.otrsRq)!}" /></td>
+		</tr>
+	</table>
+
+
+	</@form.form>
+
+</div>

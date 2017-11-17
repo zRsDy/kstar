@@ -1,0 +1,99 @@
+<@pui.body>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1" success="function(){
+			try{
+			 	parent.currentParent.reload_batch(); 
+			 }catch(e){
+			 	parent.currentParent2.reload_batch(); 
+			 }
+		 }" class="form-horizontal">	
+			<div align="center" class="form-group">
+				<table>
+					<tr>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('价格表名称 :')}</td>
+						<td width="360px">
+							<@form.input id="priceTableName" name="priceTableName" tip="${i18n.get('价格表名称')}" required="${i18n.get('不能为空！')}" readonly="true" value="${(batchInfo.priceHead.priceTableName)!}" />
+							<input type="hidden" id="priceHeadId" name="priceHeadId" value="${(batchInfo.priceHeadId)!}">
+							<@biz.picker_product id="selectPrice" url="${ctx}/batchProductPrice/selectPrice.html" 
+								callback="function(data){
+									if(data){
+										$('#priceHeadId').val(data.id);
+										$('#priceTableName').val(data.priceTableName);
+										$('#organization').val(data.organizationName);
+									 }
+								}"
+							/>
+						</td>
+						<td align="right" width="100px">
+							<label class="no-padding-right" for="organization"> ${i18n.get('组织 :')} </label>
+						</td>
+						<td width="360px">
+							<@form.input id="organization" name="" tip="${i18n.get('价格表所在的组织')}" readonly="true" value="${(batchInfo.priceHead.organizationName)!}" />
+						</td>
+						<td align="right" width="100px">
+							<label class="no-padding-right" for="productType1"> CRM${i18n.get('产品类型 : ')}</label>	
+						</td>
+						<td width="360px">
+							<@form.select id="productType" style="width:163px;" name="productType" tip="CRM${i18n.get('产品类型')}" code="crmCategory" idKey='id' value="${(batchInfo.productType)!}" /> 
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">${i18n.get('产品分类 :')}</td>
+						<td width="360px">
+							<input type="hidden" id="productSortId" name="productSortId" value="${(batchInfo.productSortId)!}">
+							<@form.input id="productSort" name="" tip="${i18n.get('产品分类')}" readonly="true" value="${(batchInfo.productSort.cproCategory)!}" />
+							<@biz.picker_product id="selectProCategory" url="${ctx}/batchProductPrice/selectProCategory.html" 
+								callback="function(data){
+									if(data){
+										$('#productSortId').val(data.id);
+										$('#productSort').val(data.cproCategory);
+									 }
+								}"
+							/>
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('调整类型 :')}</td>
+						<td width="360px">
+							<@form.select id="adjustType" style="width:163px;" name="adjustType" tip="${i18n.get('批量调价类型')}" required="${i18n.get('不能为空！')}" code="PRICEADJUST" idKey='id' value="${(batchInfo.adjustType)!}" /> 
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('调整值 :')}</td>
+						<td width="360px">
+							<@form.number id="adjustValue" name="adjustValue" tip="${i18n.get('批量调价数值')}" required="${i18n.get('不能为空！')}" value="${(batchInfo.adjustValue)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="190px">${i18n.get('创建组织')}</td>
+						<td width="450px">
+							<input type="hidden" id="createOrg" name="createOrg" value="${(batchInfo.createOrg)!}" />
+							<@form.input id="createOrgName" name="createOrgName" style="width:163px;" readonly="true" tip="${i18n.get('创建组织')}" value="${(batchInfo.createOrgName)!}" />
+						</td>
+						<td align="right" width="190px">${i18n.get('创建人 :')}</td>
+						<td width="450px">
+							<input type="hidden" id="creater" name="creater" value="${(batchInfo.creater)!}" />
+							<@form.input id="createrName" name="createrName" style="width:163px;" readonly="true" tip="${i18n.get('创建人')}" value="${(batchInfo.createrName)!}" />
+						</td>
+						<td align="right" width="190px">${i18n.get('创建日期')}</td>
+						<td width="450px">
+							<@form.input id="createDate" name="createDate" style="width:163px;" readonly="true" tip="${i18n.get('创建日期')}" value="${(batchInfo.createDate?date)!}" />
+						</td>
+					</tr>
+				</table>
+			</div>	
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<#if !batchInfo?? || !batchInfo.createdById?? || statusEdit>
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					</#if>
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+	</@form.panel>
+</@pui.body>

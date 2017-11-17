@@ -1,0 +1,85 @@
+<@cui.body2>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1" success="function(){ parent.currentParent.reload_expense_2('${(expenseInfo.id)!}'); }" class="form-horizontal">	
+			<input id="applyId" type="hidden" value="${(expenseInfo.applyId)!}">
+			<div align="center" class="form-group">
+				<table>
+					<tr>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('费用项目 :')}</td>
+						<td width="280px">
+							<@form.input id="expenseProject" name="expenseProject" placeholder="" style="width:163px;" tip="${i18n.get('活动费用项目说明')}" required="${i18n.get('不能为空')}" value="${(expenseInfo.expenseProject)!}" />
+						</td>
+						<td align="right" width="100px">
+							<label class="no-padding-right" for="estimatedExpense">${i18n.get('预算费用 :')} </label>					  
+						</td>
+						<td width="280px">	
+							<@form.number id="estimatedExpense" name="estimatedExpense" placeholder="" style="width:163px;" tip="${i18n.get('活动费用项目的预算金额')}" value="${(expenseInfo.estimatedExpense)!}" />
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('实际费用 :')}</td>
+						<td width="280px">
+							<@form.number id="actualExpense" name="actualExpense" placeholder="" style="width:163px;" tip="${i18n.get('活动费用项目的实际使用金额')}" required="${i18n.get('不能为空')}" value="${(expenseInfo.actualExpense)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">
+							<label class="no-padding-right" for="organizer"> 承担单位 : </label>
+						</td>
+						<td width="280px">
+							<@form.autocomplete 
+								id="organizer"
+								name="organizer"
+								idKey='id'
+								placeholder="${i18n.get('请选择组织')}" 
+								tip="${i18n.get('费用承担单位')}"
+								style="width:163px;"
+								code="ORG&leafFlag=N"
+								value="${org!'{}'}"
+							/>	
+						</td>
+						<td align="right" width="100px">
+							<label class="no-padding-right" for="chargeExpense1"> ${i18n.get('需收取 :')} </label>					  
+						</td>
+						<td width="280px">
+							<label>
+								<@form.radio name="chargeExpense" id='chargeExpense1' value="是" selectValue=(expenseInfo.chargeExpense)!'否'/>
+								<span class="lbl"> ${i18n.get('是')}</span>
+							</label>
+							<label>
+								<@form.radio name="chargeExpense" id='chargeExpense2' value="否" selectValue=(expenseInfo.chargeExpense)!'否'/>
+								<span class="lbl"> ${i18n.get('否')} </span>
+							</label>
+						</td>
+						<td align="right" width="100px">
+						</td>
+						<td width="280px">
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">
+							<label class="no-padding-right" for="explain">${i18n.get('说明 :')}</label> 
+				 		</td>
+						<td colspan="5">
+				 			<@form.textArea id="explain" style="width:922px;" name="explain" placeholder="" tip="${i18n.get('活动费用项目的说明')}" value="${(expenseInfo.explain)!}" />
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<#if !expenseInfo?? || !expenseInfo.id?? || statusEdit>
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					</#if>
+					<button class="btn" type="button" onclick="javascript:frameElement.api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+	</@form.panel>
+</@cui.body2>

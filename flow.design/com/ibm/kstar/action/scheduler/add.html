@@ -1,0 +1,91 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+	<@form.form id="taskSchedulerForm" success="function(){ parent.currentParent.reload_taskSchedulerList(); }" class="form-horizontal" >
+		
+		<div class="form-group">	
+			<div class="col-md-offset-7 col-md-4">
+				<button class="btn btn-info submit" id="save" type="button">
+					<i class="bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+				
+			</div>
+		</div>
+		
+		<div class="form-group" >
+			<table>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('任务组名 :')} </label>
+					</td>
+					<td >
+						<@form.input id="groupName" name="groupName" placeholder="" required="${i18n.get('不能为空')}" tip="" value="${(taskScheduler.groupName)!}" />
+					</td>
+					
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('任务名 :')} </label>
+					</td>
+					<td >
+						<@form.input id="jobName" name="jobName" placeholder="" required="${i18n.get('不能为空')}" tip="" value="${(taskScheduler.jobName)!}" />
+					</td>
+					
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('任务类名 : ')}</label>
+					</td>
+					<td >
+						<@form.input id="classPath" name="classPath" placeholder="" required="${i18n.get('不能为空')}" tip="" value="${(taskScheduler.classPath)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('开始时间 :')} </label>
+					</td>
+					<td colspan="4">
+						<@form.datetime id="startTime"  name="startTime" placeholder="" tip="" value="${(taskScheduler.startTime)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('结束时间 : ')}</label>
+					</td>
+					<td colspan="4">
+						<@form.datetime id="endTime"  name="endTime" placeholder="" tip="" value="${(taskScheduler.endTime)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('任务重复次数 :')} </label>
+					</td>
+					<td >
+						<@form.input id="repeatCount" name="repeatCount" placeholder="" tip="" value="${(taskScheduler.repeatCount)!}" />
+					</td>
+					
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('重复时间间隔 :')} </label>
+					</td>
+					<td >
+						<@form.input id="repeatInterval" name="repeatInterval" placeholder="" required="${i18n.get('不能为空')}" tip="" value="${(taskScheduler.repeatInterval)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px" >
+						<label class="no-padding-right" > ${i18n.get('任务参数 :')} </label>
+					</td>
+					<td colspan="4" >
+						<@form.textArea id="jobParams" name="jobParams" width="100%" height="2" value="${(taskScheduler.jobParams)!}" />
+					</td>
+				</tr>
+			</table>
+			
+		</div>
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+	</@form.form>
+	</@form.panel>
+</@pui.body>
+</#escape>

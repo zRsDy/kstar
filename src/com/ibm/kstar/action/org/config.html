@@ -1,0 +1,71 @@
+<@pui.body>
+<div class="col-xs-12">
+	${i18n.get('注意：创建组织不能删除 创建组织：')}<input type="text" id="primaryOrgName" readonly name="primaryOrgName" value="${(primaryOrgName)!}"/>
+	
+	
+	<script type="text/javascript">
+		var allPermissions = ${allPermissions!'[]'};
+		
+		var selectedPermissions = ${selectedPermissions!'[]'};
+		
+		for(var j=0 ; j< allPermissions.length;j++){
+			for(var i =0; i < selectedPermissions.length; i++) {
+				if(selectedPermissions[i].id == allPermissions[j].id){
+					
+					allPermissions[j].checked = true;
+				}
+			}
+		}
+	</script>
+	<label id="selected">  </label>
+	<@plug.tree 
+		checkbox="true" 
+		id="tree1" 
+		async="false"
+		datas="allPermissions"
+		chkboxType="{ 'Y' : '',  'N' : '' }"
+	  	/>
+	  	
+	  	<@form.form id="t1"  
+			before="function(){
+				var treeObj = $.fn.zTree.getZTreeObj('tree1');
+				var nodes = treeObj.getCheckedNodes(true);
+				var html = '';
+				$.each(nodes,function(i,item){
+					html = html + item.id;
+					if(i < nodes.length - 1){
+						html = html + ',';
+					}
+				})
+				$('#permissions').val(html);
+			}"
+			success="function(){ 
+				parent.currentParent.reload_t2();
+				close();
+			}" 
+			>
+	<input type="hidden" id="primaryOrgId" name="primaryOrgId" value="${(primaryOrgId)!}"/>
+	<input type="hidden" id="permissions" name="permissions" />
+	<div class="clearfix form-actions">
+	<div class="col-md-offset-5 col-md-7">
+		<button class="btn btn-info submit " id="selectOK" type="button">
+			<i class="icon-ok bigger-110"></i>
+			${i18n.get('选择')}
+		</button>
+		&nbsp; &nbsp; &nbsp;
+		<button class="btn" type="button" onclick="javascript:api.close()">
+			<i class="icon-undo bigger-110"></i>
+			${i18n.get('关闭')}
+		</button>
+	</div>
+	
+	</@form.form>
+</div>
+</div>
+<script>
+	$(document).ready(function(){
+		var treeObj = $.fn.zTree.getZTreeObj('tree1');
+		treeObj.expandAll(true);
+	})
+</script>
+</@pui.body>

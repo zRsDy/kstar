@@ -1,0 +1,134 @@
+
+
+<#escape x as x?html>
+
+<@pui.body>
+
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	
+	initialPage();
+});
+
+function initialPage(){
+	if($("#docGroupCode").val()=="ATTACHMENTTYPEGROUP" || $("#docGroupCode").val()==null || $("#docGroupCode").val()== "undefined"|| $("#docGroupCode").val()==""){
+		$("#divDocTp").hide();
+	}
+	
+	//限制文件上传格式
+	 if(isProductDemandSpecReqDocType()){
+		 $('#docUrl').attr('accept',"application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	 }
+	
+	 $(".widget-body").on('change',"#docUrl",function(){
+         var filename = $(this).val();
+         if(isProductDemandSpecReqDocType()){
+        	 var reg=/(\.xls|\.xlsx)$/;
+	         if(filename && !reg.test(filename)){
+	        	 alert('${i18n.get('产品规格需求表只能上传.xls或.xlsx类型的Excel文件')}')
+	        	 var dom = $("#docUrl").get(0);
+	        	 dom.outerHTML=dom.outerHTML; 
+	        	 return;
+	         }
+         }
+         $("#docNm").val(filename);  
+     });
+}
+//判断是否是产品规格需求表附件
+function isProductDemandSpecReqDocType(){
+	if ('${docGroupCode!''}' == 'SpecProReqDocType' && '${bizType!''}'=='productDemand_1') {
+		return true;	 
+	 }
+	return false;
+}
+
+
+</script>
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="attachment" upload="true"
+			success="function(){ alert('${i18n.get('保存成功！')}');
+				try{
+					parent.currentParent.reload_attachment_${(bizType)!}();
+				}catch(e){
+					window.location.reload();
+				}
+			}"
+			class="form-horizontal">  
+			
+			 	<input type="hidden" id="bizId"  name="bizId"   value="${(bizId)!}"/>
+			 	<input type="hidden" id="docGroupCode"  name="docGroupCode"   value="${(docGroupCode)!}"/>
+			 	<input type="hidden" id="bizType"  name="bizType"   value="${(bizType)!}"/>	
+			 	<input type="hidden" id="remark"  name="remark"   value="${(remark)!}"/>	
+			 	
+			 	<#if attNameList!true>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for=""> <strong style="color: red;">*</strong>${i18n.get('文档名称 :')} </label>
+					<@form.input id="docNm"  name="docNm"  value="${(attInfo.docNm)!}" />
+				</div>
+				</#if> 
+				<div id="divDocTp" class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="">${i18n.get(' 文档类型 :')} </label>
+             		<@form.select 
+             			style="width: 160px;" 
+             			id="docTp" name="docTp" 
+             			code="${(docGroupCode)!}"  
+             			value ="${(attInfo.docTp)!}"
+             			required="${i18n.get('不能为空！')}"
+             	/>
+				</div>	
+				<#if '${(bizType)!}'?default('') == 'proSeriesAttach'>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for=""> <strong style="color: red;">*</strong>${i18n.get('产品系列 :')} </label>
+					 <@form.autocomplete 
+						id="ext1"
+						name="ext1"
+						idKey='id'
+						required="${i18n.get('不能为空')}"
+						placeholder="${i18n.get('请选择产品系列')}"
+						style="width:160px;"
+						url="function(){ return '${ctx}/orderForecast/selectProSeries.html'; }"
+						formatResult="function(data) {return '<div >' +data.name + '</div>';}"
+						value="{id:'${(attInfo.ext1)!}',name:'${(attInfo.ext1)!}'}"
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="">${i18n.get('是否有效 :')}  </label>
+					<@form.select style="width:160px;" id="ext2" name="ext2" code="NY" idKey='code' value="${(attInfo.ext2)!'1'}" />
+				</div>
+				</#if>
+				
+		        <#if !attInfo?? || !(attInfo.id)??>
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for=""> <strong style="color: red;">*</strong> ${i18n.get('附件 :')} </label>
+						<div>
+							<input type="file" id="docUrl" name="docUrl" valid-required="${i18n.get('不能为空')}" size="50" style="display: inline-block;">
+						</div>
+						<label for="docUrl" class="error red" style="display: none">${i18n.get('不能为空')}</label>
+					</div>
+				</#if> 
+				
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="">${i18n.get('备注 :')}  </label>
+					<@form.input id="notes"  name="notes"  placeholder="" tip="${i18n.get('备注')}"  value="${(attInfo.notes)!}"  />  
+				</div>
+	
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+</@pui.body>
+</#escape>

@@ -1,0 +1,112 @@
+
+<#-- 商机列表-关联业务-售前支持-新增 --> <#if permission["P03BizOppoT6RelatedBizPresSupportSave"]?? > <#assign addURL1 = "'${ctx}/supportApply/add.html?bid=${(id)!}'" /></#if>
+
+<#-- 商机列表-关联业务-售前支持-修改 --> <#if permission["P03BizOppoT6RelatedBizPresSupportSave"]?? > <#assign editURL1 = "'${ctx}/supportApply/edit.html'" /></#if>
+
+<#-- 商机列表-关联业务-售前支持-删除 --> <#if permission["P03BizOppoT6RelatedBizPresSupportSave"]?? > <#assign deleteURL1 = "'${ctx}/supportApply/delete.html'" /></#if>
+
+<@form.table id="t_support_apply"
+class="col-xs-12"
+title="${i18n.get('售前支持')}" 
+url = "${ctx}/supportApply/page.html?bizOppId=${(id)!}" 
+rowNum = "10" 
+addURL = "${addURL1!}"
+editURL= "${editURL1!}"
+deleteURL = "${deleteURL1!}"
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'number',label:'${i18n.get('申请编号')}',hidden:false,width:200,sortable:true,align:'center' },
+	{name:'applicant',label:'${i18n.get('申请人')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'applyEnterprise',label:'${i18n.get('申请单位')}',hidden:false,width:200,sortable:true,align:'center' },
+	{name:'department',label:'${i18n.get('申请部门')}',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'reportPrice',label:'${i18n.get('报备金额')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'clientName',label:'${i18n.get('客户名称')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'bizOppName',label:'${i18n.get('商机名称')}',hidden:false,width:200,sortable:true,align:'center'},
+	{name:'bizOppProgressName',label:'${i18n.get('商机进度')}',hidden:false,width:200,sortable:true,align:'center' },
+	{name:'competitor',label:'${i18n.get('竞争对手')}',hidden:false,width:200,sortable:true,align:'center' },
+	{name:'createDate',label:'${i18n.get('创建日期')}',hidden:false,width:200,sortable:true,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+	{name:'statusName',label:'${i18n.get('状态')}',hidden:false,width:200,sortable:true,align:'center' }
+	]" 
+	buttons = "[]" > 
+</@form.table>
+
+<#-- 商机列表-关联业务-样机申请-新增 --> <#if permission["P03BizOppoT6RelatedBizSampleSave"]?? > <#assign addURL = "'${ctx}/proApply/add.html?bid=${(id)!}'" /></#if>
+
+<#-- 商机列表-关联业务-样机申请-修改 --> <#if permission["P03BizOppoT6RelatedBizSampleEdit"]?? > <#assign editURL = "'${ctx}/proApply/edit.html'" /></#if>
+
+<#-- 商机列表-关联业务-样机申请-删除 --> <#if permission["P03BizOppoT6RelatedBizSampleDelete"]?? > <#assign deleteURL = "'${ctx}/proApply/delete.html'" /></#if>
+
+<@form.table id="proApplyTable" 
+	class="col-xs-12"
+	title="${i18n.get('样机申请基本信息列表')}" 
+	url = "${ctx}/proApply/page.html?bizOppId=${(id)!}" 
+	rowNum = "10" 
+	addURL = "${addURL!}"
+	editURL= "${editURL!}"
+	deleteURL = "${deleteURL!}"
+	colModel = "[
+		{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'number',label:'${i18n.get('申请编号')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'applicantName',label:'${i18n.get('申请人')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'applyUnit',label:'${i18n.get('申请单位')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'planRecieveTime',label:'${i18n.get('期望到货时间')}',hidden:false,width:100,sortable:true,align:'center',
+			formatter:dateFmatter },
+		{name:'planReturnTime',label:'${i18n.get('预计归还时间')}',hidden:false,width:100,sortable:true,align:'center',
+			formatter:dateFmatter },
+		{name:'statusName',label:'${i18n.get('状态')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'createDate',label:'${i18n.get('申请日期')}',hidden:false,width:200,sortable:true,align:'center',
+			formatter:dateFmatter},
+		{name:'clientName',label:'${i18n.get('客户名称')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'bizoppName',label:'${i18n.get('商机名称')}',hidden:false,width:200,sortable:true,align:'center' }
+		]" 
+		<!-- onSelectRow= "function(selectedData){
+				$('#selectedId').val(selectedData.quotID);
+				$('#info').show();
+				showPage('tab1','info1.html');
+				 }" -->
+		buttons = "[]" > 
+	</@form.table>
+
+<#-- 商机列表-关联业务-投标授权-新增 --> <#if permission["P03BizOppoT6RelatedBizBidAuthSave"]?? > <#assign addURL2 = "'${ctx}/bid/add.html?bid=${(id)!}''" /></#if>
+
+<#-- 商机列表-关联业务-投标授权-修改 --> <#if permission["P03BizOppoT6RelatedBizBidAuthEdit"]?? > <#assign editURL2 = "'${ctx}/bid/edit.html'" /></#if>
+
+<#-- 商机列表-关联业务-投标授权-删除 --> <#if permission["P03BizOppoT6RelatedBizBidAuthDelete"]?? > <#assign deleteURL2 = "'${ctx}/bid/delete.html'" /></#if>
+
+<@form.table id="bidTable"
+	class="col-xs-12"
+	title="${i18n.get('投标授权申请')}" 
+	url = "${ctx}/bid/page.html?bizOppId=${(id)!}" 
+	rowNum = "10" 
+	addURL = "${addURL2!}"
+	editURL= "${editURL2!}"
+	deleteURL = "${deleteURL2!}"
+	colModel = "[
+		{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'bidAuthNumber',label:'${i18n.get('申请编号')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'bidNumber',label:'${i18n.get('投标授权编号')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'creatorName',label:'${i18n.get('申请人')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'bidEnterprise',label:'${i18n.get('招标单位')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'createDate',label:'${i18n.get('创建日期')}',hidden:false,width:100,sortable:true,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }
+		
+		]" 
+		buttons = "[]" > 
+</@form.table>
+
+
+<@form.table id="proPrice"
+class="col-xs-12"
+title="${i18n.get('报价单')}" 
+url = "${ctx}/bizproprice/page.html?boCode=${(id)!}"
+search="false"
+rowNum = "10" 
+
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'quotCode',label:'${i18n.get('报价编号')}',hidden:false,width:200,sortable:true,align:'center' },
+	{name:'creatorName',label:'${i18n.get('责任人')}',hidden:false,width:200,sortable:true,align:'center' },
+	{name:'statusName',label:'${i18n.get('状态')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'createTime',label:'${i18n.get('创建日期')}',hidden:false,width:100,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }
+	]" 
+	buttons = "[]" > 
+</@form.table>

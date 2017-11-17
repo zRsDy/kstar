@@ -1,0 +1,459 @@
+<#escape x as x?html>
+<@cui.body2>
+<style type="text/css">
+	table {
+		border-collapse: collapse;
+		border-color: #ff0000;
+	}
+	
+	table td {
+		padding:1px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	select {
+		width: 180px;
+	}
+</style>
+	
+
+	<div class="col-xs-12" >
+		<@form.panel title="${i18n.get('订单变更申请')}">
+		<@form.form id="orderForm" 
+			success="function(data){
+				alert('${i18n.get('操作成功！')}'); 
+				javascript:api.close();
+			}" 
+			class="form-horizontal" 
+			
+			postData="function(){
+				var ids = $('#orderLinesForm').jqGrid('getDataIDs');
+				var datas = [];
+				debugger;
+		 		$.each(ids,function(i,id){
+		 			var data = $('#orderLinesForm').jqGrid('getRowData',id);
+		 			datas.push(data);
+		 		})
+		 		var obj = {'linesList':datas};
+		 		return obj;
+			}"
+			
+			>
+			<#if permission["P06OrderChangeEdit"]?? >
+				<#assign orderChangeEdit = "true" />
+			<#else>
+				<#assign orderChangeEdit = "false" />
+			</#if>
+		<div style="height: 15px;" >
+			<div style="padding-right: 20px; float: right;padding-top: 3px;" >
+				<button id="order_save" class="btn btn-info submit" type="button" style="display: none;" >
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				<#if ("${(orderHeader.eventStatus)!}" == "10") >
+					<button id="order_save_show" class="btn btn-info" type="button" onclick="save_before()" >
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存并提交')}
+					</button>
+				</#if>
+				<!-- <button class="btn" type="button" onclick="javascript:api.close()" >
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')} 
+				</button> -->
+			</div>
+		</div>
+	 	<p style="padding-left:20px; ">${i18n.get('订单题头')}</p>
+	 	<input id="orderHeaderChangeId"  name="orderHeaderChangeId"  type="hidden"  value="${(orderHeader.id)!}"  />
+		<div class="main" id="main" style="padding-left: 1px; border-top: 2px solid #e9e9e9 ;padding-top: 10px;" >
+			<input id="sourceType"  name="sourceType" type="hidden" value="${(orderHeader.sourceType)!}" />
+			<table border="0" cellpadding="0" cellspacing="0" >
+		    	<tr align="left">
+		    		<td align="right" width="120px">
+		  			    <strong style="color: red;">*</strong> ${i18n.get('供货单位：')}
+		            </td>
+		            <td align="left" width="200px">
+						<@form.select id="businessEntity" name="businessEntity"  
+							placeholder="${i18n.get('请选择供货单位')}" 
+							required="${i18n.get('请选择供货单位')}"
+							code="OPERATION_UNIT"
+							level = "1"
+							value="${(orderHeader.businessEntity)!}"  /> 
+						<#if (orderChangeFlag?? &&orderChangeFlag == 'Y')||permission["P06OrderChangeEdit"]?? >
+		           		<input  id="businessEntity" name="businessEntity"  type="hidden" value="${(orderHeader.businessEntity)!}" />
+		           		</#if>
+					</td>
+		  			<td align="right" width="120px">
+		  				 <strong style="color: red;">*</strong> ${i18n.get('订货单位：')}
+		            </td>
+		            <td align="left" width="200px" >
+		            	<@form.autocomplete  id="customerId" name="customerId" 
+		            		placeholder="${i18n.get('请选择订货单位')}"
+			            	idKey='id'
+			            	required="${i18n.get('请选择订货单位')}"
+			            	formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+							url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html'; }"
+			            	value="{id: '${(orderHeader.customerId)!}',customFullName:'${(orderHeader.customerName)!}', customCode: '${(orderHeader.customerCode)!}'}"
+			            	
+			            	onSelect="function(data){
+			            		if( data.id != null && data.id !='' && data.id != 'undefined'){
+			            			$('#customerCode').val(data.customCode);
+			            			$('#customerName').val(data.customFullName);
+			            		}
+			            	}" 
+		            	/>
+		            	<input id="customerCode"  name="customerCode"  type="hidden"  value="${(orderHeader.customerCode)!}"  />
+		            	<input id="customerName"  name="customerName"  type="hidden"  value="${(orderHeader.customerName)!}"  />
+		            	<input id="createdOrgId"  name="createdOrgId"  type="hidden"  value="${(orderHeader.createdOrgId)!}"  />
+		            	<input id="orderChangeFlag"  name="orderChangeFlag"  type="hidden"  value="${(orderChangeFlag)!}"  />
+		            </td>
+		            <td align="right"  width="120px">
+		  				${i18n.get('CRM订单编号：')}
+		            </td>
+		            <td align="left"  width="200px">
+			  			<@form.input 
+							id="orderCode"  name="orderCode" 
+							placeholder="" 
+							tip="" 
+							value="${(orderHeader.orderCode)!}" 
+							readonly ="readonly"
+							required="${i18n.get('订单编号不能为空')}"
+							maxlength = "300"
+						/>
+		            </td>
+		             <td align="right">
+		  				${i18n.get('订购日期：')}
+		            </td>
+		             <td align="left">
+		  				<@form.date  
+							id="orderDate"  name="orderDate" 
+							placeholder="" 
+							tip="" 
+							value="${(orderHeader.orderDate?date)!}" 
+							/>
+		            </td>
+		  		</tr>
+		  		<tr>
+		  			<td align="right">
+	  					<strong style="color: red;">*</strong> ${i18n.get('收货单位：')}
+	            	</td>
+	             	<td align="left">
+	             		<@form.input 
+							id="finalCustName"  name="finalCustName" 
+							placeholder="" 
+							tip="" 
+							value="${(orderHeader.finalCustName)!}" 
+							required="${i18n.get('收货单位不能为空')}"
+							maxlength = "300"
+						/>
+		            </td>
+		            <td align="right">
+		  				<strong style="color: red;">*</strong> ${i18n.get('收货地址：')}
+		            </td>
+		            <td align="left">
+			             <@form.input  id="deliveryAddress" name="deliveryAddress" 
+			             	required="${i18n.get('收货地址不能空')}"
+			             	maxlength = "300"
+			              	value ="${(orderHeader.deliveryAddress)!}"
+			              />
+			        </td>
+		            <td align="right">
+		  				<strong style="color: red;">*</strong> ${i18n.get('收货人：')}
+		            </td>
+		            <td align="left" >
+		             	<@form.input  id="custAttnName" name="custAttnName" 
+		             		required="${i18n.get('收货人不能为空')}"
+		             		maxlength = "300"
+			              	value ="${(orderHeader.custAttnName)!}"
+			              />
+		            </td>
+		            <td align="right">
+		  				<strong style="color: red;">*</strong> ${i18n.get('收货人电话：')}
+		            </td>
+		            <td align="left" >
+		             	<@form.input  id="custAttnTel" name="custAttnTel" 
+		             		required="${i18n.get('收货人电话不能为空')}"
+		             		maxlength = "11"
+			              	value ="${(orderHeader.custAttnTel)!}"
+			              />
+		            </td>
+		           
+		  		</tr>
+		  		<tr>
+		  			<td align="right">
+		  				<strong style="color: red;">*</strong> ${i18n.get('商务专员：')}
+		            </td>
+		             <td align="left">
+		                <input id="businessManagerId"  name="businessManagerId" type ="hidden" value="${(orderHeader.businessManagerId)!}" />
+		                <input id="businessManagerCode"  name="businessManagerCode" type ="hidden" value="${(orderHeader.businessManagerCode)!}" />
+						<@form.autocomplete  id="businessManagerName" name="businessManagerName" 
+							placeholder="${i18n.get('请选择商务专员')}"
+							idKey='employeeName'
+							required="${i18n.get('请选择商务专员')}"
+							multiple="false"
+							formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+							url="function(){ return '${ctx}/common/selectTradeCommisioner.html'; }"
+							value="{
+								 employeeName:'${(orderHeader.businessManagerName)!}',
+								 employeeNo:'${(orderHeader.businessManagerCode)!}',
+								 employeeId:'${(orderHeader.businessManagerId)!}'
+							}"
+							
+							onSelect="function(data){
+								if( data.id != null && data.id !='' && data.id != 'undefined'){
+									$('#businessManagerId').val(data.employeeId);
+									$('#businessManagerCode').val(data.employeeNo);
+								}
+							}" 
+						/>
+		            </td>
+		            <td align="right">
+		  				<strong style="color: red;">*</strong> ${i18n.get('价目表：')}
+		            </td>
+		            <td align="left">
+						 <@form.select  id="priceTableId" name="priceTableId" 
+			             	viewKey='priceTableName'
+			             	placeholder="${i18n.get('请选择价目表')}" 
+							required="${i18n.get('请选择价目表')}"
+			                url="function(){ 
+		                		var customerId = $('#customerId').val();
+		                		return '${ctx}/lovcontract/autocompletePriceTable.html?custCode='+customerId; 
+			                }"
+			              	value ="${(orderHeader.priceTableId)!}"
+			              	onChange="function(){
+		            			var data = JSON.parse($('#priceTableId option:selected').attr('data')); 
+		            			$('#priceTableName').val(data.priceTableName); 
+		            		}"
+			              />
+		           		<input  id="priceTableName" name="priceTableName"  type="hidden" value="${(orderHeader.priceTableName)!}" />
+		           		<#if (orderChangeFlag?? &&orderChangeFlag == 'Y')||permission["P06OrderChangeEdit"]?? >
+		           		<input  id="priceTableId" name="priceTableId"  type="hidden" value="${(orderHeader.priceTableId)!}" />
+		           		</#if>
+		            </td>
+		              <td align="right" width="120px">
+		  				${i18n.get('变更状态：')}
+		            </td>
+		            <td align="left" width="200px">
+						<@form.select id="eventStatus" name="eventStatus"  
+							code="ORDER_CONTROL_STATUS" 
+							idKey='code' 
+							value="${(orderHeader.eventStatus)!}"   /> 
+						<#if (orderChangeFlag?? &&orderChangeFlag == 'Y')||permission["P06OrderChangeEdit"]?? >
+		           		<input  id="eventStatus" name="eventStatus"  type="hidden" value="${(orderHeader.eventStatus)!}" />
+		           		</#if>
+					</td>
+		  			<td align="right" width="120px">
+		  				${i18n.get('订单状态：')}
+		            </td>
+		            <td align="left" width="200px">
+						<@form.select id="executeStatus" name="executeStatus"  
+							code="ORDERSTATUS" 
+							idKey='code' 
+							value="${(orderHeader.executeStatus)!}"   /> 
+						<#if (orderChangeFlag?? &&orderChangeFlag == 'Y')||permission["P06OrderChangeEdit"]?? >
+		           		<input  id="executeStatus" name="executeStatus"  type="hidden" value="${(orderHeader.executeStatus)!}" />
+		           		</#if>
+					</td>
+					 <input id="controlStatus"  name="controlStatus" type ="hidden" value="${(orderHeader.controlStatus)!}" />
+				</tr>
+				<tr>
+		        	 <td align="right">
+		  				${i18n.get('合计：')}
+		            </td>
+		             <td align="left">
+		  				<@form.input   
+						id="amount"  name="amount" 
+						placeholder="" 
+						tip="" 
+						readonly="readonly"
+						value="${(orderHeader.amount)!}" 
+						/>
+		            </td>
+		  			 <td align="right">
+		  				${i18n.get('补充说明：')}
+		            </td>
+		             <td align="left" colspan="3" >
+		  				<@form.input 
+							id="remark"  name="remark" 
+							style="width: 500px;"
+							placeholder="" 
+							tip="" 
+							maxlength = "600"
+							value="${(orderHeader.remark)!}" 
+							/>
+		            </td>
+		            <td align="right">${i18n.get('订单变更版本')}：</td>
+					<td width="180px" align="left">
+						<@form.input id="version" name="version" placeholder="" tip="" readonly ="readonly" value="${(orderHeader.version)!}" />
+					</td>
+		  		</tr>
+			</table>
+		</div>
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		$("form input").attr("readonly", true);
+		$("form select").attr("disabled", "disabled");
+	});
+	window.onload=function(){
+		var orderChangeFlag = "${(orderChangeFlag)!}";
+		var orderChangeEdit = ${orderChangeEdit};
+		debugger;
+		if(orderChangeFlag != "Y"){
+			var path = "${ctx}/order/change/apply.html";
+			$("#form_orderForm").attr("action", path);
+		} 
+	}
+	function save_before(){
+		var b = true;
+		var ids = $("#orderLinesForm").jqGrid("getDataIDs");
+		$.each(ids,function(i,id){
+			var rowData = $("#orderLinesForm").jqGrid("getRowData",id);
+			if(!rowData.requestDate){
+				alert("${i18n.get('保存失败，订单行的要货日期不能为空，请检查!')}");
+				b = false;
+				return ;
+			}
+			if(!rowData.materielCode){
+				alert("${i18n.get('保存失败，订单行的物料编号不能为空，请检查!')}");
+				b = false;
+				return ;
+			}
+		});
+		if(b){
+			$('#orderLinesForm').trigger('blur');
+			calculateAmount();
+			$("#order_save").click();
+		}
+	}
+	
+	function updateOrderStatus(operate,status){
+		 $.ajax({
+			type : "POST",
+			url : "${ctx}/order/updateStatus.html",
+			async: true,
+			data : "id=${(orderHeader.id)!}&status="+status+"&operate="+operate, 
+			dataType : 'json',
+			success : function(msg) {
+				alert(msg.message);
+				parent.currentParent2.reload_orderListForm(); 
+				api.close();
+			},
+			error: function(e) {
+				 var msg = eval("("+e.responseText+")");
+				 if(msg !='' && msg != null && msg != 'undefined' && msg.message){
+					 alert(msg.message);
+				 }else{
+					alert("${i18n.get('操作失败，请联系管理员')}");
+				 }
+				
+			} 
+		});
+	}
+	
+	function salesmanChange(orgId){
+		 $.ajax({
+			type : "POST",
+			url : "${ctx}/order/salesmanChange.html",
+			async: true,
+			data : "orgId="+orgId, 
+			dataType : 'json',
+			success : function(data) {
+				var salesmanCenter = data.message['salesmanCenter'];
+				var salesmanDep = data.message['salesmanDep'];
+				if(salesmanCenter){
+					reload_salesmanCenter(salesmanCenter,function(){
+						reload_salesmanDep(salesmanDep);
+					});
+				}else{
+					$('#salesmanCenter').select2("val", "");
+					$('#salesmanDep').select2("val", "");
+				}
+			},
+			error: function(e) {
+				 var msg = eval("("+e.responseText+")");
+				 if(msg !='' && msg != null && msg != 'undefined' && msg.message){
+					 alert(msg.message);
+				 }else{
+					alert("${i18n.get('获取联系人销售中心/部门失败')}");
+				 }
+				
+			} 
+		});
+	}
+	
+	//计算总金额
+	function calculateAmount(){
+		$('#orderLinesForm').trigger('blur');
+		var amount = 0;
+		var ids = $('#orderLinesForm').jqGrid('getDataIDs');
+			$.each(ids,function(i,id){
+				var rowData = $("#orderLinesForm").jqGrid("getRowData",id);
+				if(rowData.amount){
+					amount += parseFloat(rowData.amount);
+				}
+			});
+		$("#amount").val(amount.toFixed(6));
+	}
+	
+	//计算订单行产品价格、金额
+	function calculateProPrice(){
+	    var sourceType = $("#sourceType").val();
+	    if(sourceType == "20"){
+			var priceTableId = $("#priceTableId").val();
+			var customerCode = $("#customerCode").val();
+			var ids = $('#orderLinesForm').jqGrid('getDataIDs');
+			var datas = [];
+			$.each(ids,function(i,id_){
+				var data = $('#orderLinesForm').jqGrid('getRowData',id_);
+				var map = {};
+				if(data.isSp != "Yes" && data.status != "CANCELLED"){
+					map['id'] = data['id'];
+					map['proId'] = data['proId'];
+					map['proModel'] = data['proModel'];
+					map['proQty'] = data['proQty'];
+					map['price'] = data['price'];
+					map['amount'] = data['amount'];
+					map['isSp'] = data['isSp'];
+				}
+				datas.push(map);
+			});
+			var obj = {'customerCode':customerCode,'priceTableId':priceTableId,'linesList':datas};
+			$.ajax({
+				type : "POST",
+				url : "${ctx}/order/calculateDiscountPrice.html",
+				async: true,
+				data : obj,
+				dataType : 'json',
+				success:function(data){
+					if(data &&  data.message){
+						var lines = data.message;
+						$.each(lines,function(i,line){
+							var line_id = line['id'];
+							var line_proQty = line['proQty'];
+							var line_price = line['price'];
+							var line_amount = line['amount'];
+							$('#orderLinesForm').jqGrid('setRowData', line_id, {erpSettPrice : parseFloat(line_price).toFixed(6), price : parseFloat(line_price).toFixed(6), 
+								amount : parseFloat(line_amount).toFixed(6)});
+			 			});
+					}
+				}
+			});
+	    }
+	}
+</script>
+		<div id="info" style="padding-top: 20px;">
+			<@plug.tabs tabMain=tabMain></@plug.tabs>
+		</div>
+		<#if (newProcessType?? && newProcessType == 'Y')>
+			<#include "process.html" />
+		</#if>
+		</@form.form>
+	</@form.panel>
+	</div>
+</@cui.body2>
+</#escape>

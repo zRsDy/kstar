@@ -1,0 +1,52 @@
+<@pui.body>
+<div class="row col-xs-12" style="width: 1000px;margin-right: 0px; margin-left: 0px;" >
+	<@form.table id="select" 
+		class="col-xs-12"
+		title="${i18n.get('选择人员')}"
+		shrinkToFit = 'true'
+		url = "${ctx}/activityApply/querySelectPersons.html?isInner=${isInner}"
+		rowNum = "20" 
+		colModel = "[
+			{name:'employeeId',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+			{name:'employeeNo',label:'${i18n.get('员工号')}',hidden:false,width:200,sortable:true,align:'center' }, 
+			{name:'employeeName',label:'${i18n.get('员工姓名')}',hidden:false,width:200,sortable:true,align:'center' }, 
+			{name:'orgName',label:'${i18n.get('部门')}',hidden:false,width:200,sortable:true,align:'center' }, 
+			{name:'positionName',label:'${i18n.get('职务')}',hidden:false,width:200,sortable:true,align:'center' }
+		]" 
+		ondblClickRow = "function(){
+			parent.currentParent.${pickerId}_callback(selected_select);
+			frameElement.api.close();
+		}"
+		buttons = "[
+			{
+				id:'select_select',
+				label : '${i18n.get('选择')}',
+				icon : 'icon-save',
+				own : 'true',
+				handler : function(e,rowData){
+					if(!selected_select){
+						exalert(e,'${i18n.get('请选择数据')}');
+						return;
+					}else{
+						parent.currentParent.${pickerId}_callback(selected_select);
+						frameElement.api.close();
+					}
+				}
+			},
+			{
+				id:'close_select',
+				label : '${i18n.get('关闭')}',
+				icon : 'icon-trash',
+				own : 'true',
+				handler : function(e,rowData){
+					frameElement.api.close();
+				}
+			}
+		]"
+		> 
+		<div style="padding-left:10px;">
+			<input type="text" id="searchKey" name="searchKey" placeholder='请输入关键字' size="30" />
+		</div>	
+	</@form.table> 
+</div>
+</@pui.body>

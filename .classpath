@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="conf"/>
+	<classpathentry kind="src" path="system.lov"/>
+	<classpathentry kind="src" path="system.permission"/>
+	<classpathentry kind="src" path="common"/>
+	<classpathentry kind="src" path="flow.design"/>
+	<classpathentry kind="src" path="report"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v8.0">
+		<attributes>
+			<attribute name="owner.project.facets" value="jst.web"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre-9.0.1"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/zookeeper-3.4.6.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/amqp-client-3.6.6.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xfire-all-1.2.6.jar"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>

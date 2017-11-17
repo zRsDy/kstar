@@ -1,0 +1,125 @@
+<@pui.body> 	
+	<div class="col-xs-12" >
+		<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+		<@form.form id="t1" success="function(){
+			try{
+				parent.currentParent.reload_t1();
+				parent.currentParent2.reload_t1();
+			}catch(e){
+				try{
+					parent.currentParent2.reload_t1();
+				}catch(e){
+					
+				}
+			}
+		}" class="form-horizontal">
+			
+			<input type="hidden" name="groupCode"  value="${lovGroup.code}" />
+			<label class="col-xs-12 left"><h4>${i18n.get('归属维度')} ： ${lovGroup.name} </h4></label>
+			
+			<!-- <div class="form-group">
+				<label class="col-sm-3 control-label no-padding-right" for="code"> <strong style="color: red;">*</strong>${i18n.get('办事处区域行业')}: </label>
+				<@form.input id="code" name="code" placeholder="${i18n.get('请输入编码')}" required="${i18n.get('不能为空！')}" value="${(lovMember.code)!}"/>
+			</div> -->
+			
+			<input type="hidden" name="groupCode" id="groupCode" value="${(inevestVo.groupCode)!}" />
+			<input type="hidden" name="lovMemberId" id="lovMemberId" value="${(inevestVo.lovMemberId)!}" />
+			
+			
+			<div class="form-group">
+				<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('办事处区域行业')}: </label>
+				<span id="path">  </span> 
+				<input type="text" name="orgName" id="orgName" readonly="readonly" value="${(inevestVo.orgName)!}" style="width: 300px" />
+				<input type="hidden" name="orgId" id="orgId" value="${(inevestVo.orgId)!}" />
+				<@biz.picker_lov_tree id="picker_lov_tree" leafFlag="N" groupId="ORG" button="${i18n.get('办事处区域行业')}" opType="2" defaultSelect="selectedDatas_picker_lov_tree" callback="function(datas){
+				 	if(datas){
+				 		selectedDatas_picker_lov_tree = datas;
+					 	$('#orgName').val(datas.namePath);
+					 	$('#orgId').val(datas.id);
+					 	reloadEmployeeList();
+				 	}
+				}" />
+			</div>
+			
+			<div class="form-group">
+				<label class="col-sm-3 control-label no-padding-right" for="code">${i18n.get('负责人')}: </label>
+				<input id="employeeId"  name="employeeId" type ="hidden" value="${(inevestVo.employeeId)!}" />
+				<select id="employeeList" style="width: 200px;" onchange="selected(this)">
+					<option value="">${i18n.get('请选择')}</option>
+				</select>
+			</div>
+			
+			<div class="form-group">
+				<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('备注')}: </label>
+				<@form.textArea id="remark" name="remark" placeholder="${i18n.get('请输入备注')}" value="${(inevestVo.remark)!}"/>
+			</div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+		<div class="col-xs-12" >
+	</div>
+
+</@pui.body>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+	//${i18n.get('加载脚本')}
+	var myScript= document.createElement("script");
+	myScript.type = "text/javascript";
+	myScript.src = "${ctx}/assets/js/ajax.js";
+	document.body.appendChild(myScript);
+
+	//document.write("<script type='text/javascript' src='${ctx}/assets/js/ajax.js'>"+"<"+"/script>");
+});
+
+function selected(option){
+	$('#employeeId').val(option.value);
+}
+
+function reloadEmployeeList(){
+	var orgId = document.getElementById("orgId").value;
+	var url = '${ctx}/custom/csr/employeeList.html?orgId='+orgId;
+	ajax({
+		type:"post",
+		url : url,
+		success : function(result) {
+			//alert("/${i18n.get('负责人加载成功')}");
+			//reload();
+			
+			document.getElementById("employeeList").options.length = 0; 
+			
+			var sel = document.getElementById("employeeList");
+			var emptyOption = document.createElement("OPTION");
+			emptyOption.text= "${i18n.get('请选择')}";
+			sel.add(emptyOption, null);
+			
+			if(result != null && result.length > 0){
+				for(var i=0;i<result.length;i++){
+					var employee = result[i];
+					var option = document.createElement("OPTION");
+					option.text = employee.name+"["+employee.no+"]";
+					option.value = employee.id;
+					sel.add(option, null);
+				}
+			}
+		},
+		error : function(result) {
+			alert(result);
+		}
+	});
+
+}
+</script>

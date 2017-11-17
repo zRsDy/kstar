@@ -1,0 +1,40 @@
+<@cui.body2>
+	<@form.form id="t1" success="function(){ parent.currentParent.reload_product_csale(); }" class="form-horizontal">	
+		<@form.panel title="${i18n.get('产品销售')}">
+			<div align="center">
+				<table>
+					<tr>
+						<td align="right" width="110px"><strong style="color: red;">*</strong>${i18n.get('销售状态 :')}</td>
+						<td>
+							<@form.select id="csaleStatus" name="csaleStatus" style="width:914px;" required="${i18n.get('不能为空')}" code="csaleStatus" idKey='id' />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="110px"><strong style="color: red;">*</strong>${i18n.get('原因 :')}</td>
+						<td>
+							<@form.select id="csaleReason" name="csaleReason" style="width:914px;" required="${i18n.get('不能为空')}" code="REVISE_REASON" idKey='id' />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="110px">${i18n.get('备注 :')}</td>
+						<td><@form.input id="csaleRemark"  name="csaleRemark" placeholder="" tip="" maxlength='100' style="width:914px;" /></td>
+					</tr>
+				</table>
+			</div>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存并提交')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:frameElement.api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.panel>
+	</@form.form>
+</@cui.body2>

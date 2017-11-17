@@ -1,0 +1,288 @@
+<div>
+	<@form.form id="sngrck" action="${ctx}/standard/prjpage/sngrck.html" success="function(){
+	alert('${i18n.get('保存成功')}！');opener.reload_sngrck(); }" class="form-horizontal">
+	<@form.input id="id" name="id" placeholder="" tip="" type="hidden"
+	value="${(sngrckInf.id)!}" />
+
+	<h5 style="background-color: #E9E9E9;">${i18n.get('机柜部分')}</h5>
+	<table>
+		<tr>
+			<td width="100px">${i18n.get('项目技术要求')}:</td>
+			<td width="180px">
+			<div> 
+				<button class="btn btn-info" onclick= "javascript:parent.dialog('${i18n.get('项目技术要求')}','${ctx}/kstarDoc/add.html?systemId=${contrId}&systemCode=SNGRCKATTM',window)" type="button">
+				${i18n.get('上传附件')}
+				</button> 
+			</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('进出线方式')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="lnInot" value="ud"
+							selectValue="${(sngrckInf.lnInot)!'N'}" /> <span class="lbl">${i18n.get('上进下出')}</span>
+						</label> 
+						<label><@form.radio name="lnInot" value="uu"
+							selectValue="${(sngrckInf.lnInot)!'N'}" /> <span class="lbl">${i18n.get('上进上出')}</span>
+						</label>
+						<label><@form.radio name="lnInot" value="dd"
+							selectValue="${(sngrckInf.lnInot)!'N'}" /> <span class="lbl">${i18n.get('下进下出')}</span>
+						</label>
+						<label><@form.radio name="lnInot" value="du"
+							selectValue="${(sngrckInf.lnInot)!'N'}" /> <span class="lbl">${i18n.get('下进上出')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('柜体尺寸(宽×深×高)')}（mm）:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="rckSz" value="a"
+							selectValue="${(sngrckInf.rckSz)!'N'}" /> <span class="lbl">600×1000×2000</span>
+						</label> 
+						<label><@form.radio name="rckSz" value="b"
+							selectValue="${(sngrckInf.rckSz)!'N'}" /> <span class="lbl">600×1100×2000</span>
+						</label>
+						<label><@form.radio name="rckSz" value="c"
+							selectValue="${(sngrckInf.rckSz)!'N'}" /> <span class="lbl">600×1200×2000</span>
+						</label>
+						<label><@form.radio name="rckSz" value="d"
+							selectValue="${(sngrckInf.rckSz)!'N'}" /> <span class="lbl">800×1000×2000</span>
+						</label>
+						<label><@form.radio name="rckSz" value="e"
+							selectValue="${(sngrckInf.rckSz)!'N'}" /> <span class="lbl">800×1100×2000</span>
+						</label>
+						<label><@form.radio name="rckSz" value="f"
+							selectValue="${(sngrckInf.rckSz)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="rckSznts" name="rckSznts" placeholder="" tip=""
+							value="${(sngrckInf.rckSznts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('开门方式（前门）')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="frdrTyp" value="a"
+							selectValue="${(sngrckInf.frdrTyp)!'N'}" /> <span class="lbl">${i18n.get('右门轴')}</span>
+						</label> 
+						<label><@form.radio name="frdrTyp" value="b"
+							selectValue="${(sngrckInf.frdrTyp)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="frdrNts" name="frdrNts" placeholder="" tip=""
+							value="${(sngrckInf.frdrNts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('开门方式（后门）')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="rrdrTyp" value="a"
+							selectValue="${(sngrckInf.rrdrTyp)!'N'}" /> <span class="lbl">${i18n.get('双开')}</span>
+						</label> 
+						<label><@form.radio name="rrdrTyp" value="b"
+							selectValue="${(sngrckInf.rrdrTyp)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="rrdrNts" name="rrdrNts" placeholder="" tip=""
+							value="${(sngrckInf.rrdrNts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('前后门型式')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="frrrDr" value="a"
+							selectValue="${(sngrckInf.frrrDr)!'N'}" /> <span class="lbl">${i18n.get('网孔铁门')}</span>
+						</label> 
+						<label><@form.radio name="frrrDr" value="b"
+							selectValue="${(sngrckInf.frrrDr)!'N'}" /> <span class="lbl">${i18n.get('钢化玻璃门')}</span>
+						</label>
+						<label><@form.radio name="frrrDr" value="c"
+							selectValue="${(sngrckInf.frrrDr)!'N'}" /> <span class="lbl">${i18n.get('无孔铁门')}</span>
+						</label>
+						<label><@form.radio name="frrrDr" value="d"
+							selectValue="${(sngrckInf.frrrDr)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="frrrNts" name="frrrNts" placeholder="" tip=""
+							value="${(sngrckInf.frrrNts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('侧门')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="sdDr" value="a"
+							selectValue="${(sngrckInf.sdDr)!'N'}" /> <span class="lbl">${i18n.get('网孔铁门')}</span>
+						</label> 
+						<label><@form.radio name="sdDr" value="b"
+							selectValue="${(sngrckInf.sdDr)!'N'}" /> <span class="lbl">${i18n.get('钢化玻璃门')}</span>
+						</label>
+						<label><@form.radio name="sdDr" value="c"
+							selectValue="${(sngrckInf.sdDr)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="sdNts" name="sdNts" placeholder="" tip=""
+							value="${(sngrckInf.sdNts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('柜体防护等级')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="rckprLvl" value="a"
+							selectValue="${(sngrckInf.rckprLvl)!'N'}" /> <span class="lbl">IP20</span>
+						</label> 
+						<label><@form.radio name="rckprLvl" value="b"
+							selectValue="${(sngrckInf.rckprLvl)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="rckprNts" name="rckprNts" placeholder="" tip=""
+							value="${(sngrckInf.rckprNts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('理线槽')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="lnSlot" value="a"
+							selectValue="${(sngrckInf.lnSlot)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="lnSlotnm" name="lnSlotnm" placeholder="" tip="" style="width:40px;"
+							value="${(sngrckInf.lnSlotnm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="lnSlot" value="b"
+							selectValue="${(sngrckInf.lnSlot)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+						<label><@form.radio name="lnSlot" value="c"
+							selectValue="${(sngrckInf.lnSlot)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="lnSlotnts" name="lnSlotnts" placeholder="" tip="" style="width:40px;"
+							value="${(sngrckInf.lnSlotnts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('底板')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="bttm" value="a"
+							selectValue="${(sngrckInf.bttm)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="bttmNm" name="bttmNm" placeholder="" tip="" style="width:40px;"
+							value="${(sngrckInf.bttmNm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="bttm" value="b"
+							selectValue="${(sngrckInf.bttm)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+						<label><@form.radio name="bttm" value="c"
+							selectValue="${(sngrckInf.bttm)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="bttmNts" name="bttmNts" placeholder="" tip="" style="width:40px;"
+							value="${(sngrckInf.bttmNts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('层板')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="lvl" value="a"
+							selectValue="${(sngrckInf.lvl)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="lvlNm" name="lvlNm" placeholder="" tip="" style="width:40px;"
+							value="${(sngrckInf.lvlNm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="lvl" value="b"
+							selectValue="${(sngrckInf.lvl)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+						<label><@form.radio name="lvl" value="c"
+							selectValue="${(sngrckInf.lvl)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="lvlNts" name="lvlNts" placeholder="" tip="" style="width:40px;"
+							value="${(sngrckInf.lvlNts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('盲板')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="bld" value="a"
+							selectValue="${(sngrckInf.bld)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="bldNm" name="bldNm" placeholder="" tip="" style="width:40px;"
+							value="${(sngrckInf.bldNm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="bld" value="b"
+							selectValue="${(sngrckInf.bld)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+						<label><@form.radio name="bld" value="c"
+							selectValue="${(sngrckInf.bld)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="bldNts" name="bldNts" placeholder="" tip="" style="width:40px;"
+							value="${(sngrckInf.bldNts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('散热单元')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="clrUt" value="a"
+							selectValue="${(sngrckInf.clrUt)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="clrUtnm" name="clrUtnm" placeholder="" tip="" style="width:40px;"
+							value="${(sngrckInf.clrUtnm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="clrUt" value="b"
+							selectValue="${(sngrckInf.clrUt)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+						<label><@form.radio name="clrUt" value="c"
+							selectValue="${(sngrckInf.clrUt)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="clrUtnts" name="clrUtnts" placeholder="" tip="" style="width:40px;"
+							value="${(sngrckInf.clrUtnts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('机柜密闭组件')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="rckCmt" value="a"
+							selectValue="${(sngrckInf.rckCmt)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="rckCmtnm" name="rckCmtnm" placeholder="" tip="" style="width:40px;"
+							value="${(sngrckInf.rckCmtnm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="rckCmt" value="b"
+							selectValue="${(sngrckInf.rckCmt)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+						<label><@form.radio name="rckCmt" value="c"
+							selectValue="${(sngrckInf.rckCmt)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="rckCmtnts" name="rckCmtnts" placeholder="" tip="" style="width:40px;"
+							value="${(sngrckInf.rckCmtnts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('其他特殊需求')}:</td>
+			<td width="180px"><@form.input id="othersRq"
+				name="othersRq" placeholder="" tip=""
+				value="${(sngrckInf.othersRq)!}" /></td>
+		</tr>
+	
+	</table>
+
+	<div class="clearfix form-actions">
+		<div class="col-md-offset-5 col-md-7">
+			<button class="btn btn-info submit" type="button" align="left">
+				<i class="icon-ok bigger-110"></i> ${i18n.get('修订')}
+			</button>
+			&nbsp; &nbsp; &nbsp;
+		</div>
+	</div>
+	</@form.form>
+
+</div>

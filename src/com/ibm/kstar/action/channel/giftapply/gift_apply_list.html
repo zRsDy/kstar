@@ -1,0 +1,438 @@
+<@cui.body>
+<#if (permission["P09GiftApplyAdd"])??>
+	<#assign addURL="true" />
+</#if>
+<#if (permission["P09GiftApplyEdit"])??>
+	<#assign editURL="true" />
+</#if>
+<#if (permission["P09GiftApplyDelete"])??>
+	<#assign deleteURL="true" />
+</#if>
+<#if (permission["P09GiftApplySubmit"])??>
+	<#assign submitURL="true" />
+</#if>
+
+	<div class="col-xs-12">
+		<@form.table id="apply"
+			class="col-xs-12"
+			title="${i18n.get('资料与礼品申请')}"
+			url = "${ctx}/giftApply/page.html"
+			rowNum = "10"
+			colModel = "[
+				{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+				{name:'applyCode',label:'${i18n.get('申请单号')}',hidden:false,width:90,sortable:true,align:'center' }, 
+				{name:'purpose',label:'${i18n.get('用途')}',hidden:false,width:250,sortable:true,align:'left'}, 
+				{name:'applyUnitName',label:'${i18n.get('申请单位')}',hidden:false,width:150,sortable:true,align:'left' }, 
+				{name:'custom',label:'${i18n.get('客户')}',hidden:false,width:150,sortable:true,align:'left',formatter:function(cellvalue, options, rowObject){ return setCustom(cellvalue, options,rowObject) } }, 
+				{name:'dealerName',label:'${i18n.get('是否经销商')}',hidden:false,width:70,sortable:true,align:'center' }, 
+				{name:'industryTypeName',label:'${i18n.get('行业类型')}',hidden:false,width:70,sortable:true,align:'center' }, 
+				{name:'status',label:'${i18n.get('状态')}',hidden:false,width:60,sortable:true,align:'center' }, 
+				{name:'currencyName',label:'${i18n.get('货币')}',hidden:false,width:70,sortable:true,align:'center' }, 
+				{name:'availableLimit',label:'${i18n.get('可用额度')}',hidden:false,width:110,sortable:true,align:'left'}, 
+				{name:'applyAmount',label:'${i18n.get('申请金额')}',hidden:false,width:110,sortable:true,align:'left' }, 
+				{name:'applyDate',label:'${i18n.get('申请日期')}',hidden:false,width:80,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+				{name:'estimatedDemandDate',label:'${i18n.get('预计需求日期')}',hidden:false,width:80,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+				{name:'applierName',label:'${i18n.get('申请人')}',hidden:false,width:70,sortable:true,align:'center'}, 
+				{name:'applierPhone',label:'${i18n.get('申请人电话')}',hidden:false,width:100,sortable:true,align:'center' }, 
+				{name:'explain',label:'${i18n.get('说明')}',hidden:false,width:400,sortable:true,align:'left' }
+			]" 
+			onSelectRow="function(){
+				$('#applyId').val(selected_apply.id);
+				$('#applyStatus').val(selected_apply.status);
+				reload_detail();
+			}"
+			onComplete="function(){
+				$('#applyId').val('');
+			}"
+			buttons = "[
+				{
+		  			id:'add_apply',
+		  			label : '${i18n.get('新增')}',
+		  			icon : 'icon-plus',
+		  			own : ${addURL!'false'},
+		  			handler : function(e,rowData){
+						parent.dialog('${i18n.get('新增')}','${ctx}/giftApply/addOrEdit.html',window);
+		  			}
+		  		},
+				{
+		  			id:'edit_apply',
+		  			label : '${i18n.get('修改')}',
+		  			icon : 'icon-pencil',
+		  			own : ${editURL!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_apply){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}else{
+							var statusEdit = !canEdit(selected_apply.status);
+							parent.dialog('${i18n.get('新增')}','${ctx}/giftApply/addOrEdit.html?id='+selected_apply.id+'&statusEdit='+statusEdit,window);
+						}
+		  			}
+		  		},
+				{
+		  			id:'delete_apply',
+		  			label : '${i18n.get('删除')}',
+		  			icon : 'icon-trash',
+		  			own : ${deleteURL!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_apply){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}else if(canEdit(selected_apply.status)){
+							myAlert(e,'${i18n.get('删除')}');
+							return;
+						}else{
+							ajax({
+								url: '${ctx}/giftApply/delete.html',
+								type: 'POST',
+								data: {id:selected_apply.id},
+								success : function(result) {
+									reload_apply();
+									reload_detail();
+									exalert(e,'${i18n.get('删除成功！')}');
+								}
+							});
+						}
+		  			}
+		  		},
+				{
+		  			id:'submit_apply',
+		  			label : '${i18n.get('提交')}',
+		  			icon : 'icon-save',
+		  			own : ${submitURL!'false'},
+		  			handler : function(e,rowData){
+		  				var detaildata = $('#detail').jqGrid('getRowData');
+						if(!selected_apply){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}else if(canEdit(selected_apply.status)){
+							myAlert(e,'${i18n.get('提交')}');
+							return;
+						}else if(detaildata.length == 0){
+							exalert(e,'${i18n.get('没有申请行，不能提交！')}');
+							return;
+						}else if((selected_apply.applyAmount-selected_apply.availableLimit) > 0){
+							exalert(e,'${i18n.get('申请金额超出可用额度，不能提交！')}');
+							return;
+						}else{
+							bootbox.confirm('${i18n.get('你确定要提交数据吗？')}', function(result) {
+                                if(result){	
+									ajax({
+										url: '${ctx}/giftApply/submit.html',
+										type: 'POST',
+										data: {id:selected_apply.id},
+										success : function(result) {
+											reload_apply();
+											exalert(e,'${i18n.get('提交成功！')}');
+										}
+									});
+								}
+							});
+						}
+		  			}
+		  		}
+			]" > 
+			
+			<div class="col-xs-12">	
+				<div class="form-group col-xs-2" align="right">${i18n.get('申请单号 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="applyCode" size="30" />
+				</div>	
+				<div class="form-group col-xs-2" align="right">${i18n.get('申请单位 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="applyUnitName" size="30" />
+				</div>
+				<div class="form-group col-xs-2" align="right">${i18n.get('客户 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="customName" size="30" />
+				</div>
+			</div> 
+		</@form.table>
+		
+		<#if (permission["P09GiftApplyDetailAdd"])??>
+			<#assign addURL_detail="true" />
+		</#if>
+		<#if (permission["P09GiftApplyDetailEdit"])??>
+			<#assign editURL_detail="true" />
+		</#if>
+		<#if (permission["P09GiftApplyDetailDelete"])??>
+			<#assign deleteURL_detail="true" />
+		</#if>
+		<#if (permission["P09GiftApplyDetailGive"])??>
+			<#assign giveURL_detail="true" />
+		</#if>
+		<#if (permission["P09GiftApplyDetailGet"])??>
+			<#assign getURL_detail="true" />
+		</#if>
+		<div id="detailDiv">
+		<@form.table id="detail" 
+			class="col-xs-12"
+			title="${i18n.get('申请行项目')}"
+			checkbox="true"
+			url = "${ctx}/giftApply/pageDetail.html"
+			rowNum = "10"
+			colModel = "[
+				{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+				{name:'giftCode',label:'${i18n.get('资料与礼品编号')}',hidden:false,width:90,sortable:true,align:'center' }, 
+				{name:'giftDesc',label:'${i18n.get('描述')}',hidden:false,width:200,sortable:true,align:'left' }, 
+				{name:'giftType',label:'${i18n.get('分类')}',hidden:false,width:50,sortable:true,align:'center' }, 
+				{name:'giftUnit',label:'${i18n.get('单位')}',hidden:false,width:40,sortable:true,align:'center' }, 
+				{name:'applyQuantity',label:'${i18n.get('申请数量')}',hidden:false,width:80,sortable:true,align:'left' }, 
+				{name:'giftPrice',label:'${i18n.get('单价')}',hidden:false,width:80,sortable:true,align:'left'}, 
+				{name:'sumMoney',label:'${i18n.get('金额')}',hidden:false,width:80,sortable:true,align:'left' }, 
+				{name:'actualGiveQuantity',label:'${i18n.get('实发数量')}',hidden:false,width:120,sortable:true,align:'left',formatter:function(cellvalue, options, rowObject){ return editActualGiveQuantity(cellvalue, options, rowObject) } }, 
+				{name:'actualGiveDate',label:'${i18n.get('实发日期')}',hidden:false,width:100,sortable:true,align:'center' ,formatter:function(cellvalue, options, rowObject){ return editActualGiveDate(cellvalue, options, rowObject) }}, 
+				{name:'actualGetQuantity',label:'${i18n.get('实到数量')}',hidden:false,width:120,sortable:true,align:'left',formatter:function(cellvalue, options, rowObject){ return editActualGetQuantity(cellvalue, options, rowObject) } }, 
+				{name:'actualGetDate',label:'${i18n.get('实到日期')}',hidden:false,width:100,sortable:true,align:'center' ,formatter:function(cellvalue, options, rowObject){ return editActualGetDate(cellvalue, options, rowObject) } },
+				{name:'status',label:'${i18n.get('状态')}',hidden:false,width:60,sortable:true,align:'center' }, 
+				{name:'explain',label:'${i18n.get('说明')}',hidden:false,width:400,sortable:true,align:'left' }
+			]" 
+			onComplete ="function(){
+				//日期控件需要
+				$('.date-picker').datepicker({autoclose:true}).next().on(ace.click_event, function(){
+					$(this).prev().focus();
+				});
+			}"
+			searchClick="function(){
+				$('#detailId').val('');
+			}"
+			ondblClickRow = "function(){
+				return;
+			}"
+			buttons = "[
+				{
+		  			id:'add_detail',
+		  			label : '${i18n.get('新增')}',
+		  			icon : 'icon-plus',
+		  			own : ${addURL_detail!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_apply){
+							exalert(e,'${i18n.get('请选择申请单数据！')}');
+							return;
+						}
+						var requestPath = '${ctx}/giftApply/addOrEditDetail.html?applyId='+selected_apply.id;
+						parent.dialog('${i18n.get('申请行项目')}', requestPath, window);
+		  			}
+		  		},
+		  		{
+		  			id:'edit_detail',
+		  			label : '${i18n.get('修改')}',
+		  			icon : 'icon-pencil',
+		  			own : ${editURL_detail!'false'},
+		  			handler : function(e,rowData){
+						if(selectedList_detail.length != 1){
+							exalert(e,'${i18n.get('请选择一条申请行数据!')}');
+							return;
+						}else{
+							var statusEdit = !canEdit(selected_apply.status);
+							var requestPath = '${ctx}/giftApply/addOrEditDetail.html?id='+selectedList_detail[0].id+'&statusEdit='+statusEdit;
+							parent.dialog('${i18n.get('申请行项目')}', requestPath, window);
+						}
+		  			}
+		  		},
+		  		{
+		  			id:'delete_detail',
+		  			label : '${i18n.get('删除')}',
+		  			icon : 'icon-trash',
+		  			own : ${deleteURL_detail!'false'},
+		  			handler : function(e,rowData){
+		  				var selectedIds = [];
+						$.each(selectedList_detail,function(i,item){
+				 			selectedIds.push(item.id);
+				 		});
+						if(selectedList_detail.length == 0){
+							exalert(e,'${i18n.get('请选择需删除的申请行数据!')}');
+							return;
+						}else if(canEdit(selected_apply.status)){
+							myAlert(e,'${i18n.get('删除')}');
+							return;
+						}else{
+							bootbox.confirm('${i18n.get('你确定要删除？')}' , function(result) {
+						        if(result) {
+						            ajax({
+										url: '${ctx}/giftApply/deleteDetails.html',
+										type: 'POST',
+										data: {ids:selectedIds},
+										success : function(result) {
+											reload_detail();
+											exalert(e,'${i18n.get('删除成功！')}');
+										}
+									});
+                                }
+                            });	
+						}
+		  			}
+		  		},
+				{
+		  			id:'giveDetail',
+		  			label : '${i18n.get('发货')}',
+		  			icon : 'icon-save',
+		  			own : ${giveURL_detail!'false'},
+		  			handler : function(e,rowData){
+		  				if(selected_apply.status != '审批通过'){
+		  					exalert(e,'${i18n.get('必须审批通过后才能发货!')}');
+							return;
+		  				}else if(selectedList_detail.length == 0){
+							exalert(e,'${i18n.get('请选择需发货的申请行数据!')}');
+							return;
+						}
+						var selectedIds = [];
+						var flag = true;
+						$.each(selectedList_detail,function(i,item){
+				 			selectedIds.push(item.id);
+				 			if(item.status != '未发货'){
+				 				flag = false;
+				 				exalert(e,'${i18n.get('只有未发货的数据才能发货!')}');
+								return;
+				 			}
+				 		});
+				 		if(flag){
+					 		bootbox.confirm('${i18n.get('如果实发数量不填默认为申请数量，你确定要发货？')}' , function(result) {
+						        if(result) {
+						            ajax({
+										url: '${ctx}/giftApply/giveDetails.html',
+										type: 'POST',
+										data: {ids:selectedIds},
+										success : function(result) {
+											reload_detail();
+											exalert(e,'${i18n.get('发货成功！')}');
+										}
+									});
+	                            }
+	                        });	
+                        }
+		  			}
+		  		},
+		  		{
+		  			id:'getDetail',
+		  			label : '${i18n.get('到货')}',
+		  			icon : 'icon-save',
+		  			own : ${getURL_detail!'false'},
+		  			handler : function(e,rowData){
+						if(selectedList_detail.length == 0){
+							exalert(e,'${i18n.get('请选择需到货的申请行数据!')}');
+							return;
+						}
+						var selectedIds = [];
+						var flag = true;
+						$.each(selectedList_detail,function(i,item){
+				 			selectedIds.push(item.id);
+				 			if(item.status != '已发货'){
+				 				flag = false;
+				 				exalert(e,'${i18n.get('只有已发货的数据才能到货!')}');
+								return;
+				 			}
+				 		});
+				 		if(flag){
+					 		bootbox.confirm('${i18n.get('如果实到数量不填默认为实发数量，你确定要到货？')}' , function(result) {
+						        if(result) {
+						            ajax({
+										url: '${ctx}/giftApply/getDetails.html',
+										type: 'POST',
+										data: {ids:selectedIds},
+										success : function(result) {
+											reload_detail();
+											exalert(e,'${i18n.get('到货成功！')}');
+										}
+									});
+	                            }
+	                        });
+                        }
+		  			}
+		  		}
+			]" > 
+			
+			<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">	
+				<div class="form-group col-xs-3">
+					<input type="hidden" id="applyId" name="applyId" />
+					<input type="text" id="searchKey" name="searchKey" placeholder='请输入编号或描述' size="30" />
+				</div>	
+			</div> 
+		</@form.table>
+		</div>
+		<input type="hidden" id="applyStatus" />
+		<input type="hidden" id="detailId" />
+	</div>
+</@cui.body>
+<script type="text/javascript">
+function reload_apply_2(applyId){
+	$("#applyId").val(applyId);
+	$("#detailId").val('');
+	reload_apply();
+}
+function reload_detail_2(applyId,detailId){
+	$("#applyId").val(applyId);
+	$("#detailId").val(detailId);
+	reload_apply();
+}
+function onComplete_apply(){
+	var applyId = $("#applyId").val();
+	$('#'+applyId).trigger('click');
+}
+function onComplete_detail(){
+	var detailId = $("#detailId").val();
+	$('#'+detailId).trigger('click');
+}
+function setCustom(cellvalue, options, rowObject){
+	if(rowObject.dealerName == '否'){
+		return cellvalue;
+	}else{
+		return rowObject.applyUnitName;
+	}
+}
+function editActualGiveQuantity(cellvalue, options, rowObject){
+	if(cellvalue == undefined){
+		cellvalue = '';
+	}
+	var applyStatus = $('#applyStatus').val();
+	if(applyStatus == '审批通过' && rowObject.status == '未发货'){
+		return '<input type="number" onBlur="submit(\''+options.rowId+'\',\'actualGiveQuantity\',this.value)" value="'+cellvalue+'" />';
+	}else{
+		return '<div align="left">'+cellvalue+'</div>';
+	}
+}
+function editActualGiveDate(cellvalue, options, rowObject){
+	var applyStatus = $('#applyStatus').val();
+	if(applyStatus == '审批通过' && rowObject.status == '未发货'){
+		return '<input class="date-picker" onChange="submit(\''+options.rowId+'\',\'actualGiveDate\',this.value)" type="text" data-date-format="yyyy-mm-dd" value="'+formatDate_date(cellvalue)+'" />';
+	}else{
+		return '<div align="left">'+formatDate_date(cellvalue)+'</div>';
+	}
+	
+}
+function editActualGetQuantity(cellvalue, options, rowObject){
+	if(cellvalue == undefined){
+		cellvalue = '';
+	}
+	var applyStatus = $('#applyStatus').val();
+	if(applyStatus == '审批通过' && rowObject.status == '已发货'){
+		return '<input type="number" onBlur="submit(\''+options.rowId+'\',\'actualGetQuantity\',this.value)" value="'+cellvalue+'" />';
+	}else{
+		return '<div align="left">'+cellvalue+'</div>';
+	}
+}
+function editActualGetDate(cellvalue, options, rowObject){
+	var applyStatus = $('#applyStatus').val();
+	if(applyStatus == '审批通过' && rowObject.status == '已发货'){
+		return '<input class="date-picker" onChange="submit(\''+options.rowId+'\',\'actualGetDate\',this.value)" type="text" data-date-format="yyyy-mm-dd" value="'+formatDate_date(cellvalue)+'" />';
+	}else{
+		return '<div align="left">'+formatDate_date(cellvalue)+'</div>';
+	}
+}
+function submit(id,column,value){
+	ajax({
+        url: '${ctx}/giftApply/submitColumnValue.html',
+        type: 'POST',
+        data: {detailId:id,column:column,value:value},
+        success : function(result) {
+        }
+    });
+}
+
+function canEdit(status){
+	return status != '新建' && status != '已驳回';
+}
+function myAlert(e,type){
+	exalert(e,'只有新建或已驳回的数据可'+type+'!');
+}
+</script>

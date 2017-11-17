@@ -1,0 +1,130 @@
+<@pui.body>
+<div class="row col-xs-12" style="width: 1000px;margin-right: 0px; margin-left: 0px;" >
+
+<table style="width: 1000px">
+<tr>
+<td style="width: 1000px">
+	<@form.table id="all_table"
+		title="${i18n.get('全部订单')}"
+		url = "${ctx}/common/order/page.html?customerId=${(customerId)!}&isAdvanceBilling=${(isAdvanceBilling)!}&executeStatus=${(executeStatus)!}&lineStatus=${(lineStatus)!}"
+		rowNum = "10"
+		colModel = "[
+			{name : 'id', label:'id', width : 1, editable : false, hidden : true},
+			{name : 'proId', label:'${i18n.get('产品ID')}', width : 1, editable : false, hidden : true},
+			{name : 'orderCode', label:'${i18n.get('订单编号')}', width : 150, editable : false, hidden : false},
+			{name : 'lineNo', label:'${i18n.get('订单行号')}', width : 50, align:'center',editable : false, hidden : false},
+			{name :	'orderType',label:'${i18n.get('订单类型')}',hidden:true,width:100,sortable:true,align:'center'},
+			{name : 'businessEntityLable', label:'${i18n.get('业务实体')}', width : 120, sortable:true, editable:false, align:'center'},
+			{name : 'orderTypeLable', label:'${i18n.get('订单类型')}', width : 120, sortable:true, editable:false, align:'center'},
+			{name : 'sourceId', label:'${i18n.get('来源ID')}',hidden:true, width : 10,sortable:false,editable : false,align:'center'}, 
+			{name : 'sourceType', label:'${i18n.get('订单来源')}',hidden:true, width : 150,sortable:true,editable : false,align:'center'}, 
+			{name : 'sourceCode', label:'${i18n.get('我司合同编码')}',hidden:false, width : 150,sortable:true,editable : false,align:'center'}, 
+			{name : 'sourceName', label:'${i18n.get('我司合同名称')}',hidden:true, width : 250,sortable:true,editable : false,align:'center'}, 
+			{name : 'proModel', label:'${i18n.get('产品型号')}', width : 100, editable : false, align:'center'},
+			{name : 'materielCode', label:'${i18n.get('物料编码')}', hidden:false, width : 100, editable : false, align:'center'},
+			{name : 'itemDescription', label:'${i18n.get('产品名称')}', width : 150, editable : false ,align:'center'}, 
+			{name : 'proDesc', label:'${i18n.get('产品说明')}', width : 200, editable : false, align:'center',hidden:true}, 
+			{name : 'proQty', label:'${i18n.get('数量')}', width : 80, sortable:true, editable : false, align:'right'}, 
+			{name : 'billingQty', label:'${i18n.get('开票数量')}', width : 80, sortable:true, editable : false, align:'right'}, 
+			{name : 'unit', label:'${i18n.get('单位')}',width : 60,sortable:true, editable : false, align:'center',hidden : true},  
+			{name : 'unitLable', label:'${i18n.get('单位')}',width : 60,sortable:true, editable : false, align:'center'},  
+			{name : 'price', label:'${i18n.get('销售单价')}',width : 80,sortable:true, editable : false, align:'right'}, 
+			{name : 'amount', label:'${i18n.get('金额')}',width : 100,sortable:true, editable : false, align:'right'}, 
+			{name : 'shipOrg', label:'${i18n.get('发货组织ID')}',width : 250,sortable:true,editable : false ,align:'center',hidden : true}, 
+			{name : 'shipOrgLable', label:'${i18n.get('发货组织')}',width : 60,sortable:true,editable : false ,align:'center'},
+			{name : 'customerId', label:'${i18n.get('客户ID')}', hidden : true , width : 250,sortable:true,editable : false,align:'center'}, 
+			{name : 'customerCode', label:'${i18n.get('客户编码')}',width : 150,sortable:true,editable : false,align:'center'}, 
+			{name : 'customerName', label:'${i18n.get('客户名称')}',width : 220,sortable:true,editable : false,align:'center'},   
+			{name : 'customerPO', label:'${i18n.get('客户合同编号')}',width : 150,sortable:true,editable : false,align:'center'},
+			{name : 'deliveryAddressId', label:'${i18n.get('客户地址ID')}',width : 150,sortable:true,editable : false,align:'center', hidden : true},
+			{name : 'deliveryAddress', label:'${i18n.get('客户地址')}', hidden : true , width : 150,sortable:true,editable : false,align:'center'},
+			{name : 'requestDate',label:'${i18n.get('要货日期')}',hidden:false,width:100,sortable:true,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+			{name : 'promiseDate',label:'${i18n.get('工程承诺日期')}',hidden:false,width:100,sortable:true,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+			{name : 'orderDate', label:'${i18n.get('下单日期')}', width : 100, align:'center',editable : false, hidden : false,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+		  	{name : 'status', label:'${i18n.get('CRM状态CODE')}',hidden:true, width : 100, sortable:true, editable : false, align:'center'}, 
+			{name : 'erpOrderCode', label:'${i18n.get('ERP订单编号')}', width : 100, editable : false, hidden : false ,align:'center'},
+			{name : 'statusLable', label:'${i18n.get('CRM状态')}', width : 100, sortable:true, editable : false, align:'center'}
+		  ]"
+		 buttons = "[]"
+		 onSelectRow = "function(data,status){
+		 	if(status){
+		 		selectedData = data ;
+		 	}
+		 }"
+		>
+		<input  id="businessEntity" name="businessEntity" type="hidden" value="${(businessEntity)!}"/>
+		<input  id="isErpDelivery" name="isErpDelivery" type="hidden" value="${(isErpDelivery)!}"/>
+		<input  id="currency" name="currency" type="hidden" value="${(currency)!}"/>
+		
+		<div class="col-xs-12" style="padding-top: 10px;padding-bottom: 10px;">
+			<table border="0" cellpadding="2" cellspacing="2" >
+		    	<tr align="left">
+		  			<td align="right" width="100px">
+		  				${i18n.get('客户：')}  
+		            </td>
+		            <td align="left" width="230px" >
+		            	<@form.input  id="customerName" name="customerName" readonly="readonly" style="width: 200px;"  value="${(customerName)!}"/>
+		            </td>
+		            <td align="right" width="100px">
+		  				 ${i18n.get('合同编码： ')}
+		            </td>
+		            <td align="left" width="230px" >
+		            	<@form.input  id="sourceCode" name="sourceCode" style="width: 200px;" value="${(contractCode)!}" />
+		            </td>
+		             <input  id="contractCode" name="contractCode" type="hidden" value="${(contractCode)!}"/>
+		    	</tr>
+		    	<tr>
+		            <td align="right">
+		  				 ${i18n.get('订单编号： ')}
+		            </td>
+		             <td align="left" width="230px" >
+		            	<@form.input  id="orderCode" name="orderCode" style="width: 200px;" />
+		            </td>
+		            <td align="right">
+		  				${i18n.get('产品型号： ')} 
+		            </td>
+		             <td align="left" width="230px" >
+		            	<@form.input  id="proModel" name="proModel" style="width: 200px; "/>
+		            </td>
+		       </tr>
+		       <tr>
+		            <td align="right">
+		  				${i18n.get('ERP订单编号：  ')} 
+		            </td>
+		             <td align="left" width="230px" >
+		            	<@form.input  id="erpOrderCode"  name="erpOrderCode" style="width: 200px; "
+							placeholder="" 
+							tip="" 
+							/>
+		            </td>
+		       </tr>
+			</table>
+	  </div>
+	</@form.table>
+</td>
+</tr>
+</table>
+
+<div class="clearfix form-actions">
+	<div class="col-md-offset-5 col-md-7">
+		<button class="btn btn-info" id="selectOK" type="button" >
+			<i class="icon-ok bigger-110"></i>
+			${i18n.get('选择 ')} 
+		</button>
+		&nbsp; &nbsp; &nbsp;
+		<button class="btn" type="button" onclick="javascript:api.close()">
+			<i class="icon-undo bigger-110"></i>
+			${i18n.get('关闭 ')} 
+		</button>
+	</div>
+</div>
+<script type="text/javascript">
+	var selectedData ;
+	$('#selectOK').click(function(){
+		selectedData = $('#all_table').jqGrid('getRowData',selectedData.id);
+		parent.currentParent.${pickerId}_callback(selectedData);
+		api.close();
+	})
+</script>
+</div>
+</@pui.body>

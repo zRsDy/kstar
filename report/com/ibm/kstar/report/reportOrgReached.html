@@ -1,0 +1,613 @@
+<div style="width:80%;float:left">
+<@cui.body2>
+
+<#if currency == 'USD' >
+ <#assign yuan = "'${i18n.get('美元')}'"/>
+<#else>
+	<#assign yuan = "'${i18n.get('元')}'"/>
+</#if>
+
+<div style="margin-top:20px;margin-bottom:20px; padding-left: 40px" >
+	<form>
+			${i18n.get('年份')}：
+			<select name="year">
+				<#list years as y>
+					<option <#if y == year?number> selected="selected" </#if> > ${y}</option>
+				</#list>
+			</select>
+			
+			${i18n.get('币种')}：
+			<select name="currency">
+				<option value="RMB" <#if currency == 'RMB'> selected="selected" </#if>> ${i18n.get('人民币')} </option>
+				<option value="USD" <#if currency == 'USD'> selected="selected" </#if>> ${i18n.get('美元 ')}</option>
+			</select>
+			
+			<input name="reportType" type="hidden" value="${reportType}"/>
+			
+			<#if reportType== "ORG">
+			${i18n.get('组织')}：
+				<input name="orgId" type="hidden" id="orgId" value="${org.id}"/>
+				<input name="treeOrgId" type="hidden" id="treeOrgId" value="${treeOrgId}"/>
+				<@biz.picker_report_tree id="picker_report_tree" leafFlag="N" groupId="ORG" opType='2' rootId="${org.id}" posId="${position.id}"  button="${treeOrgName}" defaultSelect="selectedDatas_picker_report_tree" callback="function(datas){
+				 	if(datas){
+				 	debugger;
+					 	$('#treeOrgName').val(datas.name);
+					 	$('#treeOrgId').val(datas.id);
+					 	$('#picker_report_tree').html(datas.name);
+				 	}
+				}" />
+			<#else>
+			${i18n.get('销售员')}：
+				<@form.autocomplete  id="employeeId" name="employeeId" 
+						placeholder="${i18n.get('请选择销售员')}"
+						idKey='employeeId'
+						multiple="false"
+						style="width:350px"
+						formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo  +' | '+ data.positionName +'</div>';}"
+						url="function(){ return '${ctx}/common/selectByPositionList.html?posId=${posId}'; }"
+						value="{
+							 employeeName:'${(employee.name)!}',
+							 employeeNo:'${(employee.no)!}',
+							 employeeId:'${(employee.id)!}',
+							 positionName:'${(position.name)!}'
+						}"
+						onSelect="function(data){
+							if( data.id != null && data.id !='' && data.id != 'undefined'){
+								$('#positionId').val(data.positionId);
+							}
+						}" 
+					/>
+				<input id="positionId" name="positionId" type="hidden" value="${positionId}"/> 
+			</#if>
+			<button class="btn btn-info">${i18n.get('查询')}</button>
+	</form>
+</div>
+
+<div class="col-xs-12" style="padding-left: 1px;padding-right: 1px"> 
+		<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+		<div class="container-fluid" style="margin-bottom:10px;">
+			<div class="row" style="margin-left: auto; margin-right: auto;">
+				<div style="float: left;margin-left: auto; margin-right: auto;">
+					<div class="span5" style="float: left; margin-left: 2px; margin-right: auto;">
+						<div class="row-fluid" style="margin-right: 3px;">
+							<div id="info1" style="width: 1100px;" class="center"> <#if reportType== "ORG"> ${i18n.get('组织')}：${(org.name)!}<#else> ${i18n.get('销售员')}：${(employee.name)!} </#if>&nbsp;&nbsp; 
+								<#if target?? && target == 0>
+									<#if permission["TARGET"]??>
+										<span style="color: red"><a href="#" onclick="javascript: top.addTab('${i18n.get('年度目标')}','${ctx}/report/anltgtmgt.html')">${year}${i18n.get('年未设置目标')}</a></span>
+									<#else>
+										<span style="color: red">${year}${i18n.get('年未设置目标')}</span>
+									</#if>
+								<#else>
+									${year}${i18n.get('年目标')}： ${(target?number)?string(',###.00')}
+								</#if>
+							</div>
+							<div id="chart1" style="width: 94%;height:350px;border: 1px solid #000;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+            // 基于准备好的dom，初始化echarts实例
+            var myChart1 = echarts.init(document.getElementById('chart1'));
+            // 指定图表的配置项和数据
+            option = {
+			    tooltip: {
+			        trigger: 'axis',
+			        axisPointer: {
+			            type: 'cross',
+			            crossStyle: {
+			                color: '#999'
+			            }
+			        }
+			    },
+			    toolbox: {
+			    	show : true,
+			        feature: {
+			        	mark : {show: true},
+			            dataView: {show: true, readOnly: false},
+			            magicType: {show: true, type: ['line', 'bar']},
+			            restore: {show: true},
+			            saveAsImage: {show: true}
+			        }
+			    },
+			    calculable : true,
+			    legend: {
+			        data:['${i18n.get('上年')}','${i18n.get('今年')}','${i18n.get('达成率')}','${i18n.get('同比')}']
+			    },
+			    xAxis: [
+			        {
+			            type: 'category',
+			            data: ['${i18n.get('1月')}','${i18n.get('2月')}','${i18n.get('3月')}','${i18n.get('4月')}','${i18n.get('5月')}','${i18n.get('6月')}','${i18n.get('7月')}','${i18n.get('8月')}','${i18n.get('9月')}','${i18n.get('10月')}','${i18n.get('11月')}','${i18n.get('12月')}'],
+			            position: 'bottom',
+			            boundaryGap: true,
+			            axisPointer: {
+			                type: 'shadow'
+			            }
+			        },
+			        {
+			            type : 'category',
+			            data : ['${i18n.get('1月')}','${i18n.get('2月')}','${i18n.get('3月')}','${i18n.get('4月')}','${i18n.get('5月')}','${i18n.get('6月')}','${i18n.get('7月')}','${i18n.get('8月')}','${i18n.get('9月')}','${i18n.get('10月')}','${i18n.get('11月')}','${i18n.get('12月')}']
+			        },
+			    ],
+			    yAxis: [
+			        {
+			            type: 'value',
+			            name: '${i18n.get('金额')}',
+			            min: 0,
+			            axisLabel: {
+			                formatter: '<#if currency == "RMB" >￥<#else> $ </#if>{value} '
+			            }
+			        },
+			        {
+			            type: 'value',
+			            name: '${i18n.get('达成率/同比')}',
+			            min: 0,
+			            axisLabel: {
+			                formatter: '{value}%'
+			            }
+			        }
+			    ],
+			    series: [
+			        {
+			            name:'${i18n.get('上年')}',
+			            type:'bar',
+			            data:${lastList}
+			        },
+			        {
+			            name:'${i18n.get('今年')}',
+			            type:'bar',
+			            data:${actualList}
+			        },{
+			            name:'${i18n.get('达成率')}',
+			            type:'line',
+			            yAxisIndex: 1,
+			            data:${rateList}
+			        },{
+			            name:'${i18n.get('同比')}',
+			            type:'line',
+			            xAxisIndex: 1,
+			            yAxisIndex: 1,
+			            data:${yoyList}
+			        }
+			    ]
+			};
+            // 使用刚指定的配置项和数据显示图表。
+            myChart1.setOption(option);
+		</script>
+	</div>
+	<style>
+	table{border-collapse: separate;border-spacing: 1px;}
+	table th{background:none;}
+	.table thead tr{background:none;}
+	.table thead > tr > th {
+	    vertical-align: bottom;
+	    border-bottom: 0;
+	}
+	.tableC{
+		border-collapse: collapse;border-spacing: 0px;
+	}
+	.tableC thead > tr > td, .tableC tbody > tr > td, .tableC tfoot > tr > td{
+		border-bottom:0;
+	}
+	</style>
+	
+	<div class="row" style="margin-left: auto; margin-right: auto;">
+		<table class="table">
+			<thead>
+				<tr style="background: #06A585;color: white;">
+					<th colspan="6" class="center">${i18n.get('截止统计年度以出货计算的应收款（万元）')}</th>
+					<th colspan="2" class="center">${i18n.get('财务应收款（万元）')}</th>
+				</tr>
+				<tr>
+					<th>${i18n.get('三个月内')}</th>
+					<th>${i18n.get('三个月以上')}</th>
+					<th>${i18n.get('六个月以上')}</th>
+					<th>${i18n.get('一年以上')}</th>
+					<th>${i18n.get('二年以上')}</th>
+					<th>${i18n.get('累计应收总额')}</th>
+					<th>${i18n.get('已开票')}</th>
+					<th>${i18n.get('未开票')}</th>
+				</tr>
+			</thead>
+			<tbody style="background:#B3F7CE;">
+				<tr>
+					<#assign s = 0 />
+					<#list receivableList as r >
+						<#assign s = s + r />
+					</#list>
+					
+					<#list receivableList as r >
+						<td  style='font-size: 12px;'><a href="#" onclick="parent.addTab('${i18n.get('以出货计算的应收款明细')}','${ctx}/report/planReceivableDetail.html?index=${r_index}&orgIdOrEmployeeId=<#if reportType == "ORG">${(org.id)!}<#else>${(employee.id)!}</#if>&prType=1&reportType=${reportType}')">${r?string!'0'}</a></td>
+					</#list>
+					<td  style='font-size: 12px;'>${s}</td>
+					<#list invoicedAndUnbilled as sr >
+						<td  style='font-size: 12px;'>${sr?string!'0'}</td>
+					</#list>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+
+	<div class="row" style="margin-left: auto; margin-right: auto;">
+		<table class="table">
+			<thead>
+				<tr style="background: #06A585;color: white;">
+					<th colspan="7" class="center">${i18n.get('截止统计年度以合同解释计算的应收款（万元）')}</th>
+					<th colspan="3" class="center">${i18n.get('预收款（万元）')}</th>
+				</tr>
+				<tr>
+					<th>${i18n.get('期初余额')}</th>
+					<th>${i18n.get('未到期金额')}</th>
+					<th>${i18n.get('三个月内')}</th>
+					<th>${i18n.get('三个月以上')}</th>
+					<th>${i18n.get('六个月以上')}</th>
+					<th>${i18n.get('一年以上')}</th>
+					<th>${i18n.get('二年以上')}</th>
+					<th>${i18n.get('累计应收总额')}</th>
+					<th>${i18n.get('笔数')}</th>
+					<th>${i18n.get('预收款金额')}</th>
+				</tr>
+			</thead>
+			<tbody style="background:#B3F7CE;">
+				<tr>
+					<#assign s = 0 />
+					<#list receivableList2 as r >
+						<#assign s = s + r />
+					</#list>
+					
+					<#list receivableList2 as r >
+						<td  style='font-size: 12px;'><a href="#" onclick="parent.addTab('${i18n.get('以合同计算的应收款明细')}','${ctx}/report/planReceivableDetail.html?index=${r_index}&orgIdOrEmployeeId=<#if reportType == "ORG">${(org.id)!}<#else>${(employee.id)!}</#if>&prType=2&reportType=${reportType}')"> ${r?string!'0'} </a></td>
+					</#list>
+					<td  style='font-size: 12px;'>${s}</td>
+					<#list advancesReceived as ar >
+						<td  style='font-size: 12px;'>${ar?string!'0'}</td>
+					</#list>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="row" style="margin-left: auto; margin-right: auto;">
+		<table class="table" style="background:#fff;">
+			<thead>
+				<tr >
+					<th colspan="14" class="center" style="background: #06A585;color: white;">${i18n.get('统计年度的回款金额（万元）')}</th>
+				</tr>
+				<tr>
+					<th>${i18n.get('项目')}</th>
+					<th>${i18n.get('一月')}</th>
+					<th>${i18n.get('二月')}</th>
+					<th>${i18n.get('三月')}</th>
+					<th>${i18n.get('四月')}</th>
+					<th>${i18n.get('五月')}</th>
+					<th>${i18n.get('六月')}</th>
+					<th>${i18n.get('七月')}</th>
+					<th>${i18n.get('八月')}</th>
+					<th>${i18n.get('九月')}</th>
+					<th>${i18n.get('十月')}</th>
+					<th>${i18n.get('十一月')}</th>
+					<th>${i18n.get('十二月')}</th>
+					<th>${i18n.get('累计')}</th>
+				</tr>
+			</thead>
+			<tbody style="background:#B3F7CE;">
+				<tr id="last"></tr>
+				<tr id="actual"></tr>
+				<tr id="contact"></tr>
+			</tbody>
+		</table>
+		<script type="text/javascript">
+			$(function(){
+				var lastList = ${lastList};
+				var actualListOne = ${actualListOne};
+				var rateList = ${rateList};
+				var contactList = ${contactList};
+				var delivelyList = ${delivelyList};
+				var month = 0;
+				
+				$("#last").append("<td>${i18n.get('回款金额')}</td>")
+				$.each(actualListOne,function(i,e){
+					var money = e/10000 > 0 ? e/10000 : 0;
+					month = i+1;
+					if(month > 12){
+						month = '';
+					}
+					if('${reportType}' == "ORG"){
+						$("#last").append("<td style='font-size: 12px;'><a href='#' onclick=\"parent.addTab(\'${i18n.get('回款金额明细')}\',\'${ctx}/report/veriDetail.html?orgIdOrEmployeeId=${org.id}&reportType=${reportType}&year=${year}&currency=${currency}&month="+month+"\')\">"+money.toFixed(2)+"</a></td>");
+					}else{
+						$("#last").append("<td style='font-size: 12px;'><a href='#' onclick=\"parent.addTab(\'${i18n.get('回款金额明细')}\',\'${ctx}/report/veriDetail.html?orgIdOrEmployeeId=${positionId}&reportType=${reportType}&year=${year}&currency=${currency}&month="+month+"\')\">"+money.toFixed(2)+"</a></td>");
+					}
+				})
+				
+				$("#actual").append("<td>${i18n.get('出货回款率')}(%)</td>")
+				$.each(delivelyList,function(i,e){
+					$("#actual").append("<td style='font-size: 12px;'>"+e+"</td>");
+				})
+				
+				$("#contact").append("<td>${i18n.get('合同回款率')}(%)</td>")
+				$.each(contactList,function(i,e){
+					$("#contact").append("<td style='font-size: 12px;'>"+e+"</td>");
+				})
+			})
+		</script>
+	</div>
+	
+	<div class="row" style="margin-left: auto; margin-right: auto;">
+		<table class="table">
+			<thead>
+				<tr style="background: #06A585;color: white;">
+					<th colspan="14" class="center">${i18n.get('统计年度的费用金额（万元）')}</th>
+				</tr>
+				<tr>
+					<th> </th>
+					<th>${i18n.get('一月')}</th>
+					<th>${i18n.get('二月')}</th>
+					<th>${i18n.get('三月')}</th>
+					<th>${i18n.get('四月')}</th>
+					<th>${i18n.get('五月')}</th>
+					<th>${i18n.get('六月')}</th>
+					<th>${i18n.get('七月')}</th>
+					<th>${i18n.get('八月')}</th>
+					<th>${i18n.get('九月')}</th>
+					<th>${i18n.get('十月')}</th>
+					<th>${i18n.get('十一月')}</th>
+					<th>${i18n.get('十二月')}</th>
+					<th>${i18n.get('累计')}</th>
+				</tr>
+			</thead>
+			<tbody style="background:#B3F7CE;">
+				<tr>
+					<td  style='font-size: 12px;'>${i18n.get('费用额')}</td>
+					<td style='font-size: 12px;'>${invoiceNo.m01/10000}</td>
+					<td style='font-size: 12px;'>${invoiceNo.m02/10000}</td>
+					<td style='font-size: 12px;'>${invoiceNo.m03/10000}</td>
+					<td style='font-size: 12px;'>${invoiceNo.m04/10000}</td>
+					<td style='font-size: 12px;'>${invoiceNo.m05/10000}</td>
+					<td style='font-size: 12px;'>${invoiceNo.m06/10000}</td>
+					<td style='font-size: 12px;'>${invoiceNo.m07/10000}</td>
+					<td style='font-size: 12px;'>${invoiceNo.m08/10000}</td>
+					<td style='font-size: 12px;'>${invoiceNo.m09/10000}</td>
+					<td style='font-size: 12px;'>${invoiceNo.m10/10000}</td>
+					<td style='font-size: 12px;'>${invoiceNo.m11/10000}</td>
+					<td style='font-size: 12px;'>${invoiceNo.m12/10000}</td>
+					<td style='font-size: 12px;'>${invoiceNo.totle/10000}</td>
+				</tr>
+			
+				<tr>
+					<td style='font-size: 12px;'>${i18n.get('出货费用率')}</td>
+						<td style='font-size: 12px;'>${(invoiceNoDelively.m01)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoDelively.m02)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoDelively.m03)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoDelively.m04)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoDelively.m05)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoDelively.m06)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoDelively.m07)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoDelively.m08)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoDelively.m09)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoDelively.m10)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoDelively.m11)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoDelively.m12)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoDelively.totle)}</td>
+				</tr>
+				<tr>
+					<td style='font-size: 12px;'>${i18n.get('回款费用率')}%(${i18n.get('总计划')}：${invoiceNoContact.totle})</td>
+						<td style='font-size: 12px;'>${(invoiceNoContact.m01)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoContact.m02)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoContact.m03)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoContact.m04)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoContact.m05)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoContact.m06)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoContact.m07)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoContact.m08)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoContact.m09)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoContact.m10)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoContact.m11)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoContact.m12)}%</td>
+						<td style='font-size: 12px;'>${(invoiceNoContact.totle)}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+</@cui.body2>
+</div>
+<div style="width: 20%;
+    float: right;
+    margin-top: 7%;
+    border: 1px solid;
+    text-align: center;
+    height: 350px;">
+	<div style="font-size: 20px;margin: 5px 10px 5px 10px;background: #ccc;">${i18n.get('业绩分析')}</div>
+	<a href="#" onclick="parent.addTab('${i18n.get('客户类别分组')}','${ctx}/report/reportOrgReachedByCustomType.html?reportType=${reportType}&year=${year}&currency=${currency}&employeeId=${employeeId!}&positionId=${positionId!}&orgId=${orgId!}&flag=0')">
+	<div style="font-size: 20px;margin: 5px 10px 5px 10px;background: #438eb9;color: white;">
+	${i18n.get('业绩分解(客户类别)')}
+	</div>
+	</a>
+	<a href="#" onclick="parent.addTab('${i18n.get('产品类型分组')}','${ctx}/report/reportOrgReachedByProductType.html?reportType=${reportType}&year=${year}&currency=${currency}&employeeId=${employeeId!}&positionId=${positionId!}&orgId=${orgId!}&flag=0')">
+	<div style="font-size: 20px;margin: 5px 10px 5px 10px;background: #438eb9;color: white;">
+	${i18n.get('业绩分解(产品类别)')}
+	</div>
+	</a>
+	<a href="#" onclick="parent.addTab('${i18n.get('占比分析')}','${ctx}/report/proportionAnalysis.html?reportType=${reportType}&year=${year}&currency=${currency}&employeeId=${employeeId!}&positionId=${positionId!}&orgId=${orgId!}&flag=0')">
+	<div style="font-size: 20px;margin: 5px 10px 5px 10px;background: #438eb9;color: white;">${i18n.get('占比分析')}</div>
+	<#if reportType== "ORG">
+	<a href="#" onclick="parent.addTab('${i18n.get('排名分析')}','${ctx}/report/rankOrg.html?year=${year}&currency=${currency}&rankHeaderId=${rankHeaderId!''}&orgId=${orgId!}')">
+	<div style="font-size: 20px;margin: 5px 10px 5px 10px;background: #438eb9;color: white;">
+	${i18n.get('排名分析')}
+	</div>
+	</a>
+	</#if>
+	<a href="#" onclick="parent.addTab('${i18n.get('历史分析')}','${ctx}/report/reportHistoryAnalysis.html?reportType=${reportType}&year=${year}&currency=${currency}&employeeId=${employeeId!}&orgId=${orgId!}&flag=0')">
+	<div style="font-size: 20px;margin: 5px 10px 5px 10px;background: #438eb9;color: white;">${i18n.get('历史分析')}</div>
+	</a>
+	<a href="#" onclick="parent.addTab('${i18n.get('接单量')}','${ctx}/report/orderQuantity.html?reportType=${reportType}&year=${year}&currency=${currency}&employeeId=${employeeId!}&positionId=${positionId!}&orgId=${orgId!}&flag=0')">
+	<div style="font-size: 20px;margin: 5px 10px 5px 10px;background: #438eb9;color: white;">${i18n.get('接单量')}</div>
+	</a>
+</div>
+<div style="width: 20%;
+    float: right;
+    margin-top: 10px;
+    border: 1px solid;">	
+    <table class="table tableC" style="margin-top: 25px">
+    	<tr style="text-align:center">
+			<td style="border:0;padding: 2px 3px 2px 3px;"><div style="background: #ccc;padding: 10px 25px 10px 25px;">${i18n.get('商机推进')}</div></td>
+			<td style="border:0;padding: 2px 3px 2px 3px;"><div style="background: #ccc;padding: 10px 25px 10px 25px;">${i18n.get('绩效值')}</div></td>
+		</tr>
+		<tr style="text-align:center">
+			<td style="border:0;padding: 2px 3px 2px 3px;">
+				<a href="#" onclick="parent.addTab('${i18n.get('报备授权')}','${ctx}/report/bizoppReportScaleList.html?orgIdOrEmployeeId=<#if reportType == "ORG">${positionId!}<#else>${positionId!}</#if>&reportType=${reportType}')">
+				<div  style="background: #438eb9;
+			    	border-radius: 5px;
+			    	padding: 5px 0 5px 0;
+			    	color: white;">${i18n.get('报备授权比例')}</div>
+			    </a>
+			</td>
+			<td style="border:0;padding: 2px 3px 2px 3px;">${bizoppReportScale}%</td>
+		</tr>
+		<tr style="text-align:center">
+			<td style="border:0;padding: 2px 3px 2px 3px;">
+				<a href="#" onclick="parent.addTab('${i18n.get('报备授权')}','${ctx}/report/reportOrderList.html?orgIdOrEmployeeId=<#if reportType == "ORG">${positionId!}<#else>${positionId!}</#if>&reportType=${reportType}')">
+				<div  style="background: #438eb9;
+			    	border-radius: 5px;
+			    	padding: 5px 0 5px 0;
+			    	color: white;">${i18n.get('已授权落单率')}</div>
+			    </a>
+			</td>
+			<td style="border:0;padding: 2px 3px 2px 3px;">${reportOrderScale}%</td>
+		</tr>
+		<tr style="text-align:center">
+			<td style="border:0;padding: 2px 3px 2px 3px;">
+			<a href="#" onclick="parent.addTab('${i18n.get('报备落单率')}','${ctx}/report/bizoppOrderReportScaleList.html?orgIdOrEmployeeId=<#if reportType == "ORG">${positionId!}<#else>${positionId!}</#if>&reportType=${reportType}')">
+				<div  style="background: #438eb9;
+			    	border-radius: 5px;
+			    	padding: 5px 0 5px 0;
+			    	color: white;">${i18n.get('报备落单率')}</div>
+			</td>
+			<td style="border:0;padding: 2px 3px 2px 3px;">${bizoppOrderReportScale}%</td>
+		</tr>
+		<tr style="text-align:center">
+			<td style="border:0;padding: 2px 3px 2px 3px;">
+			<a href="#" onclick="parent.addTab('授权反馈率','${ctx}/report/bidReportScaleList.html?orgIdOrEmployeeId=<#if reportType == "ORG">${positionId!}<#else>${positionId!}</#if>&reportType=${reportType}')">
+				<div  style="background: #438eb9;
+			    	border-radius: 5px;
+			    	padding: 5px 0 5px 0;
+			    	color: white;">${i18n.get('授权反馈率')}</div>
+			</td>
+			<td style="border:0;padding: 2px 3px 2px 3px;">${bidReportScale}%</td>
+		</tr>
+		<tr style="text-align:center">
+			<td style="border:0;padding: 2px 3px 2px 3px;">
+				<div  style="background: #438eb9;
+			    	border-radius: 5px;
+			    	padding: 5px 0 5px 0;
+			    	color: white;">${i18n.get('售前支持反馈率')}</div>
+			</td>
+			<td style="border:0;padding: 2px 3px 2px 3px;">${saleSupportReportScale}%</td>
+		</tr>
+		<tr style="text-align:center">
+			<td style="border:0;padding: 2px 3px 2px 3px;">
+				<div  style="background: #438eb9;
+			    	border-radius: 5px;
+			    	padding: 5px 0 5px 0;
+			    	color: white;">${i18n.get('申述次数')}</div>
+			</td>
+			<td style="border:0;padding: 2px 3px 2px 3px;">34</td>
+		</tr>
+	</table>
+	
+	<table class="table tableC" style="margin-bottom: 25px">
+    	<tr style="text-align:center">
+			<td style="border:0;padding: 2px 3px 2px 3px;"><div style="background: #ccc;padding: 10px 25px 10px 25px;">${i18n.get('逾期工作')}</div></td>
+			<td style="border:0;padding: 2px 3px 2px 3px;"><div style="background: #ccc;padding: 10px 25px 10px 25px;">${i18n.get('绩效值')}</div></td>
+		</tr>
+		<tr style="text-align:center">
+			<td style="border:0;padding: 2px 3px 2px 3px;">
+			<a href="#" onclick="parent.addTab('${i18n.get('逾期未出货明细')}','${ctx}/report/reportOverdueList.html?orgIdOrEmployeeId=<#if reportType == "ORG">${treeOrgId!}<#else>${positionId!}</#if>&reportType=${reportType}&currency=${currency}&year=${year}')">
+				<div  style="background: #438eb9;
+			    	border-radius: 5px;
+			    	padding: 5px 0 5px 0;
+			    	color: white;">
+			    	${i18n.get('逾期未发货')}</div>
+			</a>
+			</td>
+			<td style="border:0;padding: 2px 3px 2px 3px;">${overDueSum}</td>
+		</tr>
+		<tr style="text-align:center">
+			<td style="border:0;padding: 2px 3px 2px 3px;">
+			<a href="#" onclick="parent.addTab('${i18n.get('提前开票未出货')}','${ctx}/report/reportInvoicingList.html?orgIdOrEmployeeId=<#if reportType == "ORG">${treeOrgId!}<#else>${positionId!}</#if>&reportType=${reportType}&currency=${currency}&year=${year}')">
+				<div  style="background: #438eb9;
+			    	border-radius: 5px;
+			    	padding: 5px 0 5px 0;
+			    	color: white;">${i18n.get('提前开票未出货')}</div>
+			</a>
+			</td>
+			<td style="border:0;padding: 2px 3px 2px 3px;">${invoicingSum}</td>
+		</tr>
+		<tr style="text-align:center">
+			<td style="border:0;padding: 2px 3px 2px 3px;">
+			<a href="#" onclick="parent.addTab('${i18n.get('特价逾期未出货')}','${ctx}/report/reportRebateList.html?orgIdOrEmployeeId=<#if reportType == "ORG">${treeOrgId!}<#else>${positionId!}</#if>&reportType=${reportType}&currency=${currency}&year=${year}')">
+				<div  style="background: #438eb9;
+			    	border-radius: 5px;
+			    	padding: 5px 0 5px 0;
+			    	color: white;">${i18n.get('特价逾期未出货')}</div>
+			</a>
+			</td>
+			<td style="border:0;padding: 2px 3px 2px 3px;">${rebateSum}</td>
+		</tr>
+		<tr style="text-align:center">
+			<td style="border:0;padding: 2px 3px 2px 3px;">
+			<a href="#" onclick="parent.addTab('${i18n.get('特价逾期未下单')}','${ctx}/report/reportRebateOverOrderList.html?orgIdOrEmployeeId=<#if reportType == "ORG">${treeOrgId!}<#else>${positionId!}</#if>&reportType=${reportType}')">
+				<div  style="background: #438eb9;
+			    	border-radius: 5px;
+			    	padding: 5px 0 5px 0;
+			    	color: white;">${i18n.get('特价逾期未下单')}</div>
+			</a>
+			</td>
+			<td style="border:0;padding: 2px 3px 2px 3px;">${rebateReportSum}</td>
+		</tr>
+		<tr style="text-align:center">
+			<td style="border:0;padding: 2px 3px 2px 3px;">
+			<a href="#" onclick="parent.addTab('${i18n.get('7天到期订单')}','${ctx}/report/reportExpireList.html?orgIdOrEmployeeId=<#if reportType == "ORG">${treeOrgId!}<#else>${positionId!}</#if>&reportType=${reportType}&currency=${currency}&year=${year}')">
+				<div  style="background: #438eb9;
+			    	border-radius: 5px;
+			    	padding: 5px 0 5px 0;
+			    	color: white;">${i18n.get('7天到期订单')}</div>
+			</a>
+			</td>
+			<td style="border:0;padding: 2px 3px 2px 3px;">${expireSum}</td>
+		</tr>
+		<tr style="text-align:center">
+			<td style="border:0;padding: 2px 3px 2px 3px;">
+                <a href="#" onclick="parent.addTab('${i18n.get('借货未核销')}','${ctx}/report/unverificationLoanList.html?orgId=${orgId!}&positionId=${positionId!}&employeeId=${(employee.id)!}&reportType=${reportType}')">
+                    <div  style="background: #438eb9;
+			    	border-radius: 5px;
+			    	padding: 5px 0 5px 0;
+			    	color: white;">${i18n.get('借货未核销')}</div>
+                </a>
+			</td>
+			<td style="border:0;padding: 2px 3px 2px 3px;">${(unverificationLoan?string("#.00"))!'-'}</td>
+		</tr>
+		<tr style="text-align:center">
+			<td style="border:0;padding: 2px 3px 2px 3px;">
+			<a href="#" onclick="parent.addTab('${i18n.get('逾期未收回样机')}','${ctx}/report/overdueNoReturnPrototypeList.html?orgIdOrEmployeeId=<#if reportType == "ORG">${treeOrgId!}<#else>${positionId!}</#if>&reportType=${reportType}&currency=${currency}&year=${year}')">
+				<div  style="background: #438eb9;
+			    	border-radius: 5px;
+			    	padding: 5px 0 5px 0;
+			    	color: white;">${i18n.get('逾期未收回样机')}</div>
+			</td>
+			<td style="border:0;padding: 2px 3px 2px 3px;">${overdueNoReturnPrototypeSum}</td>
+		</tr>
+		<tr style="text-align:center">
+			<td style="border:0;padding: 2px 3px 2px 3px;">
+				<div  style="background: #438eb9;
+			    	border-radius: 5px;
+			    	padding: 5px 0 5px 0;
+			    	color: white;">${i18n.get('逾期投诉保证金')}</div>
+			</td>
+			<td style="border:0;padding: 2px 3px 2px 3px;"></td>
+		</tr>
+	</table>
+</div>

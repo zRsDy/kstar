@@ -1,0 +1,615 @@
+<#escape x as x?html>
+    <@pui.body>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            initialPage();
+        });
+
+
+        function initialPage() {
+            setCheckboxStat();
+            setSelectStat();
+        }
+
+        function setSelectStat() {
+
+            /*  $("#okcHeader input[type='text']").attr("readonly", "readonly");
+             $("#okcHeader textarea").attr("readonly", "readonly");
+             $("#okcHeader select").attr("disabled", "disabled");
+             $("#okcHeader input[type='search']").attr("disabled", "disabled");
+             $("#okcHeader input[type='checkbox']").attr("disabled", "disabled");
+             $("#okcHeaderOrder input[type='radio']").attr("disabled", "disabled"); */
+
+            $("#contrStatName").attr("disabled", "disabled");
+            $("#payStatDesc").attr("disabled", "disabled");
+            $("#cancelStatDesc").attr("disabled", "disabled");
+            $("#isValidBox").attr("disabled", "disabled");
+            $("#isChangeBox").attr("disabled", "disabled");
+
+        }
+
+        function setCheckboxStat() {
+            //初始化checkbox
+            //有效标识
+            var checked2 = $("#isValid").val();
+            if (checked2 == '1') {
+                $("#isValidBox").attr("checked", "true");
+            } else {
+                $("#isValid").val('0');
+                $("#isValidBox").removeAttr("checked");
+            }
+            //变更标识
+            var checked3 = $("#isChange").val();
+            if (checked3 == '1') {
+                $("#isChangeBox").attr("checked", "true");
+            } else {
+                $("#isChange").val('0');
+                $("#isChangeBox").removeAttr("checked");
+            }
+            //是否是高风险合同标识
+            var isHighRisk = $("#isHighRisk").val();
+            if (isHighRisk == '1') {
+                $("#isHighRiskBox").attr("checked", "true");
+            } else {
+                $("#isHighRisk").val('0');
+                $("#isHighRiskBox").removeAttr("checked");
+            }
+        }
+
+        //有效标识
+        function checkValIsValidBox() {
+            var checked = $("#isValidBox").is(':checked')
+            if (checked == true) {
+                $("#isValid").val('1');
+                $("#isValidBox").attr("checked", "true");
+            } else {
+                $("#isValid").val('0');
+                $("#isValidBox").removeAttr("checked");
+            }
+        }
+
+        //变更标识
+        function checkValisChangeBox() {
+            var checked = $("#isChangeBox").is(':checked')
+            if (checked == true) {
+                $("#isChange").val('1');
+                $("#isChangeBox").attr("checked", "true");
+            } else {
+                $("#isChange").val('0');
+                $("#isChangeBox").removeAttr("checked");
+            }
+        }
+
+        //是否是高效标识
+        function checkIsHighRiskBox(e) {
+            $("#isHighRiskBox").attr("disabled","disabled");
+            var checked = $("#isHighRiskBox").is(':checked')
+            var old = $("#isHighRisk").val();
+            var isHighRisk = checked ? '1' : '0';
+
+            var update = function (isHighRisk) {
+                $("#isHighRiskBox").removeAttr("disabled");
+                $("#isHighRisk").val(isHighRisk);
+                if (isHighRisk === '1') {
+                    $("#isHighRiskBox").prop("checked", true);
+                } else {
+                    $("#isHighRiskBox").prop("checked", false);
+                }
+            }
+
+            bootbox.confirm('${i18n.get('是否将该合同标记为')}' + (isHighRisk=='0'?'${i18n.get('非')}':'')  +'${i18n.get('高风险合同？')}' , function(ok) {
+                if(ok) {
+                    $.ajax({
+                        type : "POST",
+                        url : "changeHighRiskFlag.html",
+                        async: true,
+                        data : {id:'${(contr.id)!}','isHighRisk':isHighRisk},
+                        dataType : 'json',
+                        success : function(msg) {
+                            if (msg.status=='success') {
+                                update(isHighRisk);
+                                exalert(e,'${i18n.get('保存成功')}');
+                            } else {
+                                update(old);
+                                exalert(e,msg.message);
+                            }
+                        },
+                        error: function(e) {
+                            update(old);
+                            alert(e.responseJSON.message);
+                        }
+                    });
+                } else {
+                    update(old);
+                }
+            });
+
+        }
+
+        function getContrAmt() {
+            return "${(contr.totalAmtDesc)!}";
+        }
+
+        function signUpContract() {
+            var d = {};
+            d.contrId = '${id}';
+            bootbox.confirm('${i18n.get('您确定要签订合同吗')}？', function (result) {
+                if (result) {
+                    ajax({
+                        type: 'post',
+                        url: '${ctx}/loan/signUpContract.html',
+                        data: d,
+                        success: function (result) {
+                            alert('${i18n.get('合同签订成功')}');
+                            window.location.reload();
+                            //reload_finalReviewStat();
+                        }
+                    });
+                }
+            });
+        }
+
+        function validateCustomer(event) {
+            var opt = $('#actFunction').val();
+            if (opt != "startTrialProcess")
+                return true;
+            var rtn = false;
+            var d = {};
+            d.contrId = '${id}';
+            d.typ = '${typ}';
+            ajax({
+                type: 'post',
+                url: '${ctx}/standard/checkCustBusiERPForOrder.html',
+                async: false,
+                data: d,
+                success: function (result) {
+                    rtn = true;
+                }
+            });
+            return rtn;
+        }
+
+        function startReviewProcess() {
+
+            var formDatas = $('#form_stdContrF').serializeArray();
+            bootbox.confirm('${i18n.get('您确定要开启此合同的评审吗')}？', function (result) {
+                if (result) {
+                    if (getContrAmt() && parseFloat(getContrAmt()) > 0) {
+                        var d = {};
+                        d.contrId = '${id}';
+                        d.typ = '${typ}';
+                        ajax({
+                            type: 'post',
+                            url: '${ctx}/standard/checkCustBusiForOrder.html',
+                            data: d,
+                            success: function (result) {
+                                ajax({
+                                    type: 'post',
+                                    url: '${ctx}/loan/startContractTrialProcess.html?id=${id}&typ=${typ}',
+                                    data: formDatas,
+                                    success: function (result) {
+                                        alert('${i18n.get('合同评审流程已开启')}');
+                                        window.location.reload();
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        alert('${i18n.get('请添加合同工程清单并正确填入报价和数量')}');
+                    }
+                }
+            });
+        }
+
+        function changeContract() {
+            var d = {};
+            d.contrId = '${id}';
+            var data1 = JSON.parse($('#contrStatName option:selected').attr('data'));
+            if (data1.name == '${i18n.get('新建')}') {
+                alert('${i18n.get('当前状态为新建，还未签订无法变更，请直接进行修改即可')}！');
+                return;
+            }
+            bootbox.confirm('${i18n.get('您确定要变更合同吗')}？', function (result) {
+                if (result) {
+                    ajax({
+                        type: 'post',
+                        url: '${ctx}/standard/change.html',
+                        data: d,
+                        success: function (result) {
+                            parent.dialog('${i18n.get('合同变更信息')}', '${ctx}/change/add.html?contrId=${id}');
+                            window.location.reload();
+                        }
+                    });
+                }
+            });
+        }
+
+        function genOrder() {
+            var d = {};
+            d.contrId = '${id}';
+            bootbox.confirm('${i18n.get('您确定要生成订单吗')}？', function (result) {
+                if (result) {
+                    ajax({
+                        type: 'post',
+                        url: '${ctx}/standard/checkCustBusiForOrder.html',
+                        data: d,
+                        success: function (result) {
+                            parent.dialog('${i18n.get('订单信息')}', '${ctx}/order/add.html?source=${sourceType}&srcId=${id}');
+                        }
+                    });
+                }
+            });
+        }
+
+
+        function disContr() {
+            var d = {};
+            d.contrId = '${id}';
+            d.typ = '${typ}';
+            bootbox.confirm('${i18n.get('您确定要作废合同吗')}？', function (result) {
+                if (result) {
+                    ajax({
+                        type: 'post',
+                        url: '${ctx}/standard/discardContr.html',
+                        data: d,
+                        success: function (result) {
+                            alert('${i18n.get('合同已作废')}');
+                            window.location.reload();
+                        }
+                    });
+                }
+            });
+        }
+
+
+        function submitSave(opt) {
+            if (opt == 'saveOkc') {
+                $('#actFunction').val('saveOkc');
+            } else {
+                $('#actFunction').val('startTrialProcess');
+            }
+        }
+
+    </script>
+
+        <@form.panel title="${i18n.get('基本信息')}">
+            <@form.form id="loanf" before="validateCustomer" success="function(){ alert('${i18n.get('操作成功')}！');
+					window.location.reload(); }" class="form-horizontal">
+
+            <div style="height: 20px;">
+            <div style="padding-right: 20px; float: right;">
+
+                <#if permission["P05LoanParSave"]?? >
+                    <#if btnStatus.saveBtn?default('0') =='0' >
+                        <button id="saveContrBtn" class="btn btn-info submit" type="button" disabled="disabled">
+                            <i class="icon-ok bigger-110"></i> ${i18n.get('保存')} </button>
+                    <#else>
+                        <button id="saveContrBtn" class="btn btn-info submit" type="button" onclick="submitSave('saveOkc')">
+                            <i class="icon-ok bigger-110"></i> ${i18n.get('保存')} </button>
+                    </#if>
+                </#if>
+                <#if permission["P05LoanParLoanSubmitReview"]?? >
+                    <#if btnStatus.trialBtn?default('0') =='0' >
+                        <button id="trialStatBtn" class="btn btn-info" type="button" disabled="disabled" onclick="startReviewProcess()">
+                            <i class="icon-undo bigger-110"></i>
+                        ${i18n.get('提交评审')}
+                        </button>
+                    <#else>
+                        <button id="trialStatBtn" class="btn btn-info submit" type="button" onclick="submitSave('startTrialProcess')">
+                            <i class="icon-undo bigger-110"></i>
+                        ${i18n.get('提交评审')}
+                        </button>
+                    </#if>
+                </#if>
+                <#if permission["P05LoanParLoanChange1"]?? && permission["P05LoanParLoanChange2"]?? >
+                    <#if btnStatus.chgBtn?default('0') =='0' >
+                        <button id="changeBtn" class="btn btn-info" type="button" disabled="disabled" onclick="changeContract()">
+                            <i class="icon-undo bigger-110"></i>
+                        ${i18n.get('申请变更')}
+                        </button>
+                    <#else>
+                        <button id="changeBtn" class="btn btn-info" type="button" onclick="changeContract()">
+                            <i class="icon-undo bigger-110"></i>
+                        ${i18n.get('申请变更')}
+                        </button>
+                    </#if>
+                </#if>
+                <#if permission["P05LoanParLoanGenSO1"]?? && permission["P05LoanParLoanGenSO2"]?? >
+                    <#if btnStatus.genOrderBtn?default('0') =='0' >
+                        <button id="genOrderBtn" class="btn btn-info" type="button" disabled="disabled" onclick="genOrder()">
+                            <i class="icon-undo bigger-110"></i>
+                        ${i18n.get('生成订单')}
+                        </button>
+                    <#else>
+                        <button id="genOrderBtn" class="btn btn-info" type="button" onclick="genOrder()">
+                            <i class="icon-undo bigger-110"></i>
+                        ${i18n.get('生成订单')}
+                        </button>
+                    </#if>
+                </#if>
+                <#if permission["P05LoanParCancel"]??  >
+                    <#if btnStatus.disContrBtn?default('0') =='0' >
+                        <button id="disContrBtn" class="btn btn-info" type="button" disabled="disabled">
+                            <i class="icon-undo bigger-110"></i>
+                        ${i18n.get('作废')}
+                        </button>
+                    <#else>
+                        <button id="disContrBtn" class="btn btn-info" type="button" onclick="disContr()">
+                            <i class="icon-undo bigger-110"></i>
+                        ${i18n.get('作废')}
+                        </button>
+                    </#if>
+                </#if>
+            </div>
+            </div>
+            <br />
+
+            <input id="actFunction" name="actFunction" type="hidden" />
+            <input type="hidden" id="trialStat" name="trialStat" value="${(contr.trialStat)!}" />
+            <input type="hidden" id="contrType" name="contrType" value="${(contr.contrType)!}" />
+            <table id="okcHeader">
+            <tr>
+                <td width="100px" align="left">${i18n.get('借货编号')}:</td>
+                <td width="180px"><@form.input id="contrNo" name="contrNo" placeholder=""  readonly ="readonly" tip="" value="${(contr.contrNo)!}" /></td>
+                <td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('业务实体')}:</td>
+                <td width="180px">
+                    <@form.select style="width: 160px;" id="bussEnity" name="bussEnity" required="${i18n.get('不能为空')}"
+                    code="OPERATION_UNIT" level="1"  value ="${(contr.bussEnity)!}"
+             	/>
+                </td>
+                <td width="100px" align="left">${i18n.get('项目名称')}:</td>
+                <td width="180px">
+                    <input type="hidden" id="projName" name="projName" value="${(contr.projName)!}" />
+                    <@form.autocomplete  id="projNo" name="projNo"  idKey='id' style="width: 160px;"
+                    formatResult="function(data) {return '<div >' +data.opportunityName + '</div>';}"
+                    url="function(){ return '${ctx}/lovcontract/autocompleteproject.html?custCode='+$('#custCode').val(); }"
+                    value="${(project)!}"
+                    onSelect="function(data){
+            		if( data.number != null && data.number !='' && data.number != 'undefined'){
+            			$('#projName').val(data.opportunityName); 
+            		}
+            	}"
+                    />
+                </td>
+                <td width="100px" align="left">${i18n.get('审核状态')}:</td>
+                <td width="180px">
+                    <input type="hidden" id="contrStat" name="contrStat" value="${(contr.contrStat)!}" />
+                    <@form.select style="width: 160px;" id="contrStatName" name="contrStatName"
+                    code="CONTRACTSTATUS"  value ="${(contr.contrStat)!}"
+                    />
+                </td>
+                <!--
+			<td width="100px" align="left">${i18n.get('评审状态')}:</td>
+			<td width="180px">
+			<input type="hidden" id="trialStat"  name="trialStat"  value="${(contr.trialStat)!}" />
+             	<@form.select style="width: 160px;" id="trialStatDesc" name="trialStatDesc"
+                code="CONTRACTREVIEWSTATUS"   value ="${(contr.trialStat)!}"
+                />
+			 </td>
+			  -->
+            </tr>
+            <tr>
+                <td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('客户名称')}:</td>
+                <td width="180px">
+                    <input type="hidden" id="custName" name="custName" value="${(contr.custName)!}" />
+                    <@form.autocomplete  id="custCode" name="custCode" idKey='id' style="width: 160px;" required="${i18n.get('请选择客户名称')}"
+                    formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}" inputTip="${(contr.custName)!}"
+                    url="function(){ return '${ctx}/lovcontract/autocompletecustomer.html'; }"
+                    value="${(customer)!}"
+                    onSelect="function(data){
+            		if( data.id != null && data.id !='' && data.id != 'undefined'){
+            			$('#custName').val(data.customFullName); 
+            			reload_pricNo();  
+            			reload_projNo();
+            		}
+            	}"
+                    />
+                </td>
+                <td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('下单商务专员')}:</td>
+                <td width="180px">
+                    <input id="orderer" name="orderer" type="hidden" placeholder="" tip="" value="${(contr.orderer)!}" />
+                    <input id="orderOrgId" name="orderOrgId" type="hidden" placeholder="" tip="" value="${(contr.orderOrgId)!}" />
+                    <@form.autocomplete  id="orderPosId" name="orderPosId"
+                    idKey='id'
+                    required="${i18n.get('请选择')}"
+                    placeholder="${i18n.get('输入选择')}"
+                    multiple="false"
+                    formatResult="function(data) {return ' <div > <li> <i class=icon-bullhorn></i> '+data.orgName +' | '+ data.positionName +' | '+ data.employeeName +' | '+ data.employeeNo +'</li></div>';}"
+                    formatSelection="function(data) { return '<div >' + data.employeeName + '</div>';}"
+                    url="function(){ return '${ctx}/common/selectTradeCommisioner.html'; }"
+                    value="${(teamObj)!}"
+                    onSelect="function(data){
+            		if( data.id != null && data.id !='' && data.id != 'undefined'){
+            			$('#orderer').val(data.employeeId); 
+            			$('#orderOrgId').val(data.orgId); 
+            		}
+					
+				}"
+                    />
+                </td>
+                <td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('借货名称')}:</td>
+                <td width="180px"><@form.input id="contrName" name="contrName" required="${i18n.get('不能为空')}" placeholder="" tip="" value="${(contr.contrName)!}" /></td>
+                <td width="100px" align="left">${i18n.get('创建时间')}:</td>
+                <td width="180px">
+                    <@form.input id="createTime11" name="createTime11" placeholder="" readonly="readonly" tip="" value="${(contr.createTime)!}" />
+                </td>
+            </tr>
+            <tr>
+                <td width="100px" align="left"><strong style="color: red;">*</strong>ERP${i18n.get('下单客户')}:</td>
+                <td width="180px">
+                    <input type="hidden" id="erpOrderCustName" name="erpOrderCustName" value="${(contr.erpOrderCustName)!}" />
+                    <@form.autocomplete  id="erpOrderCustId" name="erpOrderCustId" idKey='id' style="width: 160px;" required="${i18n.get('不能为空')}"
+                    formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+                    url="function(){ return '${ctx}/lovcontract/autocompletecustomer.html'; }"
+                    value="${(erpCustomer)!}"
+                    onSelect="function(data){
+            		if( data.id != null && data.id !='' && data.id != 'undefined'){
+            			$('#erpOrderCustName').val(data.customFullName); 
+            		}
+            	}"
+                    />
+                </td>
+                <td width="100px" align="left">${i18n.get('我司借货人')}:</td>
+                <td width="180px">
+                    <input type="hidden" id="creator" name="creator" tip="" value="${(contr.creator)!}" />
+                    <@form.input id="creatorName" name="creatorName" placeholder="" readonly ="readonly" tip="" value="${(contr.creatorName)!}" />
+                </td>
+                <td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('价格表')}:</td>
+                <td width="180px">
+                    <@form.autocomplete  id="pricNo" name="pricNo"  idKey='id' style="width: 160px;" required="${i18n.get('请选择价格表')}"
+                    formatResult="function(data) {return '<div >' +data.priceTableName + '</div>';}"
+                    url="function(){ return '${ctx}/lovcontract/autocompletePriceTable.html?custCode='+$('#custCode').val(); }"
+                    value="${(priceTable)!}"
+           	/>
+                </td>
+                <td width="100px" align="left">${i18n.get('流程结束时间')}:</td>
+                <td width="180px">
+                    <@form.input  id="processCloseDate"  name="processCloseDate" readonly ="readonly"
+                    placeholder=""  tip=""  value="${(contr.processCloseDate?datetime)!}"  />
+                </td>
+            </tr>
+            <tr>
+                <td width="100px" align="left">${i18n.get('借货合同总金额')}:</td>
+                <td width="180px"><@form.input id="totalAmt" name="totalAmt" type="hidden" placeholder="" tip="" readonly ="readonly" value="${(contr.totalAmt)!}" />
+			<@form.input id="totalAmtDesc" name="totalAmtDesc" placeholder="" tip="" readonly ="readonly" value="${(contr.totalAmtDesc)!}" />
+                </td>
+                <td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('销售部门')}:</td>
+                <td width="180px">
+                    <input type="hidden" id="org" name="org" value="${(contr.org)!}">
+                    <@form.input id="orgName" name="orgName" placeholder="" readonly ="readonly" tip="" value="${(contr.orgName)!}" />
+                </td>
+                <td width="100px" align="left">${i18n.get('核销状态')}:</td>
+                <td width="180px">
+                    <input type="hidden" id="cancelStat" name="cancelStat" value="${(contr.cancelStat)!}" />
+                    <@form.select style="width: 160px;" id="cancelStatDesc" name="cancelStatDesc"
+                    code="CONTRACTCANCELSTATUS"  value ="${(contr.cancelStatDesc)!}" />
+                </td>
+                <td width="100px" align="left">${i18n.get('变更标识')}:</td>
+                <td width="180px">
+                <input name="isChangeBox" type="checkbox" id="isChangeBox" onclick="checkValisChangeBox()" />
+                <input name="isChange" type="hidden" id="isChange" value="${(contr.isChange)!}" />
+            </tr>
+            <tr>
+                <td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('借货时间')}:</td>
+                <td width="180px">
+                    <@form.date  style="width: 160px;"  id="submitTime"  name="submitTime" required="${i18n.get('请选择借货时间')}"
+                    placeholder=""  tip=""  value="${(contr.submitTime?date)!}"  />
+                </td>
+                <td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('营销部门')}:</td>
+                <td width="180px">
+                    <input type="hidden" id="marketDept" name="marketDept" value="${(contr.marketDept)!}">
+                    <@form.input id="marketDeptName" name="marketDeptName" placeholder="" readonly ="readonly" tip="" value="${(contr.marketDeptName)!}" />
+                </td>
+                <!-- <td width="100px" align="left">${i18n.get('收款计划维护状态')}:</td>
+			<td width="180px">	
+			<input type="hidden" id="payStat"  name="payStat"  value="${(contr.payStat)!}" />
+             	<@form.select style="width: 160px;" id="payStatDesc" name="payStatDesc"
+                code="CONTRACTPAYSTAT"  value ="${(contr.payStat)!}" />
+			</td> -->
+                <td></td>
+                <td></td>
+                <td width="100px" align="left">${i18n.get('有效标识')}:</td>
+                <td width="180px">
+                    <input name="isValidBox" type="checkbox" id="isValidBox" onclick="checkValIsValidBox()" />
+                    <input name="isValid" type="hidden" id="isValid" value="${(contr.isValid)!}" />
+                </td>
+            </tr>
+            <tr>
+                <td width="120px" align="left"><strong style="color: red;">*</strong>${i18n.get('合同预计签订时间')}:</td>
+                <td width="180px">
+                    <@form.date  style="width: 160px;"  id="expectSignDate"  name="expectSignDate" required="${i18n.get('请选择时间')}"
+                    placeholder=""  tip=""  value="${(contr.expectSignDate?date)!}"  />
+                </td>
+                <td width="100px" align="left">${i18n.get('借货用途')}:</td>
+                <td width="180px">
+                    <input type="hidden" id="usageId" name="usageId" value="${(contr.usageId)!}" />
+                    <@form.select style="width: 160px;" id="usageDesc" name="usageDesc"
+                    code="CONTRACTLOANUSAGE"  value ="${(contr.usageId)!}" />
+                </td>
+
+                <#if contr.frameNo??>
+                    <td>${i18n.get('框架协议编号')}:</td>
+                    <td><@form.input id="frameName" name="frameName" placeholder="" tip="" readonly ="readonly" value="${(contr.frameName)!}" /></td>
+                <#else>
+                    <td></td>
+                    <td></td>
+                </#if>
+
+        <!--    <td align="left">${i18n.get('是否是高风险合同')}:</td>
+                <td>
+                    <input name="" type="checkbox" id="isHighRiskBox" <#if !(permission['P05ConT10ChangeHighRiskBox']??)>disabled="disabled"</#if> onclick="checkIsHighRiskBox(event)" />
+                    <input name="isHighRisk" type="hidden" id="isHighRisk" value="${(contr.isHighRisk)!}" />
+                </td>-->       
+            </tr>
+            <tr>
+                <td width="100px" align="left">${i18n.get('合同版本')}:</td>
+                <td width="180px"><@form.input id="contrVer" name="contrVer" placeholder="" tip="" readonly ="readonly" value="${(contr.contrVer)!}" /></td>
+            </tr>
+            <tr>
+                <td width="100px" align="left">${i18n.get('备注')}:</td>
+                <td colspan="5"><@form.textArea id="remark" name="remark" width="100" placeholder="" tip="" value="${(contr.remark)!}" /></td>
+            </tr>
+            </table>
+
+            <h5 style="background-color: #E9E9E9;">${i18n.get('下单信息')}</h5>
+            <table id="okcHeaderOrder">
+            <tr>
+                <td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('要货日期')}:</td>
+                <td width="180px">
+                    <@form.date  style="width: 160px;"  id="delivDate"  name="delivDate" required="${i18n.get('请选择时间')}"
+                    placeholder=""  tip=""  value="${(contr.delivDate?date)!}"  />
+                </td>
+                <td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('是否成套')}:</td>
+                <td width="180px">
+                    <@form.radio name="isWholeSet" value="1" selectValue=(contr.isWholeSet)!'N'/>
+                    <span class="lbl">${i18n.get('是')}</span>
+                    <@form.radio name="isWholeSet" value="0" selectValue=(contr.isWholeSet)!'N'/><span class="lbl">${i18n.get('否')}</span>
+                </td>
+                <td width="120px" align="left"><strong style="color: red;">*</strong>${i18n.get('是否有配置清单')}:</td>
+                <td width="180px">
+                    <@form.radio name="isConfList" value="1" selectValue=(contr.isConfList)!'N'/>
+                    <span class="lbl">${i18n.get('是')}</span>
+                    <@form.radio name="isConfList" value="0" selectValue=(contr.isConfList)!'N'/><span class="lbl">${i18n.get('否')}</span>
+                </td>
+                <td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('是否送货上门')}:</td>
+                <td width="180px">
+                <@form.radio name="isDelivHome" value="1" selectValue=(contr.isDelivHome)!'N'/>
+                <span class="lbl">${i18n.get('是')}</span>
+                <@form.radio name="isDelivHome" value="0" selectValue=(contr.isDelivHome)!'N'/><span class="lbl">${i18n.get('否')}</span>
+            </tr>
+            <tr>
+                <td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('是否需卸货')}:</td>
+                <td width="180px">
+                    <@form.radio name="isUnload" value="1" selectValue=(contr.isUnload)!'N'/>
+                    <span class="lbl">${i18n.get('是')}</span>
+                    <@form.radio name="isUnload" value="0" selectValue=(contr.isUnload)!'N'/><span class="lbl">${i18n.get('否')}</span>
+                </td>
+                <td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('是否上门安装')}:</td>
+                <td width="180px">
+                    <@form.radio name="isHomeInstall" value="1" selectValue=(contr.isHomeInstall)!'N'/>
+                    <span class="lbl">${i18n.get('是')}</span>
+                    <@form.radio name="isHomeInstall" value="0" selectValue=(contr.isHomeInstall)!'N'/><span class="lbl">${i18n.get('否')}</span>
+                </td>
+                <td width="120px" align="left"><strong style="color: red;">*</strong>${i18n.get('是否提供安装辅材')}:</td>
+                <td width="180px">
+                <@form.radio name="isAux" value="1" selectValue=(contr.isAux)!'N'/>
+                <span class="lbl">${i18n.get('是')}</span>
+                <@form.radio name="isAux" value="0" selectValue=(contr.isAux)!'N'/><span class="lbl">${i18n.get('否')}</span>
+            </tr>
+
+            </table>
+            </@form.form>
+
+        <div id="info" style="padding-top: 20px;">
+        <input type="hidden" id="selectedId" />
+            <@plug.tabs tabMain=tabMain></@plug.tabs>
+        </div>
+        </@form.panel>
+
+
+
+
+    </@pui.body>
+</#escape>

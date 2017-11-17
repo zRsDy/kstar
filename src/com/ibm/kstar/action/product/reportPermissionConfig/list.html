@@ -1,0 +1,255 @@
+<@pui.body>
+<script type="text/javascript">
+	var lovOrgList = ${lovOrgList!'[]'};
+</script>
+<table style="width: 100%" >
+	<tr>
+	
+	<input type="text" id="searchKey" name="searchKey" placeholder='${i18n.get('查询关键字')}' style="margin-left: 15px;margin-top: 10px;" >
+				<button type="submit" class="btn btn-info" onclick="select()"> 
+					<i class="icon-search bigger-110"></i>
+					${i18n.get('查询')}
+				</button>
+	<div id="container" style="margin-left: 15px;">
+		<td id="treeTd" style="width: 300px" valign="top">
+			<@form.panel title=i18n.get("岗位树") style='height:100'>
+								<@plug.tree 
+								checkbox="false" 
+								id="tree1" 
+								moveEdit = "${movable!'false'}"
+								onMove = "function(dragNode,newParentNode,moveType){
+									var data = {
+										dragNodeId : dragNode[0].id,
+										newParentNodeId : newParentNode != null ? newParentNode.id : null
+									}
+									if(moveType == 'inner'){
+										ajax({
+											type:'post',
+											url : '${ctx}/lov/member/move.html',
+											data: data,
+											success : function(result) {
+												alert('${i18n.get('移动成功')}');
+											},
+											error : function(result) {
+												alert('${i18n.get('移动失败')}');
+											}
+										});
+									}else{
+										reload_tree1();
+									}
+								}"
+								
+								asyncUrl='${ctx}/lov/member/tree.html?groupId=${lovGroup.id}'
+								onClick=" function(event, treeId, treeNode){
+									var leftId = treeNode.id;
+									var data = { leftId : leftId};
+									var right_zTree = $.fn.zTree.getZTreeObj('tree2');
+									right_zTree.checkAllNodes(false);
+									checkRightId = treeNode.id;
+							  		$.ajax({
+										url : '${ctx}/product/reportPermissionConfig/reportPermissionPostData.html',
+										type : 'POST',
+										data : data,
+										success : function(data) {
+										debugger;
+											checkedRightTree(data.message);
+										}
+									});
+							  	}"
+							  	
+							  	onRightClick="function(event, treeId, treeNode) {
+								   	var treeObj = $.fn.zTree.getZTreeObj(treeId);
+									var nodes = treeObj.getNodes();
+									if (nodes.length>0) {
+										treeObj.cancelSelectedNode();
+									}
+									$('#parentId').val('');
+								}"
+							  	
+							  	isParent="function(data){
+							  		return data.leafFlag == 'N';
+							  	}"
+								/>
+							</@form.panel>
+		</td>
+	</div>
+		<td valign="top">
+			<@form.panel title="${i18n.get('组织树')}" style='height:100'>
+				<@plug.tree 
+				checkbox="true"
+				id="tree2" 
+				moveEdit = 'true' 
+				async="false"
+				datas="lovOrgList"
+				chkboxType="{ 'Y' : '',  'N' : 'ps' }"
+				onMove = "function(dragNode,newParentNode,moveType){
+					var data = {
+						dragNodeId : dragNode[0].id,
+						newParentNodeId : newParentNode != null ? newParentNode.id : null
+					}
+					if(moveType == 'inner'){
+						var dialog = bootbox.dialog({
+						    message: '${i18n.get('岗位调整中......')}',
+						    closeButton: false
+						});
+						ajax({
+							type:'post',
+							url : '${ctx}/lov/member/move.html',
+							data: data,
+							success : function(result) {
+								dialog.modal('hide');
+								exalert(e,'${i18n.get('移动成功')}');
+							},
+							error : function(result) {
+								dialog.modal('hide');
+								exalert(e,'${i18n.get('移动失败')}');
+								reload_tree1();
+							}
+						});
+					}else{
+						reload_tree1();
+					}
+				}"
+				
+				dataFilter="function(data){ 
+					if(data.leafFlag == 'Y'){
+						data.nocheck = true;
+					}else{
+						data.checked = false;
+					}
+					
+					return data; 
+				}"
+				
+				onClick=" function(event, treeId, treeNode){
+			  		var treeObj = $.fn.zTree.getZTreeObj(treeId);
+			  		//treeObj.checkAllNodes(false);
+			  		//treeObj.checkNode(treeNode, true, true);
+			  		//treeObj.selectNode(treeNode);
+			  		debugger;
+			  		$('#parentId').val(treeNode.id);
+			  		
+				  	if(treeNode.leafFlag == 'Y'){
+				  		$('#configPermission').hide();
+				  	}else{
+				  		$('#configPermission').show();
+				  	}
+
+				  	$('.productCatalogId').val(treeNode.id);
+
+			  	}"
+
+			  	onCheck="function(event, treeId, treeNode){
+			  		var treeObj = $.fn.zTree.getZTreeObj(treeId);
+			  		treeObj.setting.callback.onClick(null, treeObj.setting.treeId, treeNode);//调用事件
+			  	}"
+			  	
+			  	onRightClick="function(event, treeId, treeNode) {
+				   	var treeObj = $.fn.zTree.getZTreeObj(treeId);
+					var nodes = treeObj.getNodes();
+					if (nodes.length>0) {
+						treeObj.cancelSelectedNode();
+					}
+					$('#parentId').val('');
+					reload_t1();
+				}"
+			  	
+			  	isParent="function(data){
+			  		return data.leafFlag == 'N';
+			  	}"
+
+				/>
+				<div align="center">
+				<button id="saveProductBtn" class="btn btn-info submit" type="button" onclick="saveAllTree()" >
+						<i class="icon-ok bigger-110"></i> ${i18n.get('保存')} 
+				</button>
+				</div>		
+			</@form.panel>
+			
+		</td>
+	</tr>
+	
+	<#if (permission["P01-1ProductPermissonSubmit"])??>
+		<#assign configURL="true" />
+	</#if>
+</table>	
+			
+<script type="text/javascript">
+var checkRightId = '';
+function checkForm(cellvalue){
+	var html="<input type=\"checkbox\"  onclick=\"return false;\" />";
+	if(cellvalue == 'N'){
+		 return "<input type=\"checkbox\" checked=\"checked\"  onclick=\"return false;\"/>";
+		
+	}else if(cellvalue == 'Y'){
+		return html;
+	}
+}
+
+function checkedRightTree(ids){
+	debugger;
+	right_zTree = $.fn.zTree.getZTreeObj("tree2");  
+	for(var i=0 ; i< ids.length;i++){
+		var node = right_zTree.getNodeByParam("code",ids[i].code);  
+		if(node){
+			node.checked = true;
+		}
+		right_zTree.updateNode(node);
+	}
+}
+
+function saveAllTree(){
+	left_zTreeId = checkRightId;
+	if(left_zTreeId == ''){
+		alert('${i18n.get('请先选择岗位，再进行保存！')}');
+		return;
+	}
+	right_zTree = $.fn.zTree.getZTreeObj("tree2"); 
+	right_nodes=right_zTree.getCheckedNodes(true);
+	var right_zTreeId = '';
+	for(var i=0;i<right_nodes.length;i++){
+		debugger;
+		right_zTreeId+=right_nodes[i].id + ",";
+    }
+	var data = {
+			rightzTreeId : right_zTreeId,
+			leftzTreeId : left_zTreeId
+	}
+	ajax({
+		type:'post',
+		url : '${ctx}/product/reportPermissionConfig/saveReportPermissionPostData.html',
+		data: data,
+		success : function(result) {
+			//dialog.modal('hide');
+			//exalert(e,'${i18n.get('移动成功')}');
+			alert("${i18n.get('操作完成！')}");
+		},
+	});
+}
+
+function select(){
+	
+	var searchKey = $("#searchKey").val();
+	if("" ==searchKey){
+		window.location.reload();
+		alert("${i18n.get('请输入员工名称或者工号！')}");
+		return false;
+	}
+	var html="";
+	ajax({
+		type:'post',
+		url:'${ctx}/employee/selectOrg.html?searchKey='+searchKey,
+		success:function(data){
+			 $.each(data,function(item,result){
+				 html+="${i18n.get('岗位 ')} ："+result.name+"    <br/>";
+				 html+="${i18n.get('所属组织')} ："+result.namePath+"    <br/>      ";
+				 $('#container').html(html);
+		     });  
+		}
+	
+	});
+}
+
+</script>
+</@pui.body>
+

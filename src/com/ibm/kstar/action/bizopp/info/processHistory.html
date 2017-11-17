@@ -1,0 +1,72 @@
+<@pui.body>
+	<div class="col-xs-12">
+	
+	<#if (permission['P05ConT8ReviewHistoryFlowchar'])??>
+		<#assign flowcharPer='true'>
+	</#if>
+	<#if (permission['P05ConT8ReviewHistoryRevHistory'])??>
+		<#assign flowHistoryPer='true'>
+	</#if>
+	
+		<@form.table id="flowHistLst" 
+			class="col-xs-12"
+			title="${i18n.get('审批历史')}"
+			url = "${ctx}/bizopp/getHistoryByList.html?keyId=${keyId}"
+			rowNum = "20"
+			colModel = "[
+				{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+				{name:'businessKey',label:'${i18n.get('编号')}',hidden:true,width:150,sortable:true,align:'center' }, 
+				{name:'name',label:'${i18n.get('名称')}',hidden:true,width:350,sortable:true,align:'center' }, 
+				{name:'module',label:'${i18n.get('流程')}',hidden:true,width:150,sortable:true,align:'center' }, 
+				{name:'creatorType',label:'${i18n.get('创建人类型')}',hidden:true,width:90,sortable:true,align:'center' },
+				{name:'application',label:'${i18n.get('应用')}',hidden:true,width:200,sortable:true,align:'center'} ,
+				{name:'processDefinitionName',label:'${i18n.get('流程名称')}',hidden:false,width:200,sortable:true,align:'center' }, 
+				{name:'creatorName',label:'${i18n.get('发起人')}',hidden:false,width:90,sortable:true,align:'center' }, 
+				{name:'status',label:'${i18n.get('状态')}',hidden:false,width:70,sortable:true,align:'center'}, 
+				{name:'startTime',label:'${i18n.get('开始时间')}',hidden:false,width:80,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+				{name:'endTime',label:'${i18n.get('结束时间')}',hidden:false,width:80,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }
+			]" buttons = "[
+					  		{
+					  			id:'view',
+					  			label : '${i18n.get('审批历史')}',
+					  			icon : 'icon-trash',
+								own : 'true',
+					  			handler : function(e,rowData){
+					  				if(!selected_flowHistLst){
+										alert('${i18n.get('没有选中任何数据!')}'); 
+										return;
+									}
+									window.open('${ctx}/flow/flowHistory.html?id='+selected_flowHistLst.id);
+					  			}
+					  		},
+					  		{
+					  			id:'viewForm',
+					  			label : '${i18n.get('流程表单')}',
+					  			icon : 'icon-trash',
+								own : 'true',
+					  			handler : function(e,rowData){
+					  				if(!selected_flowHistLst){
+					  					alert('${i18n.get('没有选中任何数据!')}'); 
+										return;
+									}
+									
+									javascript:parent.dialog('${i18n.get('流程表单')}','${ctx}/flow/flowHisProcess.html?id='+selected_flowHistLst.id, window);
+					  			}
+					  		}
+			]"
+			 search="false" > 
+			
+			<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">
+				<div class="form-group col-xs-3">
+				<input type="text" id="searchKey" name="searchKey" placeholder='${i18n.get('请输入类型或描述')}' size="30" />
+				</div>	
+				<div class="form-group col-xs-2">
+					<button type="submit" class="btn btn-info" >
+						<i class="icon-search bigger-110"></i>
+						${i18n.get('查询')}
+					</button>
+				</div>
+			</div> 
+		</@form.table>
+	</div>
+</@pui.body>

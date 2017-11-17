@@ -1,0 +1,58 @@
+@charset "utf-8";
+/*--Jquery ui 样式修改--*/
+.ui-widget-content .ui-state-default,.ui-widget-header{background:url(../images/showtab_right.png) repeat-x  scroll 100% -3px;}
+.ui-accordion .ui-accordion-content{border-top: 0 none;overflow:auto;padding:0;}  
+.ui-state-default a,.ui-state-default a:link,.ui-state-default a:visited{color:#465C85;text-decoration:none;}
+.ui-state-hover .ui-icon,.ui-state-focus .ui-icon{background-image:url(../images/ui-icons_217bc0_256x240.png);}
+.ui-icon{width:16px;height:16px;background-image:url(../images/ui-icons_469bdd_256x240.png);}
+.ui-state-default .ui-icon{background-image:url(../images/ui-icons_6da8d5_256x240.png);}
+.ui-tabs .ui-tabs-nav li{border:1px;margin-right:5px;}
+.ui-tabs .ui-tabs-nav li a, .ui-tabs-collapsible {background:url(../images/showtab_left.png) no-repeat 0 -3px; font-weight:bold;}
+.ui-tabs-nav li.ui-tabs-active a{background:url(../images/showtab_left.png) no-repeat 0  -33px; font-weight:bold;}
+.dataTables_wrapper .ui-toolbar{padding:2px;}
+.ui-dialog-titlebar-close{background:none!important}
+.ui-widget-content{border-radius:1px!important;background:#FCFDFD url(../images/ui-bg_inset-hard_100_fcfdfd_1x100.png) 50% bottom repeat-x;color:#222;}
+.ui-widget-header{background:url(../images/showtab_bg.png) 0 0 repeat-x;color:#333;font-weight:bold;border-radius:5px 5px 0px 0px;}
+@-moz-document url-prefix()/*Firefox*/{.ui-widget-header{background:url(../images/showtab_bg.png) 0 1px repeat-x;color:#333;font-weight:bold;border-radius:5px 5px 0px 0px;}}
+.floatcloseicon{background:url(../images/ico_close.png) 0 0!important;width:16px!important;height:16px!important;}
+.ui-widget-content .ui-state-hover,.ui-widget-header .ui-state-hover,.ui-widget-content .ui-state-focus,.ui-widget-header .ui-state-focus{border:1px solid #ccc;background:url(../images/showtab_right.png) repeat-x scroll 100% -3px;font-weight:normal;color:#212121;}
+.ui-state-default,.ui-widget-content .ui-state-default,.ui-widget-header .ui-state-default{color:#333;}
+.ui-widget-header .ui-icon{background-image:url(../images/ui-icons_d8e7f3_256x240.png);}
+.ui-widget-content .ui-state-active,.ui-widget-header .ui-state-active{background:url(../images/showtab_right.png) repeat-x scroll 100% -33px;}
+
+.ui-button{border-radius:5px!important;}
+.ui-datepicker-calendar tr td a.ui-state-default{background:#e2edfa;}
+div.ui-datepicker-buttonpane button.ui-datepicker-current,div.ui-datepicker-buttonpane button.ui-datepicker-close{background:#e2edfa;}
+div.ui-datepicker-group div.ui-datepicker-header a.ui-datepicker-prev:hover,div.ui-datepicker-group div.ui-datepicker-header a.ui-datepicker-next:hover{background:#4b80d1;border:1px slid #4b80d1;border-radius:5px;}
+.ui-datepicker-calendar tr td a.ui-state-highlight{background:#FBEC88;border:1px solid #FAD42E;}
+.ui-dialog-buttonset{height:34px;line-height:34px;padding:0 10px;background:#f6faff;text-align:center;width:100%;}
+
+/*--Jquery ui index tab--*/
+.macrohg_bg{background:#f4f7fd;font-weight:bold;padding:2px 8px 2px 8px!important;overflow:hidden;}
+ul.macrohg_bg li{border:none!important;background:url(../images/indextab.png) no-repeat 100% -28px!important;cursor:pointer;padding:0 16px 0 0!important;margin:1px 4px!important;}
+ul.macrohg_bg li a{background:url(../images/indextab.png) no-repeat 0 0!important;position:relative;color:#274778!important;padding:0.5em 0.3em 0.5em 1.5em!important;}
+ul.macrohg_bg li:hover{background-position:100% -84px!important;}
+ul.macrohg_bg li:hover a{background-position:0 -56px!important;color:#182f67!important;}
+ul.macrohg_bg li.selected{background:url(../images/indextab.png) no-repeat 100% -140px!important;font-weight:bold;}
+ul.macrohg_bg li.selected a{background:url(../images/indextab.png) no-repeat 0 -112px!important;color:#fff!important;cursor:default!important;}
+
+/*index chart bg*/
+#accountrisk div,#marketrisk div,#competitionAnalysis div,#liquidityrisk div,#tabs-macro-ec-st div{background:#fff;}
+
+/*Jqurey弹出层黑色半透明边框样式*/
+.zs-dialog-border{   
+border: 8px solid rgba(0,0,0,0.4); 
+-moz-background-clip: border; /* Firefox 3.6 */    
+-webkit-background-clip: border; /* Safari 4? Chrome 6? */    
+background-clip: border-box; /* Firefox 4, Safari 5, Opera 10, IE 9 */    
+-moz-background-clip: padding; /* Firefox 3.6 */    
+-webkit-background-clip: padding; /* Safari 4? Chrome 6? */    
+background-clip: padding-box; /* Firefox 4, Safari 5, Opera 10, IE 9 */    
+-moz-background-clip: content; /* Firefox 3.6 */    
+-webkit-background-clip: content; /* Safari 4? Chrome 6? */    
+background-clip: content-box; /* Firefox 4, Safari 5, Opera 10, IE 9 */
+border-radius:5px;
+}
+
+/*--Jquery dataTables--*/
+.fg-toolbar{overflow:hidden;}

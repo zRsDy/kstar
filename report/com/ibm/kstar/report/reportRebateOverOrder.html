@@ -1,0 +1,56 @@
+<@cui.body2>
+<style type="text/css">
+	table {
+	border-collapse: collapse;
+	border-color: #ff0000;
+	}
+	
+	table td {
+		padding:1px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	select {
+		width: 180px;
+	}
+</style>
+<div class="col-xs-12">
+	<@form.table id="reportOverdue" 
+		class="col-xs-12"
+		title="${i18n.get('特价逾期未下单')}" 
+		url = "${ctx}/report/reportRebateOverOrder.html?orgIdOrEmployeeId=${orgIdOrEmployeeId}&reportType=${reportType}"
+		rowNum = "20" 
+		colModel = "[
+			 	{name : 'no', label:'${i18n.get('申请编号')}', width : 250, sortable:false, editable:false, align:'center'}, 
+			  	{name : 'name', label:'${i18n.get('申请名称')}', width : 150, sortable:false, editable:false, align:'center'},
+			  	{name : 'status', label:'${i18n.get('状态')}', width : 150, align:'center', editable : false}, 
+			  	{name : 'createdByIdName', label:'${i18n.get('申请人')}', width : 150, editable : false}, 
+			  	{name : 'agentContact', label:'${i18n.get('代理商联系人')}', width : 100, editable:false, align:'center'}, 
+			  	{name : 'phone', label:'${i18n.get('代理上联系电话')}', width : 100, editable:false, align:'center'},
+			  	{name : 'businessExecutive',label:'${i18n.get('商务专员')}',hidden:false,width:150,sortable:true,align:'center' }, 
+			  	{name : 'specialOff',label:'${i18n.get('特价类型')}',hidden:false,width:150,sortable:true,align:'center' }, 
+				{name : 'startDate', label:'${i18n.get('特价生效日期')}', width : 250, editable:false ,align:'center',sortable:true,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+				{name : 'endDate', label:'${i18n.get('特价失效日期')}', width : 150, editable:false, align:'center',sortable:true,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }}, 
+			  	{name : 'productName', label:'${i18n.get('产品名称')}', width : 150, editable:false, align:'center',sortable:true}, 
+			  	{name : 'productSortName', label:'${i18n.get('CRM产品分类')}', width : 120, editable:false, align:'center',sortable:false}, 
+			  	{name : 'cproPowcap', label:'${i18n.get('产品规格')}', width : 120, editable:false, align:'center',sortable:false}, 
+			  	{name : 'productModel', label:'${i18n.get('产品型号')}', width : 120, editable:false, align:'center',sortable:false}, 
+			  	{name : 'materCode', label:'${i18n.get('物料号')}', width : 120, editable:false, align:'center',sortable:false}, 
+			  	{name : 'catalogPrice', label:'${i18n.get('金牌价格')}', width : 120, editable:false, align:'center',sortable:false}, 
+			  	{name : 'approveRebate', label:'${i18n.get('批复折扣')}', width : 120, editable:false, align:'center',sortable:false}, 
+			  	{name : 'approvePrice', label:'${i18n.get('批复价格')}', width : 120, editable:false, align:'center',sortable:false}, 
+			  	{name : 'applyQty', label:'${i18n.get('数量')}', width : 120, editable:false, align:'center',sortable:false}, 
+			  	{name : 'applyPrice', label:'${i18n.get('金额')}', width : 120, editable:false, align:'center',sortable:false}, 
+			  	{name : 'bizName', label:'${i18n.get('商机名称')}', width : 120, editable:false, align:'center',sortable:false}, 
+			  	{name : 'clientName', label:'${i18n.get('终端用户名称')}', width : 120, editable:false, align:'center',sortable:false}, 
+			  	{name : 'orderQty', label:'${i18n.get('已下单数量')}', width : 120, editable:false, align:'center',sortable:false}
+			]" 
+			> 
+		</@form.table>
+</div>
+</@cui.body2>

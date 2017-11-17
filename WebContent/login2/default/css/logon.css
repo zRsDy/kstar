@@ -1,0 +1,25 @@
+@charset "utf-8";
+/*--logon--*/
+div#logon{background:#1b3570 url(../images/logon_bg.png) repeat-x 0 0;height:100%;}
+div#logonheader{background:url(../images/logon_logo.png) no-repeat 0 0;width:920px;height:107px;margin:0 auto;}
+div#loginflash{width:920px;height:403px;margin:0 auto;padding:0;position:relative;}
+div#logonfooter{height:29px;padding:0 15px;position:absolute;left:0;right:0;bottom:0;}
+div#logonfooter span{color:#a9bcf3;display:block;height:29px;padding:7px 0 0 0;position:relative;text-align:center;text-shadow:0 1px 0 #111b4a;}
+div#logon_wrap{background:url(../images/logon_wrap.png) no-repeat 0 0;width:235px;height:135px;position:absolute;top:295px;left:318px;padding:25px 0 0 50px;z-index:999;}
+div#logon_wrap ul{display:block;}
+div#logon_wrap ul li{padding:5px;}
+div#logon_wrap ul li span{display:block;height:22px;padding-left:20px;}
+div#logon_wrap ul li span.logon_user{background:url(../images/logon_name.png) no-repeat 0 5px;}
+div#logon_wrap ul li span.logon_password{background:url(../images/logon_password.png) no-repeat 0 5px;}
+div#logon_wrap ul li input.input_user{width:140px;height:23px!important;background:#fff;border:1px solid #3072c3;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;}
+div#logon_wrap ul li input.input_user:focus{background:#ffffbe;}
+div#logon_wrap ul li input.input_password{width:140px;height:23px!important;background:#fff;border:1px solid #3072c3;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;}
+div#logon_wrap ul li input.input_password:focus{background:#ffffbe;}
+#error{background:url(../images/logon_error.png) no-repeat 0 0;color:red;height:35px;left:179px;line-height:29px;padding-left:14px;position:absolute;top:18px;}
+.btn_padding{padding:15px 25px;}
+input.btn_margin{margin-right:24px!important;}
+.btn{font-size:13px;width:55px;height:28px!important;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;text-shadow:0 1px 1px #e1e1ff;cursor:pointer;-moz-box-shadow:0 1px 1px #999;-webkit-box-shadow:0 1px 1px #999;box-shadow:0 1px 1px #999;}
+.btn_login{background:url(../images/btn_logon.png) repeat-x 0 0;border:1px solid #1866bf;color:#976701;text-shadow:0 1px 1px rgba(0,0,0,0.25);}
+.btn_login:hover,.btn_login:focus,.btn_login:active{-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;background:url(../images/btn_logon.png) repeat-x 0 0;border:1px solid #1a57a1;box-shadow:0 0 4px #999;color:#976701;}
+.btn_reset{background:url(../images/btn_reset.png) repeat-x 0 0;border:1px solid #1866bf;color:#537dbb;text-shadow:0 1px 1px rgba(0,0,0,0.25);}
+.btn_reset:hover,.btn_reset:focus,.btn_reset:active{-moz-box-shadow:0 0 4px #999;-webkit-box-shadow:0 0 4px #999;background:url(../images/btn_reset.png) repeat-x 0 0;border:1px solid #1a57a1;box-shadow:0 0 4px #999;color:#537dbb;}

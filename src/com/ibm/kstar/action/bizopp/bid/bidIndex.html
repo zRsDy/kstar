@@ -1,0 +1,33 @@
+<#escape x as x?html>
+<@cui.body>
+	<div class="col-xs-12">
+
+	<#-- 投标授权申请列表页面-新增 --> <#if permission["P03BidAuthListAdd"]?? > <#assign addURL = "'${ctx}/bid/add.html'" /></#if>
+
+	<#-- 投标授权申请列表页面-修改 --> <#if permission["P03BidAuthListSave"]?? > <#assign editURL = "'${ctx}/bid/edit.html'" /></#if>
+
+	<#-- 投标授权申请列表页面-删除 --> <#if permission["P03BidAuthListDelete"]?? > <#assign deleteURL = "'${ctx}/bid/delete.html'" /></#if>
+
+	<@form.table id="bidTable" 
+	class="col-xs-12"
+	title="${i18n.get('用章申请基本信息列表')}"
+	url = "${ctx}/bid/page.html" 
+	rowNum = "10" 
+	addURL = "${addURL!}"
+	editURL= "${editURL!}"
+	deleteURL = "${deleteURL!	}"
+	colModel = "[
+		{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'bidNumber',label:'${i18n.get('申请编号')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'createdByIdName',label:'${i18n.get('申请人')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'statusName',label:'${i18n.get('状态')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'createdAt',label:'${i18n.get('申请日期')}',hidden:false,width:200,sortable:true,align:'center', formatter:dateFmatter },
+		{name:'terminalClientName',label:'${i18n.get('客户名称')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'bizOppName',label:'${i18n.get('商机名称')}',hidden:false,width:200,sortable:true,align:'center' }
+		]"
+		>
+	</@form.table> 
+	</div>
+</@cui.body>
+<script src="${ctx}/anne/js/util.js"></script>
+</#escape>

@@ -1,0 +1,70 @@
+<@pui.body nav1="${i18n.get('用户管理')}" nav2="${i18n.get('新增/编辑')}" type="popup">
+<div class="row col-lg-12"> 
+<@form.table id="t8" class="col-xs-12" shrinkToFit="true"  title="${i18n.get('需求单')}" 
+url ="${ctx}/product/demandList.html?id=${id}" 
+rowNum = "20" 
+addURL = "'${ctx}/product/demandAdd.html?productID=${id}'"
+editURL = "'${ctx}/product/demandAdd.html?productID=${id}'" 
+colModel = "[ 
+{name:'id',label:'',hidden:true,width:60,sortable:true,align:'center' },
+ {name:'demandCode',label:'${i18n.get('需求单编号')}',hidden:false,width:60,sortable:true,align:'center' }, 
+ {name:'demandName',label:'${i18n.get('需求单名称')}',hidden:false,width:60,sortable:true,align:'center' },
+  {name:'clientCode',label:'${i18n.get('客户名称')}',hidden:false,width:60,sortable:true,align:'center' }, 
+  {name:'clientAddress',label:'${i18n.get('客户所在地')}',hidden:false,width:60,sortable:true,align:'center' },
+   {name:'clientContract',label:'${i18n.get('客户')}PO/${i18n.get('合同')}',hidden:false,width:60,sortable:true,align:'center' }, 
+   {name:'hopeDeliverDate',label:'${i18n.get('期望交货日期')}',hidden:false,width:60,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+   {name:'demantCategory',label:'${i18n.get('需求种类')}',hidden:true,width:60,sortable:true,align:'center' }, 
+   {name:'demantCategoryName',label:'${i18n.get('需求种类')}',hidden:false,width:60,sortable:true,align:'center' }, 
+   {name:'demandNumber',label:'${i18n.get('需求数量')}',hidden:false,width:60,sortable:true,align:'center' }, 
+   {name:'prepareBefore',label:'${i18n.get('需要提前备料')}',hidden:false,width:60,sortable:true,align:'center'}, 
+   {name:'demandDepartment',label:'${i18n.get('需求部门')}',hidden:false,width:60,sortable:true,align:'center' }, 
+   {name:'demandPerson',label:'${i18n.get('需求人员')}',hidden:false,width:60,sortable:true,align:'center' }, 
+   {name:'contractNumber',label:'${i18n.get('联系电话')}',hidden:false,width:60,sortable:true,align:'center' },
+    {name:'demandStatus',label:'${i18n.get('需求状态')}',hidden:false,width:60,sortable:true,align:'center' }, 
+    {name:'productID',label:'',hidden:true,width:60,sortable:true,align:'center' }, 
+    {name:'specRequireList',label:'${i18n.get('特殊产品规格需求清单')}',hidden:false,width:60,sortable:true,align:'center',formatter:function(cellvalue, options, rowObject){ return attDemand(cellvalue)} },
+     {name:'clientDoc',label:'${i18n.get('客户资料')}',hidden:false,width:60,sortable:true,align:'center',formatter:function(cellvalue, options, rowObject){ return attDemand(cellvalue)} }
+]" 
+buttons = "[]" > 
+<script type="text/javascript">
+function attDemand(cellvalue){
+	
+	var html="";
+	if(typeof(cellvalue)!="undefined"){
+
+		//获得文件后缀名
+		var endSyn = cellvalue.substr(cellvalue.lastIndexOf(".")).toLowerCase();
+		//alert("**" + endSyn);
+		var imgsyn = "<img src=\"${ctx}/assets/img/attach.png\" border=\"0\">";
+		if(endSyn == '.xls'){
+			//alert("xls");
+			imgsyn = "<img src=\"${ctx}/assets/img/filetype/xls.gif\" border=\"0\">";
+		}else if(endSyn == '.doc'){
+			imgsyn = "<img src=\"${ctx}/assets/img/filetype/doc.gif\" border=\"0\">";
+		}
+		//html="<a onclick=\"viewInfo()\">" + cellvalue.substr(0,cellvalue.lastIndexOf(".")) + imgsyn + "</a>";
+		html="<a onclick=\"viewInfo()\">" +imgsyn + "</a>";
+		//html="<a href=\'" +  cellvalue + "\'>" +imgsyn + "</a>";
+	}
+	return html;
+}
+
+function viewInfo(){
+	alert("ddd");
+}
+</script>
+
+
+
+</@form.table>
+		<div class="clearfix form-actions" id = "submitPanel">
+			<div class="col-md-offset-5 col-md-7">
+			<button class="btn" type="button" onclick="javascript:parent.currentParent.api.close();api.close();" align="center">
+				<i class="icon-ok bigger-110"></i> ${i18n.get('关闭')}
+			</button>
+			&nbsp; &nbsp; &nbsp;
+		</div>
+	</div>
+	
+</div>
+</@pui.body>

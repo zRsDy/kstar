@@ -1,0 +1,103 @@
+<@pui.body>
+	<@form.form id="t1" class="form-horizontal">	 
+		<@form.panel title="${i18n.get('基本信息')}">
+			<div align="center">
+				<table>
+					<tr>
+						<td align="right" width="100px">${i18n.get('产品编号 :')}</td>
+						<td width="280px">
+							<@form.input id="productCode" name="productCode" style="width:163px;" tip="${i18n.get('产品编号')}" readonly="true" value="${(product.productCode)!}" />
+						</td>
+						<td align="right" width="100px">${i18n.get('产品名称 :')}</td>
+						<td width="280px">
+							<@form.input id="productName" name="productName" style="width:163px;" tip="${i18n.get('产品名称')}" readonly="true" value="${(product.productName)!}" />
+						</td>
+						<td align="right" width="100px">${i18n.get('产品型号 :')}</td>
+						<td width="280px">
+							<@form.select style="width:163px;" id="uiDealer" name="uiDealer" tip="${i18n.get('是否经销商')} " code="NY" idKey='id' value="${(product.dealer)!}" />
+							<input type="hidden" id="dealer" name="dealer" value="${(product.dealer)!}" />
+						    <script type="text/javascript">
+		    	                $("#uiDealer").attr("disabled","disabled")
+		                    </script>
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">${i18n.get('品牌 :')}</td>
+						<td width="280px">
+							<@form.input id="proBrand" name="proBrand" style="width:163px;" tip="${i18n.get('产品品牌')}" readonly="true" value="${(product.proBrand)!}" />
+						</td>
+						<td align="right" width="100px">${i18n.get('CRM产品类别 :')}</td>
+						<td width="280px">
+		                    <@form.select id="uicrmCategory" name="uicrmCategory" tip="${i18n.get('CRM产品类别')}" style="width:163px;" code="crmCategory" idKey='code' value="${(product.crmCategory)!}"  />
+					      	<input type="hidden" id="crmCategory" name="crmCategory" value="${(product.crmCategory)!}"/>
+					     	<script type="text/javascript">
+					    		$("#uicrmCategory").attr("disabled","disabled")
+					    	</script>
+		                 </td>
+						<td align="right" width="100px">${i18n.get('ERP产品类别 :')}</td>
+						<td width="280px">
+							<@form.select id="uierpCategory" name="uierpCategory" tip="${i18n.get('ERP产品类别')}" style="width:163px;" code="erpCategory" idKey='code' value="${(product.erpCategory)!}"  />
+					      	<input type="hidden" id="erpCategory" name="erpCategory" value="${(product.erpCategory)!}"/>
+					     	<script type="text/javascript">
+					    		$("#uierpCategory").attr("disabled","disabled")
+					    	</script>
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">${i18n.get('产品分类  :')}</td>
+						<td width="280px">	
+							<@form.input id="cproCategory" name="cproCategory" style="width:163px;" tip="${i18n.get('产品分类')}" readonly="true" value="${(product.lineBean.cproCategory)!}" />
+						</td>
+						<td align="right" width="100px">${i18n.get('产品系列 :')}</td>
+						<td width="280px">
+							<@form.input id="proSeries" name="proSeries" style="width:163px;" tip="${i18n.get('产品系列')}" readonly="true" value="${(product.lineBean.proSeries)!}" />
+						</td>
+						<td align="right" width="100px">${i18n.get('产品类别 :')}</td>
+						<td width="280px">
+							<@form.input id="cproType" name="cproType" style="width:163px;" tip="${i18n.get('产品类别')}" readonly="true" value="${(product.lineBean.cproType)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">${i18n.get('原销售状态 :')}</td>
+						<td width="280px">
+							<@form.select id="uicsaleStatus" name="uicsaleStatus" tip="${i18n.get('原销售状态')}" style="width:163px;" code="csaleStatus" idKey='id' value="${(product.csaleStatus)!}" />
+							<input type="hidden" id="csaleStatus" name="csaleStatus" value="${(product.csaleStatus)!}"/>
+						    <script type="text/javascript">
+			  	                $("#uicsaleStatus").attr("disabled","disabled")
+			                </script>
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('新销售状态 :')}</td>
+						<td width="280px">
+							<@form.select id="newCsaleStatus" name="newCsaleStatus" style="width:163px;" required="${i18n.get('不能为空')}" code="csaleStatus" idKey='id' value="${(product.newCsaleStatus)!}" />
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('原因')}</td>
+						<td width="280px">
+							<@form.select id="csaleReason" name="csaleReason" style="width:163px;" required="${i18n.get('不能为空')}" code="REVISE_REASON" idKey='id' value="${(product.csaleReason)!}" />
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.panel>
+		<div id="info" style="padding-top: 20px;" class="row">
+			<div class="col-xs-12">
+				<input type="hidden" id="selectedId"  />
+				<@plug.tabs tabMain=tabMainInfo>
+				</@plug.tabs>
+			</div>
+		</div>
+	</@form.form>
+</@pui.body>

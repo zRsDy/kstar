@@ -1,0 +1,31 @@
+
+<#escape x as x?html>
+<@pui.body>
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1"
+			success="function(){ alert('${i18n.get('保存成功')}！');parent.currentParent.reload_prjevlLst(); }" 
+			class="form-horizontal">
+			
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right"> ${i18n.get('评审类别')} : </label>
+					<@form.select  id="evlTyp" name="evlTyp"  style='width:160px' placeholder="" required="${i18n.get('不能为空')}！"   code="CONTRACT_EVLTYPE" value="${(prjevlInfo.evlTyp)!}" />
+				</div>
+	
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+</@pui.body>
+</#escape>

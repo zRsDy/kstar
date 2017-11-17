@@ -1,0 +1,51 @@
+<#escape x as x?html>
+<@cui.body>
+
+<@form.table id="datatraceList" 
+class="col-xs-12"
+title="${i18n.get('数据追踪')}" 
+url = "${ctx}/datatrace/page.html" 
+rowNum = "20" 
+colModel = "[
+	{name:'pkValue',label:'${i18n.get('数据主键')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'tableName',label:'${i18n.get('表名')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'tableComment',label:'${i18n.get('表注释')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'keyColComment',label:'${i18n.get('关键字段')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'keyColValue',label:'${i18n.get('关键字段值')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'operatorName',label:'${i18n.get('操作人')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'operateDate',label:'${i18n.get('操作时间')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'operateType',label:'${i18n.get('操作类型')}',hidden:false,width:100,sortable:false,align:'center' }
+	]" 
+	buttons = "[
+		{
+			id:'traceDetail',
+			label : '${i18n.get('查看变更详情')}',
+			icon : 'icon-trash',
+			own : true,
+			handler : function(e,rowData){
+				var url = '${ctx}/datatrace/traceDetail.html?pkValue='+rowData.pkValue+'&tableName='+rowData.tableName+'&operateDate='+rowData.operateDate;
+				parent.dialog('${i18n.get('变更详情')}',url,window);
+		}
+		}
+	]"
+	> 
+	<div class="col-xs-12">
+		<div class="form-group col-xs-2" align="right">${i18n.get('要追踪的表：')}</div>
+		<div class="form-group col-xs-4">
+			<select name="tableName">
+					<option value="">${i18n.get('请选择...')}</option>
+					<#list sysClassList as element>
+						<option value="${element.TABLE_NAME}">${element.TABLE_COMMENT}</option>
+					</#list>
+			</select>
+		</div>
+		
+		<div class="form-group col-xs-2" align="right">${i18n.get('关键字段值：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="keyColValue" id="keyColValue" style="width: 100px" />
+		</div>
+	</div>
+</@form.table> 
+
+</@cui.body>
+</#escape>

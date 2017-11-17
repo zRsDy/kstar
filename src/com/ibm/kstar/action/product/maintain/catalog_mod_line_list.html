@@ -1,0 +1,200 @@
+<script type="text/javascript">
+
+$(document).ready(function(){
+	
+});
+
+var newrowid = 0;  
+function addCatalogRow()  
+{   
+    //获得新添加行的行号（数据编号）  
+    newrowid = newrowid+1; 
+    var dataRow = {    
+        id: newrowid
+    };      
+    //将新添加的行插入到第一列  
+    $("#catalogModLineList").jqGrid("addRowData", newrowid, dataRow, "first");  
+    //设置grid单元格不可编辑  
+    $("#catalogModLineList").setGridParam({cellEdit:false});  
+    //设置grid单元格可编辑  
+    //$("#orderLinesForm").jqGrid('editRow', newrowid, false);
+    //初始化订单行
+    //initCataLogLine(newrowid,dataRow);
+    
+    var ps = '<input  type=\"button\" value=\"${i18n.get('选择产品')}\" onclick=\"proSelect2(\''+newrowid+'\');\" />'; 
+	    $('#catalogModLineList').jqGrid('setRowData', newrowid, { act : ps});
+    $('#catalogModLineList').jqGrid('setRowData', newrowid, { opType : 'add'});
+    $('#catalogModLineList').jqGrid('setRowData', newrowid, { opTypeName : '添加产品到目录'});
+}
+
+function initCataLogLine(newrowid,data){
+	
+	$('#catalogModLineList').jqGrid('setRowData', newrowid, { prodName : data.prodName});
+	$('#catalogModLineList').jqGrid('setRowData', newrowid, { materDesc : data.proDesc});
+	$('#catalogModLineList').jqGrid('setRowData', newrowid, { materCode : data.materielCode});
+	
+}
+
+function formatProdName2(value,options){
+	var rowData = $('#catalogModLineList').jqGrid('getRowData',options.rowId);
+	var lable = '${i18n.get('选择产品')}';
+	if(value){
+		lable = value;
+	}
+	var ps = '<a href="#" onclick="proSelect2(\''+options.rowId+'\');" >'+lable+'</a>';
+	return ps;
+}
+
+function formatCatalogName(value,options){
+	var rowData = $('#catalogModLineList').jqGrid('getRowData',options.rowId);
+	var lable = '${i18n.get('选择目录')}';
+	if(value){
+		lable = value;
+	}
+	var ps = '<a href="#" onclick="catalogSelect(\''+options.rowId+'\');" >'+lable+'</a>';
+	return ps;
+}
+
+var selectId = "";
+
+function proSelect2(rowid){
+	selectId = rowid ;
+	var rowData = $('#catalogModLineList').jqGrid('getRowData',selectId);
+	$('#selProdForCatalogBtn').click();
+}
+
+function catalogSelect(rowid){
+	selectId = rowid ;
+	var rowData = $('#catalogModLineList').jqGrid('getRowData',selectId);
+	
+	$('#selectCatalogBtn').click();
+}
+
+function getOpList(){
+	return "add:添加产品到目录;del:从目录移除产品";
+}
+
+</script>
+
+	<@form.table id="catalogModLineList" 
+		class="col-xs-12"
+		title="${i18n.get('产品所属目录变更明细')}" 
+		url = "${ctx}/product/maintain/catalogModLinePage.html?maintainId=${maintainId}" 
+		rowNum = "20" 
+		checkbox="true" 
+		style = "width:100%"
+		colModel = "[
+			{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+			{name:'act',label:'${i18n.get('选择产品')}',hidden:false,width:70,sortable:false,align:'center'},
+			{name:'opType',label:'${i18n.get('操作类型CODE')}',hidden:true,width:100,sortable:false,align:'center',editrules:{required:true}},
+			{name:'opTypeName',label:'${i18n.get('操作类型')}',hidden:false,width:150,sortable:false,align:'center',editable:true,edittype:'select',editoptions:{value:getOpList()}},
+			{name:'materCode',label:'${i18n.get('物料号')}',hidden:false,width:100,sortable:false,align:'center'},
+			{name:'materDesc',label:'${i18n.get('物料说明')}',hidden:false,width:300,sortable:false,align:'center' },
+			{name:'prodName',label:'${i18n.get('产品名称')}',hidden:false,width:200,sortable:false,align:'center' },
+			{name:'catalogId',label:'${i18n.get('产品目录ID')}',hidden:true,width:100,sortable:false,align:'center' },
+			{name:'catalogName',label:'${i18n.get('产品目录')}',hidden:false,width:500,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatCatalogName(cellvalue,options) } }
+			]" 
+		ondblClickRow = "function(id){
+			var rowData = $('#catalogModLineList').jqGrid('getRowData',id);
+			
+		  	var opType =  $('#opType').val();
+		  	if(opType != '' && opType !=null){
+				if(rowData.opType == '' || rowData.opType == null){
+					$('#catalogModLineList select[id='+id+'_opTypeName]').val(opType);
+					$('#catalogModLineList').jqGrid('setRowData', id, { opType : opType});
+				}
+			}else{
+				var _opType = $('#catalogModLineList select[id='+id+'_opTypeName]').children('option:selected').val();
+				$('#catalogModLineList').jqGrid('setRowData', id, { opType : _opType});
+			}
+			
+			$('#catalogModLineList select[id='+id+'_opTypeName]').change(function(){
+				var _opType = $(this).children('option:selected').val();
+				$('#catalogModLineList').jqGrid('setRowData', id, { opType : _opType});
+				
+				if(_opType == 'add'){
+					$('#catalogModLineList').setColProp('materCode',{editable:true});
+				}else{
+					$('#catalogModLineList').setColProp('materCode',{editable:false});
+				}
+			});
+			
+			$('#catalogModLineList input[id='+id+'_materCode]').bind('input',function(event){
+				$('#catalogModLineList').jqGrid('setRowData', id, { materDesc : ''});
+				$('#catalogModLineList').jqGrid('setRowData', id, { prodName : ''});
+			});
+		}"
+		onSelectRow = "function(rowData){
+			if(rowData.opType == 'add'){
+				$('#catalogModLineList').setColProp('materCode',{editable:true});
+			}else{
+				$('#catalogModLineList').setColProp('materCode',{editable:false});
+			}
+		}"
+		buttons = "[
+				{
+					id:'addCatalogRow',
+					label : '${i18n.get('增加一行')}',
+					icon : 'icon-save',
+					own : ${canModify!'false'},
+					handler : function(e,rowData){
+						addCatalogRow();
+					}
+				},{
+					id:'deleteCataLogRow',
+					label : '${i18n.get('删除')}',
+					icon : 'icon-remove',
+					own : ${canModify!'false'},
+					handler : function(e,rowData){
+						var ids = $('#catalogModLineList').jqGrid('getGridParam','selarrrow'); 
+						var _ids = [];
+						 $.each(ids,function(i,id){
+							 _ids.push(id);
+						 });
+					     if(!ids || ids.length <= 0 ){
+					      　　	alert('${i18n.get('请选择要删除的行')}');
+					      　　	return;
+					     }else{
+					     	if(confirm('${i18n.get('是否删除选择的行')}')){
+						    	 $.each(_ids,function(i,id){
+						    	 	 $('#catalogModLineList').jqGrid('delRowData', id);
+						    	 });
+					    	 }
+					     } 
+					}
+				}
+			]"
+		>
+	</@form.table> 
+	
+ <div style="display: none;" >
+ 	<@biz.picker_product id="selProdForCatalogBtn" 
+			urlFunction="function(){
+				return '${ctx}/common/product/selectList.html?proModel=';
+			}"
+			button="${i18n.get('选择产品')}"
+			callback="function(data){
+				if(data){
+           			delete data.id ;
+           			data['prodName'] = data.productName;
+           			data['materDesc'] = data.proDesc;
+           			data['materCode'] =data.materielCode;
+				    $('#catalogModLineList').jqGrid('setRowData',selectId,data);
+				    
+				    initCataLogLine(selectId,data);
+				 }
+			}"
+	/>
+	
+	<@biz.picker_lov_tree id="selectCatalogBtn" leafFlag="N" groupId="procatalog" button="${i18n.get('选择目录')}" 
+			defaultSelect="selectedDatas_selectCatalogBtn" opType="3"
+			callback="function(datas){
+			 	if(datas){
+			 		$('#catalogModLineList').jqGrid('setRowData', selectId, { catalogName : datas.namePath});
+					$('#catalogModLineList').jqGrid('setRowData', selectId, { catalogId : datas.id});
+				 	selectedDatas_picker_lov_tree = datas;
+			 	}
+			 }" 
+	/>
+ 
+ </div>

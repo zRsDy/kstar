@@ -1,0 +1,36 @@
+<#-- 样机申请列表页面-新增 --> <#if permission["P03SampleListQuery"]?? > <#assign addURL = "'${ctx}/proApply/add.html'" /></#if>
+
+<#-- 样机申请列表页面-修改 --> <#if permission["P03SampleListSave"]?? > <#assign editURL = "'${ctx}/proApply/edit.html'" /></#if>
+
+<#-- 样机申请列表页面-删除 --> <#if permission["P03SampleListDelete"]?? > <#assign deleteURL = "'${ctx}/proApply/delete.html'" /></#if>
+
+
+<#escape x as x?html>
+<@pui.body>
+	<@form.table id="proApplyTable" 
+	class="col-xs-12"
+	title="${i18n.get('样机申请基本信息列表')}" 
+	url = "${ctx}/proApply/page.html" 
+	rowNum = "10" 
+	addURL = "${addURL!}"
+	editURL= "${editURL!}"
+	deleteURL = "${deleteURL!}"
+	colModel = "[
+		{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'number',label:'${i18n.get('申请编号')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'applicantName',label:'${i18n.get('申请人')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'applyUnit',label:'${i18n.get('申请单位')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'planRecieveTime',label:'${i18n.get('期望到货时间')}',hidden:false,width:100,sortable:true,align:'center', formatter:dateFmatter },
+		{name:'planReturnTime',label:'${i18n.get('预计归还时间')}',hidden:false,width:100,sortable:true,align:'center', formatter:dateFmatter },
+		{name:'statusName',label:'${i18n.get('状态')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'createdAt',label:'${i18n.get('申请日期')}',hidden:false,width:200,sortable:true,align:'center', formatter:dateFmatter},
+		{name:'clientName',label:'${i18n.get('客户名称')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'bizoppName',label:'${i18n.get('商机名称')}',hidden:false,width:200,sortable:true,align:'center' }
+		]"
+		buttons = "[]"
+		> 
+	</@form.table> 
+	<br/>
+</@pui.body>
+<script src="${ctx}/anne/js/util.js"></script>
+</#escape>

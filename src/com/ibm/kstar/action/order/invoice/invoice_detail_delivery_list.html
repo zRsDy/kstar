@@ -1,0 +1,161 @@
+
+<#if (permission["P06InvoiceT2IssuedAddOne"])??>
+	<#assign invoiceLines_delivery_addRow="true" />
+</#if>
+<#if (permission["P06InvoiceT2IssuedAddBatch"])??>
+	<#assign invoiceLines_delivery_addRowBatch="true" />
+</#if>
+<#if (permission["P06InvoiceT2IssuedDelete"])??>
+	<#assign invoiceLines_delivery_delRow="true" />
+</#if>
+<#if permission["P05ConExport"]??>
+		<#assign exporBtnPer = 'true' />
+</#if>
+<@form.table id="invoiceLinesForm_Delivery" 
+	class="col-xs-12" 
+	title="${i18n.get('已出货未开票明细')}" 
+	url = "${ctx}/invoice/invoiceLines.html?invoiceCode=${(invoiceCode)!}&invoiceType=${(invoiceType)!}"
+	checkbox = "true"
+	search = "false"
+	rowNum = "500"  
+	rowNumList = "[500]"
+	colModel = "[ 
+		{name:'act',label:'${i18n.get('选择出货单')}',hidden:false,width:80,sortable:false,align:'center' }, 
+		{name:'id',label:'',hidden:true,width:100,sortable:false,align:'center' }, 
+		{name:'deliveryLineId',label:'${i18n.get('出货单行ID')}',hidden:true,width:1,sortable:false,align:'center'},
+		{name:'deliveryCode',label:'${i18n.get('出货单编号')}',hidden:false,width:150,sortable:false,align:'center' }, 
+		{name:'orderLineId',label:'${i18n.get('订单行ID')}',hidden:true,width:150,sortable:false,align:'center' }, 
+		{name:'orderCode',label:'${i18n.get('订单编号')}',hidden:false,width:150,sortable:false,align:'center' }, 
+		{name:'custCode',label:'${i18n.get('客户编号')}',hidden:false,width:150,sortable:false,align:'center' }, 
+		{name:'custName',label:'${i18n.get('客户名称')}',hidden:false,width:150,sortable:false,align:'center' }, 
+		{name:'custAddr',label:'${i18n.get('客户地址')}',hidden:false,width:150,sortable:false,align:'center' }, 
+		{name:'custPO',label:'${i18n.get('客户PO')}',hidden:false,width:150,sortable:false,align:'center'}, 
+		{name:'materielCode',label:'${i18n.get('物料编码')}',hidden:false,width:100,sortable:false,align:'center' }, 
+		{name:'materielDesc',label:'${i18n.get('物料说明')}',hidden:false,width:100,sortable:false,align:'center' }, 
+		{name:'proModel',label:'${i18n.get('产品型号')}',hidden:false,width:150,sortable:false,align:'center'},
+		{name:'deliveryDate',label:'${i18n.get('出货日期')}',hidden:false,width:100,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+		{name:'invoiceQty',label:'${i18n.get('开票数量')}',hidden:false,width:100,sortable:false,align:'center', sortable:false}, 
+		{name:'invoicePrice',label:'${i18n.get('开票单价')}',hidden:false,width:100,sortable:false,align:'center' }, 
+		{name:'unit',label:'${i18n.get('单位')}',hidden:true,width:60,sortable:false,align:'center'},
+		{name:'unitLable', label:'${i18n.get('单位')}',width : 60,sortable : false, editable : false, align:'center'}, 
+		{name:'invoiceAmount',label:'${i18n.get('开票金额')}',hidden:false,width:100,sortable:false,align:'center' }, 
+		{name:'remarks',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:false,align:'center' , editable : true}
+		]" buttons = "[
+			{id:'invoiceLines_delivery_delRow', label : '${i18n.get('删除')}', icon : 'icon-remove',own : ${invoiceLines_delivery_delRow!'false'},
+			handler : function(e,rowData){
+				delRow('invoiceLinesForm_Delivery');
+			}
+			},
+			{id:'invoiceLines_delivery_addRow',label : '${i18n.get('增加一行')}', icon : 'icon-save',own : ${invoiceLines_delivery_addRow!'false'},
+				handler : function(e,rowData){
+					addRow('invoiceLinesForm_Delivery');
+				}
+			},
+			{id:'invoiceLines_delivery_addRowBatch', label : '${i18n.get('批量增加')}', icon : 'icon-save',own : ${invoiceLines_delivery_addRowBatch!'false'},
+				handler : function(e,rowData){
+					 var customerId =  $('#customerId').val();
+					 if(customerId){
+						$('#multiSelectDelivery').click();
+					 }else{
+						 alert('${i18n.get('请先选择开票客户')}');
+					 }
+				}
+			},
+			{id:'invoiceExcel',label : '${i18n.get('导出')}',icon : 'icon-save',own : true,
+				handler : function(e,rowData){
+					var da={} ; 
+		  			var prjrows= $('#invoiceLinesForm_Delivery').jqGrid('getGridParam','selarrrow');  
+		  			var ids=[];
+		  			var idsStr = '';
+		  			if(prjrows.length>0){	
+				 		$.each(prjrows,function(i,id){
+ 							var item = $('#invoiceLinesForm_Delivery').jqGrid('getRowData',id);
+				 			ids.push(item.id);
+				 			idsStr +=   item.id +',';
+				 		});	
+				 		idsStr = idsStr.substring(0,idsStr.length-1);
+	  					bootbox.confirm('${i18n.get('您确定要导出选中的数据吗？')}' , function(result) {
+						if(result) {
+							window.location.href = '${ctx}/invoice/invoiceExport.html?idsStr='+idsStr;
+							}
+						});
+	  				}else{
+	  					alert('${i18n.get('请选择数据！')}');
+	  				}
+				}
+			}
+		
+		]" 
+		
+		onComplete = "function() { 
+			$('#invoiceLinesForm_Delivery').setGridWidth($(window).width()-100);
+			var ids = $('#invoiceLinesForm_Delivery').jqGrid('getDataIDs');
+	 		$.each(ids,function(i,id){
+ 			 	var cl = ids[i]; 
+				var ps = '<input style=\\'height:22px;width:70px;\\' type=\\'button\\' value=\\'${i18n.get('选择')}\\' onclick=deliverySelect(\\''+cl+'\\'); />';
+				$('#invoiceLinesForm_Delivery').jqGrid('setRowData', cl, { act : ps});
+	 		});
+		
+		}"
+		footerrow = "true"
+		gridComplete = "function() {
+			colSumDelivery();
+		}"
+		onLineEditAfter = "function(id,rowData){
+			colSumDelivery();
+		}"
+		> 
+</@form.table>
+
+<div style="display: none;" >
+	<@biz.picker_product id="selectDelivery" 
+			urlFunction="function(){
+				return '${ctx}/common/delivery/selectList.html?customerCode='+ $('#customerCode').val()
+					+'&customerName='+$('#customerName').val()
+					+ '&contractCode=' + $('#contractCode').val()
+					+ '&businessEntity=' + $('#businessEntity').val()
+					+ '&isAdvanceBilling=No';
+			}" 
+			button="${i18n.get('选择出货单')}"
+			callback="function(data){
+				if(data){
+					data['deliveryLineId'] = data.id;
+					data['orderLineId'] = data.orderId;
+					data['custCode'] = data.singleCustCode;
+					data['custName'] = data.singleCustName;
+					data['custAddr'] = data.deliveryAddress;
+					data['custPO'] = data.singleCustPO;
+					data['materielDesc'] = data.materielName;
+					data['invoiceQty'] = data.cInvoiceQty;
+					data['invoicePrice'] = data.price;
+					data['invoiceAmount'] = parseFloat(data.price) * parseFloat(data.cInvoiceQty);
+					
+					delete data.id;
+					delete data.singleCustCode;
+					delete data.singleCustName;
+					
+					$('#invoiceLinesForm_Delivery').jqGrid('setRowData',selectId,data);
+					colSumDelivery();
+				 }
+			}"
+	/>
+</div>
+
+<div style="display: none;" >
+	<@biz.picker_product id="multiSelectDelivery" 
+			urlFunction="function(){
+				return '${ctx}/common/delivery/multiSelect.html?customerCode='+ $('#customerCode').val()
+					+ '&customerName='+$('#customerName').val()
+					+ '&contractCode=' + $('#contractCode').val()
+					+ '&businessEntity=' + $('#businessEntity').val()
+					+ '&isAdvanceBilling=No';
+			}" 
+			button="${i18n.get('批量选择出货单')}" 
+			callback="function(datas){
+				if(datas){
+               		addRowBatchDelivery(datas);
+               		colSumDelivery();
+				 }
+			}"
+	/>
+</div>

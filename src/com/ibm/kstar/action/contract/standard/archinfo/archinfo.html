@@ -1,0 +1,136 @@
+<#escape x as x?html>
+    <@pui.body>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            initialPage();
+        });
+
+        function initialPage() {
+            setCheckboxStat();
+            //setSelectStat();
+        }
+
+        function setCheckboxStat() {
+            //初始化checkbox
+            //是否归档
+            var checked10 = $("#isArchive").val();
+            if (checked10 == '1') {
+                $("#isArchiveBox").attr("checked", "true");
+            } else {
+                $("#isArchive").val('0');
+                $("#isArchiveBox").removeAttr("checked");
+            }
+            
+            //是否是高风险合同标识
+            var isHighRisk = $("#isHighRisk").val();
+            if (isHighRisk == '1') {
+                $("#isHighRiskBox").attr("checked", "true");
+            } else {
+                $("#isHighRisk").val('0');
+                $("#isHighRiskBox").removeAttr("checked");
+            }
+            
+        }
+
+        //是否已归档
+        function checkValIsArchiveBox() {
+            var checked = $("#isArchiveBox").is(':checked')
+            if (checked == true) {
+                $("#isArchive").val('1');
+                $("#isArchiveBox").attr("checked", "true");
+            } else {
+                $("#isArchive").val('0');
+                $("#isArchiveBox").removeAttr("checked");
+            }
+        }
+
+    </script>
+
+            <!-- <h5 style="background-color: #E9E9E9;">基本信息</h5> -->
+        <@form.panel title="">
+            <@form.form id="fArchive" action="${ctx}/standard/updateArchiveInfo.html" success="function(){ alert('${i18n.get('文档管理信息已保存')}！'); }" autoClose="false" class="form-horizontal" >
+                <@form.input id="id" name="id" type="hidden" value="${(contr.id)!}" />
+                <#if permission["P05ConT10ConDocInfoSave"]?? >
+                <div style="height: 20px;">
+                <div style="padding-right: 20px; float: right;">
+                    <button id="saveArchiveBtn" class="btn btn-info submit" type="button" onclick="submitSave('archinfo')">
+                        <i class="icon-ok bigger-110"></i>
+                    ${i18n.get('保存')}
+                    </button>
+                </div>
+                </div>
+                <br />
+                </#if>
+            <table id="okcHeader">
+            <tr>
+                <td width="100px" align="left">${i18n.get('合同有效期')}:</td>
+                <td width="180px">
+                    <@form.date  style="width: 160px;" id="validDate"  name="validDate" placeholder="${i18n.get('合同有效期')}" tip=""  value="${(contr.validDate?datetime)!}" />
+                </td>
+                <td width="120px" align="left">${i18n.get('是否是高风险合同')}:</td>
+                <td >
+                    <input name="isHighRiskBox" type="checkbox" id="isHighRiskBox" <#if !(permission['P05ConT10ChangeHighRiskBox']??)>disabled="disabled"</#if> onclick="checkIsHighRiskBox()" />
+                    <input name="isHighRisk" type="hidden" id="isHighRisk" value="${(contr.isHighRisk)!}"/>
+                </td> 
+            </tr>
+            <tr>
+                <td width="100px" align="left">${i18n.get('合同邮寄日期')}:</td>
+                <td width="180px">
+                    <@form.date style="width: 160px;"  id="postDate"  name="postDate" placeholder=""  tip=""  value="${(contr.postDate?date)!}" />
+                </td>
+
+                <td width="100px" align="left">${i18n.get('邮寄快递单号')}:</td>
+                <td width="180px"><@form.input id="postNo" name="postNo" placeholder="" tip="" value="${(contr.postNo)!}" /></td>
+            </tr>
+            <tr>
+
+                <td width="100px" align="left">${i18n.get('原件是否已归档')}:</td>
+                <td width="180px">
+                    <input name="isArchiveBox" type="checkbox" id="isArchiveBox" onclick="checkValIsArchiveBox()" />
+                    <input name="isArchive" type="hidden" id="isArchive" value="${(contr.isArchive)!}" />
+                </td>
+
+                <td width="100px" align="left">${i18n.get('归档备注')}:</td>
+                <td><@form.input id="achiveRemark" name="achiveRemark" placeholder="" tip="" value="${(contr.achiveRemark)!}" /></td>
+
+            </tr>
+            <tr>
+                <td width="100px" align="left">${i18n.get('归档日期')}:</td>
+                <td width="180px">
+                    <@form.date  style="width: 160px;" id="archiveDate"  name="archiveDate" placeholder=""  tip=""  value="${(contr.archiveDate?date)!}" />
+                </td>
+                <td width="100px" align="left">${i18n.get('实际签订日期')}:</td>
+                <td width="180px">
+                    <@form.date  style="width: 160px;" id="actSignDate"  name="actSignDate" placeholder=""  tip=""  value="${(contr.actSignDate?date)!}" />
+                </td>
+            </tr>
+            </table>
+
+            </@form.form>
+
+        <script type="text/javascript">
+        $(document).ready(function () {
+// 	var archiveEditFlag = "${archiveEditFlag}"; 
+// 	if(archiveEditFlag=="N"){
+// 		$("#saveArchiveBtn").attr("disabled","disabled");
+// 	}
+        });
+        
+        function checkIsHighRiskBox(){
+            var checked =  $("#isHighRiskBox").is(':checked')
+            if(checked == true){
+                $("#isHighRisk").val('1');
+                $("#isHighRiskBox").attr("checked","true");
+            }else {
+                $("#isHighRisk").val('0');
+                $("#isHighRiskBox").removeAttr("checked");
+            }
+        }
+        </script>
+
+        </@form.panel>
+
+    </@pui.body>
+</#escape>

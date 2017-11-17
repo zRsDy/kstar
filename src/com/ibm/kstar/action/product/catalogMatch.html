@@ -1,0 +1,133 @@
+<@pui.body>
+<#if (permission["P01-1ProductCatalogMatchAdd"])??>
+	<#assign addURL="'${ctx}/product/catalog/addCatelogMatch.html'" />
+</#if>
+<#if (permission["P01-1ProductCatalogMatchEdit"])??>
+	<#assign editURL="'${ctx}/product/catalog/addCatelogMatch.html'" />
+</#if>
+<#if (permission["P01-1ProductCatalogMatchDelete"])??>
+	<#assign deleteURL="'${ctx}/product/catalog/deleteCatelogMatch.html'" />
+</#if>
+
+<table style="width: 100%" >
+				<tr>
+						<td id="treeTd" style="width: 300px" valign="top">
+							<@form.panel title="${i18n.get('销售目录树')}" style='height:100'>
+								<@plug.tree 
+								checkbox="false" 
+								id="tree1" 
+								moveEdit = 'false'
+            asyncUrl='${ctx}/lov/member/tree.html?groupId=procatalog&leafFlag=N'
+            onClick=" function(event, treeId, treeNode){
+							  		$('#parentId').val(treeNode.id);
+							  		
+							  		if(treeNode.leafFlag == 'Y'){
+							  			$('#add_t1').hide();
+							  			$('#edit_t1').hide();
+							  			
+							  		}else{
+							  			reload_t1();
+							  			$('#add_t1').show();
+							  			$('#edit_t1').show();
+							  		}				  		
+							  	}"
+							  	
+							  	isParent="function(data){
+							  		return data.leafFlag == 'N';
+							  	}"
+								/>
+							</@form.panel>
+						</td>
+				
+					<td valign="top">
+						<@form.table id="t1"
+						class="col-xs-12"
+						shrinkToFit = 'true'
+						title="${i18n.get('映射关系')}"
+						url = "${ctx}/product/catalog/catelogMatch.html"
+						rowNum = "20"
+						editURL = "${editURL!}"
+						deleteURL = "${deleteURL!}"
+						colModel = "[
+						  { name : 'id',    label : 'id', hidden : true, width : 60,sortable:false,align:'center' }, 
+						  { name : 'directID', label : '${i18n.get('目录ID')}',hidden : true, width : 90 ,sortable:false}, 
+						  { name : 'directName', label : '${i18n.get('目录名称')}', width : 150 ,sortable:false },
+
+						  { name : 'matchTypeLabel', label : '${i18n.get('映射类型')}',align:'center', width : 150 ,sortable:false },
+						  { name : 'matchType', hidden : true, label : '${i18n.get('映射类型')}' },
+
+						  { name : 'crmCategoryLabel', label : ' ${i18n.get('CRM产品类别')}', align:'center',width : 150 ,sortable:false },
+						  { name : 'crmCategory',hidden : true, label : ' ${i18n.get('CRM产品类别')}', width : 150 ,sortable:false },
+
+						  { name : 'cproCategory', label : ' ${i18n.get('产品分类')}', align:'center', width : 150 ,sortable:false },
+
+						  { name:'proModel', label:' ${i18n.get('产品型号')}', align:'center', width:150, sortable:false },
+
+						  { name : 'department', hidden : true, label : ' ${i18n.get('部门')}' ,sortable:false },
+						  { name : 'departmentName', label : ' ${i18n.get('部门')}', width : 200 ,sortable:false },
+
+						  { name : 'startTime', label : '${i18n.get('有效期开始时间')}',align:'center', width : 150 ,sortable:false,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+						  { name : 'endTime', label : '${i18n.get('有效期结束时间')}', align:'center', width : 150 ,sortable:false,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+						  { name : 'effective', label : '${i18n.get('有效')}', align:'center', width : 150 ,sortable:false,formatter:function(cellvalue, options, rowObject){ return checkForm(cellvalue)} },
+						  { name : 'comment', label : '${i18n.get('说明')}', width : 150 ,sortable:false }
+						  ]"
+						 buttons = "[
+						 	{
+					  			id:'add_t1',
+					  			label : '${i18n.get('新增')}',
+					  			icon : 'icon-plus',
+					  			own : ${addURL!'false'},
+					  			handler : function(e,rowData){
+					  				var parentId = $('#parentId').val();
+									if(parentId == ''){
+										exalert(e,'${i18n.get('请选择目录树!')}');
+										return;
+									}else{
+										parent.dialog('${i18n.get('映射关系')}','${ctx}/product/catalog/addCatelogMatch.html?parentId='+parentId,window);
+									}
+					  			}
+					  		}
+						 ]"
+            >
+
+                <div class="col-xs-12">
+                    <input type="hidden" id="parentId" name="parentId"/>
+
+                    <div class="form-group col-xs-2" align="right">${i18n.get('目录名称')} ：</div>
+                    <div class="form-group col-xs-4">
+                        <input type="text" name="name" size="30"/>
+                    </div>
+                    <div class="form-group col-xs-2" align="right">${i18n.get('产品分类')} ：</div>
+                    <div class="form-group col-xs-4">
+                        <input type="text" name="cproCategory" size="30"/>
+                    </div>
+                    <div class="form-group col-xs-2" align="right">${i18n.get('产品型号')} ：</div>
+                    <div class="form-group col-xs-4">
+                        <input type="text" name="proModel" size="30"/>
+                    </div>
+                </div>
+				</@form.table>
+			</td>
+		</tr>
+	</table>
+
+<script type="text/javascript">
+function checkForm(cellvalue) {
+    //alert("*****" + cellvalue);
+    var html = "<input type=\"checkbox\"  onclick=\"return false;\" />";
+    if (cellvalue == 'Y') {
+        return "<input type=\"checkbox\" checked=\"checked\"  onclick=\"return false;\"/>";
+
+    } else if (cellvalue == 'N') {
+        return html;
+    }
+}
+
+function treeRun() {
+    reload_tree1();
+    reload_t1();
+}
+parent.reload_t1=reload_t1
+</script>
+</@pui.body>
+

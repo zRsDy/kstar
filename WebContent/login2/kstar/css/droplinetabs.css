@@ -1,0 +1,39 @@
+/*--menutab--*/
+.dropline{font-size:12px;left:5px;right:5px;position:absolute;top:55px;z-index:2;}
+.droplinetabs{overflow:visible;background:url(../images/menutab_bg.png) repeat-x 0 0;height:39px;}
+.droplinetabs ul{list-style:none;margin:0;padding:0 10px 0 25px; width:1000px;}
+/*modify line add width:1000px;*/
+.droplinetabs li{float:left;text-transform:uppercase;display:inline-block;padding:0 2px 0 3px;background:url(../images/menutab_line.png) no-repeat 100% 0;}
+.droplinetabs a{background:url(../images/tab_l.png) no-repeat 0 0;display:block;float:left;outline:none;height:38px;padding:0 0px 0 0px;text-decoration:none;}
+.droplinetabs a:link,.droplinetabs a::visited,.droplinetabs a:active{color:#fff;}
+.droplinetabs a span{background:url(../images/tab_r.png) no-repeat 100% 0;color:#fff;display:block;float:none;font-weight:bold;outline:none;padding:9px 5px 11px 5px;text-shadow:0 1px 0 #e52f2d;}
+.droplinetabs a:hover{background-position:0 -38px;color:#fff;text-shadow:0 1px 0 #fff;}
+.droplinetabs a:hover span{background-position:100% -38px;}
+
+/*--menu subtab--*/
+.droplinetabs ul li ul{position:absolute;z-index:100;left:0!important;right:0!important;background:url(../images/menutab_subbg.png) repeat-x 0 0;padding-left:80px;height:34px;}
+.droplinetabs ul li ul li{background:none;}
+.droplinetabs ul li ul li a{height:45px;line-height:30px;background:none;margin:0;padding:0 10px 0 10px;color:#2d2d2d;font-weight:bold;}
+.droplinetabs ul li ul li a span{background:none;margin:0;padding:0;color:#2d2d2d;font-weight:bold;text-shadow:0 1px 0 #fff;}
+.droplinetabs ul li ul li a:hover{background:url(../images/menutabs_sub_hover.png) repeat-x 0 0;color:#484848;}
+.droplinetabs ul li ul li a:hover span{color:#2d2d2d;text-shadow:0 1px 0 #fff;}
+.droplinetabs .selected,.droplinetabs .selected:hover{background-position:0 -76px;}
+.droplinetabs .selected span{background-position:100% -76px;color:#e73838;text-shadow:0 1px 0 #fff;}
+.droplinetabs .selected:hover span{background-position:100% -76px;color:#e73838;text-shadow:0 1px 0 #fff;}
+.tabicon{float:left;height:0;width:0;margin:0;text-decoration:none;}
+.droplinetabs ul li ul li a.selected{background:url(../images/menutabs_sub_hover.png) repeat-x 0 0;color:#484848;}
+
+#subtabs{overflow:hidden;height:34px;}
+#subtabs ul{list-style:none;margin:0;padding:0 10px 0 25px;}
+#subtabs li{float:left;text-transform:uppercase;display:inline-block;padding:0 2px 0 3px;}
+#subtabs a{display:block;float:left;outline:none;height:38px;padding:0 2px 0 4px;text-decoration:none;}
+#subtabs a:link,#subtabs a::visited,#subtabs a:active{color:#fff;}
+#subtabs a span{color:#fff;display:block;float:none;font-weight:bold;outline:none;padding:9px 11px 11px 9px;text-shadow:0 1px 0 #e52f2d;}
+#subtabs ul{background:url(../images/menutab_subbg.png) repeat-x 0 0;padding-left:80px;height:34px;}
+#subtabs ul li{background:none;}
+#subtabs ul li a{height:32px;line-height:30px;background:none;margin:0;padding:0 10px 0 10px;color:#2d2d2d;font-weight:bold;}
+#subtabs ul li a span{background:none;margin:0;padding:0;color:#2d2d2d;font-weight:bold;text-shadow:0 1px 0 #fff;}
+#subtabs ul li a:hover{background:url(../images/menutabs_sub_hover.png) repeat-x 0 0;color:#484848;}
+#subtabs ul li a:hover span{color:#2d2d2d;text-shadow:0 1px 0 #fff;}
+#subtabs ul li a.selected{background:url(../images/menutabs_sub_hover.png) repeat-x 0 0;}
+.clearfloat{clear:both;font-size:0;}

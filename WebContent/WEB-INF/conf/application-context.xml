@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsnake="http://www.xsnake.org/schema/xsnake"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+	http://www.springframework.org/schema/jee 
+	http://www.springframework.org/schema/jee/spring-jee-3.0.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/aop   
+    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+    http://www.springframework.org/schema/task 
+	http://www.springframework.org/schema/task/spring-task-3.0.xsd
+    http://www.xsnake.org/schema/xsnake
+    http://www.xsnake.org/schema/xsnake/xsnake.xsd"
+	default-autowire="byName">
+
+	<!-- UAT -->
+<!--  	<xsnake:client id="clientFactory" zookeeperAddress="127.0.0.1:2181" timeout="15"> -->
+<!--          <xsnake:service id="taskService" interface="org.xsnake.xflow.api.ITaskService" /> -->
+<!--          <xsnake:service id="processService" interface="org.xsnake.xflow.api.IProcessService" /> -->
+<!--          <xsnake:service id="historyService" interface="org.xsnake.xflow.api.IHistoryService" /> -->
+<!--          <xsnake:service id="definitionService" interface="org.xsnake.xflow.api.IDefinitionService" /> -->
+<!--          <xsnake:service id="supportService" interface="org.xsnake.xflow.api.ISupportService" /> -->
+<!--      </xsnake:client> -->
+
+	<!-- SIT -->
+	<xsnake:client id="clientFactory" zookeeperAddress="10.2.1.229:2181" timeout="15">
+        <xsnake:service id="taskService" interface="org.xsnake.xflow.api.ITaskService" />
+        <xsnake:service id="processService" interface="org.xsnake.xflow.api.IProcessService" />
+        <xsnake:service id="historyService" interface="org.xsnake.xflow.api.IHistoryService" />
+        <xsnake:service id="definitionService" interface="org.xsnake.xflow.api.IDefinitionService" />
+        <xsnake:service id="supportService" interface="org.xsnake.xflow.api.ISupportService" />
+    </xsnake:client>
+    
+    <!-- DEV -->
+	<!-- <xsnake:client id="clientFactory" zookeeperAddress="10.2.1.125:2181" timeout="15">
+        <xsnake:service id="taskService" interface="org.xsnake.xflow.api.ITaskService" />
+        <xsnake:service id="processService" interface="org.xsnake.xflow.api.IProcessService" />
+        <xsnake:service id="historyService" interface="org.xsnake.xflow.api.IHistoryService" />
+        <xsnake:service id="definitionService" interface="org.xsnake.xflow.api.IDefinitionService" />
+        <xsnake:service id="supportService" interface="org.xsnake.xflow.api.ISupportService" />
+    </xsnake:client> -->
+
+    
+    <!-- DEV -->
+<!-- 	<xsnake:client id="clientFactory" zookeeperAddress="10.2.1.125:2181" timeout="15"> -->
+<!--         <xsnake:service id="taskService" interface="org.xsnake.xflow.api.ITaskService" /> -->
+<!--         <xsnake:service id="processService" interface="org.xsnake.xflow.api.IProcessService" /> -->
+<!--         <xsnake:service id="historyService" interface="org.xsnake.xflow.api.IHistoryService" /> -->
+<!--         <xsnake:service id="definitionService" interface="org.xsnake.xflow.api.IDefinitionService" /> -->
+<!--         <xsnake:service id="supportService" interface="org.xsnake.xflow.api.ISupportService" /> -->
+<!--     </xsnake:client> -->
+
+	<context:annotation-config />
+	<context:component-scan base-package="com.ibm.kstar" >
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Service" />
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Component" />
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:jdbc.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+ 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${jdbc.driverClassName}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="user" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="autoCommitOnClose" value="true"/>
+		<property name="initialPoolSize" value="${cpool.minPoolSize}"/>
+		<property name="minPoolSize" value="${cpool.minPoolSize}"/>
+		<property name="maxPoolSize" value="${cpool.maxPoolSize}"/>
+		<property name="maxIdleTime" value="${cpool.maxIdleTime}"/>
+		<property name="acquireIncrement" value="${cpool.acquireIncrement}"/>
+		<property name="maxIdleTimeExcessConnections" value="${cpool.maxIdleTimeExcessConnections}"/>
+	</bean>
+
+
+	<bean id="dataSource2" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${jdbc2.driverClassName}" />
+		<property name="jdbcUrl" value="${jdbc2.url}" />
+		<property name="user" value="${jdbc2.username}" />
+		<property name="password" value="${jdbc2.password}" />
+		<property name="autoCommitOnClose" value="true"/>
+		<property name="initialPoolSize" value="${cpool.minPoolSize}"/>
+		<property name="minPoolSize" value="${cpool.minPoolSize}"/>
+		<property name="maxPoolSize" value="${cpool.maxPoolSize}"/>
+		<property name="maxIdleTime" value="${cpool.maxIdleTime}"/>
+		<property name="acquireIncrement" value="${cpool.acquireIncrement}"/>
+		<property name="maxIdleTimeExcessConnections" value="${cpool.maxIdleTimeExcessConnections}"/>
+	</bean>
+
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="packagesToScan" value="com.ibm.kstar" />
+		<property name="hibernateProperties">
+			<value>
+			hibernate.dialect=org.hibernate.dialect.OracleDialect
+<!-- 			hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect -->
+			hibernate.show_sql=true
+			hibernate.format_sql=false
+			hibernate.query.substitutions=true 1, false 0
+			hibernate.jdbc.batch_size=20
+			hibernate.connection.release_mode=after_transaction
+			hibernate.hbm2ddl.auto=update 
+			</value>
+		</property>
+	</bean>
+	
+	<bean id="sessionFactory2" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="dataSource2"/>
+		<property name="packagesToScan" value="com.ibm.kstar" />
+		<property name="hibernateProperties">
+			<value>
+			hibernate.dialect=org.hibernate.dialect.OracleDialect
+			hibernate.show_sql=false
+			hibernate.format_sql=false
+			hibernate.query.substitutions=true 1, false 0
+			hibernate.jdbc.batch_size=20
+			hibernate.connection.release_mode=after_transaction
+			</value>
+		</property>
+	</bean>
+	
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate" >
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	
+	<bean id="hibernateTemplate2" class="org.springframework.orm.hibernate3.HibernateTemplate" >
+		<property name="sessionFactory">
+			<ref bean="sessionFactory2" />
+		</property>
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<bean id="transactionManager2" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory2" />
+	</bean>
+    
+
+    <tx:annotation-driven transaction-manager="transactionManager" />
+	
+	<bean id="baseDao" class="org.xsnake.web.dao.BaseDaoImpl" >
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<bean id="baseDao2" class="org.xsnake.web.dao.BaseDaoImpl" >
+		<property name="hibernateTemplate" ref="hibernateTemplate2" />
+		<property name="sessionFactory" ref="sessionFactory2" />
+	</bean>
+	
+	<bean id="cacheData" class="com.ibm.kstar.cache.CacheData" init-method="init">
+		<property name="conf" value="10.2.1.229:11211"/>
+		<property name="env" value="SIT"/>
+	</bean>
+	
+	<bean id="configuration" class="com.ibm.kstar.conf.Configuration">
+		<property name="appMap">
+			<props>
+				<!-- 订单管理模块  开始 -->
+				<prop key="ORDER_AUDIT">orderAuditFlowCallBack</prop><!-- 订单提交审核 -->
+				<prop key="ORDER_DELIVERY_AUDIT">orderDeliveryAuditFlowCallBack</prop><!-- 发货申请提交审核 -->
+				<prop key="ORDER_INVOICE_AUDIT">orderInvoiceAuditFlowCallBack</prop><!-- 开票申请单提交审核 -->
+				<prop key="ORDER_ACCOUNTS_AUDIT">orderAccountsAuditFlowCallBack</prop><!-- 账期申请单提交审核 -->
+				<prop key="ORDER_ACCOUNTS_DELAY">orderAccountsAuditFlowCallBack</prop><!-- 账期延期审核 -->
+				<prop key="ORDER_RECEIPTS_AUDIT">orderReceiptsAuditFlowCallBack</prop><!-- 收款单分配提交审核 -->
+				<prop key="ORDER_STATEMENT_AUDIT">orderStatementAuditFlowCallBack</prop><!-- 对账申请提交审核 -->
+				<prop key="ORDER_LOGISTICS_AUDIT">orderLogisticsAuditFlowCallBack</prop><!-- 物流签收提交审核 -->
+				<prop key="ORDER_CHANGE_AUDIT">orderAuditChangeFlowCallBack</prop><!-- 订单变更审核 -->
+				<!-- 订单管理模块 结束 -->
+				<!-- 合同管理模块  开始 -->
+				<prop key="CONTR_STAND_TRIAL_PROC">contrStdTrialFlowCallBack</prop>
+				<prop key="CONTR_STAND_PRESALE_PROC">contrStdReviewFlowCallBack</prop>
+				<prop key="CONTR_STAND_AFTSALE_PROC">contrStdReviewFlowCallBack</prop>
+				<prop key="CONTR_STAND_BUSINESS_PROC">contrStdReviewFlowCallBack</prop>
+				<prop key="CONTR_STAND_LEGALE_PROC">contrStdReviewFlowCallBack</prop>
+				<prop key="CONTR_STAND_RISK_PROC">contrStdReviewFlowCallBack</prop>
+				<prop key="CONTR_STAND_PRICE_PROC">contrStdReviewFlowCallBack</prop>
+				<prop key="CONTR_STAND_SUM_PROC">contrStdReviewFlowCallBack</prop>
+				<prop key="CONTR_STAND_DESICION_PROC">contrStdReviewFlowCallBack</prop>
+				<prop key="CONTR_STAND_FINAL_PROC">contrStdFinalFlowCallBack</prop>
+				
+				<prop key="CONTR_STAND_NOTIFY_PROC">contrStdNotifyFlowCallBack</prop>
+				<!-- 合同变更 -->
+				<prop key="CONTR_CHANGE_TRIAL_PROC">contrChgTrialFlowCallBack</prop>
+				<prop key="CONTR_CHANGE_PRESALE_PROC">contrChgReviewFlowCallBack</prop>
+				<prop key="CONTR_CHANGE_AFTSALE_PROC">contrChgReviewFlowCallBack</prop>
+				<prop key="CONTR_CHANGE_BUSINESS_PROC">contrChgReviewFlowCallBack</prop>
+				<prop key="CONTR_CHANGE_LEGALE_PROC">contrChgReviewFlowCallBack</prop>
+				<prop key="CONTR_CHANGE_RISK_PROC">contrChgReviewFlowCallBack</prop>
+				<prop key="CONTR_CHANGE_PRICE_PROC">contrChgReviewFlowCallBack</prop>
+				<prop key="CONTR_CHANGE_SUM_PROC">contrChgReviewFlowCallBack</prop>
+				<prop key="CONTR_CHANGE_DESICION_PROC">contrChgReviewFlowCallBack</prop>
+				
+				<prop key="CONTR_LOAN_TRIAL_PROC">contrLoanTrialFlowCallBack</prop>
+				<prop key="CONTR_LOAN_WRITEOFF_PROC">contrLoanWriteoffFlowCallBack</prop>
+				<!-- PI合同 -->
+				<prop key="CONTR_PI_TRIAL_PROC">contrPiTrialFlowCallBack</prop>
+				<prop key="CONTR_PI_PRESALE_PROC">contrPiReviewFlowCallBack</prop>
+				<prop key="CONTR_PI_AFTSALE_PROC">contrPiReviewFlowCallBack</prop>
+				<prop key="CONTR_PI_BUSINESS_PROC">contrPiReviewFlowCallBack</prop>
+				<prop key="CONTR_PI_LEGALE_PROC">contrPiReviewFlowCallBack</prop>
+				<prop key="CONTR_PI_RISK_PROC">contrPiReviewFlowCallBack</prop>
+				<prop key="CONTR_PI_PRICE_PROC">contrPiReviewFlowCallBack</prop>
+				<prop key="CONTR_PI_SUM_PROC">contrPiReviewFlowCallBack</prop>
+				<prop key="CONTR_PI_DESICION_PROC">contrPiReviewFlowCallBack</prop>
+				<!-- 合同管理模块 结束 -->
+				
+				<!-- 商机售前技术支持申请 -->
+				<prop key="BIZOPP_PERSALE_SUPPORT_PROC">bizOppFlowCallBack</prop>
+                <!-- 商机特价申请审批流程-->
+                <prop key="BIZOPP_SPECIAL_PRICE_APPLY_PROC">bizOppSpecialPriceFlowCallBack</prop>
+				<!-- 商机授权申请审批流程-->
+				<prop key="BIZOPP_BID_AUTHORITY_APPLY_PROC">bizBidAuthorityFlowCallBack</prop>
+				<!-- 商机管理-报备批准-->
+				<prop key="BIZOPP_APPROVED_PROC">bizApprovedFlowCallBack</prop>
+				<!-- 商机管理-报备申请-->
+				<prop key="BIZOPP_PREPARE_APPLY_PROC">bizPrepareApplyFlowCallBack</prop>
+				<!-- 商机管理-样机申请-->
+				<prop key="BIZOPP_PROTO_APPLY_PROC">bizProtoApplyFlowCallBack</prop>
+				<!-- 商机管理-商机信息变更-->
+				<prop key="BIZOPP_CHANGE_PROC">bizChangeFlowCallBack</prop>
+				<!--立项审批-->
+				<prop key="BIZOPP_PROJECTINIT_PROC">bizProjectInitFlowCallBack</prop>
+				<!-- 商机管理-特价审批-新-->
+				<prop key="BIZOPP_REBATE_PRICE_APPLY_PROC">bizOppRebatePriceFlowCallBack</prop>
+				<!-- 商机管理-特价变更-新-->
+				<prop key="BIZOPP_REBATE_PRICE_CHANGE_PROC">bizOppRebatePriceChangeFlowCallBack</prop>
+				
+				<prop key="BIZOPP_BTNX_PROC">bizOppBtnxFlowCallBack</prop>
+				<!-- 商机管理-投标反馈 -->
+				<prop key="BIZOPP_BID_FEED_BACK">bizOppFeedBackFlowCallBack</prop>
+
+
+				<!-- 报价管理模块  -->
+				<prop key="quot_presale">quotpresaleFlowCallBack</prop>
+				<prop key="quot_aftsale">quotaftsaleFlowCallBack</prop>
+				<prop key="quot_busprc">quotbusproFlowCallBack</prop>
+				<prop key="quot_decprc">quotdecprcFlowCallBack</prop>
+				<prop key="quot_prcprc">quotprcprcFlowCallBack</prop>
+				<prop key="quot_bidadt">quotbidadtFlowCallBack</prop>
+				<prop key="quot_spproc">quotspproctFlowCallBack</prop>
+				<prop key="quot_sbmroc">quotsbmrocFlowCallBack</prop>
+				<prop key="quot_tchproc">quottchprocFlowCallBack</prop>
+				<prop key="quot_mrproc">quotmrprocFlowCallBack</prop>
+				<prop key="quot_brproc">quotbrprocFlowCallBack</prop>
+				
+				<!-- 客户管理模块  -->
+				<prop key="CUSTOM_EVENT_PROC">customEventFlowCallBack</prop>
+				<prop key="CUSTOM_HANDOVER_PROC">customHandoverFlowCallBack</prop>
+				<prop key="CUSTOM_REPORT_PROC">customReportFlowCallBack</prop>
+				<prop key="CUSTOM_ERP_PROC">customErpFlowCallBack</prop>
+				<prop key="CUSTOM_SHARE_PROC">customShareFlowCallBack</prop>
+				<prop key="CUSTOM_ADJUST_PROC">customAdjustFlowCallBack</prop>
+				<prop key="CUSTOM_CHANGE_PROC">customChangeFlowCallBack</prop>
+				
+				<prop key="CUSTOM_REPORT_PRM_PROC">customReportPrmFlowCallBack</prop>
+				<!-- 渠道管理模块 -->
+				<prop key="GIFT_APPLY_PROC">giftApplyFlowCallBack</prop>
+				<prop key="ACTIVITY_APPLY_PROC">activityApplyFlowCallBack</prop>
+				<prop key="TRAIN_APPLY_PROC">trainApplyFlowCallBack</prop>
+				<prop key="ORDER_FORECAST_PROC">orderForecastFlowCallBack</prop>
+				<prop key="IMPORT_SALE_PROC">importSaleFlowCallBack</prop>
+				<prop key="REBATE_POLICY_PROC">rebatePolicyFlowCallBack</prop>
+				<prop key="SERVICE_APPLY_PROC">serviceApplyFlowCallBack</prop>
+				<!-- 产品模块 -->
+				<prop key="PM_PTS_PROC">productPreSaleFlowCallBack</prop>
+				<prop key="PRODUCT_CSALE_PROC">productCSaleFlowCallBack</prop>
+				<prop key="PRODUCT_AU_TEST_PROC">productAuTestFlowCallBack</prop>
+				<prop key="PRODUCT_PUBLISH_PROC">productPublishFlowCallBack</prop>
+				<prop key="PRODUCT_ECR_PROC">productEcrFlowCallBack</prop>
+				<prop key="PRODUCT_DOC_PROC">productDocFlowCallBack</prop>
+				<prop key="PRODUCT_DEMAND_PROC">productDemandFlowCallBack</prop>
+				
+				<prop key="PROD_INFO_MAINTAIN_PROC">prodInfoMaintainFlowCallBack</prop>
+			</props>
+		</property>
+		<property name="serverAddress" value="http://10.2.1.228:7777/crm" />
+ 		<property name="fileDownloadUrl" value="http://crmfiletest.kstar.com:8888/fs/download" />
+	</bean>
+	
+	<!-- 不受权限控制的账号 -->
+	<bean id="adminConfiguration" class="com.ibm.kstar.conf.AdminConfiguration">
+		<property name="admins">
+			<list>
+				<value>00001</value>
+				<value>00002</value>
+				<value>00003</value>
+				<value>00004</value>
+			</list>
+		</property>
+	</bean>
+   
+	<bean id="messageConfig" class="com.ibm.kstar.message.service.MessageConfig">
+		<property name="host" value="10.2.1.66" />
+		<property name="port" value="5673" />
+		<property name="username" value="admin" />
+		<property name="password" value="admin" />
+		<property name="env" value="SIT" />
+	</bean>
+	
+	<bean id="messageContext" class="org.xsnake.web.context.MessageContext" />
+	
+	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" autowire="no">
+		<property name="schedulerListeners">
+			<list>
+				<ref bean="schedulerListener"/>
+			</list>
+		</property>
+		<property name="triggerListeners">
+			<list>
+				<ref bean="triggerListener"/>
+			</list>
+		</property>
+		<property name="jobListeners">
+			<list>
+				<ref bean="jobListener"/>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="jobListener" class="com.ibm.kstar.action.task.schedule.CRMJobListener" />
+	<bean id="triggerListener" class="com.ibm.kstar.action.task.schedule.CRMTriggerListener" />
+	<bean id="schedulerListener" class="com.ibm.kstar.action.task.schedule.CRMSchedulerListener" />
+	
+	<bean id="applicationContextUtil" class="com.ibm.kstar.conf.ApplicationContextUtil" />
+	
+	<task:executor id="executor" pool-size="5" />  
+	<task:scheduler id="qbScheduler" pool-size="10" />  
+	<task:annotation-driven executor="executor" scheduler="qbScheduler" />
+</beans>

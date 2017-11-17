@@ -1,0 +1,985 @@
+<#escape x as x?html>
+<@cui.body2>
+<@form.panel title="${i18n.get('新增/编辑')}">
+<@form.form id="t_bidform" autoClose="false"
+
+	before="function(){
+        if(($('#tmp_type').val() == 'part1')){
+            $('.part2').remove();
+        }else{
+            $('.part1').remove();
+        }
+
+	}"
+	success="function(data){
+		try{
+			parent.currentParent2.reload_bidTable();
+		}catch(e){
+
+		}
+	    window.location.href='${ctx}/newbid/edit.html?id='+data;
+	}"
+	class="form-horizontal">
+	<div style="height: 50px;" >
+		<div style="padding-right: 20px; float: right;" >
+<#-- 投标授权申请-保存 --><#-- /bid/add.html -->
+	<#if permission["P03BidAuthSave"]??>
+			<button <#if entity.status?default('') != 'Rejected' && entity.status?default('') != 'Pending' > disabled="disabled" </#if> class="btn btn-info submit" type="button">
+				<i class="icon-ok bigger-110"></i>
+				${i18n.get('保存')}
+			</button>
+	</#if>
+<#-- 投标授权申请-提交 --><#-- /bid/startProcess -->
+			<#if permission["P03BidAuthSubmit"]??>
+			<button <#if entity.status?default('') != 'Pending' > disabled="disabled" </#if> class="btn btn-info" type="button" onclick="startAuthProcess();" id="invoice_submit">
+				<i class="icon-ok bigger-110"></i>
+				${i18n.get('提交')}
+			</button>
+			</#if>
+			
+			<!-- 
+			<#if permission["P03BidAuthFeeback"]?? >
+			<#if (entity.status?default('') == 'Completed') && (entity.sltType=='授权及承诺函（报备类）'||entity.sltType=='授权及承诺函（非报备类）') > 
+			<button class="btn btn-info" id="feedBack" type="button" onclick="updateFeedBack()">
+				<i class="bigger-110"></i>
+				${i18n.get('结果反馈')}
+			</button>
+			</#if>
+			</#if>
+			 -->
+			 
+			<button class="btn" type="button" onclick="javascript:api.close()">
+				<i class="icon-undo bigger-110"></i>
+				${i18n.get('关闭')}
+			</button>
+
+		</div>
+	</div>
+
+	<div class="radio" style="height:15px">
+
+	 <#if !entity.sltType??>
+        <label>
+            <@form.radio name="sltType" id='sltType1' value="${i18n.get('授权及承诺函（报备类）')}" selectValue="${(entity.sltType)!i18n.get('授权及承诺函（报备类）')}" />
+            <span class="lbl">${i18n.get('授权及承诺函（报备类）')}</span>
+        </label>
+        <label>
+            <@form.radio name="sltType" id='sltType2' value="${i18n.get('授权及承诺函（非报备类）')}" selectValue="${(entity.sltType)!''}" />
+            <span class="lbl">${i18n.get('授权及承诺函（非报备类）')}</span>
+        </label>
+		 <label>
+			 <@form.radio name="sltType" id='sltType9' value="${i18n.get('日常业务类')}" selectValue="${(entity.sltType)!''}" />
+			 <span class="lbl">${i18n.get('日常业务类')}</span>
+		 </label>
+		 <label>
+            <@form.radio name="sltType" id='sltType3' value="${i18n.get('售前类')}" selectValue="${(entity.sltType)!''}" />
+            <span class="lbl">${i18n.get('售前类')}</span>
+        </label>
+        <label>
+            <@form.radio name="sltType" id='sltType4' value="${i18n.get('售后类')}" selectValue="${(entity.sltType)!''}" />
+            <span class="lbl">${i18n.get('售后类')}</span>
+        </label>
+        <label>
+            <@form.radio name="sltType" id='sltType5' value="${i18n.get('报价类')}" selectValue="${(entity.sltType)!''}" />
+            <span class="lbl">${i18n.get('报价类')}</span>
+        </label>
+        <label>
+            <@form.radio name="sltType" id='sltType6' value="${i18n.get('财务类')}" selectValue="${(entity.sltType)!''}" />
+            <span class="lbl">${i18n.get('财务类')}</span>
+        </label>
+        <label>
+            <@form.radio name="sltType" id='sltType7' value="${i18n.get('物流类')}" selectValue="${(entity.sltType)!''}" />
+            <span class="lbl">${i18n.get('物流类')}</span>
+        </label>
+        <label>
+            <@form.radio name="sltType" id='sltType8' value="${i18n.get('特约经销商')}" selectValue="${(entity.sltType)!''}" />
+            <span class="lbl">${i18n.get('特约经销商')}</span>
+        </label>
+
+    <#else>
+        <#if entity.sltType == '授权及承诺函（报备类）'>
+            <label>
+                <@form.radio name="sltType" id='sltType1' value="${i18n.get('授权及承诺函（报备类）')}" selectValue="${(entity.sltType)!''}" />
+                <span class="lbl">${i18n.get('授权及承诺函（报备类）')}</span>
+            </label>
+        <#elseif entity.sltType == '授权及承诺函（非报备类）'>
+            <label>
+                <@form.radio name="sltType" id='sltType2' value="${i18n.get('授权及承诺函（非报备类）')}" selectValue="${(entity.sltType)!''}" />
+                <span class="lbl">${i18n.get('授权及承诺函（非报备类）')}</span>
+            </label>
+		<#elseif entity.sltType == '日常业务类'>
+			<label>
+				<@form.radio name="sltType" id='sltType9' value="${i18n.get('日常业务类')}" selectValue="${(entity.sltType)!''}" />
+				<span class="lbl">${i18n.get('日常业务类')}</span>
+			</label>
+        <#elseif entity.sltType == '售前类'>
+            <label>
+                <@form.radio name="sltType" id='sltType3' value="${i18n.get('售前类')}" selectValue="${(entity.sltType)!''}" />
+                <span class="lbl">${i18n.get('售前类')}</span>
+            </label>
+         <#elseif entity.sltType == '售后类'>
+            <label>
+                <@form.radio name="sltType" id='sltType4' value="${i18n.get('售后类')}" selectValue="${(entity.sltType)!''}" />
+                <span class="lbl">${i18n.get('售后类')}</span>
+            </label>
+         <#elseif entity.sltType == '报价类'>
+            <label>
+                <@form.radio name="sltType" id='sltType5' value="${i18n.get('报价类')}" selectValue="${(entity.sltType)!''}" />
+                <span class="lbl">${i18n.get('报价类')}</span>
+            </label>
+         <#elseif entity.sltType == '财务类'>
+            <label>
+                <@form.radio name="sltType" id='sltType6' value="${i18n.get('财务类')}" selectValue="${(entity.sltType)!''}" />
+                <span class="lbl">${i18n.get('财务类')}</span>
+            </label>
+         <#elseif entity.sltType == '物流类'>
+            <label>
+                <@form.radio name="sltType" id='sltType7' value="${i18n.get('物流类')}" selectValue="${(entity.sltType)!''}" />
+                <span class="lbl">${i18n.get('物流类')}</span>
+            </label>
+         <#elseif entity.sltType == '特约经销商'>
+            <label>
+                <@form.radio name="sltType" id='sltType8' value="${i18n.get('特约经销商')}" selectValue="${(entity.sltType)!''}" />
+                <span class="lbl">${i18n.get('特约经销商')}</span>
+            </label>
+
+        </#if>
+    </#if>
+<input type="hidden" id="tmp_type" name="tmp_type" value="part1" >
+	</div>
+</br>
+</br>
+	<div id="text1"><span><strong style="color: red;">${i18n.get('适用于：报备类商机的授权函、服务承诺函、原厂供货证明及其他原厂承诺函')}</strong></span></div>
+	<div id="text2"><span><strong style="color: red;">${i18n.get('适用于：非报备类项目的授权函、服务承诺函、原厂供货证明及其他原厂承诺函')}</strong></span></div>
+	<div id="text3"><span><strong style="color: red;">${i18n.get('适用于：标书资格预审文件 投标文件澄清函 技术响应偏离表 配置清单 、产品更新换代证明、供应商入围资料')}</strong></span></div>
+	<div id="text4"><span><strong style="color: red;">${i18n.get('适用于：产品质量问题整改确认书、故障分析报告 、验收资料')}</strong></span></div>
+	<div id="text5"><span><strong style="color: red;">${i18n.get('适用于：产品报价单')}</strong></span></div>
+	<div id="text6"><span><strong style="color: red;">${i18n.get('适用于：对账函、询证函')}</strong></span></div>
+	<div id="text7"><span><strong style="color: red;">${i18n.get('适用于：到货证明、物资接收单、货物签收单')}</strong></span></div>
+	<div id="text8"><span><strong style="color: red;">${i18n.get('适用于：特约经销商授权书')}</strong></span></div>
+	<div id="text9"><span><strong style="color: red;">${i18n.get('适用于：技术交流、客户考察邀请函、业务联系人在职证明、业务代表授权证明、商务洽谈授权书、账户信息确认函、开具增值税专用发票告知函、中标通知书确认函、廉洁从业责任书、母公司与子公司的关系证明、退还投标保证金申请函、领取汇票、承兑汇票授权书、付款申请、是否参与投标确认回执、招标文件澄清函、供应商调查表、投标报名资料、招投标网站平台注册资料')}</strong></span></div>
+<div class="part1">
+
+	<div class="form-group">
+		<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('基本信息')}</p>
+		<table>
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right"><strong style="color: red;">*</strong>${i18n.get('申请类别:')}</label>
+				</td>
+				<td width="200px">
+					<@form.select style="width: 162px;"
+						id="applyType"
+						name="applyType"
+						code="BIDAUTHTYPE"
+						required="${i18n.get('不能为空')}"
+						value ="${(entity.applyType)!}"
+					/>
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right"><strong style="color: red;">*</strong>${i18n.get('打印样式:')}</label>
+				</td>
+				<td width="200px">
+					<@form.select name="printStyle"
+					code="BIDPRINTMODE"
+					required="${i18n.get('不能为空')}"
+					idKey="code"
+					style="width: 162px;"
+					id="printStyle"
+					value="${(entity.printStyle)!}" />
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('申请单位:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input
+							id="createdOrgIdName"
+							name="createdOrgIdName"
+							readonly ="readonly"
+							value="${(entity.createdOrgIdName)!}"
+							/>
+					<input type="hidden" id="createdOrgId" name="createdOrgId" value="${(entity.createdOrgId)!}">
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="200px" class="bb">
+					<strong style="color: red;">*</strong>
+					<label class="no-padding-right">${i18n.get('商机名称:')}</label>
+				</td>
+				<td align="right" width="200px" class="fbb">
+						<strong style="color: red;">*</strong>
+					<label class="no-padding-right">${i18n.get('项目名称:')}</label>
+				</td>
+				<td align="left" colspan="3" class="bb">
+					<#if entity.bizOppId??>
+						<@form.autocomplete  id="bizOppId" name="bizOppId"
+						idKey='id'
+						required="${i18n.get('不能为空')}"
+						style="width: 562px;"
+						formatResult="function(data) {return '<div>' +data.opportunityName + '</div>';}"
+						url="function(){ return '${ctx}/lovBizopp/autocomplete_bizopp.html'; }"
+						value="{id: '${(entity.bizOppId)!}',opportunityName:'${(entity.bizOppName)!}'}"
+						onSelect="function(data){
+						$('#bizOppName').val(data.opportunityName);
+						}"
+						/>
+					<#else>
+						<@form.autocomplete  id="bizOppId" name="bizOppId"
+						idKey='id'
+						style="width: 562px;"
+						required="${i18n.get('不能为空')}"
+						formatResult="function(data) {return '<div>' +data.opportunityName + '</div>';}"
+						url="function(){ return '${ctx}/lovBizopp/autocomplete_bizopp.html'; }"
+						value="{id: '${(entity.bizOppId)!}',opportunityName:'${(entity.bizOppName)!}'}"
+						onSelect="function(data){
+						$('#bizOppName').val(data.opportunityName);
+						}"
+						/>
+					</#if>
+					<input id="bizOppName"  name="bizOppName" type ="hidden" value="${(entity.bizOppName)!}" />
+				</td>
+				<td align="left" colspan="3" class="fbb">
+					<@form.input
+					style="width: 562px;"
+					required="${i18n.get('不能为空')}"
+					id="prjName"
+					name="prjName"
+					value="${(entity.prjName)!}"
+					/>
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('用章申请编号:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input name="bidNumber"
+					type="text"
+					id="bidNumber"
+					value="${(entity.bidNumber)!}"
+					readonly ="readonly"
+					/>
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('创建日期:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input id="createdAt"
+						name="createdAt"
+						readonly="readonly"
+						value="${(entity.createdAt?date)!}" />
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('创建用户:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input
+						id="createdByIdName"
+						name="createdByIdName"
+						required="${i18n.get('不能为空')}"
+						readonly="readonly"
+						value="${(entity.createdByIdName)!}"
+						/>
+					<input type="hidden" id="createdById" name="createdById" value="${(entity.createdById)!}">
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('联系方式:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input name="connectMethod"
+					type="text"
+					id="connectMethod"
+					value="${(entity.connectMethod)!}" />
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('招标单位:')}</label>
+				</td>
+				<td width="200px" colspan = "3">
+					<@form.input name="bidEnterprise"
+					type="text"
+					style="width: 562px;"
+					id="bidEnterprise"
+					value="${(entity.bidEnterprise)!}"
+					/>
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('招标编号:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input name="bidAuthNumber"
+					type="text"
+					id="bidAuthNumber"
+					value="${(entity.bidAuthNumber)!}" />
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('招标代理:')}</label>
+				</td>
+				<td width="200px" colspan = "3">
+					<@form.input name="agencyName"
+					style="width: 562px;"
+					id="agencyName"
+					value="${(entity.agencyName)!}"
+					/>
+					<@form.input name="agency"
+					type="text"
+					id="agency"
+					type="hidden"
+					value="${(entity.agency)!}"
+					/>
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('开标时间:')}</label>
+				</td>
+				<td width="200px">
+					<@form.date name="bidStartDate"
+						id="bidStartDate"
+						value="${(entity.bidStartDate?date)!}"
+					/>
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('授权产品:')}</label>
+				</td>
+				<td colspan="3">
+					<@form.input name="authorizationDisc"
+					type="text"
+					style="width: 562px;"
+					id="authorizationDisc"
+					value="${(entity.authorizationDisc)!}" />
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('状态:')}</label>
+				</td>
+				<td width="200px">
+					<input id="status" name="status" type="hidden" value="${(entity.status)!}" >
+						<@form.input
+							id="statusName"
+							name="statusName"
+							readonly="readonly"
+							value="${(entity.statusName)!}"
+							/>
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('备注:')}</label>
+				</td>
+				<td colspan="5">
+					<@form.textArea name="remark"
+					style="width: 562px;height: 60px;"
+					id="remark"
+					value="${(entity.remark)!}" />
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<!-- 
+	<div id="resultDiv" class="form-group" >
+		<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('投标结果')}</p>
+		<table >
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('投标结果:')}</label>
+				</td>
+				<td width="200px">
+					<@form.select style="width: 162px;"
+							id="bidResult"
+							name="bidResult"
+                            idKey="code"
+							code="BID_RESULTS"
+							value ="${(entity.bidResult)!}"
+						/>
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('赢标/丢标/关闭原因:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input name="itemQuote"
+					type="text"
+					id="itemQuote"
+					value="${(entity.itemQuote)!}" />
+				</td>
+
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('反馈投标结果附件:')}</label>
+				</td>
+				<td >
+					<@form.select style="width: 162px;"
+						id="hasAttm"
+						name="hasAttm"
+						code="COMMONYN"
+						value ="${(entity.hasAttm)!}"
+					/>
+				</td>
+			</tr>
+			<tr>
+
+				<td width="200px" align="right">${i18n.get('主要竞争对手:')}</td>
+				<td >
+	 				<@form.select  id="bidCmpr" name="bidCmpr" multiple="true" code="BIDCOMPETITOR" idKey='code' style="width:162px;" value="${(entity.bidCmpr)!}" />
+				</td>
+
+				<td width="200px" align="right">${i18n.get('中标品牌:')}</td>
+				<td >
+	 				<@form.select  id="bidBrd" name="bidBrd" multiple="true" code="BIDCOMPETITOR" idKey='code' style="width:162px;" value="${(entity.bidBrd)!}" />
+				</td>
+
+				<td width="200px" align="right">${i18n.get('中标价格:')}</td>
+				<td >
+					<@form.input id="allQuote" style="width:162px;"
+					name="allQuote" 
+					value="${(entity.allQuote)!}" />
+				</td>
+			</tr>
+		</table>
+	</div>
+	--> 
+</div>
+	<div class="part2">
+	<div class="form-group">
+		<table>
+		<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px"></p>
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('创建用户:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input
+						id="createdByIdName"
+						name="createdByIdName"
+						value="${(entity.createdByIdName)!}"
+						readonly="readonly"
+						/>
+					<input type="hidden" id="createdById" name="createdById" value="${(entity.createdById)!}" />
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('联系方式:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input name="connectMethod"
+					type="text"
+					id="connectMethod"
+					value="${(entity.connectMethod)!}" />
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('创建日期:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input id="createdAt"
+						name="createdAt"
+						readonly="readonly"
+						value="${(entity.createdAt?date)!}" />
+				</td>
+
+			</tr>
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('用章形式:')}</label>
+				</td>
+				<td width="200px">
+					<@form.select style="width: 162px;"
+						idKey='code'
+						id="psignType"
+						name="psignType"
+						code="STAMPUSAGE"
+						value ="${(entity.psignType)!'20'}"
+					/>
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('公章类型:')}</label>
+				</td>
+				<td width="200px">
+					<@form.select style="width: 162px;"
+						idKey='code'
+						id="gsignType"
+						name="gsignType"
+						code="STAMPTYPE"
+						value ="${(entity.gsignType)!'10'}"
+					/>
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('用章法人:')}</label>
+				</td>
+				<td width="200px">
+					<input type="hidden" id="signUsr" name="signUsr" value="${(entity.signUsr)!}">
+				<!-- 	<@form.input
+						id="signUsrName"
+						name="signUsrName"
+						value="${(entity.signUsrName)!}"
+						/>   -->
+						
+					<@form.select style="width: 167px;"
+						id="bidEntity" name="bidEntity" 
+						code="OPERATION_UNIT" 
+						level="1"
+						required="${i18n.get('不能为空！')}" 
+						value ="${(entity.bidEntity)!}"
+						/>
+				</td>
+
+			</tr>
+			<tr>
+				<td align="right" width="200px">
+					<label class="no-padding-right"><strong style="color: red;">*</strong>${i18n.get('客户名称:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input
+						id="custName"
+						name="custName"
+						required="${i18n.get('不能为空')}"
+						value="${(entity.custName)!}"
+						/>
+				</td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('项目名称:')}</label>
+				</td>
+				<td width="200px">
+					<@form.input
+						id="prjName"
+						name="prjName"
+						value="${(entity.prjName)!}"
+						/>
+				</td>
+                <td align="right" width="200px">
+                    <label class="no-padding-right">${i18n.get('用章申请编号:')}</label>
+                </td>
+                <td width="200px">
+                    <@form.input name="bidNumber"
+                    type="text"
+                    id="bidNumber"
+                    value="${(entity.bidNumber)!}"
+                    readonly ="readonly"
+                    />
+                </td>
+
+			</tr>
+			<tr>
+				<td align="right" width="200px">
+                    <label class="no-padding-right">${i18n.get('状态:')}</label>
+                </td>
+                <td width="200px">
+                    <input id="status" name="status" type="hidden" value="${(entity.status)!}" >
+                    <@form.input
+                    id="statusName"
+                    name="statusName"
+                    readonly="readonly"
+                    value="${(entity.statusName)!}"
+                    />
+                </td>
+				<td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('收件信息:')}</label>
+				</td>
+				<td width="400px">
+					<@form.textArea
+						id="rcrInf"
+						name="rcrInf"
+						style="width: 380px;"
+						value="${(entity.rcrInf)!}"
+						/>
+				</td>
+                <td align="right" width="200px">
+					<label class="no-padding-right">${i18n.get('备注:')}</label>
+				</td>
+				<td width="400px">
+					<@form.textArea style="width:300px;height:80px;"
+						id="notes"
+						name="notes"
+						style="width: 380px;"
+						value="${(entity.notes)!}"
+						/>
+				</td>
+			</tr>
+	</table>
+	</div>
+</div>
+	<div id="info" style="padding-top: 20px;" class="row">
+		<div class="col-xs-12">
+			<input type="hidden" id="selectedId"  />
+			<@plug.tabs tabMain=tabMainInfo>
+		</@plug.tabs>
+	</div>
+</@form.form>
+</@form.panel>
+</@cui.body2>
+<script src="${ctx}/anne/js/util.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+
+		if ('${(entity.id)!}' === undefined || '${(entity.id)!}' === ''){
+			$("#attmDiv").hide();
+			$("#resultDiv").hide();
+		}
+
+        var sltType = "${(entity.sltType)!''}";
+        if(sltType){
+            if((sltType == "授权及承诺函（报备类）")||(sltType == "授权及承诺函（非报备类）")){
+                $(".part1").show();
+                $(".part2").hide();
+                $("#tmp_type").val("part1");
+                if((sltType == "授权及承诺函（非报备类）")){
+                    $(".bb").hide();
+                    $(".fbb").show();
+                }else{
+                    $(".fbb").hide();
+                    $(".bb").show();
+                }
+            }
+            if((sltType == "售前类")
+				||(sltType == "售后类")
+				||(sltType == "报价类")
+				||(sltType == "财务类")
+				||(sltType == "物流类")
+				||(sltType == "特约经销商")
+				||(sltType == "日常业务类")){
+            	$("#tmp_type").val("part2");
+                $(".part1").hide();
+                $(".part2").show();
+                $(".fbb").hide();
+                $(".bb").show();
+            }
+
+            if(sltType == "授权及承诺函（报备类）"){
+                $("#text1").show();
+                $("#text2").hide();
+                $("#text3").hide();
+                $("#text4").hide();
+                $("#text5").hide();
+                $("#text6").hide();
+                $("#text7").hide();
+                $("#text8").hide();
+                $("#text9").hide();
+			}
+
+            if(sltType == "授权及承诺函（非报备类）"){
+                $("#text1").hide();
+                $("#text2").show();
+                $("#text3").hide();
+                $("#text4").hide();
+                $("#text5").hide();
+                $("#text6").hide();
+                $("#text7").hide();
+                $("#text8").hide();
+                $("#text9").hide();
+            }
+
+            if(sltType == "售前类"){
+                $("#text1").hide();
+                $("#text2").hide();
+                $("#text3").show();
+                $("#text4").hide();
+                $("#text5").hide();
+                $("#text6").hide();
+                $("#text7").hide();
+                $("#text8").hide();
+                $("#text9").hide();
+            }
+
+            if(sltType == "售后类"){
+                $("#text1").hide();
+                $("#text2").hide();
+                $("#text3").hide();
+                $("#text4").show();
+                $("#text5").hide();
+                $("#text6").hide();
+                $("#text7").hide();
+                $("#text8").hide();
+                $("#text9").hide();
+            }
+
+            if(sltType == "报价类"){
+                $("#text1").hide();
+                $("#text2").hide();
+                $("#text3").hide();
+                $("#text4").hide();
+                $("#text5").show();
+                $("#text6").hide();
+                $("#text7").hide();
+                $("#text8").hide();
+                $("#text9").hide();
+            }
+
+            if(sltType == "财务类"){
+                $("#text1").hide();
+                $("#text2").hide();
+                $("#text3").hide();
+                $("#text4").hide();
+                $("#text5").hide();
+                $("#text6").show();
+                $("#text7").hide();
+                $("#text8").hide();
+                $("#text9").hide();
+            }
+
+            if(sltType == "物流类"){
+                $("#text1").hide();
+                $("#text2").hide();
+                $("#text3").hide();
+                $("#text4").hide();
+                $("#text5").hide();
+                $("#text6").hide();
+                $("#text7").show();
+                $("#text8").hide();
+                $("#text9").hide();
+            }
+
+            if(sltType == "特约经销商"){
+                $("#text1").hide();
+                $("#text2").hide();
+                $("#text3").hide();
+                $("#text4").hide();
+                $("#text5").hide();
+                $("#text6").hide();
+                $("#text7").hide();
+                $("#text8").show();
+                $("#text9").hide();
+            }
+
+            if(sltType == "日常业务类"){
+                $("#text1").hide();
+                $("#text2").hide();
+                $("#text3").hide();
+                $("#text4").hide();
+                $("#text5").hide();
+                $("#text6").hide();
+                $("#text7").hide();
+                $("#text8").hide();
+                $("#text9").show();
+            }
+
+        }else{
+            $(".part1").show();
+            $(".part2").hide();
+            $(".fbb").hide();
+            $(".bb").show();
+            $("#text1").show();
+            $("#text2").hide();
+            $("#text3").hide();
+            $("#text4").hide();
+            $("#text5").hide();
+            $("#text6").hide();
+            $("#text7").hide();
+            $("#text8").hide();
+            $("#text9").hide();
+        }
+
+        $("#sltType1").click(function () {
+            $("#tmp_type").val("part1");
+            $(".part2").hide();
+            $(".part1").show();
+            $(".fbb").hide();
+            $(".bb").show();
+            $("#text1").show();
+            $("#text2").hide();
+            $("#text3").hide();
+            $("#text4").hide();
+            $("#text5").hide();
+            $("#text6").hide();
+            $("#text7").hide();
+            $("#text8").hide();
+            $("#text9").hide();
+        });
+
+        $("#sltType2").click(function () {
+            $("#tmp_type").val("part1");
+            $(".part2").hide();
+            $(".part1").show();
+            $(".bb").hide();
+            $(".fbb").show();
+            $("#text1").hide();
+            $("#text2").show();
+            $("#text3").hide();
+            $("#text4").hide();
+            $("#text5").hide();
+            $("#text6").hide();
+            $("#text7").hide();
+            $("#text8").hide();
+            $("#text9").hide();
+        });
+
+        $("#sltType9").click(function () {
+            $("#tmp_type").val("part2");
+            $(".part1").hide();
+            $(".part2").show();
+            $("#text1").hide();
+            $("#text2").hide();
+            $("#text3").hide();
+            $("#text4").hide();
+            $("#text5").hide();
+            $("#text6").hide();
+            $("#text7").hide();
+            $("#text8").hide();
+            $("#text9").show();
+        });
+
+        $("#sltType3").click(function () {
+            $("#tmp_type").val("part2");
+            $(".part1").hide();
+            $(".part2").show();
+            $(".fbb").hide();
+            $(".bb").show();
+            $("#text1").hide();
+            $("#text2").hide();
+            $("#text3").show();
+            $("#text4").hide();
+            $("#text5").hide();
+            $("#text6").hide();
+            $("#text7").hide();
+            $("#text8").hide();
+            $("#text9").hide();
+        });
+
+        $("#sltType4").click(function () {
+            $("#tmp_type").val("part2");
+            $(".part1").hide();
+            $(".part2").show();
+            $(".fbb").hide();
+            $(".bb").show();
+            $("#text1").hide();
+            $("#text2").hide();
+            $("#text3").hide();
+            $("#text4").show();
+            $("#text5").hide();
+            $("#text6").hide();
+            $("#text7").hide();
+            $("#text8").hide();
+            $("#text9").hide();
+        });
+
+        $("#sltType5").click(function () {
+            $("#tmp_type").val("part2");
+            $(".part1").hide();
+            $(".part2").show();
+            $(".fbb").hide();
+            $(".bb").show();
+            $("#text1").hide();
+            $("#text2").hide();
+            $("#text3").hide();
+            $("#text4").hide();
+            $("#text5").show();
+            $("#text6").hide();
+            $("#text7").hide();
+            $("#text8").hide();
+            $("#text9").hide();
+        });
+
+        $("#sltType6").click(function () {
+            $("#tmp_type").val("part2");
+            $(".part1").hide();
+            $(".part2").show();
+            $(".fbb").hide();
+            $(".bb").show();
+            $("#text1").hide();
+            $("#text2").hide();
+            $("#text3").hide();
+            $("#text4").hide();
+            $("#text5").hide();
+            $("#text6").show();
+            $("#text7").hide();
+            $("#text8").hide();
+            $("#text9").hide();
+        });
+
+        $("#sltType7").click(function () {
+            $("#tmp_type").val("part2");
+            $(".part1").hide();
+            $(".part2").show();
+            $(".fbb").hide();
+            $(".bb").show();
+            $("#text1").hide();
+            $("#text2").hide();
+            $("#text3").hide();
+            $("#text4").hide();
+            $("#text5").hide();
+            $("#text6").hide();
+            $("#text7").show();
+            $("#text8").hide();
+            $("#text9").hide();
+        });
+
+        $("#sltType8").click(function () {
+            $("#tmp_type").val("part2");
+            $(".part1").hide();
+            $(".part2").show();
+            $(".fbb").hide();
+            $(".bb").show();
+            $("#text1").hide();
+            $("#text2").hide();
+            $("#text3").hide();
+            $("#text4").hide();
+            $("#text5").hide();
+            $("#text6").hide();
+            $("#text7").hide();
+            $("#text8").show();
+            $("#text9").hide();
+        });
+
+
+	});
+
+
+	function updateFeedBack(){
+		var cid = '${entity.id!}';
+		var bidResult = $("#bidResult").val();
+		var itemQuote = $("#itemQuote").val();
+		var hasAttm = $("#hasAttm").val();
+		var bidCmpr = $("#bidCmpr").val();
+		var bidBrd = $("#bidBrd").val();
+		var allQuote = $("#allQuote").val();
+
+		
+		bootbox.confirm('${i18n.get('是否要提交反馈？')}' , function(result) {
+			if(result) {
+				ajax({
+					type:'post',
+					url : '${ctx}/newbid/updateFeedBack.html',
+					data: "cid="+cid+"&bidResult="+bidResult+"&itemQuote="+itemQuote+"&hasAttm="+hasAttm+"&bidCmpr="+bidCmpr+"&bidBrd="+bidBrd+"&allQuote="+allQuote,
+					success : function(result) {
+						alert('${i18n.get('提交反馈成功！')}'); 
+					}
+				});
+			}
+		});
+	}
+
+
+	function startAuthProcess() {
+        var entityId = "${entity.id?default('')}";
+        if(''===entityId){
+        	alert('${i18n.get('数据未保存，请先保存再提交流程申请。')}'); 
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url: "${ctx}/newbid/startProcess.html",
+            async: true,
+            data: "id=" + entityId+"&bidNumber=${(entity.bidNumber)!}",
+            dataType: 'json',
+            success: function (msg) {
+            	alert('${i18n.get('审核流程提交成功')}'); 
+                try{
+					parent.currentParent2.reload_bidTable();
+				}catch(e){
+					parent.currentParent.reload_bidTable();
+				}
+                api.close();
+            },
+            error: function (e) {
+                var msg = eval("(" + e.responseText + ")");
+                if (msg) {
+                    alert(msg.message);
+                } else {
+                	alert('${i18n.get('操作失败，请联系管理员')}'); 
+                }
+            }
+        });
+        
+        $("#invoice_submit").attr("disabled",true);
+    }
+</script>
+</#escape>

@@ -1,0 +1,154 @@
+<@pui.body>
+<style type="text/css">
+	table {
+	border-collapse: collapse;
+	border-color: #ff0000;
+	}
+	
+	table td {
+		padding:1px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	select {
+		width: 180px;
+	}
+</style>
+	
+<script type="text/javascript">
+
+</script>
+<div class="row col-xs-12" style="width: 600px;margin-right: 0px; margin-left: 0px;" >
+<table style="width: 600px">
+	<tr>
+	<td style="width: 600px">
+	<div class="col-xs-12" >
+		<@form.table id="oldOrderLinesForm" 
+			class="col-xs-12"
+			title="${i18n.get('原始订单行')}"
+			datatype = "local"
+			rowNum = "5" 
+			datatype = "local"
+			data = "${(orderLines)}"
+			colModel = "[
+				{name : 'id', label:'id', width : 20, editable : false, hidden : true},
+				{name : 'orderId', label:'orderId', width : 20, editable : false, hidden : true},
+				{name :	'act',label:'${i18n.get('选择产品')}',hidden:false,width:80,sortable:false,align:'center'},
+				{name : 'proId', label:'${i18n.get('产品ID')}', width : 60, editable : false, hidden : true},
+				{name : 'proModel', label:'${i18n.get('产品型号')}', width : 150, editable : false, align:'center'},
+				{name : 'materielCode', label:'${i18n.get('物料编码')}', width : 100, editable : false, align:'center'}, 
+				{name : 'itemDescription',  label:'${i18n.get('项目说明')}', width : 150, editable : false ,align:'center'}, 
+				{name : 'proQty', label:'${i18n.get('产品数量')}', width : 100, sortable : false, editable : false, align:'center'}, 
+				{name : 'splitQty', label:'${i18n.get('拆分数量')}', width : 100, sortable : false, editable : true, align:'center'},
+				{name : 'unit', label:'${i18n.get('单位')}',width : 60,sortable : false, editable : false, align:'center'}, 
+				{name : 'price', label:'${i18n.get('销售单价')}',width : 100,sortable : false, editable : false, align:'center'}, 
+				{name : 'amount', label:'${i18n.get('金额')}',width : 100,sortable : false, editable : false, align:'center'}, 
+				{name :'requestDate',label:'${i18n.get('请求日期')}',hidden:false,width:150,sortable:false,align:'center', editable : false, formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+				{name :'promiseDate',label:'${i18n.get('承诺日期')}',hidden:false,width:150,sortable:false,align:'center', editable : false, formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+				{name : 'status', label:'${i18n.get('状态CODE')}', width : 150, sortable : false, editable : false, align:'center', hidden : true}, 
+				{name : 'statusLable', label:'${i18n.get('状态')}', width : 150, sortable : false, editable : false, align:'center'}, 
+				{name : 'confirmDeliveryDate', label:'${i18n.get('需要启动交货确认')}',width : 100, sortable : false, editable : false ,align:'center'}, 
+				{name : 'shipOrg', label:'${i18n.get('出货组织ID')}',width : 200,sortable : false,editable : false ,align:'center', hidden : true}, 
+				{name : 'shipOrgLable', label:'${i18n.get('出货组织')}',width : 200,sortable : false,editable : false ,align:'center', hidden : true}, 
+				{name : 'isAdvanceBilling', label:'${i18n.get('提前开票')}',width : 50,sortable : false, editable : false , align:'center'}, 
+				{name : 'returnReason', label:'${i18n.get('退货原因')}',width : 200, sortable : false, editable : false, align:'center'}, 
+				{name : 'returnReference', label:'${i18n.get('退货参考')}',width : 200, sortable : false,editable : false,align:'center'}, 
+				{name : 'isPending', label:'${i18n.get('是否暂挂')}',width : 50,sortable : false, editable : false, align:'center'}, 
+				{name : 'cancelQty', label:'${i18n.get('取消数量')}',width : 80, sortable : false , editable : false ,align:'center'}, 
+				{name : 'deliveryQty', label:'${i18n.get('发运数量')}',width : 80, sortable : false , editable : false ,align:'center'}, 
+				{name : 'billingQty', label:'${i18n.get('开票数量')}',width : 80, sortable : false,editable : false, align:'center'}, 
+				{name : 'orderSource', label:'${i18n.get('来源')}',width : 80,sortable : false,editable : false,align:'center'},
+				{name : 'lineNo', label:'${i18n.get('订单行号')}', width : 50, align:'center', editable : false, hidden : false}
+			]" 
+			buttons = "[
+			]" 
+			> 
+		</@form.table> 
+		</td>
+	</tr>
+	<tr>
+		<td>
+		<@form.table id="newOrderLinesForm" 
+			class="col-xs-12"
+			title="${i18n.get('拆分订单行')}" 
+			rowNum = "20" 
+			search='false' 
+			datatype = "local"
+			colModel = "[
+				{name : 'id', label:'id', width : 20, editable : false, hidden : true},
+				{name : 'orderId', label:'orderId', width : 20, editable : false, hidden : true},
+				{name :	'act',label:'${i18n.get('选择产品')}',hidden:false,width:80,sortable:false,align:'center'},
+				{name : 'proId', label:'${i18n.get('产品ID')}', width : 60, editable : false, hidden : true},
+				{name : 'proModel', label:'${i18n.get('产品型号')}', width : 150, editable : false, align:'center'},
+				{name : 'materielCode', label:'${i18n.get('物料编码')}', width : 100, editable : false, align:'center'}, 
+				{name : 'itemDescription',  label:'${i18n.get('项目说明')}', width : 150, editable : false ,align:'center'}, 
+				{name : 'proQty', label:'${i18n.get('产品数量')}', width : 100, sortable : false, editable : false, align:'center'}, 
+				{name : 'unit', label:'${i18n.get('单位')}',width : 60,sortable : false, editable : false, align:'center'}, 
+				{name : 'price', label:'${i18n.get('销售单价')}',width : 100,sortable : false, editable : false, align:'center'}, 
+				{name : 'amount', label:'${i18n.get('金额')}',width : 100,sortable : false, editable : false, align:'center'}, 
+				{name :'requestDate',label:'${i18n.get('请求日期')}',hidden:false,width:150,sortable:false,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+				{name :'promiseDate',label:'${i18n.get('承诺日期')}',hidden:false,width:150,sortable:false,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+				{name : 'status', label:'${i18n.get('状态CODE')}', width : 150, sortable : false, editable : false, align:'center', hidden : true}, 
+				{name : 'statusLable', label:'${i18n.get('状态')}', width : 150, sortable : false, editable : false, align:'center'}, 
+				{name : 'confirmDeliveryDate', label:'${i18n.get('需要启动交货确认')}',width : 100, sortable : false, editable : false ,align:'center'}, 
+				{name : 'shipOrg', label:'${i18n.get('出货组织ID')}',width : 200,sortable : false,editable : false ,align:'center', hidden : true}, 
+				{name : 'shipOrgLable', label:'${i18n.get('出货组织')}',width : 200,sortable : false,editable : false ,align:'center', hidden : true}, 
+				{name : 'isAdvanceBilling', label:'${i18n.get('提前开票')}',width : 50,sortable : false,align:'center'}, 
+				{name : 'returnReason', label:'${i18n.get('退货原因')}',width : 200, sortable : false, align:'center'}, 
+				{name : 'returnReference', label:'${i18n.get('退货参考')}',width : 200, sortable : false,editable : false,align:'center'}, 
+				{name : 'isPending', label:'${i18n.get('是否暂挂')}',width : 50,sortable : false, align:'center'}, 
+				{name : 'cancelQty', label:'${i18n.get('取消数量')}',width : 80, sortable : false , editable : false ,align:'center'}, 
+				{name : 'deliveryQty', label:'${i18n.get('发运数量')}',width : 80, sortable : false , editable : false ,align:'center'}, 
+				{name : 'billingQty', label:'${i18n.get('开票数量')}',width : 80, sortable : false,editable : false, align:'center'}, 
+				{name : 'orderSource', label:'${i18n.get('来源')}',width : 80,sortable : false,editable : false,align:'center'},
+				{name : 'lineNo', label:'${i18n.get('订单行号')}', width : 50, align:'center', editable : false, hidden : false}
+			]" 
+			buttons = "[
+				{
+					id:'calculateAmount',
+					label : '${i18n.get('拆分')}',
+					icon : 'icon-save',
+					own : true,
+					handler : function(e,rowData){
+						calculateAmount();
+					}
+				}
+			]" 
+			> 
+		</@form.table> 
+	</div>
+</td>
+</tr>
+</table>
+<div class="clearfix form-actions">
+	<div class="col-md-offset-5 col-md-7">
+		<button class="btn btn-info" id="selectOK" type="button" onclick="">
+			<i class="icon-ok bigger-110"></i>
+			${i18n.get('保存')}
+		</button>
+		&nbsp; &nbsp; &nbsp;
+		<button class="btn" type="button" onclick="javascript:api.close()">
+			<i class="icon-undo bigger-110"></i>
+			${i18n.get('关闭')}
+		</button>
+	</div>
+</div>
+</div>
+<script type="text/javascript">
+	var selectedList = [];
+	$('#selectOK').click(function(){
+		selectedData = $('#newOrderLinesForm').jqGrid('getRowData',selectedData.id);
+		if(selectedData.cInvoiceQty == null || selectedData.cInvoiceQty=='' || selectedData.cInvoiceQty == 0){
+			alert(${i18n.get('本次开票数量不能为空，且必须大于0')});
+		}else{
+			parent.currentParent.${pickerId}_callback(selectedData);
+			api.close();
+		}
+	})
+</script>
+</@pui.body>

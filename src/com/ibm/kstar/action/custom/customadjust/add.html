@@ -1,0 +1,562 @@
+<#escape x as x?html>
+<@cui.body2>
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="customCreditAdjustment" success="function(){ parent.currentParent.reload_tableAdjustList(); }" class="form-horizontal" >
+		<div class="form-group">	
+			<div style="padding-right: 20px; float: right;padding-top: 3px;">
+				<#if permission["P02AssessmentSave"]?? >
+					<button class="btn btn-info submit" id="save" type="button">
+						<i class="bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+				</#if>
+				<#if permission["P02AssessmentSubmit"]?? >
+					<button class="btn btn-info" id="apply" type="button" onclick="applyCustom('submit','20')">
+						<i class="bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+				</#if>
+				
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+				
+			</div>
+		</div>
+		<div class="form-group" >
+			<table>
+				<tr>
+					<td align="right" width="200">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('客户名称')}  : </label>
+					</td>
+					<td>
+						<@form.autocomplete  id="customName" name="customName" 
+							idKey='customFullName'
+							style="width: 161px;"
+							required="${i18n.get('请选择客户编号')}"
+							formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+							url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html'; }"
+							value="{customFullName:'${(customCreditAdjustment.customName)!}', customCode: '${(customCreditAdjustment.customCode)!}'
+								, customClass: '${(customCreditAdjustment.customClass)!}'
+								, customClassName: '${(customCreditAdjustment.customClassName)!}'
+								, customGrade: '${(customCreditAdjustment.customGrade)!}'
+								, customGradeName: '${(customCreditAdjustment.customGradeName)!}'
+								, corpPayDays: '${(customCreditAdjustment.corpPayDays)!}'
+								, pipeClass: '${(customCreditAdjustment.pipeClass)!}'
+								, pipeAttr: '${(customCreditAdjustment.pipeAttr)!}'
+								, pipeClassName: '${(customCreditAdjustment.pipeClassName)!}'
+								, pipeAttrName: '${(customCreditAdjustment.pipeAttrName)!}'
+								, limitCurrency: '${(customCreditAdjustment.limitCurrencyName)!}'
+								, limitAmount: '${(customCreditAdjustment.limitAmountOld)!}'
+								, limitRate: '${(customCreditAdjustment.limitRateOld)!}'
+								, tempCurrency: '${(customCreditAdjustment.tempCurrencyName)!}'
+								, tempAmount: '${(customCreditAdjustment.tempAmountOld)!}'
+								, tempRate: '${(customCreditAdjustment.tempRateOld)!}'}"
+							
+							onSelect="function(data){
+							
+								if( data.customCode != null && data.customCode !='' && data.customCode != 'undefined'){
+									$('#customCode').val(data.customCode);
+									$('#customClass').val(data.customClass);
+									$('#customClassName').val(data.customClassName);
+									$('#customGrade').val(data.customGrade);
+									$('#customGradeName').val(data.customGradeName);
+									$('#corpPayDays').val(data.corpPayDays);
+									$('#pipeClass').val(data.pipeClass);
+									$('#pipeAttr').val(data.pipeAttr);
+									$('#pipeClassName').val(data.pipeClassName);
+									$('#pipeAttrName').val(data.pipeAttrName);
+									
+									$('#limitCurrencyOld').val(data.limitCurrencyName);
+									$('#limitAmountOld').val(data.limitAmount);
+									$('#limitRateOld').val(data.limitRate);
+									$('#tempCurrencyOld').val(data.tempCurrencyName);
+									$('#tempAmountOld').val(data.tempAmount);
+									$('#tempRateOld').val(data.tempRate);
+									
+									reload_gradeChangeto();
+								}
+							}" 
+						/>
+					</td>
+					
+					<td align="right" width="200">
+						<label class="no-padding-right" >${i18n.get('申请人')} :</label>
+					</td>
+					<td>
+						<input id="applier" name="applier" type="hidden" value="${(customCreditAdjustment.applier)!}" >
+						<input id="applierPos" name="applierPos" type="hidden" value="${(customCreditAdjustment.applierPos)!}" >
+						
+						<@form.input
+						id="applierName"  
+						name="applierName" 
+						placeholder="" 
+						readonly ="readonly"
+						required="${i18n.get('不能为空！')}"
+						readonly="readonly"
+						tip="" 
+						value="${(customCreditAdjustment.applierName)!}" 
+						/>
+					</td>
+					<td align="right" width="200">
+						<label class="no-padding-right" > ${i18n.get('申请编号')} : </label>
+					</td>
+					<td>
+						<@form.input
+						id="creditAdjustmentCode"  
+						name="creditAdjustmentCode" 
+						placeholder="" 
+						required="${i18n.get('不能为空！')}"
+						readonly ="readonly"
+						tip="" 
+						value="${(customCreditAdjustment.creditAdjustmentCode)!}" 
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200">
+						<label class="no-padding-right" > ${i18n.get('客户编码')} : </label>
+					</td>
+					<td>
+							<@form.input
+							id="customCode"  
+							name="customCode" 
+							placeholder="" 
+							required="${i18n.get('不能为空！')}"
+							tip="" 
+							value="${(customCreditAdjustment.customCode)!}" 
+							readonly ="readonly"
+							/>
+					</td>
+					<td align="right" width="200">
+						<label class="no-padding-right" > ${i18n.get('申请部门')} : </label>
+					</td>
+					<td>
+						<input id="applierOrg" name="applierOrg" type="hidden" value="${(customCreditAdjustment.applierOrg)!}" >
+							<@form.input
+							id="applierOrgName"  
+							name="applierOrgName" 
+							readonly ="readonly"
+							placeholder="" 
+							required="${i18n.get('不能为空！')}"
+							tip="" 
+							value="${(customCreditAdjustment.applierOrgName)!}" 
+							/>
+					</td>
+					<td align="right" width="200">
+						<label class="no-padding-right" >${i18n.get('状态')}  : </label>
+					</td>
+					<td>
+						<input id="status" name="status" type="hidden" value="${(customCreditAdjustment.status)!}" >
+						
+						<@form.input
+							id="statusName"  
+							name="statusName" 
+							placeholder="" 
+							required="　${i18n.get('不能为空！')}"
+							readonly="readonly"
+							tip="" 
+							value="${(customCreditAdjustment.statusName)!}" 
+							/>
+						
+					</td>
+				</tr>
+				<tr>
+					<td>
+					</td>
+					<td>	
+					</td>
+					
+					<td align="right" width="200">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('联系方式')} : </label>
+					</td>
+					<td>
+							<@form.input
+							id="createContact"  
+							name="createContact" 
+							placeholder="" 
+							required="${i18n.get('不能为空！')}"
+							tip="" 
+							value="${(customCreditAdjustment.createContact)!}" 
+							/>
+					</td>
+					<td align="right" width="200">
+						<label class="no-padding-right" > ${i18n.get('创建日期')}  : </label>
+					</td>
+					<td>
+						
+						<@form.input
+							id="createDate"  
+							name="createDate" 
+							readonly ="readonly"
+							placeholder="" 
+							required="${i18n.get('不能为空！')}"
+							tip="" 
+							value="${(customCreditAdjustment.createDate)!}" 
+							/>
+					</td>
+				</tr>
+			</table>
+			<br>
+			<br>
+			<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('客户状态')}</p>
+			<table>
+				<tr>
+					<td align="right" width="200">
+						<label class="no-padding-right" > ${i18n.get('客户类别')} : </label>
+					</td>
+					<td>
+						<input id="customClass" name="customClass" type="hidden" value="${(customCreditAdjustment.customClass)!}">
+						<input id="customClassTemp" name="customClassTemp" type="hidden" >	
+						<@form.input
+							id="customClassName"  
+							name="customClassName" 
+							placeholder="" 
+							tip="" 
+							value="${(customCreditAdjustment.customClassName)!}" 
+							readonly ="readonly"
+							/>
+					</td>
+					<td align="right" width="200">
+						<label class="no-padding-right" > ${i18n.get('客户等级')}  : </label>
+					</td>
+					<td>
+						<input id="customGrade" name="customGrade" type="hidden" value="${(customCreditAdjustment.customGrade)!}">
+							<@form.input
+							id="customGradeName"  
+							name="customGradeName" 
+							placeholder="" 
+							tip="" 
+							value="${(customCreditAdjustment.customGradeName)!}" 
+							readonly ="readonly"
+							/>
+					</td>
+					<td align="right" width="200">
+						<label class="no-padding-right" > ${i18n.get('客户账期（天）')} : </label>
+					</td>
+					<td>
+							<@form.input
+							id="corpPayDays"  
+							name="corpPayDays" 
+							placeholder="" 
+							tip="" 
+							value="${(customCreditAdjustment.corpPayDays)!}" 
+							readonly ="readonly"
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200">
+						<label class="no-padding-right" > ${i18n.get('渠道类别 ')} : </label>
+					</td>
+					<td>
+							
+						<input id="pipeClass" name="pipeClass" type="hidden" value="${(customCreditAdjustment.pipeClass)!}">
+							<@form.input
+							id="pipeClassName"  
+							name="pipeClassName" 
+							placeholder="" 
+							tip="" 
+							value="${(customCreditAdjustment.pipeClassName)!}" 
+							readonly ="readonly"
+							/>
+					</td>
+					<td align="right" width="200">
+						<label class="no-padding-right" > ${i18n.get('渠道属性 ')} : </label>
+					</td>
+					<td>
+						<input id="pipeAttr" name="pipeAttr" type="hidden" value="${(customCreditAdjustment.pipeAttr)!}">
+							<@form.input
+							id="pipeAttrName"  
+							name="pipeAttrName" 
+							placeholder="" 
+							tip="" 
+							value="${(customCreditAdjustment.pipeAttrName)!}" 
+							readonly ="readonly"
+							/>
+					</td>
+					<td align="right" width="200">
+					</td>
+					<td>
+						
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200">
+						<label class="no-padding-right" >  ${i18n.get('去年营业额（万元） ')} : </label>
+					</td>
+					<td>
+							<@form.number
+							id="yearBeforeTurnover"  
+							name="yearBeforeTurnover" 
+							placeholder="" 
+							tip="" 
+							value="${(customCreditAdjustment.yearBeforeTurnover)!}" 
+							/>
+					</td>
+					<td align="right" width="200">
+						<label class="no-padding-right" >${i18n.get('今年营业额（万元） ')}  : </label>
+					</td>
+					<td>
+						<@form.number
+							id="yearCurrentTurnover"  
+							name="yearCurrentTurnover" 
+							placeholder="" 
+							tip="" 
+							value="${(customCreditAdjustment.yearCurrentTurnover)!}" 
+							/>
+					</td>
+					<td align="right" width="200">
+						
+					</td>
+					<td>
+							
+					</td>
+				</tr>
+			</table>
+			<br>
+			<br>
+			<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('信用调整 ')} </p>
+			<table>
+				<tr>
+					<th>${i18n.get('信用类型 ')}</th>
+					<th>${i18n.get('币种 ')}</th>
+					<th>${i18n.get('额度 ')}</th>
+					<th>${i18n.get('汇率类型 ')}</th>
+					<th>${i18n.get('币种 ')}</th>
+					<th>${i18n.get('调整金额至 ')}</th>
+					<th>${i18n.get('有效日期至 ')}</th>
+				</tr>
+				<tr>
+					
+					<td>
+						<@form.input id="corpCreditCalss" 
+						name="corpCreditCalss" 
+						readonly="readonly" 
+						placeholder=""  
+						tip="" value="${i18n.get('常规额度')}" />
+					</td>
+					<td>
+						<@form.input id="limitCurrencyOldName" 
+						name="limitCurrencyOldName" 
+						readonly="readonly" 
+						placeholder=""  
+						tip="" 
+						value="${(customCreditAdjustment.limitCurrencyOldName)!}" />
+					</td>
+					<td>
+						<@form.input id="limitAmountOld" 
+						name="limitAmountOld" 
+						readonly="readonly" 
+						placeholder=""  
+						tip="" 
+						value="${(customCreditAdjustment.limitAmountOld)!}" />
+					</td>
+					<td>
+						<@form.input id="limitRateOld" 
+						name="limitRateOld" 
+						readonly="readonly" 
+						placeholder=""  
+						tip="" value="${(customCreditAdjustment.limitRateOld)!}" />
+					</td>
+					<td>
+						<@form.select id="limitCurrency" 
+						name="limitCurrency" 
+						tip="" 
+						code="CURRENCY" 
+						value="${(customCreditAdjustment.limitCurrency)!}" />
+					</td>
+					<td>
+						<@form.number id="limitAmount" 
+						name="limitAmount"  
+						placeholder=""  
+						tip="" 
+						value="${(customCreditAdjustment.limitAmount)!}" />
+					</td>
+					<td>
+						<@form.date id="limitValidTo"  name="limitValidTo" 
+							placeholder="" 
+							tip="" 
+							value="${(customCreditAdjustment.limitValidTo?date)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					
+					<td>
+						<@form.input id="corpCreditCalssTemp" 
+						name="corpCreditCalssTemp" 
+						readonly="readonly" 
+						placeholder=""  
+						tip="" 
+						value="${i18n.get('临时额度')}" />
+					</td>
+					<td>
+						<@form.input id="tempCurrencyOldName" 
+						name="tempAmountOld"
+						readonly="readonly" 
+						placeholder=""  
+						tip="" 
+						value="${(customCreditAdjustment.tempCurrencyOldName)!}" />
+					</td>
+					<td>
+						<@form.input id="tempAmountOld" 
+						name="tempAmountOld" 
+						readonly="readonly" 
+						placeholder=""  
+						tip="" 
+						value="${(customCreditAdjustment.tempAmountOld)!}" />
+					</td>
+					<td>
+						<@form.input id="tempRateOld" 
+						name="tempRateOld" 
+						readonly="readonly" 
+						placeholder=""  
+						tip="" 
+						value="${(customCreditAdjustment.tempRateOld)!}" />
+					</td>
+					<td>
+						
+						<@form.select id="tempCurrency" 
+						name="tempCurrency" 
+						tip="" 
+						code="CURRENCY" 
+						value="${(customCreditAdjustment.tempCurrency)!}" />
+					</td>
+					<td>
+						<@form.number id="tempAmount" 
+						name="tempAmount"  
+						placeholder=""  
+						tip="" 
+						value="${(customCreditAdjustment.tempAmount)!}" />
+					</td>
+					<td>
+						<@form.date id="tempValidTo"  name="tempValidTo" 
+							placeholder="" 
+							tip="" 
+							value="${(customCreditAdjustment.tempValidTo?date)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td>${i18n.get('合计')}</td>
+					<td></td>
+					<td>CNY</td>
+					<td></td>
+					<td>CNY</td>
+					<td></td>
+				</tr>	
+				
+			</table>
+			<br>
+			<br>
+			<table>
+				<tr>
+					<td align="right" width="200">
+						<label class="no-padding-right" > ${i18n.get('客户等级调整为')} : </label>
+					</td>
+					<td >
+						<@form.select style="width: 161px;"
+							id="gradeChangeto" name="gradeChangeto" 
+							code="CUSTOMCLASS" 
+							level="2"
+							parentId="customClass" 
+							value ="${(customCreditAdjustment.gradeChangeto)!}"
+						/>
+					</td>
+					
+					<td align="right" width="200">
+						<label class="no-padding-right" > ${i18n.get('客户账期调整为天')} : </label>
+					</td>
+					<td >
+							<@form.number
+							id="payDaysChangeto"  
+							name="payDaysChangeto" 
+							placeholder="" 
+							tip="" 
+							value="${(customCreditAdjustment.payDaysChangeto)!}" 
+							/>
+					</td>
+					<td align="right" width="200">
+					</td>
+					<td >	
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200">
+						<label class="no-padding-right" >  ${i18n.get('抵押物 ')}: </label>
+					</td>
+					<td colspan="5" >
+						<@form.textArea id="pledge" 
+						name="pledge" 
+						width="130px" 
+						height="2" 
+						value="${(customCreditAdjustment.pledge)!}" 
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200">
+						<label class="no-padding-right" >${i18n.get('备注')} : </label>
+					</td>
+					<td colspan="5" >
+						<@form.textArea id="comment" 
+						name="comment" 
+						width="130px" 
+						height="2" 
+						value="${(customCreditAdjustment.comment)!}" 
+						/>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div class="hr hr-18 dotted hr-double"></div>
+	</@form.form>
+	
+	<@plug.tabs  tabMain=tabMain>
+	</@plug.tabs>
+	
+	</@form.panel>
+</@cui.body2>
+<script type="text/javascript">
+	$(document).ready(function() {
+		if ('${(customCreditAdjustment.status)!}' === 'CUSTOM_NORMAL_STATUS_20'
+			|| '${(customCreditAdjustment.status)!}' === 'CUSTOM_NORMAL_STATUS_40'){
+			$("#save").attr("disabled","true");
+			$("#apply").attr("disabled","true");
+		}
+	});
+	
+	
+	function applyCustom(operate,status){
+		var msg= " ${i18n.get('确定启动评估调整流程吗？')}";
+		
+		var formDatas = $('#form_customCreditAdjustment').serialize();
+		formDatas = "id=${(customCreditAdjustment.id)!}&"+formDatas;
+		
+		bootbox.confirm(msg, function(result) {
+			if(result) {
+				$.ajax({
+					type : "POST",
+					url : "${ctx}/custom/adjustApply.html",
+					async: true,
+					data : formDatas, 
+					dataType : 'json',
+					success : function(msg) {
+						alert(msg.message);
+						parent.currentParent2.reload_tableAdjustList(); 
+						javascript:api.close();
+					},
+					error: function(e) {
+						alert(e.responseJSON.message);
+					} 
+				});
+			}
+		});
+	}
+</script>
+</#escape>

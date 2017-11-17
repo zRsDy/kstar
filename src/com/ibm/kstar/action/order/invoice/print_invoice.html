@@ -1,0 +1,112 @@
+<@pui.body>
+<style >
+	body {font-size:14px;}
+	*{padding:0;margin:0;color:#000;}
+	table{border-right:1px #333 solid;border-top:1px #333 solid;}
+	table tr{line-height: 20px;}
+	table td{border-left:1px #333 solid;border-bottom:1px #333 solid;padding:3px;}
+	table.item{border-top:none;}
+	.row{line-height: 30px; width:100%;margin:0;}
+	.row2{line-height: 26px; width:100%;margin:0;}
+	.txt{float:left;}
+	.line{float:left; border-bottom:solid 1px #333;height:24px;}
+	.width10{width:20%;float:left;height:20px;}
+</style>
+<script language="javascript">
+$(function(){
+	$(".print").click(function(){
+		$(".print").parent().hide();
+		window.print();
+		//wb.execwb(6,6) 
+	})
+	$(".print").click(function(){
+		$(".print").parent().hide();
+		wb.execwb(7,1);
+	})
+	
+	$("title").html('${(invoiceMaster.invoiceCode)!}');
+	
+	
+})
+</script>
+
+<div style="margin:10px auto;height:30px; width: 50px;">
+	<input type="button" class="m-btn highlight print" style="float: right;" value=" ${i18n.get('打印')} " />
+</div>
+
+<div style="width: 20cm;margin: 0 auto;">
+	<!-- <div><img src="${ctx}/assets/img2/print.png" height="34" /></div> -->
+	<div style="font-size: 24px; width: 100%; text-align: center; font-weight:bold;">${i18n.get('深圳科士达科技股份有限公司')}</div>
+	<div style="font-size: 24px; width: 100%; text-align: center; font-weight:bold;">SHENZHEN KSTAR SCIENCE & TECHNOLOGY  CO., LTD</div>
+	<div class="row">
+		<div class="txt" style="width:80%">4/F, No.1 Bldg., Software Park, </div>
+		<div class="txt" style="width:20%">TEL:(0755)86168477</div>
+	</div>
+	<div class="row">
+		<div class="txt" style="width:50%">Keji C. Rd. 2nd, Hi-Tech Industrial Zone,</div>
+	</div>
+	<div class="row">
+		<div class="txt" style="width:80%">Shenzhen 518057, China,</div>
+		<div class="txt" style="width:20%">FAX:(0755)86168482</div>
+	</div>
+	<div style="font-size: 24px; width: 100%; text-align: center; font-weight:bold;">${i18n.get('发   票')}</br>INVOICE</div>
+	<div class="row">
+		<div class="txt" style="width:60%">&nbsp;</div>
+		<div class="txt" style="width:40%">${i18n.get('发票号码')}Inv. No.: ${(invoiceMaster.invoiceCode)!}</div>
+	</div>
+	<div class="row">
+		<div class="txt" style="width:60%">&nbsp;</div>
+		<div class="txt" style="width:40%">${i18n.get('合同号')}Contract No: ${(invoiceMaster.contractCode)!}</div>
+	</div>
+	<div class="row">
+		<div class="txt" style="width:60%">&nbsp;</div>
+		<div class="txt" style="width:40%">${i18n.get('日期')}Date: ${(invoiceMaster.invoiceDate?date)!}</div>
+	</div>
+	<div class="row">
+		<div class="txt" style="width:15%">${i18n.get('客户')}Client：</div><div class="line" style="width:40%">${(invoiceMaster.customerName)!}</div>
+	</div>
+	<div class="row">
+		<div class="txt" style="width:15%">${i18n.get('地址')}Address：</div><div class="line" style="width:40%">${(invoiceMaster.postalAddress)!}</div>
+	</div>
+	
+	
+	<div style="width: 20cm; /* page-break-after: always; */">
+		
+		<table style="width:100%" class="">
+			<tr>
+				<td class="center" width="40px">${i18n.get('唛头')}</br>Marks&Nos</td>
+				<td class="center" width="420px">${i18n.get('品名及规格')}</br>Description of Goods</td>
+				<td class="center" width="80px">${i18n.get('数量')}</br>Quantity</td>
+				<td class="center" width="80px">${i18n.get('单价')}</br>Unit Price(USD)</td>
+				<td class="center" width="80px">${i18n.get('总价')}</br>Amount(USD)</td>
+			</tr>
+			<tr>
+				<td class="center"></td>
+				<td class="center"></td>
+				<td class="center"></td>
+				<td class="center">FOB</td>
+				<td class="center">SHENZHEN</td>
+			</tr>
+			<#list list as bean>
+			<tr>
+				<td class="center">${(bean.invoiceNo)!}</td>
+				<td class="center">${(bean.materielDesc)!}&nbsp;&nbsp;&nbsp;&nbsp;${(bean.proModel)!}</td>
+				<td align="center">${(bean.invoiceQty)!}&nbsp;&nbsp;${(bean.unit)!}</td>
+				<td align="center">${(bean.invoicePrice)!}</td>
+				<td align="center">${(bean.invoiceAmount)!}</td>
+			</tr>
+			</#list>
+			<tr>
+				<td align="left" colspan="3" style="height:30px;">${i18n.get('合计金额(大写)/元：')}${(toUpper)!}</td>
+				<td align="right" colspan="2">
+					<span class="line" style="display: block;width:80%;float: right;">$${(invoiceMaster.invoiceAmount)!'0'}</span>
+				</td>
+			</tr>
+		</table>
+	</div>
+	
+<div style="margin:10px auto;height:30px; width: 50px;">
+	<input type="button" class="m-btn highlight print" style="float: right;" value=" ${i18n.get('打印')} " />
+</div>
+
+</@pui.body>

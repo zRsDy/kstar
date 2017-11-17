@@ -1,0 +1,22 @@
+
+	<@form.table id="piaddress" 
+	class="col-xs-12"
+	title="${i18n.get('发货地址列表')}" 
+	url = "${ctx}/pi/shipaddr/page.html?contrId=${contrId}"  
+	rowNum = "10" 
+	addURL = "'${ctx}/pi/shipaddr/add.html?contrId=${contrId}'" 
+	editURL= "'${ctx}/pi/shipaddr/edit.html'" 
+	deleteURL = "'${ctx}/pi/shipaddr/delete.html'" 
+	colModel = "[
+		{name:'id',label:'${i18n.get('内部')}ID',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'delivAddr',label:'${i18n.get('发货地址')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'receiver',label:'${i18n.get('收货人')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'phone',label:'${i18n.get('电话')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'remark',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:true,align:'center' }
+		]"
+		onSelectRow= "function(selectedData){
+		}"
+		buttons = "[]" > 
+	</@form.table> 
+	
+

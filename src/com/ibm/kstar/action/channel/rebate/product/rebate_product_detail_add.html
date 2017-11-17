@@ -1,0 +1,40 @@
+<@cui.body2>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1" success="function(){ parent.currentParent.reload_detail_2('${(detailInfo.id)!}'); }" class="form-horizontal">	
+			<div align="center">
+				<table>
+					<tr>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('产品系列 :')}</td>
+						<td width="320px">
+							<@form.select id="productSeries" name="productSeries" style="width:163px;" required="${i18n.get('不能为空')}" tip="${i18n.get('产品的系列名称')}" viewKey="name" idKey='id' url="function(){return '${ctx}/orderForecast/selectProSeries.html?noInProGroup=1'}" value="${(detailInfo.productSeries)!}" />
+						</td>
+						<td align="right" width="120px">
+							<label class="no-padding-right" for="endDate"> ${i18n.get('失效日期 :')} </label>
+						</td>
+						<td width="320px">
+							<@form.date id="endDate" name="endDate" format="yyyy-mm-dd" style="width:163px;" tip="${i18n.get('产品组明细行的失效日期')}" value="${(detailInfo.endDate?date)!}" />
+						</td>
+						<td align="right" width="120px">
+						</td>
+						<td width="320px">
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:frameElement.api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+	</@form.panel>
+</@cui.body2>

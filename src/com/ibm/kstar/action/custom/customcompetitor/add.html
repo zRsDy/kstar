@@ -1,0 +1,197 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="customCompetitorReport" success="function(){ parent.currentParent.reload_tableReportList(); }" class="form-horizontal" >
+		<input id="selectedId" type="hidden"  value="${(customCompetitorReport.id)!}">
+		<div class="form-group">	
+			<div style="padding-right: 20px; float: right;padding-top: 3px;">
+				
+				<#if permission["P02CompetitorReportSave"]?? >
+					<button class="btn btn-info submit" id="save" type="button">
+						<i class="bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+				</#if>
+				
+				<#if permission["P02CompetitorReportSubmit"]?? >
+					<button class="btn btn-info" id="apply" type="button" onclick="applyCustom('submit','20')">
+						<i class="bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+				</#if>
+				
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+				
+			</div>
+		</div>
+		
+		<div class="form-group" >
+			<table>
+				<tr>
+					<td  align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('报告编号')} : </label>
+					</td>
+					<td width="150">
+						<@form.input
+						id="reportCode"
+						name="reportCode"
+						placeholder=""
+						required="${i18n.get('不能为空！')}"
+						readonly="readonly"
+						tip="" 
+						value="${(customCompetitorReport.reportCode)!}"  
+						/>
+					</td>
+					<td  align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('报告归属公司')}: </label>
+					</td>
+					<td width="150">
+						<@form.select id="customCode" name="customCode"
+							required="${i18n.get('请选择客户编号')}"
+							style="width:161px;"
+							viewKey="customFullName"
+							idKey='customCode'
+							url="function(){return '${ctx}/lovcustom/autocompleteCustom.html?customType=0'}"
+							value="${(customCompetitorReport.customCode)!}" />
+							
+					</td>
+					<td  align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('报告状态')} : </label>
+					</td>
+					<td width="150">
+						<input id="status" name="status" type="hidden" value="${(customCompetitorReport.status)!}" >
+						
+						<@form.input
+							id="statusName"  
+							name="statusName" 
+							placeholder="" 
+							required="${i18n.get('不能为空！')}"
+							readonly="readonly"
+							tip="" 
+							value="${(customCompetitorReport.statusName)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td  align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('报告日期')}: </label>
+					</td>
+					<td width="150">
+						<@form.input
+							id="reoprtDate"  
+							name="reoprtDate" 
+							readonly ="readonly"
+							placeholder="" 
+							required="${i18n.get('不能为空！')}"
+							tip="" 
+							value="${(customCompetitorReport.reoprtDate)!}" 
+							/>
+					</td>
+					<td  align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('报告人')}: </label>
+					</td>
+					<td width="150">
+							
+						<input id="applier" name="applier" type="hidden" value="${(customCompetitorReport.applier)!}" >
+						<input id="applierPos" name="applierPos" type="hidden" value="${(customCompetitorReport.applierPos)!}" >
+						
+						<@form.input
+						id="applierName"  
+						name="applierName" 
+						placeholder="" 
+						readonly ="readonly"
+						required="${i18n.get('不能为空！')}"
+						readonly="readonly"
+						tip="" 
+						value="${(customCompetitorReport.applierName)!}" 
+						/>
+					</td>
+					<td  align="right" width="200px">
+						<label class="no-padding-right">${i18n.get('报告部门')} : </label>
+					</td>
+					<td width="150">
+							
+						<input id="applierOrg" name="applierOrg" type="hidden" value="${(customCompetitorReport.applierOrg)!}" >
+							<@form.input
+							id="applierOrgName"  
+							name="applierOrgName" 
+							readonly ="readonly"
+							placeholder="" 
+							required="${i18n.get('不能为空！')}"
+							tip="" 
+							value="${(customCompetitorReport.applierOrgName)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td  align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('备注')} : </label>
+					</td>
+					<td colspan="5">
+						<@form.textArea id="comment" 
+							name="comment" 
+							placeholder="${i18n.get('备注')}" 
+							width="143px" 
+							height="3" 
+							value="${(customCompetitorReport.comment)!}" 
+							/>
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+		
+	</@form.form>
+	
+	<@plug.tabs  tabMain=tabMain>
+	</@plug.tabs>
+	</@form.panel>
+</@pui.body>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		if ('${(customCompetitorReport.status)!}' === 'CUSTOM_NORMAL_STATUS_20'
+			|| '${(customCompetitorReport.status)!}' === 'CUSTOM_NORMAL_STATUS_40'){
+			$("#save").attr("disabled","true");
+			$("#apply").attr("disabled","true");
+		}
+	});
+	
+	function applyCustom(operate,status){
+		var msg= "${i18n.get('确定启动提报流程吗？')}";
+		
+		var formDatas = $('#form_customCompetitorReport').serialize();
+		formDatas = "id=${(customCompetitorReport.id)!}&"+formDatas;
+		
+		bootbox.confirm(msg, function(result) {
+			if(result) {
+				$.ajax({
+					type : "POST",
+					url : "${ctx}/custom/reportApply.html",
+					async: true,
+					data : formDatas, 
+					dataType : 'json',
+					success : function(msg) {
+						alert(msg.message);
+						parent.currentParent2.reload_tableReportList(); 
+						javascript:api.close();
+					},
+					error: function(e) {
+						alert(e.responseJSON.message);
+					} 
+				});
+			}
+		});
+	}
+</script>
+
+</#escape>

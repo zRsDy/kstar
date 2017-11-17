@@ -1,0 +1,120 @@
+<div>
+	<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('执行情况')}</p>
+	<table align="center">
+		<tr>
+			<td align="right" width="100px">${i18n.get('活动开始时间 :')}</td>
+			<td width="280px">
+				<@form.input id="startDate" name="startDate" style="width:163px;" tip="${i18n.get('市场活动实际开始时间')}" readonly="true" />
+			</td>
+			<td align="right" width="100px">${i18n.get('活动结束时间 :')}</td>
+			<td width="280px">
+				<@form.input id="endDate" name="endDate" style="width:163px;" tip="${i18n.get('市场活动实际结束时间')}" readonly="true" />
+			</td>
+			<td align="right" width="100px">${i18n.get('活动效果评估 :')}</td>
+			<td width="280px">
+				<@form.input id="resultAssess" name="resultAssess" style="width:163px;" tip="${i18n.get('市场活动执行效果评估结果')}" readonly="true" />
+			</td>
+		</tr>
+		<tr>
+			<td align="right" width="100px">${i18n.get('活动效果说明 :')}</td>
+			<td colspan="5">
+				<@form.input id="resultExplain" name="resultExplain" tip="${i18n.get('市场活动执行效果详细说明')}" style="width:923px;" readonly="true" />
+			</td>
+		</tr>
+	</table>
+</div>
+
+<#if (permission["P09ActivityExpenseAdd"])??>
+	<#assign addURL_summary="true" />
+</#if>
+<#if (permission["P09ActivityExpenseEdit"])??>
+	<#assign editURL_summary="true" />
+</#if>
+<#if (permission["P09ActivityExpenseDelete"])??>
+	<#assign deleteURL_summary="'${ctx}/activityApply/deleteExpense.html'" />
+</#if>
+<#if (permission["P09ActivitySummaryFileAdd"])??>
+	<#assign fileAddURL_summary="true" />
+</#if>
+<#if (permission["P09ActivitySummaryFileDelete"])??>
+	<#assign fileDeleteURL_summary="true" />
+</#if>
+
+<@form.table id="expense" 
+	class="col-xs-12"
+	title="${i18n.get('费用信息')}"
+	url = "${ctx}/activityApply/pageExpense.html?applyId1=${(applyId)!}"
+	deleteURL = "${deleteURL_summary!}"
+	search="false"
+	rowNum = "10"
+	colModel = "[
+		{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+		{name:'expenseProject',label:'${i18n.get('费用项目')}',hidden:false,width:150,sortable:true,align:'center' }, 
+		{name:'estimatedExpense',label:'${i18n.get('预算费用')}',hidden:false,width:150,sortable:true,align:'center' }, 
+		{name:'actualExpense',label:'${i18n.get('实际费用')}',hidden:false,width:150,sortable:true,align:'center' }, 
+		{name:'organizerName',label:'${i18n.get('承办单位')}',hidden:false,width:150,sortable:true,align:'center' }, 
+		{name:'chargeExpense',label:'${i18n.get('需收取')}',hidden:false,width:150,sortable:true,align:'center' }, 
+		{name:'explain',label:'${i18n.get('说明')}',hidden:false,width:150,sortable:true,align:'center'}
+	]" 
+	buttons = "[
+		{
+  			id:'add_expense',
+  			label : '${i18n.get('新增')}',
+  			icon : 'icon-plus',
+  			own : ${addURL_summary!'false'},
+  			handler : function(e,rowData){
+				if(!selected_apply){
+					exalert(e,'${i18n.get('请选择申请单号')}');
+					return;
+				}else if(canEdit(selected_apply.statusName)){
+					myAlert(e,'${i18n.get('新增')}');
+					return;
+				}
+				parent.dialog('${i18n.get('费用信息')}','${ctx}/activityApply/addOrEditExpense.html?businessType=activity&applyId='+selected_apply.id,window);
+  			}
+  		},
+  		{
+  			id:'edit_expense',
+  			label : '${i18n.get('修改')}',
+  			icon : 'icon-pencil',
+  			own : ${editURL_summary!'false'},
+  			handler : function(e,rowData){
+				if(!selected_apply){
+					exalert(e,'${i18n.get('请选择申请单号')}');
+					return;
+				}else{
+					var statusEdit = !canEdit(selected_apply.statusName);
+					var requestPath = '${ctx}/activityApply/addOrEditExpense.html?businessType=activity&id='+selected_expense.id+'&statusEdit='+statusEdit;
+					parent.dialog('${i18n.get('修改')}', requestPath, window);
+				}
+  			}
+  		}
+	]" > 
+	
+	<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">	
+		<div class="form-group col-xs-3">
+			<input type ="hidden" class="applyId" name ="applyId" />
+			<input type="text" id="searchKey" name="searchKey" placeholder='请输入姓名或经销商名称' size="30" />
+		</div>	
+	</div> 
+</@form.table>
+<div id="attachmentId2"></div>
+<script type="text/javascript">
+function reload_expense_2(expenseId){
+	$("#expenseId").val(expenseId);
+	reload_apply();
+}
+
+function onComplete_expense(){
+	var expenseId = $("#expenseId").val();
+	$('#'+expenseId).trigger('click');
+}
+
+$(document).ready(function() {
+	initSummary();
+});
+
+function initSummary(){
+	showAttachmentPage("attachmentId2","${ctx}/common/attachment/attachment.html?docGroupCode=ActSummaryDotType&businessType=summary&unableAdd=true&unableDelete=true");
+}
+</script>

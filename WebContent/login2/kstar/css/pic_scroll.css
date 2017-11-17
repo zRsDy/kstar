@@ -1,0 +1,104 @@
+/* Gallery styles */
+
+#gallery{
+	/* CSS3 Box Shadow */
+	-moz-box-shadow:0 0 3px #AAAAAA;
+	-webkit-box-shadow:0 0 3px #AAAAAA;
+	box-shadow:0 0 3px #AAAAAA;
+	
+	/* CSS3 Rounded Corners */
+	
+	-moz-border-radius-bottomleft:4px;
+	-webkit-border-bottom-left-radius:4px;
+	border-bottom-left-radius:4px;
+	
+	-moz-border-radius-bottomright:4px;
+	-webkit-border-bottom-right-radius:4px;
+	border-bottom-right-radius:4px;
+	
+	border:1px solid #c9def6;
+	
+	background:url(../images/pic_scroll_panel.jpg) repeat-x bottom center #ffffff;
+	
+	/* The width of the gallery */
+	width:900px;
+	overflow:hidden;
+}
+
+#scroll_slides{
+	/* This is the slide area */
+	height:500px;
+	
+	/* jQuery changes the width later on to the sum of the widths of all the slides. */
+	width:900px;
+	overflow:hidden;
+}
+
+.scroll_slide{
+	float:left;
+}
+
+#reportmenu{
+	/* This is the container for the thumbnails */
+	height:32px;
+}
+
+#reportmenu ul{
+	margin:0px;
+	padding:0px;
+}
+
+#reportmenu li{
+	/* Every thumbnail is a li element */
+	width:80px;
+	display:inline-block;
+	list-style:none;
+	height:32px;
+	overflow:hidden;
+	display:inline!important;
+	float:left!important;
+}
+
+
+li.inact:hover{
+	/* The inactive state, highlighted on mouse over */
+	background:url(../images/pic_scroll_pic_bg.png) repeat;
+}
+
+li.act,li.act:hover{
+	/* The active state of the thumb */
+	background:url(../images/pic_scroll_active_bg.png) no-repeat;
+}
+
+li.act a{
+	cursor: pointer;
+}
+
+.fbar{
+	/* The left-most vertical bar, next to the first thumbnail */
+	background:url(../images/pic_scroll_divider.png) no-repeat right;
+}
+
+#reportmenu li a{
+	display:block;
+	background:url(../images/pic_scroll_divider.png) no-repeat right;
+	height:32px;
+	width:80px;
+	padding:0px;
+	outline:none;
+}
+
+#reportmenu a img{
+	border:none;
+}
+
+
+
+#reportmain{
+	/* The main container */
+	margin:15px auto;
+	text-align:center;
+	width:900px;
+	position:relative;
+}
+

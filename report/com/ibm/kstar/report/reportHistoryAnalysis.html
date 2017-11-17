@@ -1,0 +1,115 @@
+<@cui.body2>
+
+	
+	<div style="margin-top:20px;margin-bottom:20px; padding-left: 40px" >
+		<form>
+		</form>
+	</div>
+	<div class="radio" style="height:15px">
+	    <label>
+	        <span class="lbl"> &nbsp${i18n.get('业绩维度')}&nbsp&nbsp&nbsp</span>
+	    </label>
+	        <label>
+	            <@form.radio name="type" id='type1' value="0" selectValue="${(flag)!'0'}" />
+	            <span class="lbl">${i18n.get('客户分类')}&nbsp&nbsp  </span>
+	        </label>
+	        <label>
+	            <@form.radio name="type" id='type2' value="1" selectValue="${(flag)!}" />
+	            <span class="lbl">${i18n.get('客户行业')}&nbsp&nbsp  </span>
+	        </label>
+	        <label>
+	            <@form.radio name="type" id='type3' value="2"  selectValue="${(flag)!}" />
+	            <span class="lbl">${i18n.get('产品分类')}&nbsp&nbsp</span>
+	        </label>
+	        <label>
+	            <@form.radio name="type" id='type4' value="3" selectValue="${(flag)!}" />
+	            <span class="lbl">${i18n.get('产品系列')}&nbsp&nbsp  </span>
+	        </label>
+	</div>
+	<div class="row" style="margin-left: auto; margin-right: auto;">
+		<div id="query_hint" class="query_hint">
+	    	<img src="../assets/img/loading.gif" />${i18n.get('正在查询，请稍等．．．')}
+		</div>
+						<table class="table" border="1" border frame=box>
+								<thead>
+									<th rowspan="3"  border="1" style="text-align:center;">
+									${i18n.get('业绩项目')}
+									</th>
+									<th colspan="12" style="text-align:center;">${i18n.get('业绩结果（亿元）')}</th>
+									 <tr>
+									 	 <th style="text-align:center;" colspan="2">${year-4}</th> 
+									 	 <th style="text-align:center;" colspan="2">${year-3}</th> 
+									 	 <th style="text-align:center;" colspan="2">${year-2}</th> 
+									 	 <th style="text-align:center;" colspan="2">${year-1}</th> 
+									 	 <th style="text-align:center;" colspan="2">${year}</th> 
+									 </tr>
+									 <tr>
+									 	 <th style="text-align:center;">${i18n.get('达成')}</th> <th style="text-align:center;">${i18n.get('同比')}</th>
+									 	 <th style="text-align:center;">${i18n.get('达成')}</th> <th style="text-align:center;">${i18n.get('同比')}</th>
+									 	 <th style="text-align:center;">${i18n.get('达成')}</th> <th style="text-align:center;">${i18n.get('同比')}</th>
+									 	 <th style="text-align:center;">${i18n.get('达成')}</th> <th style="text-align:center;">${i18n.get('同比')}</th>
+									 	 <th style="text-align:center;">${i18n.get('达成')}</th> <th style="text-align:center;">${i18n.get('同比')}</th>
+									 </tr>
+									 
+								</thead>
+								<tbody>
+									<#list list as ctv>
+										<tr>
+											<td>${(ctv.type)!}</td>
+											<td>${(ctv.fourYearsAgoAccomplish)!}</td>
+											<td>${(ctv.fourYearsAgoContrast)!}%</td>
+											<td>${(ctv.threeYearsAgoAccomplish)!}</td>
+											<td>${(ctv.threeYearsAgoContrast)!}%</td>
+											<td>${(ctv.twoYearsAgoAccomplish)!}</td>
+											<td>${(ctv.twoYearsAgoContrast)!}%</td>
+											<td>${(ctv.oneYearsAgoAccomplish)!}</td>
+											<td>${(ctv.oneYearsAgoContrast)!}%</td>
+											<td>${(ctv.newYearsAgoAccomplish)!}</td>
+											<td>${(ctv.newYearsAgoContrast)!}%</td>
+										</tr>
+									</#list>
+								</tbody>
+						</table>
+			</div>
+	<script type="text/javascript">
+	$(document).ready(function () {
+			$("#query_hint").hide();
+			$("#type1").click(function () {
+				$("#query_hint").show();
+				window.location.href="${ctx}/report/reportHistoryAnalysis.html?reportType=${reportType}&year=${year}&currency=${currency}&employeeId=${employeeId!}&orgId=${orgId!}&flag=0";
+	        });
+
+	        $("#type2").click(function () {
+	        	$("#query_hint").show();
+	        	window.location.href="${ctx}/report/reportHistoryAnalysis.html?reportType=${reportType}&year=${year}&currency=${currency}&employeeId=${employeeId!}&orgId=${orgId!}&flag=1"; 
+	        });
+
+	        $("#type3").click(function () {
+	        	$("#query_hint").show();
+	        	window.location.href="${ctx}/report/reportHistoryAnalysis.html?reportType=${reportType}&year=${year}&currency=${currency}&employeeId=${employeeId!}&orgId=${orgId!}&flag=2";
+	        });
+
+	        $("#type4").click(function () {
+	        	$("#query_hint").show();
+	        	$(location).attr('href', '${ctx}/report/reportHistoryAnalysis.html?reportType=${reportType}&year=${year}&currency=${currency}&employeeId=${employeeId!}&orgId=${orgId!}&flag=3'); 
+	        });
+	})
+	/**
+	 * @description  * 显示查询等待层
+	 * @param query_hint
+	 */
+	function show_query_hint(query_hint){
+	    var query_hint = document.getElementById(query_hint);
+	    query_hint.style.display="block";
+	}
+	/**
+	 * @description 查询结果回调函数
+	 * @param query_hint 要隐藏的提示层id
+	 */
+	function queryHintCallback(query_hint){
+	    var query_hint = document.getElementById(query_hint);
+	    query_hint.style.display="none";
+	}
+	</script>		
+			
+</@cui.body2>

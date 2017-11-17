@@ -1,0 +1,216 @@
+<#escape x as x?html>
+<@pui.body>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	initialPage();
+});
+	
+function initialPage(){
+	setCheckboxStat();
+	setSelectStat(); 
+}	
+
+function setSelectStat(){
+
+	//$("#contrStatName").attr("disabled","disabled");
+   // $("#trialStatDesc").attr("disabled","disabled")	;
+    //$("#finalReviewStatDesc").attr("disabled","disabled");
+    $("#payStatDesc").attr("disabled","disabled");             	
+ 	/* $("#reviewStatDesc").attr("disabled","disabled");             	
+ 	$("#trialStatDesc").attr("disabled","disabled");*/	             	
+ 	$("#changeStatDesc").attr("disabled","disabled"); 
+ 	
+ 	
+ 	$("#isValidBox").attr("disabled","disabled");		             	
+ 	$("#isChangeBox").attr("disabled","disabled");
+ 	//$("#isArchiveBox").attr("disabled","disabled")
+ 	
+}
+
+function setCheckboxStat(){
+	
+	 //有效标识
+	 var checked2= $("#isValid").val();
+	 if (checked2 == '1'){
+	  $("#isValidBox").attr("checked","true"); 
+	 }else{
+		 $("#isValid").val('0');
+	  $("#isValidBox").removeAttr("checked"); 
+	 }
+	 
+	 var checked1 = $("#isSealFirst").val();
+	if (checked1 == '1') {
+		$("#isSealFirstBox").attr("checked", "true");
+	} else {
+		$("#isSealFirst").val('0');
+		$("#isSealFirstBox").removeAttr("checked");
+	}
+	 
+}
+
+//我司先盖章标识
+function checkValIsSealFirst(){	
+	var checked =  $("#isSealFirstBox").is(':checked')	
+	if(checked == true){	
+		$("#isSealFirst").val('1');
+		$("#isSealFirstBox").attr("checked","true"); 
+	}else {
+		$("#isSealFirst").val('0');
+		$("#isSealFirstBox").removeAttr("checked"); 		
+	}
+}
+
+//有效标识
+function checkValIsValidBox(){	
+	var checked =  $("#isValidBox").is(':checked');	
+	if(checked == true){	
+		$("#isValid").val('1'); 
+		$("#isValidBox").attr("checked","true"); 
+	}else {
+		$("#isValid").val('0'); 
+		$("#isValidBox").removeAttr("checked"); 		
+	}
+}
+
+</script>
+
+<@form.panel title="${i18n.get('新增/编辑')}">
+<@form.form id="t1" success="function(){parent.addTab('${i18n.get('合同变更')}' ,'${ctx}/change/contractchange.html'); }" class="form-horizontal" >
+			
+			<@form.input id="trialStat" name="trialStat" placeholder="" tip="" type="hidden" value="${(contrChg.trialStat)!}" />
+			<@form.input id="reviewStat" name="reviewStat" placeholder="" tip="" type="hidden" value="${(contrChg.reviewStat)!}" />
+		<table>
+		<tr>
+			<td width="100px" align="left">${i18n.get('变更编号:')}</td>
+			<td width="180px"><@form.input id="changeNo" name="changeNo" placeholder="" readonly ="readonly" tip="" value="${(contrChg.changeNo)!}" /></td>
+			
+			<td width="100px" align="left">${i18n.get('项目名称:')}</td>
+			<td width="180px">	
+			<@form.input id="projName" name="projName" placeholder="" readonly ="readonly" tip="" value="${(contrChg.projName)!}" />
+           	<input type="hidden" id="projNo"  name="projNo"  value="${(contrChg.projNo)!}" />	
+			</td>			
+			<td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('业务实体:')}</td>
+			<td width="180px">					
+				<@form.input id="bussEnityName" name="bussEnityName" placeholder="" readonly ="readonly" tip="" value="${(contrChg.bussEnityName)!}" />
+	            <input type="hidden" id="bussEnity"  name="bussEnity"  value="${(contrChg.bussEnity)!}" />
+			</td>
+			<td width="100px" align="left">${i18n.get('状态:')}</td>
+			<td width="180px">		
+             	<input type="hidden" id="changeStat"  name="changeStat"  value="${(contrChg.changeStat)!}" />
+             	<@form.select style="width: 160px;" id="changeStatDesc" name="changeStatDesc" 
+             		code="CONTRACTSTATUS"  value ="${(contrChg.changeStat)!}" />
+			</td>
+			<!-- 
+			<td width="100px" align="left">${i18n.get('初审状态:')}</td>
+			<td width="180px">	
+             	<input type="hidden" id="trialStat"  name="trialStat"  value="${(contrChg.trialStat)!}" />
+             	<@form.select style="width: 160px;" id="trialStatDesc" name="trialStatDesc" 
+             		code="CONTRACTREVIEWSTATUS"  value ="${(contrChg.trialStat)!}" />	
+			</td>
+			 -->
+		</tr>
+		<tr>
+		<td width="100px" align="left">${i18n.get('合同编号:')}</td>
+			<td width="180px"><@form.input id="contrNo" name="contrNo" placeholder="" readonly ="readonly" tip="" value="${(contrChg.contrNo)!}" /></td>
+			<td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('变更类型:')}</td>		
+			<td width="180px">			
+             	<@form.select style="width: 160px;" id="changeType" name="changeType" code="CONTRACTCHANGETYPE"   multiple="true"
+             		required="${i18n.get('请选择变更类型')}" value ="${(contrChg.changeType)!}" />
+			</td>
+			<td width="100px" align="left">${i18n.get('申请人:')}</td>
+			<td width="180px">		
+			<input type="hidden" id="creator" name="creator" tip="" value="${(contrChg.creator)!}" />
+			<@form.input id="creatorName" name="creatorName" placeholder="" readonly ="readonly" tip="" value="${(contrChg.creatorName)!}" />
+			</td>
+			<td width="100px" align="left">${i18n.get('申请时间:')}</td>
+			<td width="180px"> 
+			<@form.input id="submiteTime" name="submiteTime" placeholder="" readonly="readonly" tip="" value="${(contrChg.submiteTime?datetime)!}" />
+			</td>
+		</tr>
+		<tr>
+		<td width="100px" align="left">${i18n.get('合同名称:')}</td>
+			<td width="180px"><@form.input id="contrName" name="contrName"  readonly="readonly" placeholder="" tip="" value="${(contrChg.contrName)!}" /></td>
+			<td width="100px" align="left">${i18n.get('付款方式:')}</td>
+			<td width="180px">						
+             	<@form.select style="width: 160px;" id="payWay" name="payWay"  multiple="true" 
+             		code="PAYMENTTYPE"  value ="${(contrChg.payWay)!}"
+             	/>
+			</td>
+			<td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('申请组织:')}</td>
+			<td width="180px">			
+			<input type="hidden" id="org" name="org" value="${(contrChg.org)!}">
+			<@form.input id="orgName" name="orgName" placeholder="" readonly ="readonly" tip="" value="${(contrChg.orgName)!}" />
+           </td> 
+           
+           <td align="left">${i18n.get('是否我司先盖章:')}</td>
+			<td >						
+				<input name="isSealFirstBox" type="checkbox" id="isSealFirstBox" onclick="checkValIsSealFirst()" />
+				<input name="isSealFirst" type="hidden" id="isSealFirst" value="${(contrChg.isSealFirst)!}"/>
+			</td>
+			
+		</tr>
+		<tr>
+			<td width="100px" align="left">${i18n.get('客户名称:')}</td>
+			<td width="180px">
+			<@form.input id="custCode" name="custCode" type="hidden" value="${(contrChg.custCode)!}" />
+			<@form.input id="custName" name="custName" readonly="readonly" value="${(contrChg.custName)!}" />		
+			</td>
+			<td width="100px" align="left">${i18n.get('合同总金额:')}</td>
+			<td width="180px"><@form.input id="totalAmt" name="totalAmt" type="hidden" placeholder="" tip="" readonly ="readonly" value="${(contrChg.totalAmt)!}" />
+			<@form.input id="totalAmtDesc" name="totalAmtDesc" placeholder="" tip="" readonly ="readonly" value="${(contrChg.totalAmtDesc)!}" />
+			</td>
+			<td width="100px" align="left">${i18n.get('价格表:')}</td>
+			<td width="180px">
+			<@form.input id="pricTable" name="pricTable"  readonly="readonly" placeholder="" tip="" value="${(contrChg.pricTable)!}" />
+			</td>
+			<td align="left">${i18n.get('币种:')}</td>
+			<td >		
+			<@form.select  style="width: 160px;" id="currency" name="currency" required="${i18n.get('请选择币种')}"  
+				placeholder="${i18n.get('请选择币种')}" 
+				code="CURRENCY" 
+				idKey='id' 
+				value="${(contrChg.currency)!}"  /> 
+			</td>
+			
+		</tr>
+		<tr>
+			<td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('要货日期:')}</td>
+			<td width="180px">			
+			<@form.date style="width: 160px;" id="delivDate"  name="delivDate" 
+				required="${i18n.get('请选择要货日期')}" value="${(contrChg.delivDate?date)!}" />
+			</td>
+			<td width="100px" align="left">${i18n.get('有效标识:')}</td>
+			<td width="180px">
+				<input name="isValidBox" type="checkbox" id="isValidBox" onclick="checkValIsValidBox()" />
+				<input name="isValid" type="hidden" id="isValid" value="${(contrChg.isValid)!}"/>
+			</td> 
+				
+		</tr>
+		<tr>
+		<td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('变更原因:')}</td>
+			<td colspan="3"><@form.textArea id="changeReason" name="changeReason" required="${i18n.get('请填写变更原因')}" value="${(contrChg.changeReason)!}" /></td>
+		  <td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('变更内容:')}</td>
+			<td colspan="3"><@form.textArea id="changeCont" name="changeCont"  required="${i18n.get('请填写变更变更内容')}"  value="${(contrChg.changeCont)!}" /></td>
+		</tr>
+	</table>
+		
+<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+	</@form.form>
+</@form.panel>
+
+</@pui.body>
+</#escape>

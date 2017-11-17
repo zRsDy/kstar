@@ -1,0 +1,182 @@
+<@pui.body> 
+				
+
+
+<div class="col-xs-12">
+    <@form.panel title="${i18n.get('新增/编辑')}">
+        <@form.form
+        success="function(){
+				parent.currentParent.reload_t1();
+				try{ parent.currentParent.reload_tree1('${(parentLovMember.id)!}'); }catch(e){ }
+			}"
+        class="form-horizontal"
+        >
+
+            <input type="hidden" name="groupCode" value="${lovGroup.code}" />
+            <input type="hidden" name="optTxt5" id="optTxt5" value="${(lovMember.optTxt5)!}" />
+
+            <label class="col-xs-12 left"><h4>${i18n.get('归属维度')} ： ${lovGroup.name} </h4></label>
+            <#if (lovGroup.treeFlag)?? && lovGroup.treeFlag == 'Y' >
+                <label class="col-xs-12 left"><h4>${i18n.get('上级')} ： ${(parentLovMember.namePath)!''} </h4></label>
+            </#if>
+
+            <div class="form-group" <#if (lovMember.id)??>style="display:none"</#if>>
+                <label class="col-sm-3 control-label no-padding-right" for="type"> ${i18n.get('产品')} :</label>
+                <div class="radio">
+                    <label>
+                        <@form.radio  name="leafFlag" id='c1' value="Y" selectValue=(lovMember.leafFlag)!'N'/>
+                        <span class="lbl"> ${i18n.get('是')}</span>
+                    </label>
+
+                    <label>
+                        <@form.radio  name="leafFlag" id='c2' value="N" selectValue=(lovMember.leafFlag)!'N'/>
+                        <span class="lbl"> ${i18n.get('否')} </span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group" id="completechoose">
+                <label class="col-sm-3 control-label no-padding-right" for="product"> ${i18n.get('选择产品')}: </label>
+                <#--【销售目录配置】功能，添加产品时增加判断：-->
+                <#--  1）标准库只能添加CRM产品类别为“标准产品”的产品（外购除外）；-->
+                <#--  2）非标准库只能添加CRM产品类别为“非标产品”的产品（外购除外）；-->
+                <#if (parentLovMember.namePath)?? && (parentLovMember.namePath)?contains(i18n.get('国内数据中心') + '/' + i18n.get('标准产品'))>
+                    <#assign crmCategory="&crmCategory=0001,0005">
+                <#elseif (parentLovMember.namePath)?? && (parentLovMember.namePath)?contains(i18n.get('国内数据中心') + '/' + i18n.get('非标产品'))>
+                    <#assign crmCategory="&crmCategory=0002,0005">
+                </#if>
+                <@form.autocomplete
+                id="product"
+                name="product"
+                placeholder="${i18n.get('请选择产品')}"
+                tip="${i18n.get('请输入产品')} "
+                style="width:300px;"
+                url="${ctx}/product/catalog/productchoose.html?parentId=${(parentLovMember.id)!}&productId=${(lovMember.optTxt5)!}${crmCategory!''}"
+                formatResult="function(data) {
+							return '<div> ' +data.productName+ '【' +data.productCode +'】 </div>';
+						}"
+                onSelect="function(data){
+							$('#optTxt5').val(data.id);
+							$('#name').val(data.productName);
+						}"
+                value="${productJson!'{}'}"
+                />
+            </div>
+
+            <div id="inputArea" >
+                <div class="form-group" id="catelogname">
+                    <label class="col-sm-3 control-label no-padding-right" for="desc">
+                        <strong style="color: red;">*</strong>${i18n.get('目录名称')}: </label>
+                    <@form.input
+                    id="name"
+                    name="name"
+                    placeholder="${i18n.get('请输入名称')}"
+                    required="${i18n.get('不能为空！')}"
+                    tip="${i18n.get('请输入名称')}"
+                    value="${(lovMember.name)!}" />
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right" for="startDate"><strong style="color: red;">*</strong>
+                        ${i18n.get('有效期开始时间')}: </label>
+                    <@form.date id="startDate" name="startDate" required="${i18n.get('不能为空')}" value="${(lovMember.startDate?date)!}" />
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right" for="endDate"> ${i18n.get('有效期结束时间')}: </label>
+                    <@form.date id="endDate" name="endDate" value="${(lovMember.endDate?date)!}" />
+                </div>
+
+                <div style="display: none;">
+                    <div class="form-group uncompletechoose" <#if lovGroup.id!='procatalog'>style="display:none;"</#if>>
+                        <label class="col-sm-3 control-label no-padding-right" for="optTxt21"><strong style="color: red;">*</strong>${i18n.get('是否报备')}:
+                        </label>
+                        <@form.select id="optTxt2" name="optTxt2" style="width:163px;" code="NY" required="${i18n.get('不能为空')}" idKey='code' value="${(lovMember.optTxt2)!'0'}" />
+                    </div>
+
+                    <div class="form-group uncompletechoose" <#if lovGroup.id!='procatalog'>style="display:none;"</#if>>
+                        <label class="col-sm-3 control-label no-padding-right" for="upBaoBei1"><strong style="color: red;">*</strong>${i18n.get('是否呈上报备')}:
+                        </label>
+                        <@form.select id="upBaoBei" name="upBaoBei" style="width:163px;" code="NY" required="${i18n.get('不能为空')}" idKey='code' value="0" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right" for="desc">${i18n.get('自定义排序')}: </label>
+                    <@form.input
+                    id="no"
+                    name="no"
+                    placeholder="${i18n.get('请输入目录序号')}"
+                    tip="${i18n.get('目录顺序')}"
+                    value="${(lovMember.no)!}"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('说明')}: </label>
+                    <@form.textArea
+                    id="memo"
+                    name="memo"
+                    placeholder="${i18n.get('请输入备注')}"
+                    tip="${i18n.get('备注')}"
+                    value="${(lovMember.memo)!}"
+                    />
+                </div>
+            </div>
+
+
+            <div class="clearfix form-actions">
+                <div class="col-md-offset-5 col-md-7">
+
+
+                    <button class="btn btn-info submit" onclick="changeType()" type="button">
+                        <i class="icon-ok bigger-110"></i>
+                        ${i18n.get('保存')}
+                    </button>
+                    &nbsp; &nbsp; &nbsp;
+                    <button class="btn" type="button" onclick="javascript:api.close()">
+                        <i class="icon-undo bigger-110"></i>
+                        ${i18n.get('关闭')}
+                    </button>
+                </div>
+            </div>
+        </@form.form>
+    </@form.panel>
+    <div class="col-xs-12">
+        <script type="text/javascript">
+
+            $('#c1').click(function () {
+                $('#product').attr("disabled", false);
+                $('#completechoose').show();
+                $('.uncompletechoose').hide();
+                $('#catelogname').hide();
+                $("#name").attr("disabled", true);
+                $("#code").attr("disabled", true);
+            })
+
+            $('#c2').click(function () {
+                $("#inputArea input").attr("disabled", false);
+                $('#product').attr("disabled", true);
+                $('#completechoose').hide();
+                if ('${lovGroup.id}' == 'procatalog') {
+                    $('.uncompletechoose').show();
+                }
+
+                $('#catelogname').show();
+            })
+
+            $().ready(function () {
+                var leaf = '${(lovMember.leafFlag)!}';
+                if (leaf == 'N') {
+                    $('#c2').click();
+                } else {
+                    $('#c1').click();
+                }
+            });
+
+            function changeType() {
+                $("#name").attr("disabled", false);
+                $("#code").attr("disabled", false);
+            }
+        </script>
+    </div>
+</@pui.body>

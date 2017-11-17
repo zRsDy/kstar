@@ -1,0 +1,86 @@
+<@pui.body>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t81" success="function(){
+		try{
+			parent.currentParent.reload_t81();
+		}catch(e){
+			parent.currentParent2.reload_t81();
+		}
+		}" class="form-horizontal">		
+		<div align="center" class="form-group">
+			<table>
+					<tr>
+						<td align="right" width="190px"><strong style="color: red;">*</strong>${i18n.get('层级对照表名称 :')}</td>
+						<td width="450px">
+							<@form.input id="layCompName" style="width:260px;" name="layCompName" tip="${i18n.get('底价层级与职务对照表名称')}" required="${i18n.get('不能为空')}" value="${(lpc.layCompName)!}" />
+						</td>
+						<td align="right" width="190px"><strong style="color: red;">*</strong>${i18n.get('组织 :')}</td>
+						<td width="450px">
+							<input type="hidden" id="organization" name="organization" value="${(lpc.organization)!}" />
+							<@form.input id="organizationName" name="organizationName" style="width:163px;" tip="${i18n.get('组织')}" readonly="true" required="${i18n.get('不能为空')}" value="${(lpc.organizationName)!}" />
+							<@biz.picker_product id="select" url="${ctx}/proprice/selectPriceOrg.html" 
+								callback="function(data){
+									if(data){
+										$('#organization').val(data.id);
+										$('#organizationName').val(data.name);
+									 }
+								}"
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="190px"><strong style="color: red;">*</strong>${i18n.get('有效期开始时间 :')}</td>
+						<td width="450px">
+							<@form.date id="startDate" style="width:260px;" name="startDate" required="${i18n.get('不能为空')}" tip="${i18n.get('有效期开始时间')}" value="${(lpc.startDate?date)!}" />
+						</td>
+						<td align="right" width="190px">${i18n.get('有效期结束时间 :')}</td>
+						<td width="450px">
+							 <@form.date id="endDate" style="width:260px;" name="endDate" tip="${i18n.get('有效期线束时间')}" value="${(lpc.endDate?date)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="190px">${i18n.get('创建组织')}</td>
+						<td width="450px">
+							<input type="hidden" id="createOrg" name="createOrg" value="${(lpc.createOrg)!}" />
+							<@form.input id="createOrgName" name="createOrgName" style="width:163px;" readonly="true" tip="${i18n.get('创建组织')}" value="${(lpc.createOrgName)!}" />
+						</td>
+						<td align="right" width="190px">${i18n.get('创建人 :')}</td>
+						<td width="450px">
+							<input type="hidden" id="creater" name="creater" value="${(lpc.creater)!}" />
+							<@form.input id="createrName" name="createrName" style="width:163px;" readonly="true" tip="${i18n.get('创建人')}" value="${(lpc.createrName)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="190px">${i18n.get('创建日期')}</td>
+						<td width="450px">
+							<@form.input id="createDate" name="createDate" style="width:163px;" readonly="true" tip="${i18n.get('创建日期')}" value="${(lpc.createDate?date)!}" />
+						</td>
+						<td align="right" width="190px"></td>
+						<td width="450px">
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="190px">${i18n.get('说明 :')}</td>
+						<td colspan="3">
+							<@form.textArea id="priceCompDesc" name="priceCompDesc" style="width:900px;" tip="${i18n.get('价格表说明性备注')}" value="${(lpc.priceCompDesc)!}" />
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+	</@form.panel>
+</@pui.body>

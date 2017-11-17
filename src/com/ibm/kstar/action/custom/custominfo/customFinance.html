@@ -1,0 +1,55 @@
+<#escape x as x?html>
+
+<#if (permission["P02CusT2FinanceEPRImportAdd"]?? && ("${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_40")
+										&& ("${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_40"))>
+	<#assign addEPRURL = "'${ctx}/custom/baseinfo/erp/add.html?id=${(customInfo.id)!}'"   />
+</#if>
+
+<#if (permission["P02CusT2FinanceEPRImportEdit"]?? && ("${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_40")
+										&& ("${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_40"))>
+	<#assign editEPRURL= "'${ctx}/custom/baseinfo/erp/edit.html'"     />	
+</#if>
+
+<#if (permission["P02CusT2FinanceEPRImportDelete"]?? && ("${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_40")
+										&& ("${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_40"))>
+	<#assign deleteEPRURL = "'${ctx}/custom/baseinfo/erp/delete.html'"     />	
+</#if>
+
+<@form.table id="erp" 
+class="col-xs-12"
+height="131px"
+title="${i18n.get('ERP引入')}" 
+url = "${ctx}/custom/baseinfo/erp/page.html?id=${(customInfo.id)!}"
+rowNum = "5" 
+addURL = "${addEPRURL!}"
+editURL = "${editEPRURL!}"
+deleteURL= "${deleteEPRURL!}"  
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+	{name:'customId',label:'${i18n.get('客户编码')}',hidden:true,width:200,sortable:false,align:'center' },
+	{name:'corpErpUnitGrid.name',label:'${i18n.get('业务实体')}',hidden:false,width:250,sortable:false,align:'center' },
+	{name:'area',label:'${i18n.get('引入地址')}',hidden:false,width:500,sortable:false,align:'center' },
+	{name:'corpErpStatus',label:'${i18n.get('有效')}',hidden:true,width:200,sortable:false,align:'center' },
+	{name:'corpErpStatusName',label:'${i18n.get('有效')}',hidden:false,width:200,sortable:false,align:'center' },
+	{name:'corpLeadedComment',label:'${i18n.get('引入说明')}',hidden:false,width:200,sortable:false,align:'center' }
+	]" 
+onComplete = "function() { 
+	var ids = $('#erp').jqGrid('getDataIDs');
+	if(!!ids&& ids.length ==0){
+		$('#add_erp').show();
+	}
+	$.each(ids,function(i,id){
+		var status = $('#erp').jqGrid('getCell', id, 'corpErpStatus');
+		if(status == 'CUSTOM_NORMAL_STATUS_10' || status == 'CUSTOM_NORMAL_STATUS_20' || status == 'CUSTOM_NORMAL_STATUS_30'){
+			$('#add_erp').hide();
+		}
+	});
+
+}"
+	>
+</@form.table> 
+
+<script type="text/javascript">
+
+</script>
+</#escape>

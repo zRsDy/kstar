@@ -1,0 +1,107 @@
+<@pui.body> 
+	<script type="text/javascript">
+		var selectedEmployeeList = ${selectedEmployeeList!'[]'};
+	</script>
+		<div class="col-xs-12">
+			<table style="width: 100%" >
+				<tr>
+					<td valign="top">
+						<@form.table id="t1"
+							class="col-xs-12"
+							shrinkToFit = 'true'
+							title="${i18n.get('用户')}"
+							checkbox='true'
+							url = "${ctx}/user/page.html"
+							rowNum = "20"
+							colModel = "[
+							  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:false,align:'center' }, 
+							  { name : 'employee.no', label : '${i18n.get('员工号')}', width : 90 ,sortable:false}, 
+							  { name : 'employee.name', label : '${i18n.get('姓名')}', width : 150 ,sortable:false },
+							  { name : 'user.endDate', label : '${i18n.get('失效日期')}', width : 90 ,sortable:false ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }}
+							  ]"
+							  
+							  onComplete= "function(list){
+							  	debugger;
+							  		$.each(list,function(i,item){
+							  			$.each(selectedEmployeeList,function(j,item2){
+							  				if(item.id == item2.id){
+								  				$('#t1').jqGrid('setSelection',item.id,false);
+								  			}
+							  			});
+							  		})
+							  }"
+							  
+							  onSelectRow = "function(rowid,status){
+							  	if(status){
+							  		var flag = true;
+							 		$.each(selectedEmployeeList,function(i,item){
+							 			if(item && rowid.id === item.id){
+							 				flag = false;
+							 				return;
+							 			}
+							 		});
+							 		if(flag){
+								 		selectedEmployeeList.push(selected_t1);
+							 		}
+							  	}else{
+								  	$.each(selectedEmployeeList,function(i,item){
+							 			if(item && rowid.id === item.id){
+							 				selectedEmployeeList.splice(i,1);
+							 			}
+						 			});
+					 			}
+							  }"
+							>
+						<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">
+							<input type="hidden" id="parentId" name="parentId" />
+							<div class="form-group col-xs-3">
+								<input type="text" id="searchKey" name="searchKey" placeholder="${i18n.get('查询关键字')}" />
+							</div>	
+							<div class="form-group col-xs-2">
+								<button type="submit" class="btn btn-info" > 
+									<i class="icon-search bigger-110"></i>
+									${i18n.get('查询')}
+								</button>
+							</div>
+						</div>
+						</@form.table>
+					</td>
+				</tr>
+			</table>	
+		</div>
+		
+		<div class="col-xs-12">
+			 	<@form.form id="t1"  
+			before="function(){
+				var html = '';
+				$.each(selectedEmployeeList,function(i,item){
+					html = html + item.id;
+					if(i < selectedEmployeeList.length - 1){
+						html = html + ',';
+					}
+				})
+				$('#employees').val(html);
+			}"
+			success="function(){ 
+				close();
+			}" 
+			>
+	<input type="hidden" name="roleId" value="${roleId}" />
+	<input type="hidden" id="employees" name="employees" />
+	<div class="clearfix form-actions">
+	<div class="col-md-offset-5 col-md-7">
+		<button class="btn btn-info submit" id="selectOK" type="button">
+			<i class="icon-ok bigger-110"></i>
+			${i18n.get('选择')}
+		</button>
+		&nbsp; &nbsp; &nbsp;
+		<button class="btn" type="button" onclick="javascript:api.close()">
+			<i class="icon-undo bigger-110"></i>
+			${i18n.get('关闭')}
+		</button>
+	</div>
+	</div>
+	</@form.form>
+		</div>
+		
+</@pui.body>

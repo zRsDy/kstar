@@ -1,0 +1,23 @@
+<#escape x as x?html>
+<@form.table id="tableEvent" 
+class="col-xs-12"
+height="131px"
+title="${i18n.get('活动一览')}" 
+url = "${ctx}/custom/baseinfo/info360/event360Show.html?customCode=${(customInfo.customCode)!}" 
+rowNum = "5" 
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+	{name:'eventCode',label:'${i18n.get('接待活动编号')}',hidden:false,width:160,sortable:false,align:'center' },
+	{name:'applierName',label:'${i18n.get('申请人')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'applierOrgName',label:'${i18n.get('申请部门')}',hidden:false,width:200,sortable:false,align:'center' },
+	{name:'customName',label:'${i18n.get('来访客户名称')}',hidden:false,width:300,sortable:false,align:'center' },
+	{name:'eventGoal',label:'${i18n.get('来访目的')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'eventArrivalDate',label:'${i18n.get('来访日期')}',hidden:false,width:100,sortable:false,align:'center' ,formatter:dateFmatter },
+	{name:'eventStayDays',label:'${i18n.get('逗留天数')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'eventStatusName',label:'${i18n.get('状态')}',hidden:false,width:100,sortable:false,align:'center' }
+	]" 
+	> 
+	<script src="${ctx}/anne/js/util.js"></script>
+</@form.table> 
+
+</#escape>

@@ -1,0 +1,212 @@
+<@pui.body>
+<div class="col-xs-12">
+<table style="width: 100%" >
+<tr>
+<td valign="top">
+<@form.table id="taskSchedulerList" 
+	class="col-xs-12"
+	title="${i18n.get('任务调度列表')}" 
+	url = "${ctx}/task/schedule/page.html" 
+	rowNum = "5" 
+	addURL = "'${ctx}/task/schedule/add.html'" 
+	editURL = "'${ctx}/task/schedule/edit.html'" 
+	deleteURL = "'${ctx}/task/schedule/delete.html'" 
+	colModel = "[
+		{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'groupName',label:'${i18n.get('任务组名')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'jobName',label:'${i18n.get('任务名')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'classPath',label:'${i18n.get('任务类名')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'repeatCount',label:'${i18n.get('任务重复次数')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatRepeatCount(cellvalue)} },
+		{name:'repeatInterval',label:'${i18n.get('重复时间间隔')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'jobParams',label:'${i18n.get('任务参数')}',hidden:false,width:100,sortable:false,align:'center' }
+		]" 
+		
+		onSelectRow="function(){
+			$('#taskSchedulerId').val(selected_taskSchedulerList.id);
+			reload_jodDetailVo();
+		}"
+		buttons = "[
+		{
+  			id:'startBtn',
+  			label : '${i18n.get('启动')}',
+  			icon : 'icon-trash',
+  			own : true,
+  			handler : function(e,rowData){
+				if(!selected_taskSchedulerList){
+					exalert(e,'${i18n.get('没有选中任何数据!')}');
+					return;
+				}else{
+					ajax({
+						url: '${ctx}/task/schedule/start.html',
+						type: 'POST',
+						data: {id:selected_taskSchedulerList.id},
+						success : function(result) {
+							reload_jodDetailVo();
+						}
+					});
+				}
+  			}
+  		},
+  		{
+  			id:'pauseAndResumeBtn',
+  			label : '${i18n.get('暂停/重启')}',
+  			icon : 'icon-trash',
+  			own : true,
+  			handler : function(e,rowData){
+				if(!selected_taskSchedulerList){
+					exalert(e,'${i18n.get('没有选中任何数据!')}');
+					return;
+				}else{
+					ajax({
+						url: '${ctx}/task/schedule/pauseAndResume.html',
+						type: 'POST',
+						data: {id:selected_taskSchedulerList.id},
+						success : function(result) {
+							reload_jodDetailVo();
+						}
+					});
+				}
+  			}
+  		},
+  		{
+  			id:'removeBtn',
+  			label : '${i18n.get('停止')}',
+  			icon : 'icon-trash',
+  			own : true,
+  			handler : function(e,rowData){
+				if(!selected_taskSchedulerList){
+					exalert(e,'${i18n.get('没有选中任何数据!')}');
+					return;
+				}else{
+					ajax({
+						url: '${ctx}/task/schedule/remove.html',
+						type: 'POST',
+						data: {id:selected_taskSchedulerList.id},
+						success : function(result) {
+							reload_jodDetailVo();
+						}
+					});
+				}
+  			}
+  		}
+		  		]"
+>
+</@form.table> 
+
+	<div id="layCompLine">
+	<hr>
+	<@form.table id="jodDetailVo" 
+			class="col-xs-12"
+			title="${i18n.get('任务详情及状态')}" 
+			url = "${ctx}/task/schedule/queryJodDetailVo.html"  
+			rowNum = "5" 
+			colModel = "[
+				{name:'previousFireTime',label:'${i18n.get('上次执行时间')}',hidden:false,width:150,sortable:false,align:'right' },
+				{name:'nextFireTime',label:'${i18n.get('下次执行时间')}',hidden:false,width:150,sortable:false,align:'right' }, 
+				{name:'startTime',label:'${i18n.get('开始时间')}',hidden:false,width:150,sortable:true,align:'right' }, 
+				{name:'endTime',label:'${i18n.get('结束时间')}',hidden:false,width:150,sortable:false,align:'right' },
+				{name:'excuteCount',label:'${i18n.get('已执行次数')}',hidden:false,width:100,sortable:false,align:'center' },
+				{name:'schedulerState',label:'${i18n.get('状态')}',hidden:false,width:150,sortable:false,align:'left',formatter:function(cellvalue, options){ return  formatSchedulerState(cellvalue)} }
+			]"> 
+			<input type="hidden" name="taskSchedulerId" id ="taskSchedulerId" />
+		</@form.table> 
+	</div>
+</td>
+</tr>
+</table>	
+</div>
+</@pui.body>
+<script type="text/javascript">
+	var schedulerStateArr = {
+			"-1" : "未启动",
+			"0" : "运行",
+			"1" : "暂停",
+			"2" : "完成",
+			"3" : "出错",
+			"4" : "阻塞",
+			"-101" : "任务中断执行",
+			"-100" : "本轮任务执行完毕"
+	};
+	
+	function formatRepeatCount(cellvalue){
+		if(cellvalue == null || cellvalue < 0){
+	    	return "${i18n.get('无限')}";
+		}else{
+			return cellvalue;
+		}
+	}
+	
+	
+	
+	function formatSchedulerState(cellvalue){
+		return schedulerStateArr[cellvalue];
+	}
+	
+	/* 
+	function initOptBtns(ids){
+		for ( var i = 0; i < ids.length; i++) {
+            var cl = ids[i];
+            startBtn = "<input class='btn btn-info' type='button' value='启动' onclick=\"startTask("+ cl +")\"/>";
+            pauseBtn = "<input class='btn btn-info' type='button' value='暂停' onclick=\"pauseTask("+ cl +")\" />";
+            deleteBtn = "<input class='btn btn-info' type='button' value='删除' onclick=\"delTask("+ cl +")\" />";
+            $('#taskSchedulerList').jqGrid('setRowData', ids[i],
+            {
+            	optBtns : startBtn+" "+pauseBtn+" "+deleteBtn
+            });
+          }
+	}
+	
+	function startTask(obj){
+		var starturl = '${ctx}/task/schedule/start.html';
+		if(obj == null){
+			exalert(e,'没有选中任何数据!');
+			return;
+		}else{
+			ajax({
+				url: starturl,
+				type: 'POST',
+				data: obj,
+				success : function(result) {
+					reload_taskSchedulerList();
+					$('#loading_taskSchedulerList').hide();
+				},
+				error : function(result) {
+					exalert(e,result);
+					$('#loading_taskSchedulerList').hide();
+				}
+			});
+		}
+	} */
+	
+	/* function pauseTask(obj){
+		ajax({
+			type:"post",
+			url : ${ctx}/task/schedule/pause.html,
+			data: obj,
+			success : function(result) {
+				reload_taskSchedulerList();
+				$('#loading_taskSchedulerList').hide();
+			},
+			error : function(result) {
+				exalert(e,result);
+				$('#loading_taskSchedulerList').hide();
+			}
+		});
+	}
+	
+	function delTask(obj){
+		ajax({
+			type:"post",
+			url : ${ctx}/task/schedule/delete.html,
+			data: obj,
+			success : function(result) {
+				reload_taskSchedulerList();
+				$('#loading_taskSchedulerList').hide();
+			},
+			error : function(result) {
+				exalert(e,result);
+				$('#loading_taskSchedulerList').hide();
+			}
+		});
+	}  */
+</script>

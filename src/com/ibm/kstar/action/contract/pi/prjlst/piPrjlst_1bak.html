@@ -1,0 +1,291 @@
+<div style="overflow:hidden;">
+
+
+<script type="text/javascript">
+
+		$(document).ready(function(){
+			$("#orderStatus").attr("disabled","disabled");
+			if("${(orderHeader.isAbnormalPrice)!}" == 1){
+				$("#isAbnormalPrice").attr("checked","checked");
+			}
+			if("${(orderHeader.isAbnormalCredit)!}" == 1){
+				$("#isAbnormalCredit").attr("checked","checked");
+			}
+		});
+		
+		$(document.body).on('click',function(event){
+			var target =event.srcElement ? event.srcElement :event.target;
+			if($(target).hasClass("edit-cell")|| ($(target).is("input")&&$(target).closest("td").attr("role")=="gridcell")){
+				return;
+			}else{
+				calculateAmount();
+			}
+		});
+		
+		
+		function submit_before(){
+			$('#piPrjlstForm').trigger('blur')
+			$("#orderStatus").removeAttr("disabled");
+			calculateAmount();
+		}
+		
+		$(window).resize(function(){  
+		 	$("#piPrjlstForm").setGridWidth($(window).width()-90);
+		});
+	
+		var selectId = "";
+		function proSelect(rowid){
+			selectId = rowid ;
+			$('#selectProduct').click();
+		}
+		
+		var newrowid = 0;  
+		function addRow()  
+		{   
+		    //var selectedId = $("#piPrjlstForm").jqGrid("getGridParam", "selrow");   
+		    //var ids = jQuery("#piPrjlstForm").jqGrid('getDataIDs');  
+		    //获得当前最大行号（数据编号）  
+		    //var rowid = Math.max.apply(Math,ids);  
+		    //获得新添加行的行号（数据编号）  
+		    newrowid = newrowid+1; 
+		    var dataRow = {    
+		        id: ""
+		    };      
+		      
+		    //将新添加的行插入到第一列  
+		    $("#piPrjlstForm").jqGrid("addRowData", newrowid, dataRow, "first");  
+		    //设置grid单元格不可编辑  
+		    $("#piPrjlstForm").setGridParam({cellEdit:false});  
+		    //设置grid单元格可编辑  
+		    //$("#piPrjlstForm").jqGrid('editRow', newrowid, false);  
+		    //确定按钮可用    
+		    //给添加的列加选择按钮  
+			var ps = '<input  type=\"button\" value=\"${i18n.get('选择产品')}\" onclick=\"proSelect(\''+newrowid+'\');\" />'; 
+			jQuery('#piPrjlstForm').jqGrid('setRowData', newrowid, { act : ps}); 
+		}
+		
+		//批量增加行
+		function addRowBatch(datas){
+			$.each(datas,function(i,data){
+     			delete data.id ;
+				newrowid = newrowid+1;  
+			    //将新添加的行插入到第一列  
+			    $("#piPrjlstForm").jqGrid("addRowData", newrowid, data, "first");  
+			    //设置grid单元格不可编辑  
+			    $("#piPrjlstForm").setGridParam({cellEdit:false});  
+			    //设置grid单元格可编辑  
+			    //$("#piPrjlstForm").jqGrid('editRow', newrowid, false);  
+			    //确定按钮可用    
+			    //给添加的列加选择按钮  
+				var ps = '<input  type=\"button\" value=\"${i18n.get('选择产品')}\" onclick=\"proSelect(\''+newrowid+'\');\" />'; 
+				jQuery('#piPrjlstForm').jqGrid('setRowData', newrowid, { act : ps}); 
+	 		})
+		}
+		
+		function calculateAmount(){
+			$('#piPrjlstForm').trigger('blur')
+			var amount = 0;
+			var ids = $('#piPrjlstForm').jqGrid('getDataIDs');
+	 		$.each(ids,function(i,id){
+				var rowData = $("#piPrjlstForm").jqGrid("getRowData",id);
+				if(rowData.amount){
+					amount = amount +  parseFloat(rowData.amount);
+				}
+	 		});
+	 		$("#amount").val(amount);
+		}
+		
+</script>
+	<div>
+	<@form.panel title="">
+		
+		<table style="width: 800px;" >
+				<tr>
+						<td id="treeTd" style="width:100px" valign="top">
+							<@form.panel title="${i18n.get('工程清单目录')}" style='height:100'>
+								<@plug.tree 
+								checkbox="false" 
+								id="prjlsttree1" 
+								asyncUrl='${ctx}/pi/prjlst/treePrjlst.html?groupId=PRJLSTPRDCAT&contrId=${contrId}'
+								onClick=" function(event, treeId, treeNode){
+							  		$('#parentId').val(treeNode.id);
+							  		reload_prjlst();
+							  		if(treeNode.leafFlag == 'Y'){
+							  			$('#add_prjlst').hide();
+							  		}else{
+							  			$('#add_prjlst').show();
+							  		}				  		
+							  	}"
+							  	
+							  	 viewName="function(data){
+										return data.name ;
+									}"
+								/>
+							</@form.panel>
+						</td>
+				
+					<td valign="top">
+						<@form.table id="piPrjlstForm"
+						class="col-xs-12"
+						shrinkToFit = 'true'
+						title="${i18n.get('工程清单列表')}"
+						url = "${ctx}/pi/prjlst/prjLstPage.html?contrId=${contrId}"
+						rowNum = "20"
+				<!-- 		addURL = "'${ctx}/pi/prjlst/addPrjlst.html?contrId=${contrId}&groupId=PRJLSTPRDCAT&parentId=' + $('#parentId').val()"
+						editURL = "'${ctx}/pi/prjlst/editPrjlst.html?contrId=${contrId}'"
+						deleteURL = "'${ctx}/pi/prjlst/deletePrjlst.html?contrId=${contrId}'" 
+					 -->
+						colModel = "[
+						  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:true,align:'center' }, 
+						  { name : 'contrId', label:'contrId', width : 20, editable : false, hidden : true},
+						  { name :	'act',label:'${i18n.get('选择产品')}',hidden:false,width:80,sortable:true,align:'center'},
+						  { name : 'lvmenber.code', label : '${i18n.get('编码')}',hidden : true, width : 90 ,sortable:true}, 
+						  { name : 'prdNm', label : '${i18n.get('产品名称')}', width : 100 ,sortable:true },
+						  { name : 'prdCtg', label : '${i18n.get('产品分类')}', width : 80 ,sortable:true ,editable : false },
+						  { name : 'prdTyp', label : '${i18n.get('产品型号')}', width : 80 ,sortable:true ,editable : false },
+						  { name : 'prdUnt', label : '${i18n.get('单位')}', width : 50 ,sortable:true ,editable : false },
+						  { name : 'prdSprc', label : '${i18n.get('定价')}', width : 50 ,sortable:true  ,editable : false},
+						  { name : 'prdPrc', label : '${i18n.get('报价')}', width : 50 ,sortable:true ,editable : true},
+						  { name : 'amt', label : '${i18n.get('数量')}', width : 50 ,sortable:true, editable : true },
+						  { name : 'ttlUnt', label : '${i18n.get('单品总金额')}', width : 80 ,sortable:true ,editable : false},
+						  { name : 'avgTtl', label : '${i18n.get('平均总单价')}', width : 80 ,sortable:true ,editable : false},
+						  { name : 'nstRq', label : '${i18n.get('非标需求')}', width : 50 ,sortable:true ,editable : false},
+						  { name : 'notes', label : '${i18n.get('备注')}', width : 50 ,sortable:true }
+						  ]"
+						 buttons = "[
+						  		{
+						  			id:'deleteButton',
+						  			label : '${i18n.get('删除')}',
+						  			icon : 'icon-trash',
+						  			own : true,
+						  			handler : function(e,rowData){
+										if(!selected_prjlst){
+											alert('${i18n.get('没有选中任何数据')}!');
+											return;
+										}
+										bootbox.confirm('${i18n.get('你确定要删除该条数据')}【'+selected_prjlst.code+','+selected_prjlst.name+'】?', function(result) {
+											if(result) {
+												ajax({
+													type:'post',
+													url : '${ctx}/lov/member/delete.html',
+													data: selected_prjlst,
+													success : function(result) {
+														try{ reload_prjlsttree1(selected_prjlst.parentId); }catch(e){ }
+														reload_prjlst();
+														selected_prjlst = null;
+													},
+													error : function(result) {
+														alert(result);
+													}
+												});
+											}
+										});
+						  			}
+						  		},
+								{
+									id:'deleteRow',
+									label : '${i18n.get('删除')}',
+									icon : 'icon-save',
+									own : true,
+									handler : function(e,rowData){
+										var id = $('#piPrjlstForm').jqGrid('getGridParam','selrow'); 
+									     if(!id){
+									        	alert('${i18n.get('请选择要删除的行')}');
+									        	return;
+									     }else{           
+									         $('#piPrjlstForm').jqGrid('delRowData', id);      
+									     } 
+									}
+								},{
+									id:'addRow',
+									label : '${i18n.get('增加一行')}',
+									icon : 'icon-save',
+									own : true,
+									handler : function(e,rowData){
+										addRow();
+									}
+								},{
+									id:'addRowBatch',
+									label : '${i18n.get('批量增加')}',
+									icon : 'icon-save',
+									own : true,
+									handler : function(e,rowData){
+										$('#selectProductMulti').click();
+									}
+								},{
+									id:'calculateAmount',
+									label : '${i18n.get('计算合计')}',
+									icon : 'icon-save',
+									own : true,
+									handler : function(e,rowData){
+										calculateAmount();
+									}
+								}
+										  	]"						  	
+								onComplete = "function() { 
+									var ids = $('#piPrjlstForm').jqGrid('getDataIDs');
+							 		$.each(ids,function(i,id){
+						 			 	var cl = ids[i]; 
+										var ps = '<input style=\\'height:22px;width:70px;\\' type=\\'button\\' value=\\'${i18n.get('选择产品')}\\' onclick=proSelect(\\''+cl+'\\'); />';
+										$('#piPrjlstForm').jqGrid('setRowData', cl, { act : ps});
+							 		});			
+								}"
+						>
+						
+						<div class="col-xs-12">
+							<input type="hidden" id="parentId" name="parentId" />
+							<div class="form-group col-xs-3">
+								<input type="text" id="searchKey" name="searchKey" placeholder='${i18n.get('查询关键字')}' />
+							</div>	
+							<div class="form-group col-xs-2">
+								<button type="submit" class="btn btn-info" > 
+									<i class="icon-search bigger-110"></i>
+									${i18n.get('查询')}
+								</button>
+							</div>
+						</div>
+						</@form.table>
+					</td>
+				</tr>
+			</table>
+	
+	
+		
+<script type="text/javascript">
+function checkForm(cellvalue){
+	//alert("*****" + cellvalue);
+	var html="<input type=\"checkbox\"  onclick=\"return false;\" />";
+	if(cellvalue == 'N'){
+		 return "<input type=\"checkbox\" checked=\"checked\"  onclick=\"return false;\"/>";
+		
+	}else if(cellvalue == 'Y'){
+		return html;
+	}
+}
+</script>
+</@form.panel>
+
+</div>
+
+<div style="visibility: hidden;" >
+		<@biz.picker_product id="selectProduct" url="${ctx}/common/product/selectList.html" 
+				button="${i18n.get('选择产品')}"
+				callback="function(data){ 
+					if(data){
+						if(window.confirm('${i18n.get('你确定选择该产品')}？')){
+                 			delete data.id ;
+                 			var p={};
+                 			p.prdNm = data.productName; 
+                 			p.prdCtg= data.materCode;
+                 			p.prdTyp  = data.proModel;
+							p.prdUnt  = data.unit;
+							p.prdSprc = data.catalogPrice; 
+							$('#piPrjlstForm').jqGrid('setRowData',selectId,p);
+              			}
+					 }
+				}"
+		/>
+	</div>
+
+</div>
+

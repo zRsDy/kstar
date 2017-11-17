@@ -1,0 +1,21 @@
+package com.anne.api.${modelName};
+
+import org.xsnake.web.page.IPage;
+
+import com.anne.api.AnneException;
+import com.anne.api.PageCondition;
+import ${className};
+
+public interface I${shortClassName}Service {
+	
+	void save${shortClassName}(${shortClassName} ${dShortClassName})throws AnneException;
+	
+	void update${shortClassName}(${shortClassName} ${dShortClassName})throws AnneException;
+	
+	IPage query${shortClassName}s(PageCondition condition) throws AnneException;
+	
+	void delete${shortClassName}(String ${dShortClassName}Id) throws AnneException;
+	
+	${shortClassName} get${shortClassName} (String ${dShortClassName}Id) throws AnneException;
+	
+}

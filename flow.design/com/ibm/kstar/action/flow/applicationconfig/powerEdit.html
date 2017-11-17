@@ -1,0 +1,42 @@
+<@pui.body>
+	<@form.form id="t1" success="function(){ parent.currentParent.reload_power(); }" class="form-horizontal">	
+		<@form.panel title="${i18n.get('执行情况')}">
+			<div style="padding-left:160px;" class="form-group">
+				<table>
+					<tr>
+						<td align="right" width="150px"><strong style="color: red;">*</strong>${i18n.get('域名称:')}</td>
+						<td>
+							<@form.input id="areaName" name="areaName" style="width:800px;" tip="${i18n.get('域名称')}"required="${i18n.get('不能为空')}" value="${(power.areaName)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="150px"><strong style="color: red;">*</strong>${i18n.get('权限:')}</td>
+						<td>
+							<@form.select id="power" style="width:800px;" name="power" tip="${i18n.get('权限')}" required="${i18n.get('不能为空')}" code="FLOWPOWER" idKey='id' value="${(power.power)!}" /> 
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="150px">${i18n.get('备注:')}</td>
+						<td>	
+							<@form.textArea id="remark" style="width:800px;" name="remark" tip="${i18n.get('备注')}" value="${(power.remark)!}" />
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.panel>
+	</@form.form>
+</@pui.body>

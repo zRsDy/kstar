@@ -1,0 +1,1070 @@
+<@pui.body>
+
+
+<div>
+	<#if ('${processpage}')?? && '${processpage}' == 'P12'>
+		<#assign submitlineUrl='${ctx}/quot/catalog/submitLinesa.html' />
+	<#else>
+		<#assign submitlineUrl='${ctx}/quot/catalog/submitLines.html' />
+	</#if>			
+		
+		
+	<#if ('${processpage}')?? && '${processpage}' == 'P13'>
+		<#assign submitlineUrl='${ctx}/quot/catalog/submitLinesa.html' />
+	</#if>	
+
+	<#if (permission["P04TabsPage"])??>
+	
+	<@form.form id="quot1" 
+	success="function(){ 
+		alert('${i18n.get('保存成功')}！');	
+		window.location.reload();	
+	 }"
+	class="form-horizontal"> 
+	<@form.input id="id" name="id" placeholder=""
+	tip="" type="hidden" value="${(quotInf.id)!}" />
+
+	<h4><strong>&nbsp;&nbsp; ${i18n.get('报价基本信息')}</strong></h4>
+	
+	<br/>
+	
+	<div>
+		<div style="padding-right: 20px; float: right;padding-top: 3px;" >
+		
+			<#if (permission["P04ParSave"])??>
+			<#if (quotInf.ifsubmitted)?? && quotInf.ifsubmitted == 'Y'>
+				<button id="button1" class="btn btn-info submit" type="button" align="right">
+					<i class="bigger-110"></i> ${i18n.get('保存')}
+				</button>
+			<#else>
+				<button id="button1" class="btn btn-info submit" type="button" align="right">
+					<i class="bigger-110"></i> ${i18n.get('保存')}
+				</button>
+			</#if>
+			</#if>
+			
+			<#if (permission["P04ParRevise"])??>
+			<button id="button2" class="btn btn-info" type="button" align="right" onclick="reviseQuot()">
+				<i class="bigger-110"></i> ${i18n.get('修订')}
+			</button>
+			</#if>
+			
+			<#if (permission["P04ParSubmitProjApprove"])??>
+			<button id="button3" class="btn btn-info" type="button" onclick="startsubmitProcess()" align="right">
+				<i class="bigger-110"></i> ${i18n.get('提交评审')}
+			</button>
+			</#if>
+			
+			<#if (quotInf.isProReview)?? && quotInf.isProReview == '1' && (quotInf.isBidPro)?? && quotInf.isBidPro == '1' ></#if>
+			
+			<#if (permission["P04ParPriceApprove"])??>
+				<button id="button6" class="btn btn-info" type="button"  onclick="startpriceProcess()" align="right">
+					<i class="bigger-110"></i> ${i18n.get('价格评审')}
+				</button>
+			</#if>
+			
+	  <!--  <#if (quotInf.isProReview)?? && quotInf.isProReview == '1' && (quotInf.isBidPro)?? && quotInf.isBidPro == '1' >
+				<#if (permission["P04ParTechApprove"])??>
+				<button id="button7" class="btn btn-info" type="button" onclick="startchProcess()" align="right">
+					<i class="bigger-110"></i> ${i18n.get('技术评审')}
+				</button>
+				</#if>
+			</#if>  -->	
+			
+			<#if ((quotInf.prcAdtstatus)?? && quotInf.prcAdtstatus == 'S02') || ((quotInf.isProReview)?? && quotInf.isProReview == '0' && (quotInf.isBidPro)?? && quotInf.isBidPro == '0') >
+			
+				<#if (permission["P04ParUnlockSpeOff"])??>
+				<button id="button5" class="btn btn-info" type="button" onclick="unlockSpProcess()" align="right">
+					<i class="bigger-110"></i> ${i18n.get('特价申请')}
+				</button>
+				</#if>
+			
+			<#else>
+			
+				<#if (permission["P04ParUnlockSpeOff"])??>
+				<button id="button5" class="btn btn-info" type="button" onclick="unlockSpProcess()" disabled="disabled" align="right">
+					<i class="bigger-110"></i> ${i18n.get('特价申请')}
+				</button>
+				</#if>
+			
+			</#if>
+			
+			<#if (quotInf.isProReview)?? && quotInf.isProReview == '1' && (quotInf.isBidPro)?? && quotInf.isBidPro == '1' >
+
+				<#if (permission["P04ParSubmitPropApprove"])??>
+					<#if (((quotInf.bidAuditStatus)?? && quotInf.bidAuditStatus == 'B03'))||(((quotInf.bidAuditStatus)?? && quotInf.bidAuditStatus == 'B04')) >
+						<button id="button4" class="btn btn-info" type="button" onclick="startbiddocProcess()" align="right">
+							<i class="bigger-110"></i> ${i18n.get('提交标书审核')}
+						</button>
+					<#else>
+						<button id="button4" class="btn btn-info" type="button" disabled="disabled" onclick="startbiddocProcess()" align="right">
+							<i class="bigger-110"></i> ${i18n.get('提交标书审核')}
+						</button>
+					</#if>
+				</#if>
+			
+			</#if>
+			
+<!--${(quotInf.isBidPro)!}   /
+${(quotInf.marketDeptName)!} /
+${(quotInf.tchAdtstatus)!} /
+${(quotInf.bidAuditStatus)!}/
+${applycont!}
+-->
+		
+				<#if ((quotInf.spAuditStatus)?? && quotInf.spAuditStatus == 'P01') || ((quotInf.prcAdtstatus)?? && quotInf.prcAdtstatus == 'S01') || ((quotInf.tchAdtstatus)?? && quotInf.tchAdtstatus == 'S01') || ((quotInf.bidRspstatus)?? && quotInf.bidRspstatus == 'S01') || ((quotInf.bidAuditStatus)?? && quotInf.bidAuditStatus == 'S01') || ((quotInf.mtrReqstatus)?? && quotInf.mtrReqstatus == 'S01') >
+					
+					<#if (permission["P04ParReqAggreement"])??>
+					<button id = "applycnt" class="btn btn-info" type="button" onclick="javascript:parent.alert('${i18n.get('评审未完成，请评审完成后再申请')}')"  align="right">
+						<i class="bigger-110"></i> ${i18n.get('申请合同')}
+					</button>
+					</#if>
+					
+					<#if (permission["P04ParLending"])??>
+					<button id = "applyloancnt" class="btn btn-info" type="button" onclick="javascript:parent.alert('${i18n.get('评审未完成，请评审完成后再申请')}')" align="right">
+						<i class="bigger-110"></i> ${i18n.get('申请借货')}
+					</button>
+					</#if>
+				
+				<#elseif contractStatus?? && contractStatus == 'Y'>
+				
+					<#if (permission["P04ParReqAggreement"])??>
+					<button id = "applycnt" class="btn btn-info" type="button" onclick="javascript:parent.alert('${i18n.get('当前报价单已申请过合同，若需要修改报价信息请将合同')}：'+'${cntId}'+'${i18n.get('废弃后再申请新合同')}!')"  align="right">
+						<i class="bigger-110"></i> ${i18n.get('申请合同')}
+					</button>
+					</#if>
+					
+					<#if (permission["P04ParLending"])??>
+					<button id = "applyloancnt" class="btn btn-info" type="button" onclick="javascript:parent.alert('${i18n.get('当前报价单已申请过合同，若需要修改报价信息请将合同')}：'+'${cntId}'+'${i18n.get('废弃后再申请新合同')}!')"  align="right">
+						<i class="bigger-110"></i> ${i18n.get('申请借货')}
+					</button>
+					</#if>
+					
+				<#elseif  applycont?? && applycont == 'N' >	
+					
+					<#if (permission["P04ParReqAggreement"])??>
+					<button id = "applycnt" class="btn btn-info" type="button" onclick="javascript:parent.alert('${i18n.get('对于投标项目，需完成技术评审与标书审核后，才可申请合同')}!')"  align="right">
+						<i class="bigger-110"></i> ${i18n.get('申请合同')}
+					</button>
+					</#if>
+					
+					<#if (permission["P04ParLending"])??>
+					<button id = "applyloancnt" class="btn btn-info" type="button" onclick="javascript:parent.alert('${i18n.get('对于投标项目，需完成技术评审与标书审核后，才可申请合同')}!')"  align="right">
+						<i class="bigger-110"></i> ${i18n.get('申请借货')}
+					</button>
+					</#if>
+					
+					
+				<#elseif  applycontb?? && applycontb == 'N' >		
+					
+					<#if (permission["P04ParReqAggreement"])??>
+					<button id = "applycnt" class="btn btn-info" type="button" onclick="javascript:parent.alert('${i18n.get('存在公开价格为空的产品，请通过价格评审后再申请合同')}!')"  align="right">
+						<i class="bigger-110"></i> ${i18n.get('申请合同')}
+					</button>
+					</#if>
+					
+					<#if (permission["P04ParLending"])??>
+					<button id = "applyloancnt" class="btn btn-info" type="button" onclick="javascript:parent.alert('${i18n.get('存在公开价格为空的产品，请通过价格评审后再申请合同')}!')"  align="right">
+						<i class="bigger-110"></i> ${i18n.get('申请借货')}
+					</button>
+					</#if>
+					
+					
+				<#else>	
+					
+					<#if (permission["P04ParReqAggreement"])??>
+					<button id = "applycnt" class="btn btn-info" type="button" onclick="check('${ctx}/quot/addContract.html?qid=${qid}')" align="right">
+						<i class="bigger-110"></i> ${i18n.get('申请合同')}
+					</button>
+					</#if>
+					
+					<#if (permission["P04ParLending"])??>
+					<button id = "applyloancnt" class="btn btn-info" type="button" onclick="check('${ctx}/quot/addloancontract.html?qid=${qid}')" align="right">
+						<i class="bigger-110"></i> ${i18n.get('申请借货')}
+					</button>
+					</#if>
+					
+					
+					<script type="text/javascript">
+						function check(url){
+							var selectedIds = $('#prjlst').jqGrid('getDataIDs');
+							var selectedDatas = [];
+							var flag ;
+							if('${status!''}' == '1'){
+								alert("${i18n.get('申请价格小于金牌价格，走特价审批!')}");
+								flag = false;
+							}else if('${status!''}' == '2'){
+								alert("${i18n.get('工程清单列表不能为空！')}");
+								flag = false;
+							}else{
+								flag = true;
+							}
+					 		$.each(selectedIds,function(i,id){
+					 			var data = $('#prjlst').jqGrid('getRowData',id);
+					 			var f = $('#boName').val();
+					 			if(data.optTxt2=='1' && !(f)){
+					 				alert("${i18n.get('当前报价单含有报备机型，请关联商机')}");
+					 				flag = true;
+					 			}
+					 		})
+							if(flag==true){
+								parent.dialog('${i18n.get('新建合同')}',url,window);
+							}
+						}
+					</script>
+					
+				</#if>
+
+			<#if (permission["P04ParPrepareApply"])??>
+			<button id="button6" class="btn btn-info" type="button" onclick="startmrProcess()" align="right">
+				<i class="bigger-110"></i> ${i18n.get('备料申请')}
+			</button>
+			</#if>
+
+	  	<!--	<#if (quotInf.isProReview)?? && quotInf.isProReview == '1' && (quotInf.isBidPro)?? && quotInf.isBidPro == '1' >
+				<#if (permission["P04ParFeedBack"])??>
+				<button id="button6" class="btn btn-info" type="button" onclick="startbrProcess()" align="right">
+					<i class="bigger-110"></i> ${i18n.get('投标反馈')}
+				</button>
+				</#if>
+			</#if>  -->
+			
+		</div>
+	</div>
+
+	<br/>
+
+<div style="height: 50px;"></div>
+	<table>
+		<tr>
+			<td width="100px" align="right" >${i18n.get('报价单编号')}:</td>
+			<td width="180px"><@form.input id="quotCode"
+				name="quotCode" placeholder="" tip="" style="width: 170px;"
+				value="${(quotInf.quotCode)!}" /> 
+			</td>
+			<td width="100px" align="right" ><strong style="color: red;">*</strong>${i18n.get('报价单名称')}:</td>
+			<td width="180px"><@form.input id="quotName"
+				name="quotName" placeholder="" tip="" style="width: 170px;"
+				required="${i18n.get('请输入报价单名称')}"
+				value="${(quotInf.quotName)!}" />
+				</td>	
+			<td width="100px" align="right" ><strong style="color: red;">*</strong>${i18n.get('客户名称')}:</td>
+			<td width="180px">			  
+				<input id="customerCode" name="customerCode" type="hidden" >		  
+					<@form.autocomplete  id="customerName" name="customerName" 
+					idKey='customFullName'
+					style="width: 170px;"
+					required="${i18n.get('请选择客户编号')}"
+					formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+					url="function(){ return '${ctx}/lovcontract/autocompletecustomer.html'; }"
+					value="{customFullName:'${(quotInf.customerName)!}'
+					,customCode: '${(quotInf.customerCode)!}'
+
+					}"
+					
+					onSelect="function(data){
+						if( data.customCode != null && data.customCode !='' && data.customCode != 'undefined'){
+							$('#customerCode').val(data.customCode);
+						}
+					}" 
+				/>
+			</td>		
+		</tr>
+		<tr>
+			<td width="100px" align="right">${i18n.get('销售代表')}:</td>
+			<td width="180px"><@form.input id="salesRep"
+				name="salesRep" placeholder="" tip="" style="width: 170px;"
+				value="${(quotInf.salesRep)!}" /></td>
+				
+			<td width="100px" align="right">${i18n.get('销售部门')}:</td>
+			<td width="180px">
+           	<@form.autocomplete  id="salDep" name="salDep" 
+            	idKey='code' style="width: 170px;" required="${i18n.get('请选择组织')}"
+            	formatResult="function(data) {return '<div >' +data.name + '</div>';}"
+				url="function(){ return '${ctx}/lovcontract/autocompleteOrg.html'; }"
+            	value="${org}"
+            	
+           		onSelect="function(data){
+						if( data.id != null && data.id !='' && data.id != 'undefined'){
+							$('#salDep').val(data.id);
+						}
+					}" 
+           	/>
+			</td>
+				
+			<td width="100px" align="right">${i18n.get('业务单元')}:</td>
+			<td width="180px">
+	            <input type="hidden" id="marketDept" name="marketDept" value="${(quotInf.marketDept)!}">
+				<@form.input id="marketDeptName" name="marketDeptName" placeholder="" readonly ="readonly" tip="" style="width:170px;" value="${(quotInf.marketDeptName)!}" /> 		
+	             		
+			</td>
+
+		</tr>
+		
+			<td width="100px" align="right">${i18n.get('商机名称')}:</td>
+			<td width="180px">
+				<input id="boCode" name="boCode" type="hidden" >			  
+					<@form.autocomplete  id="boName" name="boName" 
+					idKey='id'
+					style="width: 170px;"
+					formatResult="function(data) {return '<div >' +data.opportunityName + '</div>';}"
+					url="function(){ return '${ctx}/lovcontract/autocompleteproject.html'; }"
+					value="{id:'${(quotInf.boCode)!}',opportunityName:'${(quotInf.boName)!}'
+					}"
+					
+					onSelect="function(data){
+						if( data.id != null && data.id !='' && data.id != 'undefined'){
+							$('#boCode').val(data.id);
+							$('#boName').val(data.opportunityName);
+						}
+					}" 
+				/>
+			</td>
+		
+			<td width="100px" align="right"><strong style="color: red;">*</strong>${i18n.get('价格表')}:</td>
+			<td width="180px">
+				<input id="priceListid" name="priceListid" type="hidden" >
+				<@form.autocomplete  id="priceList" name="priceList" 
+	            	idKey='id'
+	            	style="width: 170px;"
+	            	required="${i18n.get('请选择价格表')}"
+	            	formatResult="function(data) {return '<div >' +data.priceTableName + '</div>';}"
+					url="function(){ return '${ctx}/lovcontract/autocompletePriceTable.html'; }"
+	            	value="{id: '${(quotInf.priceListid)!}',priceTableName:'${(quotInf.priceList)!}'}"
+	            	
+	            	onSelect="function(data){
+						if( data.id != null && data.id !='' && data.id != 'undefined'){
+							$('#priceList').val(data.priceTableName);
+							$('#priceListid').val(data.id);
+						}
+					}" 
+	           	/>
+			</td>
+			
+		</tr>
+		<tr>
+			<td width="100px" align="right">${i18n.get('付款方式')}:</td>
+			<td width="180px">
+				<@form.input
+				id="payType"  name="payType" 
+				placeholder=""  style="width:170px;"
+				value="${(quotInf.payType)!}" 
+				/>
+			</td>
+		
+			<td width="100px" align="right">${i18n.get('货币')}:</td>
+			<td width="180px">
+			<@form.input id="currency" name="currency" style="width:170px;" value="${(quotInf.currencyGrid.name)!}" />
+			</td>
+			
+			<#if (permission["PRICE_COLUMN_DISABLE_METHOD"])??>
+			
+			<td width="100px" align="right">${i18n.get('总金额')}:</td>
+			<td width="180px"></td>
+			
+			<#else>
+
+			<td width="100px" align="right">${i18n.get('总金额')}:</td>
+			<td width="180px"><@form.input id="amount" style="width:170px;"
+				name="amount" placeholder="" tip="" readonly="readonly" required="${i18n.get('总金额不能为空')}"
+				value="${(quotInf.amount)!}" /></td>
+				
+			</#if>
+		
+		</tr>
+
+	</table>
+	
+	<table>
+		<h5 style="background-color: #E9E9E9;">${i18n.get('招投标信息')}</h5>  
+		<tr>
+
+			<td width="100px" align="right"><strong style="color: red;">*</strong>${i18n.get('是否投标项目')}:</td>
+			<td width="180px">
+				<@form.select  id="isBidPro" name="isBidPro" code="NY" idKey='code' style="width:170px;" 
+				value="${(quotInf.isBidPro)!}" /> 
+			</td>
+
+			<td width="100px"  align="right">${i18n.get('标书递交日期')}:</td>
+			<td width="180px"><@form.date id="bidsbmDt"
+				name="bidsbmDt" placeholder="" tip="" style="width:170px;"
+				value="${(quotInf.bidsbmDt)!}" /></td>
+
+			<td width="100px"  align="right">${i18n.get('开标日期')}:</td>
+			<td width="180px"><@form.date id="bidstDt"
+				name="bidstDt" placeholder="" tip="" style="width:170px;"
+				value="${(quotInf.bidstDt)!}" /></td>
+
+		</tr>
+		<tr>
+			
+			<td width="100px" align="right">${i18n.get('招标编号')}:</td>
+			<td width="180px">
+				<@form.input
+				id="bidID"  name="bidID" 
+				placeholder=""  style="width:170px;"
+				value="${(quotInf.bidID)!}" 
+				/>
+			</td>	
+
+			<td width="100px" align="right">${i18n.get('招标类型')}:</td>
+			<td width="180px">
+				<@form.select  id="bidTyp" name="bidTyp" code="QUOTETYPE" idKey='code' style="width:170px;" 
+				value="${(quotInf.bidTyp)!}" /> 
+			</td>
+				
+			<td width="100px" align="right">${i18n.get('招标单位')}:</td>
+			<td width="180px">
+				<@form.input
+				id="bidUnt"  name="bidUnt" 
+				placeholder=""  style="width:170px;"
+				value="${(quotInf.bidUnt)!}" 
+				/>
+			</td>		
+				
+				
+		</tr>
+		<tr>
+			<td width="100px" align="right">${i18n.get('招标单位联系人')}:</td>
+			<td width="180px">
+				<@form.input
+				id="bidCnct"  name="bidCnct" 
+				placeholder=""  style="width:170px;"
+				value="${(quotInf.bidCnct)!}" 
+				/>
+			</td>	
+			
+			<td width="100px" align="right">${i18n.get('招标单位地址')}:</td>
+			<td width="180px">
+				<@form.input
+				id="bidAddr"  name="bidAddr" 
+				placeholder=""  style="width:170px;"
+				value="${(quotInf.bidAddr)!}" 
+				/>
+			</td>
+	
+		</tr>
+		</table>
+		
+		<table>
+		<h5 style="background-color: #E9E9E9;">${i18n.get('相关信息')}</h5> 
+		<!-- 
+		<tr>
+			<td width="100px"  align="right">${i18n.get('投标结果')}:</td>
+			<td width="180px">
+			<@form.select  id="bidResults" name="bidResults" code="BDRST" idKey='code' style="width:170px;" 
+			
+				onLoadSuccess="function(){
+					if($('#bidResults').val()=='R01'){
+						$('#status').val('S02');
+					}
+					if($('#bidResults').val()=='R02'){
+						$('#status').val('S03');
+					}	
+				}"
+				
+				onChange="function(){
+					if($('#bidResults').val()=='R01'){
+						$('#status').val('S02');
+					}
+					if($('#bidResults').val()=='R02'){
+						$('#status').val('S03');
+					}	
+				}"
+			
+			value="${(quotInf.bidResults)!}" /> 
+			</td>
+
+			<td width="100px" align="right">${i18n.get('赢标/丢标/关闭原因')}:</td>
+			<td width="180px">
+				<@form.input
+				id="bidResReason"  name="bidResReason" style="width:170px;"
+				placeholder=""
+				value="${(quotInf.bidResReason)!}" 
+				/>
+			</td>
+
+			<td width="100px" align="right">${i18n.get('反馈投标结果附件')}:</td>
+			<td width="180px">
+ 				<@form.select  id="bidRstatt" name="bidRstatt" code="NY" idKey='code' style="width:170px;" value="${(quotInf.bidRstatt)!}" /> 
+			</td>
+			<td>
+			<#if (permission["P04ParTechConfirm"])??>
+				<button id="btn01"  class="btn btn-info submit" type="button" style="margin-left: 60px;">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('确认结果')}
+				</button>
+			</#if>
+			</td>
+				
+		</tr>
+		<tr>
+			<td width="100px" align="right">${i18n.get('主要竞争对手')}:</td>
+			<td width="180px">
+ 				<@form.select  id="bidCmpr" name="bidCmpr" multiple="true" code="BIDCOMPETITOR" idKey='code' style="width:170px;" value="${(quotInf.bidCmpr)!}" /> 
+			</td>
+
+			<td width="100px" align="right">${i18n.get('中标品牌')}:</td>
+			<td width="180px">
+ 				<@form.select  id="bidBrd" name="bidBrd" multiple="true" code="BIDCOMPETITOR" idKey='code' style="width:170px;" value="${(quotInf.bidBrd)!}" /> 
+			</td>
+
+			<td width="100px" align="right">${i18n.get('中标价格')}:</td>
+			<td width="180px"><@form.input id="bidAmount" style="width:170px;"
+				name="bidAmount" placeholder="" tip="" readonly="readonly"
+				value="${(quotInf.bidAmount)!}" /></td>
+			
+		</tr>
+		 -->
+		<tr>
+		
+			<td width="100px" align="right">${i18n.get('状态')}:</td>
+			<td width="180px">
+			<@form.select  id="status" name="status" code="QUOTSTS" idKey='code' style="width:170px;" 
+			
+				onLoadSuccess="function(){
+					if($('#status').val()!='S01'){
+						checkStatus();
+					if($('#status').val()=='S02'){
+						$('#bidResults').val('R01');
+					}
+					if($('#status').val()=='S03'){
+						$('#bidResults').val('R02');
+					}
+						
+					}
+				}"
+				
+				onChange="function(){
+					if($('#status').val()!='S01'){
+						
+						checkStatus();
+					if($('#status').val()=='S02'){
+						$('#bidResults').val('R01');
+					}	
+					if($('#status').val()=='S03'){
+						$('#bidResults').val('R02');
+					}
+					}
+				}"
+			
+			value="${(quotInf.status)!}" /> 
+			</td>
+		
+			<td width="100px" align="right">${i18n.get('价格评审状态')}:</td>
+			<td width="180px">
+				<@form.select  id="prcAdtstatus" name="prcAdtstatus" code="PRJEVLST" idKey='code' style="width:170px;" value="${(quotInf.prcAdtstatus)!}" /> 
+			</td>
+		
+			<td width="100px" align="right">${i18n.get('特价审核状态')}:</td>
+			<td width="180px">
+				<@form.select  id="spAuditStatus" name="spAuditStatus" code="SPST" idKey='code' style="width:170px;" 
+				value="${(quotInf.spAuditStatus)!}" /> 
+			</td>		
+		
+		</tr>	
+		<tr>
+		
+			<td width="100px" align="right">${i18n.get('技术评审状态')}:</td>
+			<td width="180px">
+				<@form.select  id="tchAdtstatus" name="tchAdtstatus" code="PRJEVLST" idKey='code' style="width:170px;" value="${(quotInf.tchAdtstatus)!}" /> 
+			</td>
+			<!-- 
+			<td width="100px" align="right">${i18n.get('投标反馈状态')}:</td>
+			<td width="180px">
+				<@form.select  id="bidRspstatus" name="bidRspstatus" code="PRJEVLST" idKey='code' style="width:170px;" value="${(quotInf.bidRspstatus)!}" /> 
+			</td>
+			 -->
+			<td width="100px" align="right">${i18n.get('标书审核状态')}:</td>
+			<td width="180px">
+				<@form.select  id="bidAuditStatus" name="bidAuditStatus" code="BDDCST" idKey='code' style="width:170px;" 
+				
+				onLoadSuccess="function(){
+					debugger;
+					if($('#isBidPro').val()=='1'){
+						if($('#bidAuditStatus').val()=='B03'){	
+							$('#bidResults').attr('disabled','disabled');
+						}
+					}else{
+						$('#bidResults').removeAttr('disabled');
+					}
+					if($('#bidAuditStatus').val()!='B01'){
+							$('#btn01').attr('disabled','disabled');
+						}else{
+							$('#btn01').removeAttr('disabled');
+					}		
+				}"
+				
+				onChange="function(){
+					
+					if($('#isBidPro').val()=='1'){
+						if($('#bidAuditStatus').val()!='B02'){	
+							$('#bidResults').attr('disabled','disabled');
+						}
+					}else{
+						$('#bidResults').removeAttr('disabled');
+					}
+				}"
+				
+				value="${(quotInf.bidAuditStatus)!}" /> 
+			</td>
+		
+		</tr>
+				
+		<tr>
+		
+			<td width="100px" align="right">${i18n.get('备料申请状态')}:</td>
+			<td width="180px">
+				<@form.select  id="mtrReqstatus" name="mtrReqstatus" code="PRJEVLST" idKey='code' style="width:170px;" value="${(quotInf.mtrReqstatus)!}" /> 
+			</td>
+		
+			<td width="100px" align="right">${i18n.get('创建人')}:</td>
+			<td width="180px"><@form.input id="creator" style="width:170px;"
+				name="creator" placeholder="" tip=""
+				value="${(quotInf.creator)!}" /></td>
+		
+			<td width="100px"  align="right">${i18n.get('创建时间')}:</td>
+			<td width="180px"><@form.date id="createTime"
+				name="createTime" placeholder="" tip="" style="width:170px;"
+				value="${(quotInf.createTime)!}" /></td>
+		
+		</tr>		
+		</table>
+		
+		<table>
+		<tr>
+		
+			<td width="100px" align="right">${i18n.get('备注')}:</td>
+			<td >
+				<@form.textArea
+				id="memo"  name="memo" width="98" height="3"
+				placeholder="" 
+				value="${(quotInf.memo)!}" 
+				/>
+			</td>
+		
+		</tr>
+		</table>
+		
+	<div style="height: 50px;"></div>
+	</@form.form>
+	</#if>
+</div>
+
+<div id="info">
+<@plug.tabs tabMain=tabMainbgn>
+
+</@plug.tabs>
+
+<!-- <input type="hidden" id="selectedId"  /> -->
+<!-- <ul class="nav nav-tabs" role="tablist" id="maintab"> -->
+<!--   <li class="active"><a href="#tab1"  onclick='showPage("tab1","${ctx}/quot/prjLst.html?qid=${qid}")'>${i18n.get('工程清单')}</a></li> -->
+<!--   <li><a href="#tab2" onclick='showPage("tab2","prjpages.html?qid=${qid}")'>${i18n.get('工程界面')}</a></li> -->
+<!--   <li><a href="#tab3" onclick='showPage("tab3","att.html?qid=${qid}")'>${i18n.get('附件')}</a></li> -->
+<!--   <li><a href="#tab4" onclick='showPage("tab4","mem.html?qid=${qid}")'>${i18n.get('团队成员')}</a></li> -->
+<!--   <li><a href="#tab5" onclick='showPage("tab5","prjevl.html?qid=${qid}")'>${i18n.get('工程评审')}</a></li> -->
+<!--   <li><a href="#tab6" onclick='showPage("tab6","biddcevl.html?qid=${qid}")'>${i18n.get('标书审核')}</a></li> -->
+<!--   <li><a href="#tab7" onclick='showPage("tab7","contract.html?qid=${qid}")'>${i18n.get('合同')}</a></li> -->
+<!-- </ul> -->
+
+<!-- <div class="tab-content"> -->
+<!--   	<div class="tab-pane active" id="tab1"></div> -->
+<!--   	<div class="tab-pane" id="tab2"></div> -->
+<!--   	<div class="tab-pane" id="tab3"></div> -->
+<!--   	<div class="tab-pane" id="tab4"></div> -->
+<!--   	<div class="tab-pane" id="tab5"></div> -->
+<!--   	<div class="tab-pane" id="tab6"></div> -->
+<!--   	<div class="tab-pane" id="tab7"></div> -->
+<!-- </div> -->
+
+<script type="text/javascript">
+// 	var loadimg="<img src ='${ctx}/assets/img/loading.gif' /> ";
+// 	function showPage(tabId, url){
+// 		$('#maintab a[href="#'+tabId+'"]').tab('show');
+// 		$('#'+tabId).html(url +'<br>'+loadimg+' ${i18n.get('页面加载中，请稍后')}...');
+// 		$('#'+tabId).load(url,function(response,status,xhr){
+// 			if(status === 'error'){
+// 				$('#'+tabId).html(url+'<br> ${i18n.get('页面加载失败')}');
+// 			}
+// 		});
+// 	}
+	
+	processFlag = false;
+	$(document).ready(function(){
+
+		$("#quotCode").attr("disabled","disabled");
+	 	$("#salDep").attr("disabled","disabled");
+	 	$("#creator").attr("disabled","disabled");
+	 	$("#currency").attr("disabled","disabled");
+	 	$("#bidAuditStatus").attr("disabled","disabled");
+	 	$("#proReviewStatus").attr("disabled","disabled");
+	 	$("#spAuditStatus").attr("disabled","disabled");
+	 	$("#prcAdtstatus").attr("disabled","disabled");
+	 	$("#tchAdtstatus").attr("disabled","disabled");
+	 	$("#bidRspstatus").attr("disabled","disabled");
+	 	$("#mtrReqstatus").attr("disabled","disabled");
+	 	
+	 	//$("#isBidPro").attr("disabled","disabled");
+	 	//$("#isProReview").attr("disabled","disabled");
+	
+	 
+	 	
+	 	if('${ifProReviewStatus}'=="Y"){
+	 		$("#quotCode").attr("disabled","disabled");
+	 		$("#quotName").attr("disabled","disabled");
+	 		$("#customerName").attr("disabled","disabled");
+	 		$("#contacts").attr("disabled","disabled");
+	 		$("#salesRep").attr("disabled","disabled");
+	 		$("#boName").attr("disabled","disabled");
+	 		$("#priceList").attr("disabled","disabled");
+	 		//$("#status").attr("disabled","disabled");
+	 		$("#payType").attr("disabled","disabled");
+	 		$("#memo").attr("disabled","disabled");
+	 		$("#biddocNo").attr("disabled","disabled");
+	 		$("#marketDept").attr("disabled","disabled");
+	 		//$("#bidResReason").attr("disabled","disabled");
+	 		$("#createTime").attr("disabled","disabled");
+	 	}
+	 	
+	 	
+	 	if('${processpage}'=="Y"){
+		 	$("#button1").attr("disabled","disabled");
+		 	$("#button2").attr("disabled","disabled");
+		 	$("#button3").attr("disabled","disabled");
+		 	$("#button4").attr("disabled","disabled");
+		 	$("#applycnt").attr("disabled","disabled");
+		 	$("#applyloancnt").attr("disabled","disabled");
+	 	}
+	 	
+	 	if('${processpage}'=="P1"){
+		 	$("#button1").attr("disabled","disabled");
+		 	//$("#button2").attr("disabled","disabled");
+		 	$("#button3").attr("disabled","disabled");
+		 	$("#button4").attr("disabled","disabled");
+		 	//$("#applycnt").attr("disabled","disabled");
+		 	//$("#applyloancnt").attr("disabled","disabled");
+	 	}
+	 	
+	 	if('${processpage}'=="P3"){
+		 	$("#button1").attr("disabled","disabled");
+		 	//$("#button2").attr("disabled","disabled");
+		 	$("#button3").attr("disabled","disabled");
+		 	//$("#button4").attr("disabled","disabled");
+		 	//$("#applycnt").attr("disabled","disabled");
+		 	//$("#applyloancnt").attr("disabled","disabled");
+	 	}
+	 	
+	 	if('${processpage}'=="P5"){
+		 	$("#button1").attr("disabled","disabled");
+		 	//$("#button2").attr("disabled","disabled");
+		 	$("#button3").attr("disabled","disabled");
+		 	$("#button4").attr("disabled","disabled");
+		 	//$("#applycnt").attr("disabled","disabled");
+		 	//$("#applyloancnt").attr("disabled","disabled");
+	 	}
+	 	
+	 	if('${processpage}'=="P6"){
+		 	$("#button1").attr("disabled","disabled");
+		 	//$("#button2").attr("disabled","disabled");
+		 	$("#button3").attr("disabled","disabled");
+		 	$("#button4").attr("disabled","disabled");
+		 	//$("#applycnt").attr("disabled","disabled");
+		 	//$("#applyloancnt").attr("disabled","disabled");
+	 	}
+	 	
+	 	if('${processpage}'=="P7"){
+		 	//$("#button1").attr("disabled","disabled");
+		 	//$("#button2").attr("disabled","disabled");
+		 	$("#button3").attr("disabled","disabled");
+		 	$("#button4").attr("disabled","disabled");
+		 	//$("#applycnt").attr("disabled","disabled");
+		 	//$("#applyloancnt").attr("disabled","disabled");
+	 	}
+	 	
+	 	if('${processpage}'=="P8"){
+		 	//$("#button1").attr("disabled","disabled");
+		 	//$("#button2").attr("disabled","disabled");
+		 	$("#button3").attr("disabled","disabled");
+		 	$("#button4").attr("disabled","disabled");
+		 	//$("#applycnt").attr("disabled","disabled");
+		 	//$("#applyloancnt").attr("disabled","disabled");
+	 	}
+	 	
+	 	if('${processpage}'=="P9"){
+		 	//$("#button1").attr("disabled","disabled");
+		 	//$("#button2").attr("disabled","disabled");
+		 	$("#button3").attr("disabled","disabled");
+		 	$("#button4").attr("disabled","disabled");
+		 	//$("#applycnt").attr("disabled","disabled");
+		 	//$("#applyloancnt").attr("disabled","disabled");
+	 	}
+	 	
+	 	if('${processpage}'=="P10"){
+	 		debugger;
+		 	//$("#button1").attr("disabled","disabled");
+		 	//$("#button2").attr("disabled","disabled");
+		 	$("#button3").attr("disabled","disabled");
+		 	$("#button4").attr("disabled","disabled");
+		 	//$("#applycnt").attr("disabled","disabled");
+		 	//$("#applyloancnt").attr("disabled","disabled");
+	 	}
+	 	
+	 	if('${ifbidresult}'=="N"){
+	 		$("#button1").attr("disabled","disabled");
+		 	$("#button2").attr("disabled","disabled");
+		 	$("#button3").attr("disabled","disabled");
+		 	$("#button4").attr("disabled","disabled");
+		 	$("#button5").attr("disabled","disabled");
+		 	$("#button6").attr("disabled","disabled");
+		 	$("#applycnt").attr("disabled","disabled");
+		 	$("#applyloancnt").attr("disabled","disabled");
+	 	}
+	 	
+	 	if('${ifsubmitted}'=="Y"){
+	 		
+	 		$("#button3").attr("disabled","disabled");
+	 	}
+	 	
+	 	debugger;
+	 	if('${bidstatus}'=="bid"){
+	 		$("#button4").attr("disabled","disabled");
+	 	}
+	 	
+	});
+	
+	
+	function checkStatus(){
+		if($("#status").val()!="S01"){
+			if($('#bidResReason').val()==""){
+				alert("${i18n.get('赢标/丢标/关闭原因不能为空')}!");
+			}
+		}
+	}
+	
+	
+	function reviseQuot(){
+		var d = {};
+		d.qid = '${qid}';
+		bootbox.confirm('${i18n.get('修订后会生成新版本的报价单，需重走流程，请确认是否需修订报价单')}？' , function(result) {		
+			if(result) {
+				ajax({
+					type:'post',
+					url : '${ctx}/quot/reviseQuot.html',  
+					data: d,
+					success : function(result) {
+						alert('${i18n.get('报价修订成功')}'); 
+					}
+				});
+			}
+		});	
+	}
+	
+	
+	function startbiddocProcess(){ 
+		var d = {};
+		d.qid = '${qid}';
+		bootbox.confirm('${i18n.get('您确定要开启标书审核吗')}？' , function(result) {		
+			if(result) {
+				ajax({
+					type:'post',
+					url : '${ctx}/quotprocess/startbiddocProcess.html',  
+					data: d,
+					success : function(result) {
+						alert('${i18n.get('标书审核流程已开启')}'); 
+						window.location.reload();
+					}
+				});
+			}
+		});		
+	}
+	
+	
+	function startsubmitProcess(){ 
+		var d = {};
+		d.qid = '${qid}';
+		bootbox.confirm('${i18n.get('您确定要开启工程评审提交流程吗')}？' , function(result) {		
+			if(result) {
+				ajax({
+					type:'post',
+					url : '${ctx}/quotprocess/starsubmitProcess.html',  
+					data: d,
+					success : function(result) {
+						alert('${i18n.get('工程评审流程已开启')}');
+						window.location.reload();
+					}
+				});
+			}
+		});		
+	}
+	
+	
+	
+	function startSpProcess(){ 
+		var d = {};
+		d.qid = '${qid}';
+		bootbox.confirm('${i18n.get('您确定要特价申请吗')}?' , function(result) {		
+			if(result) {
+				ajax({
+					type:'post',
+					url : '${ctx}/quotprocess/startSpProcess.html',  
+					data: d,
+					success : function(result) {
+						alert('${i18n.get('特价申请流程已开启')}');
+						window.location.reload();
+					}
+				});
+			}
+		});		
+	}
+	
+	
+	function unlockSpProcess(){ 
+		var d = {};
+		d.qid = '${qid}';
+		bootbox.confirm('${i18n.get('您确定要特价审批吗')}?' , function(result) {		
+			if(result) {
+				ajax({
+					type:'post',
+					url : '${ctx}/quot/unlockSpProcess.html',  
+					data: d,
+					success : function(result) {
+						ajax({
+							type:'post',
+							url : '${ctx}/quotprocess/startSpProcess.html',  
+							data: d,
+							success : function(result) {
+								alert('${i18n.get('报价已经提交')}！');  
+								window.location.reload();
+							}
+						});
+					}
+				});
+			}
+		});		
+	}
+	
+	
+	function startpriceProcess(){ 
+		var d = {};
+		d.qid = '${qid}';
+		bootbox.confirm('${i18n.get('您确定要价格评审吗')}?' , function(result) {		
+			if(result) {
+				ajax({
+					type:'post',
+					url : '${ctx}/quotprocess/startpriceProcess.html',  
+					data: d,
+					success : function(result) {
+						alert('${i18n.get('价格评审流程已开启')}');
+						window.location.reload();
+					}
+				});
+			}
+		});		
+	}
+	
+	
+	function startchProcess(){ 
+		var d = {};
+		d.qid = '${qid}';
+		bootbox.confirm('${i18n.get('您确定要技术评审吗')}?' , function(result) {		
+			if(result) {
+				ajax({
+					type:'post',
+					url : '${ctx}/quotprocess/startchProcess.html',  
+					data: d,
+					success : function(result) {
+						alert('${i18n.get('技术评审流程已开启')}');
+						window.location.reload();
+					}
+				});
+			}
+		});		
+	}
+	
+	
+	function startmrProcess(){ 
+		var d = {};
+		d.qid = '${qid}';
+		bootbox.confirm('${i18n.get('您确定要备料申请吗')}?' , function(result) {		
+			if(result) {
+				ajax({
+					type:'post',
+					url : '${ctx}/quotprocess/startmrProcess.html',  
+					data: d,
+					success : function(result) {
+						alert('${i18n.get('备料申请流程已开启')}');
+						window.location.reload();
+					}
+				});
+			}
+		});		
+	}
+	
+	
+	function startbrProcess(){ 
+		var d = {};
+		d.qid = '${qid}';
+		bootbox.confirm('${i18n.get('您确定要投标反馈吗')}?' , function(result) {		
+			if(result) {
+				ajax({
+					type:'post',
+					url : '${ctx}/quotprocess/startbrProcess.html',  
+					data: d,
+					success : function(result) {
+						alert('${i18n.get('投标反馈流程已开启')}');
+						window.location.reload();
+					}
+				});
+			}
+		});		
+	}
+
+/* ${i18n.get('审核确认自动保存工程清单')} */
+$(function(){
+	$(window.parent.document).find(".submit").click(function(){
+		if($(this).attr('onclick') == "s('1')"){
+			$('#prjlst').trigger('blur');
+			var ids = $('#prjlst').jqGrid('getDataIDs');
+			var d={};
+			var datas = [];
+			$.each(ids,function(i,id){
+				var line = $('#prjlst').jqGrid('getRowData',id);
+				if(line && line['prdCtg']){
+				if( line['amt']=='' || line['applyPrc']==''){
+					curid = id; 
+					 flg = false;
+					 return false;
+				}else{
+					flg = true;
+					datas.push(line);
+				}
+			 }
+			})
+			d.listStr= JSON.stringify(datas);
+			d.quotID = '${(quotInf.id)!}';
+			d.typ = '0003';
+			ajax({
+				type:'post',
+				url : '${submitlineUrl!}',  
+				dataType : 'json',
+				data: d,
+				async: false,
+				success : function(result) {
+					
+					processFlag = true;
+					return processFlag;
+				},
+				error : function(result) {
+					alert(result); 
+					return processFlag;			
+				}
+			});	
+			return processFlag;
+		}
+	});
+})	
+	
+	
+</script>
+</div>
+</@pui.body>

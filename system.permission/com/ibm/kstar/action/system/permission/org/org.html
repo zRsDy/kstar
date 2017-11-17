@@ -1,0 +1,154 @@
+<@pui.body> 
+				
+	<div class="col-xs-12" >
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1"
+			success="function(){ 
+				parent.currentParent.reload_t1();
+				try{ parent.currentParent.reload_tree1('${(parentLovMember.id)!}'); }catch(e){ }
+			}" 
+			class="form-horizontal"
+			>
+			
+			<input type="hidden" name="groupCode"  value="${lovGroup.code}" />
+			<label class="col-xs-12 left"><h4>${i18n.get('归属维度 ：')} ${lovGroup.name} </h4></label>
+			<#if (lovGroup.treeFlag)?? && lovGroup.treeFlag == 'Y' >
+				<label class="col-xs-12 left"><h4>${i18n.get('上级 ：')} ${(parentLovMember.namePath)!''} </h4></label>
+			</#if>
+			
+			<div class="form-group">
+				<label class="col-sm-3 control-label no-padding-right" for="code"> <strong style="color: red;">*</strong>${i18n.get('编码:')} </label>
+				<@form.input 
+				id="code"
+				name="code"
+				placeholder="${i18n.get('请输入编码')}" 
+				required="${i18n.get('不能为空！')}" 
+				tip="${i18n.get('请输入编码')}" 
+				value="${(lovMember.code)!}"
+				/>
+			</div>	
+			
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" for="desc"> <strong style="color: red;">*</strong>${i18n.get('名称:')} </label>
+				<@form.input 
+				id="name" 
+				name="name" 
+				placeholder="${i18n.get('请输入名称')}" 
+				required="${i18n.get('不能为空！')}" 
+				tip="${i18n.get('请输入名称')}" 
+				value="${(lovMember.name)!}"
+				/>
+			</div>
+			
+			<div class="form-group">
+				<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('备注: ')}</label>
+				<@form.textArea 
+					id="memo" 
+					name="memo" 
+					placeholder="${i18n.get('请输入备注')}" 
+					tip="${i18n.get('备注')}"
+					value="${(lovMember.memo)!}"
+					/>
+			</div>
+			
+			<#if (permission["/costcenter/edit.html"])??>
+				<#assign edit="'edit.html'" />
+			</#if>
+			
+						<#assign js = "
+							if(selected == 'E'){
+								$('.customer').show();
+								$('#customerId').removeAttr('disabled');
+							}else{
+								$('.customer').hide();
+								$('#customerId').attr('disabled','disabled');
+							}
+						" />
+			
+			<#if parentLovMember?? && (parentLovMember.optTxt3)?? && parentLovMember.optTxt3 == 'E'>
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('代理商:')} </label> 
+					<input type="text" readonly="readonly" value="${(customInfo.customFullName)!}">
+					<input type="hidden" name="optTxt3" value="E" />
+					<input type="hidden" name="optTxt4" value="${(parentLovMember.optTxt4)!}" />
+				</div>
+			<#else>
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('组织类型:')} </label>
+					<@form.select 
+					code="ORG_TYPE"
+					id="optTxt3" 
+					name="optTxt3"
+					idKey="code"
+					placeholder="${i18n.get('请选择组织类型')}"
+					required="${i18n.get('不能为空！')}" 
+					tip="${i18n.get('请输入组织类型')}"
+					idKey='code'
+					value="${(lovMember.optTxt3)!}"
+					style="width:300px;"
+					onChange="function(){
+						var selected = $('#optTxt3').val();
+						${js}
+					}"
+					
+					onLoadSuccess="function(){
+						var selected = '${(lovMember.optTxt3)!}';
+						${js}
+					}"
+					/>
+				</div>
+				
+				<div class="form-group customer " style="display: none">
+					<label class="col-sm-3 control-label no-padding-right"  for="code"> ${i18n.get('归属客户:')} </label>
+					<@form.autocomplete  id="customerId" name="optTxt4"
+		            	idKey='id'
+		            	style="width: 200px;"
+		            	formatResult="function(data) { return '<div >' +data.customFullName + '</div>';}"
+						url="function(){ return '${ctx}/lovcustom/autoCompleteCustomAll.html'; }"
+		            	value="{id: '${(customInfo.id)!}',customFullName:'${(customInfo.customFullName)!}'}"
+	            	    />
+				</div>
+				
+			</#if>
+			
+			<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('部门段:')} </label>
+					<@form.select 
+						id="optTxt6" 
+						name="optTxt6"
+						url="function(){
+							return '${ctx}/org/orgGroupList.html';
+						}"
+						placeholder="${i18n.get('部门段')}" 
+						value="${(lovMember.optTxt6)!}"
+						style="width:300px;"
+						onChange="function(){
+							var selected = $('#optTxt6').val();
+						}"
+						onLoadSuccess="function(){
+							var selected = '${(lovMember.optTxt6)!}';
+						}"
+					/>
+			</div>
+			
+			<input type="hidden" name="leafFlag" value="N" /> 
+			
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+		<div class="col-xs-12" >
+	</div>
+
+</@pui.body>

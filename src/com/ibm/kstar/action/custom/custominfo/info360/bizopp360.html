@@ -1,0 +1,22 @@
+<#escape x as x?html>
+<@form.table id="tableBizOp" 
+class="col-xs-12"
+height="131px"
+title="${i18n.get('商机基本信息列表')}" 
+url = "${ctx}/custom/baseinfo/info360/bizopp360Show.html?customId=${(customInfo.id)!}" 
+rowNum = "5" 
+colModel = "[
+{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'number',label:'${i18n.get('商机编号')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'opportunityName',label:'${i18n.get('商机名称')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'createdByIdName',label:'${i18n.get('报备人')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'enterpriseName',label:'${i18n.get('报备单位')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'clientName',label:'${i18n.get('客户名称')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'bizOppAddressName',label:'${i18n.get('商机所在地')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'saleStageLable.name',label:'${i18n.get('销售阶段')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'statusName',label:'${i18n.get('处理状态')}',hidden:false,width:200,sortable:true,align:'center'},
+		{name:'conflictStatusName',label:'${i18n.get('商机状态')}',hidden:false,width:200,sortable:true,align:'center' }
+	]" 
+	buttons = "[]" > 
+</@form.table> 
+</#escape>

@@ -1,0 +1,188 @@
+<script type="text/javascript">
+
+var newrowid = 0;  
+function addAttrRow()  
+{   
+    //获得新添加行的行号（数据编号）  
+    newrowid = newrowid+1; 
+    var dataRow = {    
+        id: newrowid
+    };      
+    //将新添加的行插入到第一列  
+    $("#attrModLineList").jqGrid("addRowData", newrowid, dataRow, "first");  
+    //设置grid单元格不可编辑  
+    $("#attrModLineList").setGridParam({cellEdit:false});  
+    //设置grid单元格可编辑  
+    //$("#orderLinesForm").jqGrid('editRow', newrowid, false);
+    //初始化订单行
+    initAttrLine(newrowid,dataRow);
+}
+
+function initAttrLine(newrowid,data){
+	
+	$('#attrModLineList').jqGrid('setRowData', newrowid, { prodName : data.prodName});
+	$('#attrModLineList').jqGrid('setRowData', newrowid, { materDesc : data.proDesc});
+	$('#attrModLineList').jqGrid('setRowData', newrowid, { materCode : data.materielCode});
+	
+}
+
+function formatProdName(value,options){
+	var rowData = $('#attrModLineList').jqGrid('getRowData',options.rowId);
+	var lable = '${i18n.get('选择产品')}';
+	if(value){
+		lable = value;
+	}
+	var ps = '<a href="#" onclick="proSelect(\''+options.rowId+'\');" >'+lable+'</a>';
+	return ps;
+}
+
+var selectId = "";
+
+function proSelect(rowid){
+	selectId = rowid ;
+	var rowData = $('#attrModLineList').jqGrid('getRowData',selectId);
+	 
+	 $('#selProdForAttrBtn').click();
+}
+
+function getAttrList(){
+	var str="";
+	$.ajax({
+		type:"post",
+		async:false,
+		url:"${ctx}/lov/member/select.html?code=PROD_ATTR",
+		success:function(data){
+			if (data != null) {
+				var jsonobj = eval(data.message);
+				var length = jsonobj.length;
+				for(var i=0;i<length;i++){
+					if(i != length-1 ){
+						// 这里是option里面的 value:label
+						str += jsonobj[i].id + ":" + jsonobj[i].name + ";";
+					}else{
+						str += jsonobj[i].id + ":" + jsonobj[i].name;
+					}
+	         	}   
+	     	}
+		}
+	});
+	return str;
+}
+
+function getProdAttrValue(materCode,attrId){
+	var str="";
+	$.ajax({
+		type:"post",
+		async:false,
+		url:"${ctx}/product/maintain/getProdAttrValue.html?materCode="+materCode+"&attrId="+attrId,
+		success:function(data){
+			if (data != null) {
+				str = data.message;
+	     	}
+		}
+	});
+	return str;
+}
+
+</script>
+	
+<@form.table id="attrModLineList" 
+	class="col-xs-12"
+	title="${i18n.get('产品属性变更明细')}" 
+	url = "${ctx}/product/maintain/attrModLinePage.html?maintainId=${maintainId}" 
+	rowNum = "20" 
+	checkbox="true" 
+	style = "width:100%"
+	addURL = "${addURL!}"
+	editURL= "${editURL!}"
+	deleteURL= "${delURL!}"
+	colModel = "[
+		{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'materCode',label:'${i18n.get('物料号')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'materDesc',label:'${i18n.get('物料说明')}',hidden:false,width:400,sortable:false,align:'center' },
+		{name:'prodName',label:'${i18n.get('产品名称')}',hidden:false,width:200,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatProdName(cellvalue,options) } },
+		{name:'prodAttrId',label:'${i18n.get('产品属性ID')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'prodAttrName',label:'${i18n.get('产品属性')}',hidden:false,width:100,editable:true,sortable:false,align:'center',edittype:'select',editoptions:{value:getAttrList()}},
+		{name:'oldVale',label:'${i18n.get('当前属性值')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'newValue',label:'${i18n.get('要求变更后的属性值')}',hidden:false,width:150,sortable:false,align:'center',editable:true },
+		{name:'reason',label:'${i18n.get('变更原因')}',hidden:false,width:300,sortable:false,align:'center',editable:true}
+		]" 
+	ondblClickRow = "function(id){
+		var rowData = $('#attrModLineList').jqGrid('getRowData',id);
+		
+	  	var prodAttrId =  $('#prodAttrId').val();
+	  	if(prodAttrId != '' && prodAttrId !=null){
+			if(rowData.prodAttrId == '' || rowData.prodAttrId == null){
+				$('#attrModLineList select[id='+id+'_prodAttrName]').val(prodAttrId);
+				$('#attrModLineList').jqGrid('setRowData', id, { prodAttrId : prodAttrId});
+				$('#attrModLineList').jqGrid('setRowData', id, { oldVale : getProdAttrValue(rowData.materCode,prodAttrId)});
+			}
+		}else{
+			var _prodAttrId = $('#attrModLineList select[id='+id+'_prodAttrName]').children('option:selected').val();
+			$('#attrModLineList').jqGrid('setRowData', id, { prodAttrId : _prodAttrId});
+			$('#attrModLineList').jqGrid('setRowData', id, { oldVale : getProdAttrValue(rowData.materCode,_prodAttrId)});
+		}
+		
+		$('#attrModLineList select[id='+id+'_prodAttrName]').change(function(){
+			var _prodAttrId = $(this).children('option:selected').val();
+			$('#attrModLineList').jqGrid('setRowData', id, { prodAttrId : _prodAttrId});
+			$('#attrModLineList').jqGrid('setRowData', id, { oldVale : getProdAttrValue(rowData.materCode,_prodAttrId)});
+			
+		});
+	}"
+	buttons = "[
+		{
+			id:'addAttrRow',
+			label : '${i18n.get('增加一行')}',
+			icon : 'icon-save',
+			own : ${canModify!'false'},
+			handler : function(e,rowData){
+				addAttrRow();
+			}
+		},{
+			id:'deleteAttrRow',
+			label : '${i18n.get('删除')}',
+			icon : 'icon-remove',
+			own : ${canModify!'false'},
+			handler : function(e,rowData){
+				var ids = $('#attrModLineList').jqGrid('getGridParam','selarrrow'); 
+				var _ids = [];
+				 $.each(ids,function(i,id){
+					 _ids.push(id);
+				 });
+			     if(!ids || ids.length <= 0 ){
+			      　　	alert('${i18n.get('请选择要删除的行')}');
+			      　　	return;
+			     }else{
+			     	if(confirm('${i18n.get('是否删除选择的行')}')){
+				    	 $.each(_ids,function(i,id){
+				    	 	 $('#attrModLineList').jqGrid('delRowData', id);
+				    	 });
+			    	 }
+			     } 
+			}
+		}
+	]"
+		>
+</@form.table>
+
+
+ <div style="display: none;" >
+		<@biz.picker_product id="selProdForAttrBtn" 
+				urlFunction="function(){
+					return '${ctx}/common/product/selectList.html?proModel=';
+				}"
+				button="${i18n.get('选择产品')}"
+				callback="function(data){
+					if(data){
+               			delete data.id ;
+               			data['prodName'] = data.productName;
+               			data['materDesc'] = data.proDesc;
+               			data['materCode'] =data.materielCode;
+					    $('#attrModLineList').jqGrid('setRowData',selectId,data);
+					    initAttrLine(selectId,data);
+					 }
+				}"
+		/>
+		
+</div>

@@ -1,0 +1,165 @@
+<#if (permission["P09ActivityInnerPersonAdd"])??>
+	<#assign addURL_inner_person="true" />
+</#if>
+<#if (permission["P09ActivityInnerPersonEdit"])??>
+	<#assign editURL_inner_person="true" />
+</#if>
+<#if (permission["P09ActivityInnerPersonDelete"])??>
+	<#assign deleteURL_inner_person="'${ctx}/activityApply/deletePerson.html'" />
+</#if>
+
+<@form.table id="innerPerson" 
+	class="col-xs-12"
+	title="${i18n.get('内部人员')}"
+	url = "${ctx}/activityApply/pagePerson.html?internalPerson=yes&applyId1=${(applyId)!}"
+	deleteURL = "${deleteURL_inner_person!}"
+	rowNum = "10"
+	search="false"
+	colModel = "[
+		{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+		{name:'personName',label:'${i18n.get('人员姓名')}',hidden:false,width:90,sortable:true,align:'center' },
+		{name:'department',label:'${i18n.get('部门')}',hidden:false,width:200,sortable:true,align:'center' }, 
+		{name:'position',label:'${i18n.get('职务')}',hidden:false,width:100,sortable:true,align:'center' }, 
+		{name:'phone',label:'${i18n.get('联系电话')}',hidden:false,width:130,sortable:true,align:'center' }, 
+		{name:'power',label:'${i18n.get('权限')}',hidden:true,width:150,sortable:true,align:'center'}, 
+		{name:'powerName',label:'${i18n.get('权限')}',hidden:false,width:70,sortable:true,align:'center'}, 
+		{name:'startDate',label:'${i18n.get('有效日期从')}',hidden:false,width:90,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+		{name:'endDate',label:'${i18n.get('有效日期至')}',hidden:false,width:90,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+		{name:'explain',label:'${i18n.get('说明')}',hidden:false,width:500,sortable:true,align:'center'}
+	]" 
+	buttons = "[
+		{
+  			id:'add_innerPerson',
+  			label : '${i18n.get('新增')}',
+  			icon : 'icon-plus',
+  			own : ${addURL_inner_person!'false'},
+  			handler : function(e,rowData){
+				if(!selected_apply){
+					exalert(e,'${i18n.get('请选择申请单号')}');
+					return;
+				}else if(canEdit(selected_apply.statusName)){
+					myAlert(e,'${i18n.get('新增')}');
+					return;
+				}
+				parent.dialog('${i18n.get('内部人员')}', '${ctx}/activityApply/addOrEditPerson.html?businessType=activity&applyId='+selected_apply.id+'&internalPerson=yes', window);
+  			}
+  		},
+  		{
+  			id:'edit_innerPerson',
+  			label : '${i18n.get('修改')}',
+  			icon : 'icon-pencil',
+  			own : ${editURL_inner_person!'false'},
+  			handler : function(e,rowData){
+				if(!selected_apply){
+					exalert(e,'${i18n.get('请选择申请单号')}');
+					return;
+				}else{
+					var statusEdit = !canEdit(selected_apply.statusName);
+					var requestPath = '${ctx}/activityApply/addOrEditPerson.html?businessType=activity&id='+selected_innerPerson.id+'&statusEdit='+statusEdit;
+					parent.dialog('${i18n.get('修改')}', requestPath, window);
+				}
+  			}
+  		}
+	]" > 
+	
+	<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">	
+		<div class="form-group col-xs-3">
+			<input type ="hidden" class="applyId" name ="applyId" />
+			<input type="text" id="searchKey" name="searchKey" placeholder='请输入姓名或部门' size="30" />
+		</div>	
+	</div> 
+</@form.table>
+
+<#if (permission["P09ActivityOuterPersonAdd"])??>
+	<#assign addURL_outer_person="true" />
+</#if>
+<#if (permission["P09ActivityOuterPersonEdit"])??>
+	<#assign editURL_outer_person="true" />
+</#if>
+<#if (permission["P09ActivityOuterPersonDelete"])??>
+	<#assign deleteURL_outer_person="'${ctx}/activityApply/deletePerson.html'" />
+</#if>
+<@form.table id="outerPerson" 
+	class="col-xs-12"
+	title="${i18n.get('外部人员')}"
+	url = "${ctx}/activityApply/pagePerson.html?internalPerson=no&applyId1=${(applyId)!}"
+	deleteURL = "${deleteURL_outer_person!}"
+	rowNum = "10"
+	search="false"
+	colModel = "[
+		{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+		{name:'sellerName',label:'${i18n.get('经销商名称')}',hidden:false,width:250,sortable:true,align:'left' }, 
+		{name:'personName',label:'${i18n.get('人员姓名')}',hidden:false,width:70,sortable:true,align:'center' }, 
+		{name:'position',label:'${i18n.get('职务')}',hidden:false,width:100,sortable:true,align:'center' }, 
+		{name:'phone',label:'${i18n.get('联系电话')}',hidden:false,width:100,sortable:true,align:'center' }, 
+		{name:'email',label:'${i18n.get('E-mail')}',hidden:false,width:100,sortable:true,align:'center' }, 
+		{name:'power',label:'${i18n.get('权限')}',hidden:true,width:70,sortable:true,align:'center'}, 
+		{name:'powerName',label:'${i18n.get('权限')}',hidden:false,width:70,sortable:true,align:'center'}, 
+		{name:'startDate',label:'${i18n.get('有效日期从')}',hidden:false,width:90,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+		{name:'endDate',label:'${i18n.get('有效日期至')}',hidden:false,width:90,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+		{name:'explain',label:'${i18n.get('说明')}',hidden:false,width:400,sortable:true,align:'left'}
+	]" 
+	buttons = "[
+		{
+  			id:'add_outerPerson',
+  			label : '${i18n.get('新增')}',
+  			icon : 'icon-plus',
+  			own : ${addURL_outer_person!'false'},
+  			handler : function(e,rowData){
+				if(!selected_apply){
+					exalert(e,'${i18n.get('请选择申请单号')}');
+					return;
+				}else if(canEdit(selected_apply.statusName)){
+					myAlert(e,'${i18n.get('新增')}');
+					return;
+				}
+				parent.dialog('${i18n.get('外部人员')}', '${ctx}/activityApply/addOrEditPerson.html?businessType=activity&applyId='+selected_apply.id+'&internalPerson=no', window);
+  			}
+  		},
+  		{
+  			id:'edit_outerPerson',
+  			label : '${i18n.get('修改')}',
+  			icon : 'icon-pencil',
+  			own : ${editURL_outer_person!'false'},
+  			handler : function(e,rowData){
+				if(!selected_apply){
+					exalert(e,'${i18n.get('请选择申请单号')}');
+					return;
+				}else{
+					var statusEdit = !canEdit(selected_apply.statusName);
+					var requestPath = '${ctx}/activityApply/addOrEditPerson.html?businessType=activity&id='+selected_outerPerson.id+'&statusEdit='+statusEdit;
+					parent.dialog('${i18n.get('修改')}', requestPath, window);
+				}
+  			}
+  		}
+	]" > 
+	
+	<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">	
+		<div class="form-group col-xs-3">
+			<input type ="hidden" class="applyId" name ="applyId" />
+			<input type="text" id="searchKey" name="searchKey" placeholder='请输入姓名或经销商名称' size="30" />
+		</div>	
+	</div> 
+</@form.table>
+<input type ="hidden" id="innerPersonId" />
+<input type ="hidden" id="outerPersonId" />
+<script type="text/javascript">
+function reload_innerPerson_2(innerPersonId){
+	$("#innerPersonId").val(innerPersonId);
+	reload_innerPerson();
+}
+
+function onComplete_innerPerson(){
+	var innerPersonId = $("#innerPersonId").val();
+	$('#'+innerPersonId).trigger('click');
+}
+function reload_outerPerson_2(outerPersonId){
+	$("#outerPersonId").val(outerPersonId);
+	reload_outerPerson();
+}
+
+function onComplete_outerPerson(){
+	var outerPersonId = $("#outerPersonId").val();
+	$('#'+outerPersonId).trigger('click');
+}
+</script>

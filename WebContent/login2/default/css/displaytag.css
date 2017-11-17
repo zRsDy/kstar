@@ -1,0 +1,25 @@
+div.exportlinks{background:#fff url(../images/exportlinks_bg.png) repeat-x 0 0;border:none;padding:2px 10px;height:26px;line-height:26px;text-align:left;margin-top:0;}
+span.export{padding:0 2px 0 30px;display:inline-block;cursor:pointer;color:#0f1c56;}
+span.export:hover{color:#5594e1;}
+span.excel{background:url(../images/ico_file_excel.png) no-repeat 0 center;}
+span.csv{background:url(../images/ico_file_csv.png) no-repeat 0 center;}
+span.xml{background:url(../images/ico_file_xml.png) no-repeat 0 center;}
+span.pdf{background-image:url(../images/ico_file_pdf.png) 0 center;}
+span.rtf{background-image:url(../images/ico_file_rtf.png) 0 center;}
+div.pagebanner{background:#fff;border:none;padding:5px 10px 0;height:28px;line-height:26px;text-align:right;color:#204c82;white-space:nowrap;word-break:keep-all;text-align:right;}
+
+div.pagebanner a.pagea{background:url(../images/page_a_r.png) no-repeat 100% 0;display:inline-block;height:22px;padding:0 7px 0 0;margin:0;vertical-align:middle;}
+div.pagebanner a.pagea span{color:#3466a3;background:url(../images/page_a_l.png) no-repeat 0 0;display:inline-block;height:22px;line-height:21px;padding:0 1px 0 8px;font-weight:normal;float:none;}
+div.pagebanner a.pagea:hover{background:url(../images/page_a_rhover.png) no-repeat 100% 0;}
+div.pagebanner a.pagea:hover span{color:#fff;background:url(../images/page_a_lhover.png) no-repeat 0 0;}
+div.pagebanner a.pagestrong{background:url(../images/page_s_r.png) no-repeat 100% 0;display:inline-block;height:22px;padding:0 7px 0 0;margin:0;vertical-align:middle;}
+div.pagebanner a.pagestrong span{color:#fff;background:url(../images/page_s_l.png) no-repeat 0 0;display:inline-block;height:22px;line-height:21px;padding:0 1px 0 8px;font-weight:normal;}
+div.pagebanner a.pagebu{display:0;display:inline-block;height:22px;width:22px;vertical-align:middle;margin:0;}
+div.pagebanner a.first{background:url(../images/page_first.png) 0 0;}
+div.pagebanner a.first:hover{background:url(../images/page_first_hover.png) 0 0;}
+div.pagebanner a.prev{background:url(../images/page_prev.png);}
+div.pagebanner a.prev:hover{background:url(../images/page_prev_hover.png) 0 0;}
+div.pagebanner a.next{background:url(../images/page_next.png) 0 0;}
+div.pagebanner a.next:hover{background:url(../images/page_next_hover.png) 0 0;}
+div.pagebanner a.last{background:url(../images/page_last.png) 0 0;}
+div.pagebanner a.last:hover{background:url(../images/page_last_hover.png) 0 0;}

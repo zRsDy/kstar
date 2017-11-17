@@ -1,0 +1,35 @@
+<#escape x as x?html>
+<@cui.body>
+	<div class="col-xs-12">
+	<#-- 特价申请列表页面-新增 --> <#if permission["P03SpecialPriceListAdd"]?? > <#assign addURL = "'${ctx}/spePrice/add.html'" /></#if>
+
+	<#-- 特价申请列表页面-修改 --> <#if permission["P03SpecialPriceListSave"]?? > <#assign editURL = "'${ctx}/spePrice/edit.html'" /></#if>
+
+	<#-- 特价申请列表页面-删除 --> <#if permission["P03SpecialPriceListDelete"]?? > <#assign deleteURL = "'${ctx}/spePrice/delete.html'" /></#if>
+	<@form.table id="spePriceTable" 
+	class="col-xs-12"
+	title="${i18n.get('特价申请基本信息列表')}" 
+	url = "${ctx}/spePrice/page.html" 
+	rowNum = "10" 
+	addURL = "${addURL!}"
+	editURL= "${editURL!}"
+	deleteURL = "${deleteURL!}"
+	colModel = "[
+		{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'applyNumber',label:'${i18n.get('申请编号')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'applicantName',label:'${i18n.get('申请人')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'applyUnitName',label:'${i18n.get('申请单位')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'totalPrice',label:'${i18n.get('价目表总金额')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'discountTotalPrice',label:'${i18n.get('折扣后总金额')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'discount',label:'${i18n.get('折扣')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'applyDate',label:'${i18n.get('申请日期')}',hidden:false,width:200,sortable:true,align:'center', formatter:dateFmatter },
+		{name:'validDate',label:'${i18n.get('特价有效期至')}',hidden:false,width:200,sortable:true,align:'center' , formatter:dateFmatter },
+		{name:'applyStatusName',label:'${i18n.get('申请状态')}',hidden:false,width:200,sortable:true,align:'center' }
+		]"
+		buttons = "[]" >
+	</@form.table> 
+	<br/>
+	</div>
+</@cui.body>
+<script src="${ctx}/anne/js/util.js"></script>
+</#escape>

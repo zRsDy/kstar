@@ -1,0 +1,296 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="customHandoverList" success="function(){ parent.currentParent.reload_tableHandoverList(); }" class="form-horizontal" >
+		
+		<div class="form-group">	
+			<div style="padding-right: 20px; float: right;padding-top: 3px;">
+				<#if permission["P02HandoverSave"]?? && (customHandoverList.handoverStatusName)?? && customHandoverList.handoverStatusName != '审批中'>
+					<button class="btn btn-info submit" id="save" type="button">
+						<i class="bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+				</#if>
+				<#if permission["P02HandoverSubmit"]?? && (customHandoverList.handoverStatusName)?? && customHandoverList.handoverStatusName != '审批中'>
+					<button class="btn btn-info" id="apply" type="button" onclick="applyCustom('submit','20')">
+						<i class="bigger-110"></i>
+					${i18n.get('提交')}
+					</button>
+				</#if>
+				
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+				
+			</div>
+		</div>
+		
+		<div class="form-group" >
+			<table>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('交接人')}  : </label>
+					</td>
+					<td >
+						<input id="handoverFrom" name="handoverFrom" type="hidden" value="${(customHandoverList.handoverFrom)!}" >
+						<input id="handoverFromPos" name="handoverFromPos" type="hidden" value="${(customHandoverList.handoverFromPos)!}" >
+						<input id="handoverFromOrg" name="handoverFromOrg" type="hidden" value="${(customHandoverList.handoverFromOrg)!}" >
+						
+						<#if (customHandoverList.handoverFrom)??>
+							<@form.input  id="handoverFromName" name="handoverFromName" value="${(customHandoverList.handoverFromName)!}" readonly="readonly" />
+						<#else>
+							<@form.autocomplete  id="handoverFromName" name="handoverFromName" 
+								idKey='employeeId'
+								style='width:200px'
+								required="${i18n.get('请选择')}"
+								multiple="false"
+								formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+								url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+								value="{
+										employeeName:'${(customHandoverList.handoverFromName)!}'
+										,employeeNo:'${(customHandoverList.handoverFromNo)!}'
+										,employeeId:'${(customHandoverList.handoverTo)!}'
+										,positionName:'${(customHandoverList.positionToName)!}'
+								}"
+								onSelect="function(data){
+									if( data.id != null && data.id !='' && data.id != 'undefined'){
+										$('#handoverFrom').val(data.employeeId);
+										$('#handoverFromOrg').val(data.orgId);
+										$('#handoverFromPos').val(data.positionId);
+									}
+								}" 
+							/>
+						</#if>
+					</td>
+					
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('交接至')}  : </label>
+					</td>
+					<td >
+						
+						<input id="handoverTo" name="handoverTo" type="hidden" value="${(customHandoverList.handoverTo)!}" >
+						<input id="handoverToOrg" name="handoverToOrg" type="hidden" value="${(customHandoverList.handoverToOrg)!}" >
+						<input id="handoverToPos" name="handoverToPos" type="hidden" value="${(customHandoverList.handoverToPos)!}" >
+						
+						<#if (customHandoverList.handoverTo)??>
+							<@form.input  id="handoverToName" name="handoverToName" value="${(customHandoverList.handoverToNo)!}|${(customHandoverList.handoverToName)!}|${(customHandoverList.positionToName)!}" readonly="readonly" />
+			            <#else>
+			            	<@form.autocomplete  id="handoverToName" name="handoverToName" 
+				            	idKey='id'
+				            	style='width:200px'
+				            	required="${i18n.get('请选择')}"
+				            	placeholder="${i18n.get('输入选择')}"
+								multiple="false"
+				            	formatResult="function(data) {return ' <div > <li> <i class=icon-bullhorn></i> '+data.orgName +' | '+ data.positionName +' | '+ data.employeeName +' | '+ data.employeeNo +'</li></div>';}"
+				            	formatSelection="function(data) { return '<div >' + data.employeeName + ' </div>';}"
+								url="function(){ return '${ctx}/common/selectPositionList.html?orgId=${orgId!}&layerId=${layerId!}'; }"
+								value="{
+									employeeName:'${(customHandoverList.handoverToName)!}'
+									,employeeNo:'${(customHandoverList.handoverToNo)!}'
+									,employeeId:'${(customHandoverList.handoverTo)!}'
+									,positionName:'${(customHandoverList.positionToName)!}'
+								}"
+								onSelect="function(data){
+			            			$('#handoverTo').val(data.employeeId);
+									$('#handoverToOrg').val(data.orgId);
+									$('#handoverToPos').val(data.positionId);
+								}"
+			            	/>
+		            	</#if>
+						
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('申请编号')} : </label>
+					</td>
+					<td >
+						<@form.input
+						id="handoverCode"  
+						name="handoverCode" 
+						placeholder="" 
+						required="${i18n.get('不能为空！')}"
+						readonly="readonly"
+						tip="" 
+						value="${(customHandoverList.handoverCode)!}" 
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('交接原因')}  : </label>
+					</td>
+					<td >
+						<@form.select  style="width: 200px;"
+						id="handoverReason" name="handoverReason" 
+						code="HANDOVERREASON" 
+						required="${i18n.get('不能为空！')}"
+						value ="${(customHandoverList.handoverReason)!}"
+						/>
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('申请日期 ')}: </label>
+					</td>
+					<td >
+						<@form.input
+						id="handoverDate"  
+						name="handoverDate" 
+						style="width: 200px;"
+						placeholder="" 
+						readonly="readonly"
+						tip="" 
+						value="${(customHandoverList.handoverDate)!}" 
+						/>
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('申请状态')} : </label>
+					</td>
+					<td >
+						<input id="handoverStatus" name="handoverStatus" type="hidden" value="${(customHandoverList.handoverStatus)!}" >
+						
+						<@form.input
+							id="handoverStatusName"  
+							name="handoverStatusName" 
+							placeholder="" 
+							required="${i18n.get('不能为空！')}"
+							readonly="readonly"
+							tip="" 
+							value="${(customHandoverList.handoverStatusName)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px" >
+						<label class="no-padding-right" > ${i18n.get('备注')} : </label>
+					</td>
+					<td colspan="5" >
+						<@form.textArea id="handoverComment" 
+						name="handoverComment" 
+						width="136px" 
+						height="2" 
+						value="${(customHandoverList.handoverComment)!}" 
+						/>
+					</td>
+				</tr>
+			</table>
+			
+		</div>
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+		
+		<div class="form-group">
+			<div class="col-md-offset-5 col-md-4">
+				${i18n.get('指定客户交接')}：
+				<@form.autocomplete  id="customName" name="customName" 
+					idKey='id'
+					style="width: 230px;"
+					formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+					url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html?userId=' + $('#handoverFrom').val() + '&posId=' + $('#handoverFromPos').val() + '&orgId=' + $('#handoverFromOrg').val(); }"
+					value="{customFullName:'${(customInfo.customFullName)!}'
+					,customCode: '${(customInfo.customCode)!}'
+					}"
+					
+					onSelect="function(data){
+						if( data.customCode != null && data.customCode !='' && data.customCode != 'undefined'){
+							$('#customCode').val(data.customCode);
+							$('#customNameDisp').val(data.customFullName);
+							$('#customId').val(data.id);
+						}
+					}" 
+				/>
+				<#if permission["P02HandoverAbstract"]?? >
+				<input id="overCnt" name="overCnt" type="hidden" value="0" >
+					<input id="customCode" name="customCode" type="hidden" >
+					<input id="customNameDisp" name="customNameDisp" type="hidden" >
+					<input id="customId" name="customId" type="hidden"  value="${(customHandoverList.customId)!}" >
+					<button class="btn btn-info" id="dataGet" type="button" onclick="customDataGet()">
+						<i class="bigger-110"></i>
+						${i18n.get('抽取')}
+					</button>
+				</#if>
+				
+			</div>
+		</div>
+	</@form.form>
+	
+	<@plug.tabs  tabMain=tabMain>
+	</@plug.tabs>
+	</@form.panel>
+</@pui.body>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		
+		if ('${(customHandoverList.handoverStatus)!}' === 'CUSTOM_NORMAL_STATUS_20'
+			|| '${(customHandoverList.handoverStatus)!}' === 'CUSTOM_NORMAL_STATUS_40'){
+			$("#save").attr("disabled","true");
+			$("#apply").attr("disabled","true");
+			$("#dataGet").attr("disabled","true");
+		}
+		
+		if ('${mode!}' === 'ADD'){
+			$("#dataGet").attr("disabled","true");
+		}
+	});
+
+
+	function applyCustom(operate,status){
+		var msg= "${i18n.get('确定启动交接流程吗？')}";
+		
+		var formDatas = $('#form_customHandoverList').serialize();
+		formDatas = "id=${(customHandoverList.id)!}&"+formDatas;
+		bootbox.confirm(msg, function(result) {
+			if(result) {
+				$.ajax({
+					type : "POST",
+					url : "${ctx}/custom/handoverApply.html",
+					async: true,
+					data : formDatas, 
+					dataType : 'json',
+					success : function(msg) {
+						alert(msg.message);
+						parent.currentParent2.reload_tableHandoverList(); 
+						javascript:api.close();
+					},
+					error: function(e) {
+						alert(e.responseJSON.message);
+					} 
+				});
+			}
+		});
+	}
+	
+	function customDataGet(){
+		var customCode= $("#customCode").val();
+		var customName= $("#customNameDisp").val();
+		var formDatas = $('#form_customHandoverList').serialize();
+		formDatas = "id=${(customHandoverList.id)!}&"+formDatas;
+		var msg;
+		if(''===customCode){
+			msg = "${i18n.get('确定抽取全部数据吗？')}";
+		} else {
+			msg = "${i18n.get('确定抽取客户(" + customName + ")数据吗')}？";
+		}
+		
+		bootbox.confirm(msg, function(result) {
+			if(result) {
+				$.ajax({
+					type : "POST",
+					url : "${ctx}/custom/handover/handoverInfo.html",
+					async: true,
+					data : formDatas, 
+					dataType : 'json',
+					success : function(msg) {
+						alert(msg.message);
+					},
+					error: function(e) {
+						alert(e.responseJSON.message);
+					} 
+				});
+			}
+		});
+	}
+</script>
+</#escape>

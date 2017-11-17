@@ -1,0 +1,46 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="t1" success="function(){ parent.currentParent.reload_require(); }" class="form-horizontal" >
+		
+		<input id="customId" name="customId" type="hidden"  value="${(customRequireInfo.customId)!}">
+		<div class="form-group" >
+			<label class="col-sm-3 control-label " > <strong style="color: red;">*</strong>${i18n.get('产品类别 ')}: </label>
+			<@form.select style="width: 147px;"
+				id="customRequireClass" name="customRequireClass" 
+				code="REQUIRECLASS" 
+				required="${i18n.get('不能为空')}" 
+				value ="${(customRequireInfo.customRequireClass)!}"
+			/>
+		</div>
+		
+		<div class="form-group" >
+			<label class="col-sm-3 control-label " >${i18n.get('备注')} : </label>
+			<@form.input
+			id="customRequireComment"  
+			name="customRequireComment" 
+			placeholder="${i18n.get('备注')}" 
+			tip="" 
+			value="${(customRequireInfo.customRequireComment)!}" 
+			/>
+		</div>
+		
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+		<div class="clearfix form-actions">
+			<div class="col-md-offset-5 col-md-7">
+				<button class="btn btn-info submit" type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				&nbsp; &nbsp; &nbsp;
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+	</@form.form>
+	</@form.panel>
+</@pui.body>
+</#escape>

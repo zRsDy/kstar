@@ -1,0 +1,976 @@
+<#escape x as x?html>
+<@cui.body2>
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="customInfo" autoClose="false" 
+		 success="function(data){ 
+			try{
+				parent.currentParent2.reload_tableCustomList(); 
+			}catch(e){
+				parent.currentParent.reload_tableCustomList(); 
+			}
+			
+			alert('${i18n.get('保存成功！')}');
+			window.location.href='${ctx}/custom/baseinfo/edit.html?id='+data;
+		}" 
+	class="form-horizontal">
+		<div class="form-group">	
+			<div style="padding-right: 20px; float: right;padding-top: 3px;">
+				
+				<#if permission["P02CusParSave"]?? >
+					<button class="btn btn-info submit" id= "save" type="button">
+						<i class="bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+				</#if>
+				
+				<#if permission["P02CusParChange"]?? >
+					<button class="btn btn-info " id="update" type="button" onclick="javascript:parent.dialog('${i18n.get('变更申请')}','${ctx}/custom/change/change.html?id=${(customInfo.id)!}',window);javascript:api.close();">
+						<i class="bigger-110"></i>
+						${i18n.get('提交变更')}
+					</button>
+				</#if>
+				
+				<#if permission["P02CusParOpportunity"]?? >
+					<button class="btn btn-info " id="bizopp" type="button" onclick="javascript:parent.dialog('${i18n.get('客户商机报备')}','${ctx}/bizopp/add.html?customId=${(customInfo.id)!}',window);javascript:api.close();">
+						<i class="bigger-110"></i>
+						${i18n.get('启动商机报备')}
+					</button>
+				</#if>
+				
+				<#if permission["P02CusParReport"]?? >
+					<button class="btn btn-info" id="apply" type="button" onclick="applyCustom('customApply','20')">
+						<i class="bigger-110"></i>
+						${i18n.get('客户报备')}
+					</button>
+				</#if>
+				
+				<#if permission["P02CusParImport"]?? >
+					<button class="btn btn-info" id="erpApply" type="button" onclick="applyCustom('erpApply','30')">
+						<i class="bigger-110"></i>
+						${i18n.get('提交引入申请')}
+					</button>
+				</#if>
+				
+				
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+			
+		<div class="form-group">
+			<input id="selectedId" name="selectedId" type="hidden" value="${(customInfo.id)!}">
+			<input id="personCnt" name="personCnt" type="hidden" value="${(personCnt)!}" >
+			<table>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right"> ${i18n.get('客户编号')}:</label>
+					</td>
+					<td nowrap="nowrap">
+					<input id="customCode" name="customCode" type="hidden" value="${(customInfo.customCode)!}" >
+						<@form.input id="erpCode" 
+							name="erpCode" 
+							readonly="readonly" 
+							tip="" 
+							value="${(customInfo.erpCode)!}" />
+						
+					</td>
+					
+					<td align="right" width="200px">
+						
+					</td>
+					<td>
+						
+					</td>
+					<td align="right"  width="200px">
+						
+					</td>
+					<td>
+						
+					</td>
+				</tr>
+				<tr>
+					<td align="right"  width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right"> ${i18n.get('客户全称')} :</label>
+						
+					</td>
+					<td colspan="3">
+						<@form.input id="customFullName" 
+						name="customFullName" 
+						required="${i18n.get('不能为空')}" 
+						maxlength="70"
+						style="width:350px"
+						tip="" 
+						value="${(customInfo.customFullName)!}" />
+						
+					</td>
+					<td align="right"  width="200px">
+						
+						<label class="no-padding-right" > ${i18n.get('客户别名')} :</label>
+					</td>
+					<td>
+						<@form.input id="customAliasName" 
+						name="customAliasName" 
+						tip="" value="${(customInfo.customAliasName)!}" />
+						
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						<label class="no-padding-right" >${i18n.get('公司网址')}  :</label>
+					</td>
+					<td>
+						<@form.input id="customWebAddress" 
+						name="customWebAddress" 
+						tip="" 
+						value="${(customInfo.customWebAddress)!}" />
+					</td>
+					<td align="right">
+					</td>
+					<td>
+					</td>
+					<td align="right">
+					</td>
+					<td>
+						<#if permission["P02CusParExternal"]?? >
+							<@form.radio name="customType" 
+							value="1" 
+							selectValue=(customInfo.customType)/>
+							<span class="lbl">${i18n.get('外部客户')}</span>
+							
+							<@form.radio name="customType" 
+							value="0" 
+							selectValue=(customInfo.customType)/>
+							<span class="lbl">${i18n.get('内部客户')}</span>
+						<#else>
+							<input id="customType" name="customType" type="hidden" value="${(customInfo.customType)!}" >
+						</#if>
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+		<div class="form-group">
+			<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('常规信息')}</p>
+			<table>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('客户来源')} :</label>
+					</td>
+					<td >
+						<@form.select style="width: 161px;"
+							id="customSource" name="customSource" 
+							code="CUSTOMSOURCE" 
+							required="${i18n.get('不能为空')}" 
+							value ="${(customInfo.customSource)!}"
+						/>
+					</td>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right"> ${i18n.get('客户类别')} :</label>
+					</td>
+					<td >
+						<@form.select style="width: 161px;"
+							id="customClass" name="customClass" 
+							code="CUSTOMCLASS" 
+							level="1"
+							childId="customGrade"
+							required="${i18n.get('不能为空')}" 
+							value ="${(customInfo.customClass)!}"
+							onChange="function(){
+								$('#customGrade').val('');
+								reload_customGrade();
+							}"
+						/>
+					</td>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('客户状态')}:</label>
+					</td>
+					<td >
+						<input id="customStatus" name="customStatus" type="hidden" value="${(customInfo.customStatus)!}" >
+						<@form.input
+							id="customStatusName"  
+							name="customStatusName" 
+							required="${i18n.get('不能为空')}"
+							readonly="readonly"
+							tip="" 
+							value="${(customInfo.customStatusName)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					
+					<td align="right">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('所属区域 ')} ${i18n.get('国家')}:</label>
+					</td>
+					<td>
+						<@form.select 
+							code="ADDRESSREGION"
+							level="1"
+							childId="customAreaSub1"
+							id="customArea"  name="customArea" 
+							style="width: 161px;"
+							required="${i18n.get('不能为空')}" 
+							value="${(customInfo.customArea)!}" 
+							tip="" 
+							onChange="function(){
+								$('#customAreaSub1').val('');
+								$('#customAreaSub2').val('');
+								$('#customAreaSub3').val('');
+								reload_customAreaSub1();
+								reload_customAreaSub2();
+								reload_customAreaSub3();
+							}"
+						/>
+					</td>
+					<td align="right">
+						
+						<label class="no-padding-right"> ${i18n.get('客户等级')} :</label>
+					</td>
+					<td >
+						<@form.select style="width: 161px;"
+							id="customGrade" name="customGrade" 
+							code="CUSTOMCLASS" 
+							level="2"
+							parentId="customClass" 
+							value ="${(customInfo.customGrade)!}"
+						/>
+						
+						
+					</td>
+					<td align="right">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('业务状态')}  :</label>
+					</td>
+					<td >
+						<input id="customControlStatus" name="customControlStatus" type="hidden" value="${(customInfo.customControlStatus)!}" >
+						<@form.input
+							id="customControlStatusName"  
+							name="customControlStatusName" 
+							required="${i18n.get('不能为空')}"
+							readonly="readonly"
+							tip="" 
+							value="${(customInfo.customControlStatusName)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					
+					<td align="right">
+						<label class="no-padding-right" > ${i18n.get('省份')} :</label>
+					</td>
+					<td >
+						<@form.select 
+							code="ADDRESSREGION"
+							level="2"
+							parentId="customArea"
+							childId="customAreaSub2"
+							style="width: 161px;"
+							id="customAreaSub1" name="customAreaSub1" 
+							tip="" 
+							value="${(customInfo.customAreaSub1)!}" 
+							onChange="function(){
+								$('#customAreaSub2').val('');
+								$('#customAreaSub3').val('');
+								reload_customAreaSub2();
+								reload_customAreaSub3();
+							}"
+							/>
+
+					</td>
+					<td align="right">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('行业大类')} :</label>
+					</td>
+					<td >
+						<#if P_GJORG_B1_0001>
+							<@form.select 
+								code="CUSTOMCATEGORY&optTxt1s=I,ACI,AI,BI,ABCI,BCI"
+								level="1"
+								childId="customCategorySub"
+								required="${i18n.get('不能为空')}" 
+								style="width: 161px;"
+								id="customCategory"  name="customCategory" 
+								value ="${(customInfo.customCategory)!}"
+								tip="" 
+								onChange="function(){
+									$('#customCategorySub').val('');
+									reload_customCategorySub();
+								}"
+							/>
+						</#if>
+						
+						<#if P_GNORG_B1_0001>
+							<@form.select 
+								code="CUSTOMCATEGORY&optTxt1s=A,AC,AI,ACI,ABCI"
+								level="1"
+								childId="customCategorySub"
+								required="${i18n.get('不能为空')}" 
+								style="width: 161px;"
+								id="customCategory"  name="customCategory" 
+								value ="${(customInfo.customCategory)!}"
+								tip="" 
+								onChange="function(){
+									$('#customCategorySub').val('');
+									reload_customCategorySub();
+								}"
+							/>
+						</#if>
+						
+						<#if P_GNGFORG_B1_0001>
+							<@form.select 
+								code="CUSTOMCATEGORY&optTxt1s=B,BI,BCI,ABCI"
+								level="1"
+								childId="customCategorySub"
+								required="${i18n.get('不能为空')}" 
+								style="width: 161px;"
+								id="customCategory"  name="customCategory" 
+								value ="${(customInfo.customCategory)!}"
+								tip="" 
+								onChange="function(){
+									$('#customCategorySub').val('');
+									reload_customCategorySub();
+								}"
+							/>
+						</#if>
+						
+						<#if P_GNQCORG_B1_0001>
+							<@form.select 
+								code="CUSTOMCATEGORY&optTxt1s=C,AC,ACI,ABCI"
+								level="1"
+								childId="customCategorySub"
+								required="${i18n.get('不能为空')}" 
+								style="width: 161px;"
+								id="customCategory"  name="customCategory" 
+								value ="${(customInfo.customCategory)!}"
+								tip="" 
+								onChange="function(){
+									$('#customCategorySub').val('');
+									reload_customCategorySub();
+								}"
+							/>
+						</#if>
+					</td>
+					<td align="right">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('ERP状态')} :</label>
+					</td>
+					<td >
+						<input id="customReportedFlg" name="customReportedFlg" type="hidden" value="${(customInfo.customReportedFlg)!}" >
+						<input id="erpStatus" name="erpStatus" type="hidden" value="${(customInfo.erpStatus)!}" >
+						<@form.input
+							id="erpStatusName"  
+							name="erpStatusName" 
+							required="${i18n.get('不能为空')}"
+							readonly="readonly"
+							tip="" 
+							value="${(customInfo.erpStatusName)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						<label class="no-padding-right" > ${i18n.get('城市')} :</label>
+					</td>
+					<td >
+						<@form.select 
+							code="ADDRESSREGION"
+							level="3"
+							parentId="customAreaSub1"
+							childId="customAreaSub3"
+							style="width: 161px;"
+							id="customAreaSub2" name="customAreaSub2" 
+							tip="" 
+							value="${(customInfo.customAreaSub2)!}" 
+							onChange="function(){
+								$('#customAreaSub3').val('');
+								reload_customAreaSub3();
+							}"
+							/>
+					</td>
+					<td align="right">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('行业小类')}  :</label>
+					</td>
+					<td >
+						<#if P_GJORG_B1_0001>
+							<@form.select style="width: 161px;"
+								id="customCategorySub" name="customCategorySub" 
+								code="CUSTOMCATEGORY&optTxt1s=I,ACI,AI,BI,ABCI,BCI" 
+								style="width: 161px;"
+								level="2"
+								parentId="customCategory"
+								required="${i18n.get('不能为空')}" 
+								value ="${(customInfo.customCategorySub)!}"
+							/>
+						</#if>
+						
+						<#if P_GNORG_B1_0001>
+							<@form.select style="width: 161px;"
+								id="customCategorySub" name="customCategorySub" 
+								code="CUSTOMCATEGORY&optTxt1s=A,AC,AI,ACI,ABCI" 
+								style="width: 161px;"
+								level="2"
+								parentId="customCategory"
+								required="${i18n.get('不能为空')}" 
+								value ="${(customInfo.customCategorySub)!}"
+							/>
+						</#if>
+						
+						<#if P_GNGFORG_B1_0001>
+							<@form.select style="width: 161px;"
+								id="customCategorySub" name="customCategorySub" 
+								code="CUSTOMCATEGORY&optTxt1s=B,BI,BCI,ABCI" 
+								style="width: 161px;"
+								level="2"
+								parentId="customCategory"
+								required="${i18n.get('不能为空')}" 
+								value ="${(customInfo.customCategorySub)!}"
+							/>
+						</#if>
+						
+						<#if P_GNQCORG_B1_0001>
+							<@form.select style="width: 161px;"
+								id="customCategorySub" name="customCategorySub" 
+								code="CUSTOMCATEGORY&optTxt1s=C,AC,ACI,ABCI" 
+								style="width: 161px;"
+								level="2"
+								parentId="customCategory"
+								required="${i18n.get('不能为空')}" 
+								value ="${(customInfo.customCategorySub)!}"
+							/>
+						</#if>
+					</td>
+					<td align="right">
+						<label class="no-padding-right" > ${i18n.get('OEM 品牌')} :</label>
+					</td>
+					<td >
+						<@form.input id="customOem" name="customOem" tip="" value="${(customInfo.customOem)!}" />
+					</td>
+					
+				</tr>
+				<tr>
+					<td align="right">
+						<label class="no-padding-right" > ${i18n.get('区/县')} :</label>
+					</td>
+					<td >
+						<@form.select 
+							code="ADDRESSREGION"
+							level="4"
+							parentId="customAreaSub2"
+							style="width: 161px;"
+							id="customAreaSub3" name="customAreaSub3" 
+							tip="" 
+							value="${(customInfo.customAreaSub3)!}" 
+							/>
+					</td>
+					<td align="right">
+						<label class="no-padding-right" > ${i18n.get('行业备注')} :</label>
+					</td>
+					<td >
+						<@form.input id="customCategoryComment" 
+						name="customCategoryComment" 
+						tip="" 
+						value="${(customInfo.customCategoryComment)!}" />
+					</td>
+					<td align="right">
+						<label class="no-padding-right" >${i18n.get('收入规模')}  :</label>
+					</td>
+					<td >
+						<@form.select style="width: 161px;"
+							id="customIncomeScale" name="customIncomeScale" 
+							code="INCOMESCALE" 
+							value ="${(customInfo.customIncomeScale)!}"
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" >${i18n.get('注册地址')}  :</label>
+					</td>
+					<td colspan="5">
+						<@form.textArea id="corpRegAddress" 
+						name="corpRegAddress" 
+						required="${i18n.get('不能为空')}" 
+						width="125px" 
+						height="1" 
+						value="${(customInfo.corpRegAddress)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						<label class="no-padding-right" >${i18n.get('客户概况')}  :</label>
+					</td>
+					<td colspan="5">
+						<@form.textArea id="customProfile" 
+						name="customProfile" 
+						width="125px" 
+						height="2" 
+						value="${(customInfo.customProfile)!}" />
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="form-group">
+			<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('财务信息')}</p>
+			<table>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('一般纳税人资格 ')} :</label>
+					</td>
+					<td >
+						<@form.select style="width: 161px;"
+							id="corpOrdinaryFlg" 
+							name="corpOrdinaryFlg" 
+							code="ORDINARY" 
+							value ="${(customInfo.corpOrdinaryFlg)!}"
+						/>
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('客户开票名称')} :</label>
+					</td>
+					<td >
+						<@form.input id="corpInvoiceName" 
+							name="corpInvoiceName" 
+							tip="" 
+							value="${(customInfo.corpInvoiceName)!}" />
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('纳税识别号')} :</label>
+					</td>
+					<td>
+						<@form.input id="corpTrn" 
+							name="corpTrn" 
+							tip="" 
+							value="${(customInfo.corpTrn)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('开票地址')}  :</label>
+					</td>
+					<td >
+						<@form.input id="accountAddress" 
+							name="accountAddress" 
+							tip="" 
+							value="${(customInfo.accountAddress)!}" />
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('开户行')} :</label>
+					</td>
+					<td >
+						<@form.input id="accountBank" 
+							name="accountBank" 
+							tip="" 
+							value="${(customInfo.accountBank)!}" />
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('法定代表人')}  :</label>
+					</td>
+					<td>
+						<@form.input id="corpRepresentative" 
+							name="corpRepresentative" 
+							tip="" 
+							value="${(customInfo.corpRepresentative)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('开票电话')} :</label>
+					</td>
+					<td >
+						<@form.number id="accountTel" 
+							name="accountTel" 
+							tip="" 
+							value="${(customInfo.accountTel)!}" />
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('开票账号')} :</label>
+					</td>
+					<td >
+						<@form.number id="accountNo" 
+							name="accountNo" 
+							tip="" 
+							value="${(customInfo.accountNo)!}" />
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('账期（天）')}  :</label>
+					</td>
+					<td>
+						<@form.number id="corpPayDays" 
+							name="corpPayDays" 
+							readonly ="readonly" 
+							tip="" 
+							value="${(customInfo.corpPayDays)!}" />
+					</td>
+				</tr>
+				<#if permission["P02CusParInsurance"]?? >
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('中信保额度(USD)')} :</label>
+					</td>
+					<td >
+						<@form.number id="corpCiticAmount" 
+							name="corpCiticAmount" 
+							tip="" 
+							value="${(customInfo.corpCiticAmount)!}" />
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('人保额度(USD)')} :</label>
+					</td>
+					<td >
+						<@form.number id="corpPiccAmount" 
+							name="corpPiccAmount" 
+							tip="" 
+							value="${(customInfo.corpPiccAmount)!}" />
+					</td>
+					<td align="right" width="200px">
+					</td>
+					<td>
+					</td>
+				</tr>
+				</#if>
+			</table>
+		</div>
+		<div id = "creditDiv" class="form-group">
+			<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('信用额度')}</p>
+			<table>
+				<tr>
+					<th>
+					</th>
+					<th>
+						${i18n.get('信用类型')}
+					</th>
+					<th>
+						${i18n.get('币种')}
+					</th>
+					<th>
+						${i18n.get('额度')}
+					</th>
+					<th>
+						${i18n.get('汇率')}
+					</th>
+					
+					<th>
+						${i18n.get('有效期至')}
+					</th>
+				</tr>
+				<tr>
+					<td align="right" width="200px"></td>
+					<td >
+						<@form.input id="corpCreditCalss" 
+						name="corpCreditCalss" 
+						readonly="readonly" 
+						tip="" 
+						value="${i18n.get('常规额度')}" />
+					</td>
+					<td>
+						<@form.input id="corpCalcCurrency" 
+						name="corpCalcCurrency" 
+						readonly="readonly" 
+						tip="" 
+						value="${(customInfo.limitCurrencyName)!}" />
+					</td>
+					<td>
+						<@form.input 
+						id="corpCreditAmount" 
+						name="corpCreditAmount" 
+						readonly="readonly" 
+						tip="" value="${(customInfo.limitAmount)!}" />
+					</td>
+					<td>
+						<@form.input id="corpExchangeRate" 
+						name="corpExchangeRate" 
+						readonly="readonly" 
+						tip="" 
+						value="${(customInfo.limitRate)!}" />
+					</td>
+					
+					<td>
+						
+						<@form.date id="corpCreditValidFlg"  name="corpCreditValidFlg" 
+							tip="" 
+							value="${(customInfo.limitValidTo?date)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px"></td>
+					<td>
+						<@form.input id="corpCreditCalssTemp" 
+						name="corpCreditCalssTemp" 
+						readonly="readonly" 
+						tip="" 
+						value="${i18n.get('临时额度')}" />
+					</td>
+					<td>
+						<@form.input id="corpCalcCurrencyTemp" 
+						name="corpCalcCurrencyTemp" 
+						readonly="readonly" 
+						tip="" 
+						value="${(customInfo.tempCurrencyName)!}" />
+					</td>
+					<td>
+						<@form.input id="corpCreditAmountTemp" 
+						name="corpCreditAmountTemp" 
+						readonly="readonly" 
+						tip="" 
+						value="${(customInfo.tempAmount)!}" />
+					</td>
+					<td>
+						<@form.input id="corpExchangeRateTemp" 
+						name="corpExchangeRateTemp" 
+						readonly="readonly" 
+						tip="" 
+						value="${(customInfo.tempRate)!}" />
+					</td>
+					
+					<td>
+						
+						<@form.date id="corpCreditValidFlgTemp"  name="corpCreditValidFlgTemp" 
+							tip="" 
+							value="${(customInfo.tempValidTo?date)!}" 
+							/>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div id="pipeDiv" class="form-group">
+			<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('渠道信息')}</p>
+			<table>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('渠道类别')}  :</label>
+					</td>
+					<td>
+						<@form.select style="width: 161px;"
+							id="pipeClass" name="pipeClass" 
+							code="PIPECLASS" 
+							value ="${(customInfo.pipeClass)!}"
+						/>
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('渠道属性')}  :</label>
+					</td>
+					<td>
+						<@form.select style="width: 161px;"
+							id="pipeAttr" name="pipeAttr" 
+							code="PIPEATTR" 
+							value ="${(customInfo.pipeAttr)!}"
+						/>
+					</td>
+					<td align="right" width="200px">
+					</td>
+					<td>
+					</td>
+				</tr>
+				
+			</table>
+		</div>
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+		
+	</@form.form>
+
+	
+
+	
+	<@plug.tabs  tabMain=tabMain>
+	</@plug.tabs>
+	
+	</@form.panel>
+</@cui.body2>
+
+<script type="text/javascript">
+	
+	$(document).ready(function() {
+		$("#corpCreditValidFlgTemp").attr("disabled","true");
+		$("#corpCreditValidFlg").attr("disabled","true");
+		
+		iniCheck("corpValidFlg");
+		if ('${(customInfo.id)!}' === undefined || '${(customInfo.id)!}' === ''){
+			$("#pipeDiv").hide();
+			$("#invoiceDiv").hide();
+		}
+		
+		if ('${(customInfo.creditId)!}' === undefined || '${(customInfo.creditId)!}' === ''){
+			$("#creditDiv").hide();
+		}
+		
+		if ('${mode!}' === 'ADD'){
+			$("#bizopp").attr("disabled","true");
+			$("#update").attr("disabled","true");
+			$("#apply").attr("disabled","true");
+			$("#erpApply").attr("disabled","true");
+		}
+		
+		<#if isERPCustom?? && isERPCustom >
+			updateDisable();
+		</#if>
+		
+		if ('${mode!}' === 'EDIT'){
+			if ('${saveFlg!}' === 'true'){
+				$("#save").attr("disabled","true");
+			}
+			if ('${updateFlg!}' === 'true'){
+				$("#update").attr("disabled","true");
+			}
+			if ('${applyFlg!}' === 'true'){
+				$("#apply").attr("disabled","true");
+			}
+			if ('${erpApplyFlg!}' === 'true'){
+				$("#erpApply").attr("disabled","true");
+			}
+			
+			if ('${(customInfo.customReportedFlg)!}' === 'CUSTOM_NORMAL_STATUS_40'){
+				updateDisable();
+			}
+			
+			if ('${(customInfo.customReportedFlg)!}' === 'CUSTOM_NORMAL_STATUS_20'){
+				updateDisable();
+			}
+			
+			if ('${(customInfo.erpStatus)!}' === 'CUSTOM_NORMAL_STATUS_40'){
+				updateDisable();
+			}
+			
+			if ('${(customInfo.erpStatus)!}' === 'CUSTOM_NORMAL_STATUS_20'){
+				updateDisable();
+			}
+		}
+		
+	});
+	
+	function updateDisable() {
+		// ${i18n.get('以下字段在审批中和审批完成时不可用')}
+		//${i18n.get('客户全称')} 
+		$("#customFullName").attr("readonly","true");
+		//${i18n.get('公司网址')} 
+		$("#customWebAddress").attr("disabled","true");
+		// ${i18n.get('客户别名')}
+		$("#customAliasName").attr("disabled","true");
+		// ${i18n.get('客户类别')}
+		$("#customClass").attr("disabled","true");
+		// ${i18n.get('客户等级')}
+		$("#customGrade").attr("disabled","true");
+		//${i18n.get('OEM品牌')} 
+		$("#customOem").attr("disabled","true");
+		// ${i18n.get('所属区域')}
+		$("#customArea").attr("disabled","true");
+		$("#customAreaSub1").attr("disabled","true");
+		$("#customAreaSub2").attr("disabled","true");
+		$("#customAreaSub3").attr("disabled","true");
+		// ${i18n.get('收入规模')}
+		$("#customIncomeScale").attr("disabled","true");
+		//${i18n.get('客户行业')} 
+		$("#customCategory").attr("disabled","true");
+		$("#customCategorySub").attr("disabled","true");
+		//${i18n.get('客户概况')} 
+		$("#customProfile").attr("disabled","true");
+		// ${i18n.get('注册地址')}
+		$("#corpRegAddress").attr("disabled","true");
+		// ${i18n.get('法定代表人')}
+		$("#corpRepresentative").attr("disabled","true");
+		// ${i18n.get('纳税登记号')}
+		$("#corpTrn").attr("disabled","true");
+		// ${i18n.get('开票名称')}
+		$("#corpInvoiceName").attr("disabled","true");
+		// ${i18n.get('开票注意事项')}
+		$("#corpInvoiceComment").attr("disabled","true");
+		
+		// ${i18n.get('一般纳税人资格')}
+		$("#corpOrdinaryFlg").attr("disabled","true");
+		// ${i18n.get('开票地址')}
+		$("#accountAddress").attr("disabled","true");
+		// ${i18n.get('开户行')}
+		$("#accountBank").attr("disabled","true");
+		// ${i18n.get('开票电话')}
+		$("#accountTel").attr("disabled","true");
+		// ${i18n.get('开票账号')}
+		$("#accountNo").attr("disabled","true");
+	}
+
+	function iniCheck(domId){
+		var checkedValue= $("#" + domId).val();
+		if(checkedValue == '0'){
+			$("#" + domId).removeAttr("checked"); 
+		}else if (checkedValue == '1'){
+			$("#" + domId).attr("checked","true"); 
+		}
+	}	
+	function changeCheckValue(domId) {
+		var checked = $(domId).is(':checked')
+		if (checked == true) {
+			$(domId).val('1');
+			$(domId).attr("checked", "true");
+		} else {
+			$(domId).val('0');
+			$(domId).removeAttr("checked");
+		}
+	}
+
+    function applyCustom(operate, status) {
+        var msg = "${i18n.get('没有有效联系人，请完善联系人表格后提交！')}";
+        var personCnt = $("#personCnt").val();
+        if (personCnt == "0") {
+            alert(msg);
+            return;
+        }
+
+        if (!$("#customArea").val()) {
+            alert("${i18n.get('所属国家不能为空！')}");
+            return;
+        }
+        if(!$("#customCategory").val()){
+        	alert("${i18n.get('行业大类不能为空！')}");
+            return;
+        }
+        if(!$("#customCategorySub").val()){
+        	alert("${i18n.get('行业小类不能为空！')}");
+            return;
+        }
+
+        if ('20' === status) {
+            msg = "${i18n.get('确定启动报备流程吗？')}";
+        } else if ('30' === status) {
+            msg = "${i18n.get('确定提交引入申请流程吗？')}";
+        }
+
+        var formDatas = $('#form_customInfo').serialize();
+        formDatas = "id=${(customInfo.id)!}&" + formDatas;
+        bootbox.confirm(msg, function (result) {
+            if (result) {
+                $.ajax({
+                    type: "POST",
+                    url: "${ctx}/custom/" + operate + ".html",
+                    async: true,
+                    data: formDatas,
+                    dataType: 'json',
+                    success: function (msg) {
+                        alert(msg.message);
+                        javascript:api.close();
+
+                        try {
+                            parent.currentParent2.reload_tableCustomList();
+                        } catch (e) {
+                            parent.currentParent.reload_tableCustomList();
+                        }
+                    },
+                    error: function (e) {
+                        alert(e.responseJSON.message);
+                    }
+                });
+            }
+        });
+    }
+	
+</script>
+</#escape>

@@ -1,0 +1,64 @@
+<@pui.body>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t811" success="function(){parent.currentParent.reload_t811(); }" class="form-horizontal">
+		<div align="center" class="form-group">
+			<table>
+					<tr>
+						<td align="right" width="190px"><strong style="color: red;">*</strong>${i18n.get('层级名称 :')}</td>
+						<td width="450px">
+							<!-- <@form.select style="width: 163px;"  
+			             		id="layLineName"
+			             		name="layLineName" 
+			             		required="不能为空" 
+			             		tip="底价层级名称"
+			             		url="function(){ return '${ctx}/lov/member/selectLpcLineName.html?orgId='+ '${(organization)!}';}" 
+			             		idKey='id'
+			             		value ="${(lpcl.layLineName)!}"
+			             	/> -->
+			             	<input type="hidden" id="layLineName" name="layLineName" value="${(lpcl.layLineName)!}" />
+			             	<@form.input id="layLineNameName" name="layLineNameName" readonly="true" tip="${i18n.get('底价层级名称')}" value="${(lpcl.layLineNameName)!}" />
+						</td>
+						<td align="right" width="190px"><strong style="color: red;">*</strong>${i18n.get('默认折扣率 :')}</td>
+						<td width="450px">
+							<@form.number id="discountRate" name="discountRate" required="${i18n.get('不能为空')}" tip="${i18n.get('每个层级底价对于目录价的默认折扣率')}" value="${(lpcl.discountRate)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="190px"><strong style="color: red;">*</strong>${i18n.get('有效期开始时间 :')}</td>
+						<td width="450px">
+							<@form.date id="startDate" name="startDate" required="${i18n.get('不能为空')}" tip="${i18n.get('有效期开始时间')}" value="${(lpcl.startDate?date)!}" />
+						</td>
+						<td align="right" width="190px">${i18n.get('有效期结束时间 :')}</td>
+						<td width="450px">
+							 <@form.date id="endDate" name="endDate" tip="${i18n.get('有效期线束时间')}" value="${(lpcl.endDate?date)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="190px">${i18n.get('审批层级 :')}</td>
+						<td width="450px">
+							<@form.select id="approveLayLine" name="approveLayLine" style="width:163px;" tip="${i18n.get('审批层级')}" viewKey="name" 
+								idKey='id' url="function(){return '${ctx}/proprice/selectApproveLayLine.html'}" value="${(lpcl.approveLayLine)!}" />
+						</td>
+						<td align="right" width="190px"></td>
+						<td width="450px">
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+	</@form.panel>
+</@pui.body>

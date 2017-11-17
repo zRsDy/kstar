@@ -1,0 +1,185 @@
+<@cui.body2>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1" success="function(){ parent.currentParent.reload_policy_2('${(policyInfo.id)!}'); }" class="form-horizontal">	
+			<div align="center">
+				<table>
+					<tr>
+						<td align="right" width="120px">${i18n.get('政策编号 :')}</td>
+						<td width="320px">
+							<@form.input id="policyCode" name="policyCode" style="width:163px;" tip="${i18n.get('返利政策编号')}" readonly="true" value="${(policyInfo.policyCode)!}" />
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('政策名称 :')}</td>
+						<td width="320px">
+							<@form.input id="policyName" name="policyName" style="width:163px;" tip="${i18n.get('返利政策名称')}" required="${i18n.get('不能为空')}" value="${(policyInfo.policyName)!}" />
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('组织名称 :')}</td>
+						<td width="320px">
+							<input type="hidden" id="organization" name="organization" value="${(policyInfo.organization)!}" />
+							<@form.input id="organizationName" name="organizationName" style="width:163px;" tip="${i18n.get('申请单创建的组织')}" readonly="true" value="${(policyInfo.organizationName)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('起始日期 :')}</td>
+						<td width="320px">
+							<@form.date id="startDate" name="startDate" format="yyyy-mm-dd" required="${i18n.get('不能为空')}" style="width:163px;" tip="${i18n.get('返利政策起始日期')}" value="${(policyInfo.startDate?date)!}" />
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('结束日期 :')}</td>
+						<td width="320px">
+							<@form.date id="endDate" name="endDate" format="yyyy-mm-dd" required="${i18n.get('不能为空')}" style="width:163px;" tip="${i18n.get('返利政策结束日期')}" value="${(policyInfo.endDate?date)!}" />
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('销售人员 :')}</td>
+						<td width="320px">
+							<@form.input id="salesman" name="salesman" style="width:163px;" tip="${i18n.get('客户对应的销售员')}" required="${i18n.get('不能为空')}" value="${(policyInfo.salesman)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('客户名称 :')}</td>
+						<td width="320px">
+							<@form.select childId="contact" id="customId" name="customId" style="width:163px;" tip="${i18n.get('返利政策客户名称')}" viewKey="customFullName"
+							 idKey='id' url="function(){return '${ctx}/lovcustom/autoCompleteCustomAll.html?customType=1';}" value="${(policyInfo.customId)!}" />
+						</td>
+						<td align="right" width="120px">${i18n.get('联系人 :')}</td>
+						<td width="320px">
+							<@form.select parentId="customId" id="contact" onChange="setPhone()" name="contact" style="width:163px;" tip="${i18n.get('客户联系人名称')}"
+							 viewKey="contactName" idKey='id' url="function(){return selectContract()} " value="${(policyInfo.contact)!}" />
+						</td>
+						<td align="right" width="120px">${i18n.get('联系电话 :')}</td>
+						<td width="320px">
+							<@form.input id="contactPhone" name="contactPhone" style="width:163px;" readonly="true" tip="${i18n.get('客户联系人联系电话')}" value="${(policyInfo.contactPhone)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('返利类型 :')}</td>
+						<td width="320px">
+							<@form.select style="width:163px;" id="rebateType" name="rebateType" tip="${i18n.get('返利类型')}" required="${i18n.get('不能为空')}" code="REBATETYPE" idKey='id' value="${(policyInfo.rebateType)!}" /> 
+						</td>
+						<td align="right" width="120px">${i18n.get('状态  :')}</td>
+						<td width="320px">
+							<input type="hidden" id="status" name="status" value="${(policyInfo.status)!}" />
+							<@form.select id="uiStatus" name="uiStatus" tip="${i18n.get('单据状态')}" style="width:163px;" code="REBATE_POLICY_PROC" idKey='id' value="${(policyInfo.status)!}"/>
+							<script type="text/javascript">$("#uiStatus").attr("disabled","disabled");</script>
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('货币 :')}</td>
+						<td width="320px">
+							<@form.select style="width:163px;" id="uicurrency" name="uicurrency" tip="${i18n.get('申请的结算货币')}" required="${i18n.get('不能为空')}" code="CURRENCY" idKey='id' value="${(policyInfo.currency)!}" /> 
+							<input type="hidden" id="currency" name="currency" value="${(policyInfo.currency)!}" />
+						    <script type="text/javascript">
+		    	                $("#uicurrency").attr("disabled","disabled")
+		                    </script>
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('授权区域 :')}</td>
+						<td width="320px">
+							<@form.input id="authorityZone" name="authorityZone" style="width:163px;" tip="${i18n.get('经销商签约授权区域')}" required="${i18n.get('不能为空')}" value="${(policyInfo.authorityZone)!}" />
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('授权产品 :')}</td>
+						<td width="320px">
+							<@form.input id="authorityProduct" name="authorityProduct" style="width:163px;" tip="${i18n.get('经销商签约授权产品类型')}" required="${i18n.get('不能为空')}" value="${(policyInfo.authorityProduct)!}" />
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('代理级别 :')}</td>
+						<td width="320px">
+							<@form.input id="agentLevel" name="agentLevel" style="width:163px;" tip="${i18n.get('代理商级别')}" required="${i18n.get('不能为空')}" value="${(policyInfo.agentLevel)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('年任务量(万元) :')}</td>
+						<td width="320px">
+							<@form.number id="annualTask" name="annualTask" style="width:163px;" tip="${i18n.get('经销商年度任务量')}" required="${i18n.get('不能为空')}" value="${(policyInfo.annualTask)!}" />
+						</td>
+						<td align="right" width="120px">${i18n.get('合同编号  :')}</td>
+						<td width="320px">
+							<@form.input id="contractCode" name="contractCode" style="width:163px;" tip="${i18n.get('销售合同编号')}" value="${(policyInfo.contractCode)!}" />
+						</td>
+						<td align="right" width="120px">${i18n.get('协议编号  :')}</td>
+						<td width="320px">
+							<@form.input id="agreeCode" name="agreeCode" style="width:163px;" tip="${i18n.get('返利协议编号')}" value="${(policyInfo.agreeCode)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('基准类型 :')}</td>
+						<td width="320px">
+							<@form.select style="width:163px;" id="referenceType" name="referenceType" tip="${i18n.get('返利计算基准类型')}" required="${i18n.get('不能为空')}" code="REFERTYPE" idKey='id' value="${(policyInfo.referenceType)!}" /> 
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('基准日期  :')}</td>
+						<td width="320px">
+							<@form.select style="width:163px;" id="referenceDate" name="referenceDate" tip="${i18n.get('返利计算的基准日期类型')}" required="${i18n.get('不能为空')}" code="REFERDATE" idKey='id' value="${(policyInfo.referenceDate)!}" /> 
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('返利方式 :')}</td>
+						<td width="320px">
+							<@form.select style="width:163px;" id="rebateMode" name="rebateMode" tip="${i18n.get('返利返还给客户的方式')}" required="${i18n.get('不能为空')}" code="REBATEMODE" idKey='id' value="${(policyInfo.rebateMode)!}" /> 
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('账期方式 :')}</td>
+						<td width="320px">
+							<@form.input id="accountMode" name="accountMode" style="width:163px;" tip="${i18n.get('返利返还给客户的账期')}" required="${i18n.get('不能为空')}" value="${(policyInfo.accountMode)!}" />
+						</td>
+						<td align="right" width="120px">${i18n.get('剔除特价销售  :')}</td>
+						<td width="320px">
+							<label>
+								<@form.radio name="eliminateSpecial" id='eliminateSpecial1' value="是" selectValue=(policyInfo.eliminateSpecial)!'否'/>
+								<span class="lbl"> ${i18n.get('是')}</span>
+							</label>
+							<label>
+								<@form.radio name="eliminateSpecial" id='eliminateSpecial2' value="否" selectValue=(policyInfo.eliminateSpecial)!'否'/>
+								<span class="lbl"> ${i18n.get('否')} </span>
+							</label>
+						</td>
+						<td align="right" width="120px">${i18n.get('剔除非标品销售 :')}</td>
+						<td width="320px">
+							<label>
+								<@form.radio name="eliminateNonStandard" id='eliminateNonStandard1' value="是" selectValue=(policyInfo.eliminateNonStandard)!'否'/>
+								<span class="lbl"> ${i18n.get('是')}</span>
+							</label>
+							<label>
+								<@form.radio name="eliminateNonStandard" id='eliminateNonStandard2' value="否" selectValue=(policyInfo.eliminateNonStandard)!'否'/>
+								<span class="lbl"> ${i18n.get('否')} </span>
+							</label>
+						</td>
+					</tr>
+					<tr>
+						<td align="right">${i18n.get('备注说明 :')}</td>
+						<td colspan="5">
+							<@form.textArea id="explain" style="width:1043px;" name="explain" tip="${i18n.get('返利政策的说明')}" value="${(policyInfo.explain)!}" />
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<#if !policyInfo?? || !policyInfo.id?? || statusEdit || ableEdit>
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					</#if>
+					<#if !ableEdit>
+					<button class="btn" type="button" onclick="javascript:frameElement.api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+					</#if>
+				</div>
+			</div>
+		</@form.form>
+<div id="info" style="padding-top: 20px;" class="row">
+	<div class="col-xs-12">
+		<input type="hidden" id="selectedId"  />
+		<@plug.tabs tabMain=tabMainInfo>
+	</@plug.tabs>
+</div>
+	</@form.panel>
+</@cui.body2>
+<script type="text/javascript">
+function selectContract(){
+	var customId = $("#customId").val();
+	return '${ctx}/lovcustom/select_contact.html?customId='+customId;
+}
+function setPhone(){
+	var contactInfo = JSON.parse($("#contact option:selected").attr('data'));
+	$('#contactPhone').val(contactInfo.contactTel);
+}
+</script>

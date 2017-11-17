@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title></title>
+
+<link rel="stylesheet" href="${ctx}/assets/easyui/css/themes/default/easyui.css" />
+<link rel="stylesheet" href="${ctx}/assets/easyui/css/themes/icon.css" />
+
+
+
+<style type="text/css">
+html{
+	-webkit-touch-callout: none;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+	border: 0 none;
+}
+body{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	top: 0;
+	left: 0;
+	font-family: Microsoft YaHei,STXihei,SimSun,sans-serif;
+	font-size: 12px;
+	background-repeat: repeat;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-webkit-touch-callout: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+</style>
+
+
+<script type="text/javascript" src='${ctx}/assets/js/jquery-2.0.3.min.js'></script>
+<script type="text/javascript" src="${ctx}/assets/easyui/js/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="${ctx}/assets/easyui/js/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="${ctx}/assets/js/ajax.js"></script>
+
+</head>
+<body>
+	<br>
+    <br>  
+    <br>
+    
+    <input class="easyui-textbox"  id="exportSql" style="width:800px;height: 200px" data-options="multiline:true,label:'${i18n.get('报表SQL')}:',labelWidth:65">
+    <br>
+    <br>
+    <input class="easyui-textbox"  id="exportHead" style="width:800px;" data-options="label:'${i18n.get('报表表头')}:',labelWidth:65">
+    <br>
+    <a href="javascript:void(0)" onclick="downLoadDataBySQL()" class="easyui-linkbutton">${i18n.get('根据sql下载报表')}</a>
+   
+</body>
+<script type="text/javascript">
+	function downLoadDataBySQL(){
+		var exportSql = $('#exportSql').textbox('getValue');
+		var exportHead = $('#exportHead').textbox('getValue');
+		if(exportSql == null || exportSql ==""){
+			alert("${i18n.get('请输入sql')}");
+		}else{
+			window.location.href = "${ctx}/downLoadDataBySQL.html?exportSql="+$('#exportSql').textbox('getValue')+"&exportHead="+$('#exportHead').textbox('getValue');
+		}
+	}
+</script>
+</html>
+
+	

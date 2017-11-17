@@ -1,0 +1,150 @@
+<@cui.body2>
+<style type="text/css">
+	table {
+	border-collapse: collapse;
+	border-color: #ff0000;
+	}
+	
+	table td {
+		padding:1px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	select {
+		width: 180px;
+	}
+</style>
+<script type="text/javascript">
+function changeValue(checkbox_id,id){
+	var checked = $("#"+checkbox_id).is(':checked')
+	if(checked){
+		$("#"+id).val(1);
+	}else{
+		$("#"+id).val(0);
+	}
+	
+}
+
+</script>
+<div class="col-xs-12">
+	<@form.table id="interFaceLogForm" 
+		class="col-xs-12"
+		title="${i18n.get('接口日志列表')}" 
+		url = "${ctx}/interFaceLog/page.html" 
+		rowNum = "20" 
+		colModel = "[
+			 	{name : 'id', label:'id', width : 20, editable : false, hidden : true}, 
+			 	{name : 'logType', label:'${i18n.get('日志类型')}',hidden:true, width : 250, sortable:false, editable:false, align:'center'}, 
+			  	{name : 'orderNumber', label:'${i18n.get('单号')}', width : 150, sortable:false, editable:false, align:'center'},
+			  	{name : 'fromFunction', label:'${i18n.get('方法来源')}', width : 450, editable : false}, 
+			  	{name : 'interfaceStartDate', label:'${i18n.get('接口调用时间')}', width : 140, editable : false ,formatter:function(cellvalue, options){ return formatDate(cellvalue) }}, 
+			  	{name : 'interfaceReportDate', label:'${i18n.get('接口返回时间')}', width : 140, editable:false, align:'center' ,formatter:function(cellvalue, options){ return formatDate(cellvalue) }}, 
+			  	{name : 'processingStatus', label:'${i18n.get('处理状态')}', width : 100, editable:false, align:'center'},
+			  	{name : 'userNum',label:'${i18n.get('用户工号')}',hidden:false,width:150,sortable:true,align:'center'}, 
+				{name : 'userName', label:'${i18n.get('用户名称')}', width : 150, editable:false ,align:'center',sortable:true}, 
+				{name : 'userPosition', label:'${i18n.get('用户岗位名称')}', width : 150, editable:false, align:'center',sortable:true}, 
+			  	{name : 'userOrgName', label:'${i18n.get('用户组织名称')}', width : 150, editable:false, align:'center',sortable:true}
+			]" 
+			buttons = "[
+				{
+					id:'refresh',
+					label : '${i18n.get('刷新')}',
+					icon : 'icon-refresh',
+					own : true,
+					handler : function(e,rowData){
+						reload_interFaceLogForm();
+					}
+				}
+			]" 
+			ondblClickRow = "function(id){
+                var url ='${ctx}/interFaceLog/edit.html?id='+ id;
+                parent.dialog('日志详情',url,window);
+			}"
+			> 
+			<input id="contrId"  name="contrId" value = "${(contrId)!}" hidden="hidden" />
+			<table border="0" cellpadding="0" cellspacing="0" >
+		    	<tr align="left">
+		            <td align="right" width="120px">
+		  				${i18n.get('单号')}：
+		            </td>
+		            <td align="left"  >
+			  			<@form.input 
+							id="orderNumber"  name="orderNumber" 
+							placeholder="" 
+							tip="" />
+		            </td>
+		            <td align="right">
+		  				${i18n.get('用户工号')}：
+		            </td>
+		            <td align="left">
+		  				<@form.input 
+							id="userNum"  name="userNum" 
+							placeholder="" 
+							tip="" />
+		            </td>
+		            <td align="right">
+		  				${i18n.get('操作人')}：
+		            </td>
+		            <td align="left">
+						<@form.autocomplete  id="userEmployeeId" name="userEmployeeId" 
+							placeholder="${i18n.get('请选择操作人')}"
+							idKey='employeeId'
+							multiple="false"
+							formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+							url="function(){ return '${ctx}/common/selectPositionList.html'; }" />
+		            </td>
+		        </tr>
+		        <tr>
+		        	 <td align="right">
+		  				${i18n.get('接口调用时间从')}：
+		            </td>
+		             <td align="left">
+		  				<@form.date  
+							id="interfaceStartDate_begin"  name="interfaceStartDate_begin" 
+							placeholder="" 
+							tip="" />
+		            </td>
+		             <td align="right">
+		  				${i18n.get('接口调用时间至')}：
+		            </td>
+		             <td align="left">
+		  				<@form.date  
+							id="interfaceStartDate_end"  name="interfaceStartDate_end" 
+							placeholder="" 
+							tip="" />
+		            </td>
+		            <td align="right" ></td>
+					<td align="left">
+						 <input id="isHaveProcessingStatus_cbx" type="checkbox" style="width:10px;"  <#if isHaveProcessingStatus?? && isHaveProcessingStatus==true>checked</#if> onclick="changeValue('isHaveProcessingStatus_cbx','isHaveProcessingStatus')"/>${i18n.get('是否只看ERROR记录')}
+                            <input id="isHaveProcessingStatus"  name="isHaveProcessingStatus" type="hidden"  value="<#if isHaveProcessingStatus?? && isHaveProcessingStatus==true>1<#else>0</#if>"  style="width:10px;" />
+                        </td>
+		        </tr>
+		         <tr>
+		        	 <td align="right">
+		  				${i18n.get('接口返回时间从')}：
+		            </td>
+		             <td align="left">
+		  				<@form.date  
+							id="interfaceReportDate_begin"  name="interfaceReportDate_begin" 
+							placeholder="" 
+							tip="" />
+		            </td>
+		             <td align="right">
+		  				${i18n.get('接口返回时间至')}：
+		            </td>
+		             <td align="left">
+		  				<@form.date  
+							id="interfaceReportDate_end"  name="interfaceReportDate_end" 
+							placeholder="" 
+							tip="" />
+		            </td>
+		        </tr>
+			</table>
+	</@form.table>
+</div>
+</@cui.body2>

@@ -1,0 +1,82 @@
+<@pui.body>
+<div class="col-xs-12">
+    <@form.panel title="${i18n.get('修改CRM产品类别')}">
+        <@form.form
+        success="function(){
+				parent.currentParent.reload_t1();
+				try{ parent.currentParent.reload_tree1('${(product.id)!}'); }catch(e){ }
+			}"
+        class="form-horizontal" >
+
+        <table align="center" class="mainPanel">
+            <tr>
+                <td width="130px;"><strong style="color: red;">*</strong>${i18n.get('CRM产品类别')}:</td>
+                <td width="200px;">
+                    <script type="text/javascript">
+                        var oldVmaterCode = '${(product.vmaterCode)!''}'
+                        function setupMaterCode(crmCategory) {
+                            var selected = crmCategory;
+                            if (selected == '0002' || selected == '0005') {
+                                $('#vmaterCode').val(oldVmaterCode);
+                                $('#vmaterCode').attr("valid-required","${i18n.get('不能为空')}");
+                                var $td = $("tr").has("td input#vmaterCode").children().first();
+                                var s = $td.html().replace("<strong style=\"color: red;\">*</strong>","");
+                                $td.html("<strong style=\"color: red;\">*</strong>" + s);
+                            } else if(selected == '0001'){
+                                $('#vmaterCode').val("");
+                                $('#vmaterCode').removeAttr("valid-required");
+                                $td = $("tr").has("td input#vmaterCode").children().first();
+                                var s = $td.html().replace("<strong style=\"color: red;\">*</strong>","");
+                                $td.html(s);
+                            }
+                        }
+                        function setupMaterCodeAttr(value) {
+                            if (value == '0002' || value == '0005'){
+                                $("#vmaterCode").removeAttr("readonly");
+                            } else {
+                                $("#vmaterCode").attr("readonly","readonly");
+                            }
+                        }
+                        <#--修改CRM产品分类为非标/外购产品的时候可以编辑“预定义物料号”字段-->
+                        $(function () {
+                            var crmCategory = "${(product.crmCategory)!}";
+                            setupMaterCodeAttr(crmCategory);
+                            setupMaterCode(crmCategory)
+                            $("#crmCategory").on("change",function(e){
+                                setupMaterCodeAttr(this.value);
+                                setupMaterCode(this.value)
+                            });
+                        });
+                    </script>
+                    <@form.select id="crmCategory" name="crmCategory" style="width:163px;" required="${i18n.get('请选择CRM产品类别')}" url="function(){ return 'crmCategorys.html'}" idKey='code' value="${(product.crmCategory)!}"/>
+                </td>
+            </tr>
+            <tr>
+                <td>${i18n.get('CRM预定义物料号')}：</td>
+                <td>
+                    <@form.input id="vmaterCode" name="vmaterCode" value="${(product.vmaterCode)!}"/>
+                    <#--<input type="text" readonly="readonly" id="vmaterCode" name="vmaterCode" <#if (product.crmCategory)?? && (product.crmCategory=='0002' || product.crmCategory == '0005')>valid-required="${i18n.get('不能能为空')}"</#if> value="${(product.vmaterCode)!}"/></td>-->
+            </tr>
+            <tr>
+                <td>${i18n.get('ERP预定义物料号')}：</td>
+                <td>
+                    <input type="text" readonly="readonly" id="erpVmaterCode" name="erpVmaterCode" value="${(erpVmaterCode)!}" />
+                </td>
+            </tr>
+        </table>
+        <div class="clearfix form-actions">
+            <div class="col-md-offset-5 col-md-7">
+                <button class="btn btn-info submit" type="button">
+                    <i class="icon-ok bigger-110"></i>
+                ${i18n.get('保存')}
+                </button>
+                &nbsp; &nbsp; &nbsp;
+                <button class="btn" type="button" onclick="javascript:api.close()">
+                    <i class="icon-undo bigger-110"></i>
+                ${i18n.get('关闭')}
+                </button>
+            </div>
+        </div>
+        </@form.form>
+    </@form.panel>
+</@pui.body>

@@ -1,0 +1,141 @@
+<@cui.body2>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1" success="function(){ 
+			if($('#internalPerson').val() == 'yes'){
+				try{
+					parent.currentParent.reload_innerPerson_2('${(personInfo.id)!}');
+				}catch(e){
+					parent.currentParent2.reload_innerPerson_2('${(personInfo.id)!}');
+				}
+			}
+			else{
+				try{
+					parent.currentParent.reload_outerPerson_2('${(personInfo.id)!}');
+				}catch(e){
+					parent.currentParent2.reload_outerPerson_2('${(personInfo.id)!}');
+				}
+			} }" class="form-horizontal">	
+			<input type="hidden" id="internalPerson" value="${(personInfo.internalPerson)!}">
+			<div align="center" class="form-group">
+				<table>
+					<#if personInfo.internalPerson == 'no'>
+					<tr>
+						<td align="right" width="90px"><strong style="color: red;">*</strong>${i18n.get('人员姓名 :')}</td>
+						<td width="340px">
+							<@form.input id="personName" name="personName" style="width:163px;" tip="${i18n.get('参加培训人员的姓名')}" required="${i18n.get('不能为空')}" value="${(personInfo.personName)!}" />
+							<@biz.picker_product id="select" url="${ctx}/activityApply/selectOuterPerson.html" 
+								callback="function(data){
+									if(data){
+										$('#personName').val(data.employeeName);
+										$('#sellerName').val(data.orgName);
+										$('#position').val(data.positionName);
+									}
+								}"
+							/>
+						</td>
+						<td align="right" width="90px"><strong style="color: red;">*</strong>${i18n.get('经销商名称 :')}</td>
+						<td width="240px">
+							<@form.input id="sellerName" name="sellerName" style="width:163px;" tip="${i18n.get('外部经销商客户名称')}" required="${i18n.get('不能为空')}" value="${(personInfo.sellerName)!}" />
+						</td>
+						<td align="right" width="90px">${i18n.get('职务 :')}</td>
+						<td width="280px">
+							<@form.input id="position" name="position" style="width:163px;" tip="${i18n.get('参加培训人员的职备')}" required="${i18n.get('不能为空')}" value="${(personInfo.position)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="90px"><strong style="color: red;">*</strong>${i18n.get('联系电话 :')}</td>
+						<td width="280px">
+							<@form.input id="phone" name="phone" style="width:163px;" tip="${i18n.get('参加培训人员联系电话')}" required="${i18n.get('不能为空')}" value="${(personInfo.phone)!}" />
+						</td>
+						<td align="right" width="90px">E-mail :</td>
+						<td width="240px">
+							<@form.input id="email" name="email" style="width:163px;" tip="${i18n.get('参加培训人员的电子邮件地址')}" value="${(personInfo.email)!}" />
+						</td>
+						<td align="right" width="90px"><strong style="color: red;">*</strong>${i18n.get('角色')}</td>
+						<td width="280px">
+							<@form.select style="width:163px;" id="role" name="role" tip="${i18n.get('参加培训人员的角色')}" required="${i18n.get('不能为空')}" code="TRAIN_ROLE" idKey='id' value="${(personInfo.role)!}" />
+						</td>
+					</tr>
+					<#else>
+					<tr>
+						<td align="right" width="90px"><strong style="color: red;">*</strong>${i18n.get('人员姓名 :')}</td>
+						<td width="340px">
+							<@form.input id="personName" name="personName" style="width:163px;" tip="${i18n.get('参加培训人员的姓名')}" required="${i18n.get('不能为空')}" readonly="true" value="${(personInfo.personName)!}" />
+							<@biz.picker_product id="select" url="${ctx}/activityApply/selectInnerPerson.html" 
+								callback="function(data){
+									if(data){
+										$('#personName').val(data.employeeName);
+										$('#department').val(data.orgName);
+										$('#position').val(data.positionName);
+									}
+								}"
+							/>
+						</td>
+						<td align="right" width="90px">${i18n.get('部门 :')}</td>
+						<td width="240px">
+							<@form.input id="department" name="department" style="width:163px;" tip="${i18n.get('参与人员对应的部门名称')}" readonly="true" value="${(personInfo.department)!}" />
+						</td>
+						<td align="right" width="90px">${i18n.get('职务 :')}</td>
+						<td width="280px">
+							<@form.input id="position" name="position" style="width:163px;" tip="${i18n.get('参加培训人员的职备')}" readonly="true" value="${(personInfo.position)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="90px"><strong style="color: red;">*</strong>${i18n.get('联系电话 :')}</td>
+						<td width="280px">
+							<@form.input id="phone" name="phone" style="width:163px;" tip="${i18n.get('参加培训人员联系电话')}" required="${i18n.get('不能为空')}" value="${(personInfo.phone)!}" />
+						</td>
+						<td align="right" width="90px"></td>
+						<td width="240px">
+						</td>
+						<td align="right" width="90px"><strong style="color: red;">*</strong>${i18n.get('角色')}</td>
+						<td width="280px">
+							<@form.select style="width:163px;" id="role" name="role" tip="${i18n.get('参加培训人员的角色')}" required="${i18n.get('不能为空')}" code="TRAIN_ROLE" idKey='id' value="${(personInfo.role)!}" />
+						</td>
+					</tr>
+					</#if>
+					<tr>
+						<td align="right" width="90px"><strong style="color: red;">*</strong>${i18n.get('权限  :')}</td>
+						<td width="280px">
+							<@form.select style="width:163px;" id="power" name="power" tip="${i18n.get('参加培训人员的权限')}" required="${i18n.get('不能为空')}" code="POWER" idKey='id' value="${(personInfo.power)!}" />
+						</td>
+						<td align="right" width="90px"><strong style="color: red;">*</strong>${i18n.get('有效日期从 :')}</td>
+						<td width="240px">
+							<@form.date id="startDate" name="startDate" format="yyyy-mm-dd" style="width:163px;" tip="${i18n.get('参加培训人员的有效起始日期')}" required="${i18n.get('')}不能为空" value="${(personInfo.startDate?date)!}" />
+						</td>
+						<td align="right" width="90px">
+							<label class="no-padding-right" for="endDate"> ${i18n.get('有效日期至 :')} </label>
+						</td>
+						<td width="280px">
+							<@form.date id="endDate" name="endDate" format="yyyy-mm-dd" style="width:163px;" tip="${i18n.get('参加培训人员的有效截止日期')}" value="${(personInfo.endDate?date)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="90px">
+							<label class="no-padding-right" for="explain">${i18n.get('说明 :')}</label>
+						</td>
+						<td colspan="5">
+							<@form.textArea id="explain" style="width:923px;;" name="explain" tip="${i18n.get('参加培训人员说明')}" value="${(personInfo.explain)!}" />
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<#if !personInfo?? || !personInfo.id?? || statusEdit>
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					</#if>
+					<button class="btn" type="button" onclick="javascript:frameElement.api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+	</@form.panel>
+</@cui.body2>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title></title>
+
+<link rel="stylesheet" href="${ctx}/assets/easyui/css/themes/default/easyui.css" />
+<link rel="stylesheet" href="${ctx}/assets/easyui/css/themes/icon.css" />
+
+
+
+<style type="text/css">
+html{
+	-webkit-touch-callout: none;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+	border: 0 none;
+}
+body{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	top: 0;
+	left: 0;
+	font-family: Microsoft YaHei,STXihei,SimSun,sans-serif;
+	font-size: 12px;
+	background-repeat: repeat;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-webkit-touch-callout: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+</style>
+
+
+<script type="text/javascript" src='${ctx}/assets/js/jquery-2.0.3.min.js'></script>
+<script type="text/javascript" src="${ctx}/assets/easyui/js/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="${ctx}/assets/easyui/js/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="${ctx}/assets/js/ajax.js"></script>
+
+</head>
+<body>
+
+	<table class="easyui-datagrid" style="width:100%;height:100%" toolbar="#tb" id="onlineUserList"></table>
+
+	<div id="tb" style="height:auto;">
+	    <div style="padding-top: 1px;padding-bottom: 1px;">
+	    	<input class="easyui-textbox" style="width:265px;height: 25px;" data-options="label:'${i18n.get('用户名')}/${i18n.get('账号')}/${i18n.get('岗位')}/${i18n.get('组织')}:',labelWidth:135" id="qryCondition">
+	    	<input class="easyui-textbox" style="width:187px;height: 25px;" data-options="label:'${i18n.get('IP地址')}:',labelWidth:47"  id="ipAddress">
+	    	<input class="easyui-datetimebox" style="width:187px;height: 25px;" data-options="label:'${i18n.get('开始时间')}:',labelWidth:57"  id="startTime">
+	    	<input class="easyui-datetimebox" style="width:187px;height: 25px;" data-options="label:'${i18n.get('结束时间')}:',labelWidth:57"  id="endTime">
+	        <a href="javascript:void(0)" class="easyui-linkbutton" style="height: 25px;" onclick="reload()">&nbsp;&nbsp;${i18n.get('查询')}&nbsp;&nbsp;</a>
+	        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	        <label id="tip"></label>
+	    </div>
+	</div>
+</body>
+<script type="text/javascript">
+
+
+$(document).ready(function(){
+	$('#onlineUserList').datagrid({
+		striped: true,
+		singleSelect: true,
+		url:'${ctx}/getOnlineUsers.html',
+	    columns:[[    
+	        {field:'index',title:'${i18n.get('序号')}',align:'right',resizable:true,formatter:formatIndex},
+	        {field:'employeeName',title:'${i18n.get('登陆用户名')}',resizable:true,formatter:formatVal},
+	        {field:'employeeNo',title:'${i18n.get('登陆账号')}',resizable:true,formatter:formatVal},
+	        {field:'position',title:'${i18n.get('登陆岗位')}',resizable:true,formatter:formatName},
+	        {field:'org',title:'${i18n.get('登陆组织')}',resizable:true,formatter:formatName},
+	        {field:'loginIp',title:'${i18n.get('客户端IP')}',align:'right',resizable:true,formatter:formatIP},
+	        /* {field:'clientMac',title:'客户端MAC',align:'right',resizable:true}, */
+	        {field:'loginDate',title:'${i18n.get('登陆时间')}',align:'right',resizable:true},
+	        {field:'sessionId',title:'${i18n.get('操作')}',resizable:true,formatter:formatOption}
+	    ]],
+	    onLoadSuccess: function(data){
+	    	var qryCondition = $('#qryCondition').textbox('getValue');
+	    	if(qryCondition == null || qryCondition == "" ){
+		    	$('#tip').empty();
+		    	$('#tip').append('<strong style="color: red;">*</strong>${i18n.get('当前登录用户总数')}:'+data.rows.length+'');
+	    	}
+		}
+
+	});
+});
+
+function reload(){
+	var qryCondition = $('#qryCondition').textbox('getValue');
+	var ipAddress = $('#ipAddress').textbox("getValue");
+	var startTime = $('#startTime').datetimebox("getValue");
+	var endTime = $('#endTime').datetimebox("getValue");
+	$('#onlineUserList').datagrid({
+		queryParams: {
+			qryCondition : qryCondition,
+			ipAddress : ipAddress,
+			startTime : startTime,
+			endTime : endTime
+		},
+	});
+	$('#onlineUserList').datagrid('reload');
+}
+
+setInterval(reload, 10*60*1000);
+
+function formatIndex(value,row,index){
+	return index+1;
+}
+
+function formatIP(value,row,index){
+	var ipAddress = $('#ipAddress').textbox('getValue');
+	if(ipAddress == null || ipAddress == "" ){
+		return value;
+	}else{ 
+		var reg = new RegExp("("+ipAddress+")","g");
+		var newstr = value.replace(reg,'<label  style="background-color: yellow;font-weight: bold;">'+ipAddress+'</label>');
+		return newstr;
+	}
+}
+
+function formatVal(value,row,index){
+	var qryCondition = $('#qryCondition').textbox('getValue');
+	if(qryCondition == null || qryCondition == "" ){
+		return value;
+	}else{ 
+		var reg = new RegExp("("+qryCondition+")","g");
+		var newstr = value.replace(reg,'<label  style="background-color: yellow;font-weight: bold;">'+qryCondition+'</label>');
+		return newstr;
+	}
+}
+
+function formatName(value,row,index){
+	var qryCondition = $('#qryCondition').textbox('getValue');
+	if(qryCondition == null || qryCondition == "" ){
+		return value.name;
+	}else{ 
+		var reg = new RegExp("("+qryCondition+")","g");  
+		var str = value.name;
+		var newstr = str.replace(reg,'<label  style="background-color: yellow;font-weight: bold;">'+qryCondition+'</label>');
+		return newstr;
+	}
+}
+
+function formatOption(value,row,index){
+	return '<button onclick="cutLink(\''+value+'\')">${i18n.get('断开链接')}</button>';
+}
+
+
+/*删除*/
+function cutLink(value){
+	var url = '${ctx}/cutLink.html?sessionId='+value;
+	$.messager.confirm('${i18n.get('提示')}', '${i18n.get('确定断开此用户的链接?')}', function(result){
+		if (result){
+			ajax({
+				type:"post",
+				url : url,
+				success : function(result) {
+					$.messager.alert('${i18n.get('提示')}',"${i18n.get('已断开与用户的链接')}");
+					reload();
+				},
+				error : function(result) {
+					$.messager.alert('${i18n.get('提示')}',result);
+				}
+			});
+		}
+	});
+}
+</script>
+</html>
+
+	

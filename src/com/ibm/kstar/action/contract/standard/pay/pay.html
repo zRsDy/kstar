@@ -1,0 +1,308 @@
+<#escape x as x?html>
+
+
+<script type="text/javascript"> 
+	var initFlag = false;
+function getLovSelectStr(code){
+
+	var str="";
+	$.ajax({
+		type:"post",
+		async:false,
+		url:"${ctx}/lov/member/select.html?code="+code,
+		success:function(data){
+			if (data != null) {
+				var jsonobj = eval(data.message);
+				var length = jsonobj.length;
+				if('CONTRACTPAYMENTPLAN' == code){
+					str += ":;";
+				}
+				for(var i=0;i<length;i++){
+					if(i != length-1 ){
+						// 这里是option里面的 value:label
+						str += jsonobj[i].id + ":" + jsonobj[i].name + ";";
+					}else{
+						str += jsonobj[i].id + ":" + jsonobj[i].name;
+					}
+	         	}   
+	     	}
+		}
+	});
+	return str;
+}
+
+
+</script>
+
+	<#if (permission['P05ConT9PaymentAdd'])??>
+		<#assign addRowPer='true'>
+	</#if>
+	<#if (permission['P05ConT9PaymentDoubleClick'])??>
+		<#assign dblClickPer='true'>
+	</#if>
+	<#if (permission['P05ConT9PaymentSubmit'])??>
+		<#assign submitLinePer='true'>
+	</#if>
+	<#if (permission['P05ConT9PaymentReferFrame'])??>
+		<#assign refFrameNoPer='true'>
+	</#if>
+	<#if (permission['P05ConT9PaymentDelete'])??>
+		<#assign deleteRowPer='true'>
+	</#if>
+	<@form.table id="payLst" 
+	class="col-xs-12"
+	title="${i18n.get('回款规则')}" 
+	url = "${ctx}/standard/pay/page.html?contrId=${contrId}" 
+	rowNum = "10" 
+	
+	colModel = "[
+		{name:'id',label:'${i18n.get('内部')}ID',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'totalAmt',label:'${i18n.get('合同总金额')}',hidden:false,width:100,sortable:false,align:'center',formatoptions:{decimalPlaces : 2,defaultValue:''}, formatter:function(cellvalue, options){ return getContrAmt() }},
+		{name:'payNo',label:'${i18n.get('回款计划编号')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'paySeqId',label:'${i18n.get('笔数')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'paySeqDesc',label:'${i18n.get('笔数')}',hidden:false,width:100,sortable:false,align:'center', editable : true, edittype:'select',editoptions:{value:getLovSelectStr('CONTRACTPAYSEQ')} },
+		{name:'payPlan',label:'${i18n.get('收款阶段')}',hidden:true,width:100,sortable:false,align:'center'},
+		{name:'payPlanDesc',label:'${i18n.get('收款阶段')}',hidden:false,width:100,sortable:false,align:'center', editable : true, edittype:'select',editoptions:{value:getLovSelectStr('CONTRACTPAYMENTPLAN')}},
+		{name:'planRatio',label:'${i18n.get('计划收款比例')}(%)',hidden:false,width:150,sortable:false,align:'center', editable : true, editrules:{required:true} },
+		{name:'planAmt',label:'${i18n.get('计划收款金额')}',hidden:false,width:100,sortable:false,align:'center', 
+			formatter:function(cellvalue, options,rowdata){
+				debugger;
+				if(!initFlag){ 
+					initFlag = true;
+					if(!(rowdata.planRatio)) {
+						return '0.00';
+					} else {
+						if(rowdata.totalAmt == undefined){
+							return (0*rowdata.planRatio/100).toFixed(2); 
+						}else{
+							return (rowdata.totalAmt*rowdata.planRatio/100).toFixed(2); 
+						}
+					}
+				}else{
+					if(cellvalue==undefined) {
+						return '0.00';
+					} else {
+						return parseFloat(cellvalue).toFixed(2);
+					}
+				}  
+			}
+		},
+		{name:'origClause',label:'${i18n.get('合同原始条款')}',hidden:false,width:300,sortable:false,align:'center', editable : true },
+		{name:'payTerm',label:'${i18n.get('收款条件满足时间(天)')}',hidden:false,width:150,sortable:false,align:'center' , editable : true },
+		{name:'payTermDesc',label:'${i18n.get('收款条件满足时间(天)')}',hidden:true,width:100,sortable:false,align:'center', editable : true },
+		{name:'saler',label:'${i18n.get('销售人员')}',hidden:true,sortable:false,align:'center' },
+		{name:'cancelAmt',label:'${i18n.get('已核销金额')}',hidden:true,sortable:false,align:'center' },
+		{name:'ncanAmt',label:'${i18n.get('未核销金额')}',hidden:true,sortable:false,align:'center' },
+		{name:'remark',label:'${i18n.get('备注')}',hidden:false,width:200,sortable:false,align:'center', editable : true }
+		]"
+		onSelectRow= "function(selectedData){
+		}"
+		search="false"
+		ondblClickRow = "function(id){ 
+		
+			if(${dblClickPer!'false'}){
+			var rowData = $('#payLst').jqGrid('getRowData',id);
+		
+			var _paySeqId = $('#payLst select[id='+id+'_paySeqDesc]').children('option:selected').val();
+			$('#payLst').jqGrid('setRowData', id, { paySeqId : _paySeqId});
+			
+			var _payPlanId = $('#payLst select[id='+id+'_payPlanDesc]').children('option:selected').val();
+			$('#payLst').jqGrid('setRowData', id, { payPlan : _payPlanId});
+			
+			$('#payLst select[id='+id+'_paySeqDesc]').change(function(){
+				var _paySeq = $(this).children('option:selected').val();
+				$('#payLst').jqGrid('setRowData', id, { paySeqId : _paySeq});
+			});
+			
+			$('#payLst select[id='+id+'_payPlanDesc]').change(function(){
+				var _payPlan = $(this).children('option:selected').val(); 
+				$('#payLst').jqGrid('setRowData', id, { payPlan : _payPlan});
+			});
+			
+			var old_ratio = $('#payLst input[id='+id+'_planRatio]').val();
+			$('#payLst input[id='+id+'_planRatio]').bind('input',function(event){
+				var ratio = $(this).val();
+				if(ratio){ 
+					if(!isNaN(ratio)){
+						var totalAmt = 0;
+						if(rowData.totalAmt != null && rowData.totalAmt !=''){
+							totalAmt = parseFloat(rowData.totalAmt);
+						}
+						$('#payLst').jqGrid('setRowData', id, { planAmt : parseFloat(ratio*totalAmt/100).toFixed(2)});
+					}else{
+						alert('${i18n.get('收款比例必须为数字')}！');
+						$(this).val(old_ratio);
+					}
+				}else{
+					$('#payLst').jqGrid('setRowData', id, { planAmt : 0 });
+				}
+	 		});
+		
+			var old_term = $('#payLst input[id='+id+'_payTerm]').val();
+			$('#payLst input[id='+id+'_payTerm]').bind('input',function(event){
+				var qty = $(this).val();
+				if(qty){
+					var re = /^[0-9]+$/ ;
+					if(!re.test(qty)){ 
+						alert('${i18n.get('天数必须为正整数')}！');
+						$(this).val(old_term);
+					} 
+				}
+	 		});
+		
+		}
+	}"
+		
+		buttons = "[
+			{
+			id:'addRow',
+			label : '${i18n.get('增加一行')}',
+			icon : 'icon-save',
+			own : ${addRowPer!'false'},
+			handler : function(e,rowData){
+				addRow();
+			}
+		},{
+	  			id:'refFrameNoBtn',
+	  			label : '${i18n.get('引用框架协议')}',
+	  			own : ${refFrameNoPer!'false'},
+	  			handler : function(e,rowData){
+	  				var d = {};
+ 					d.qid = '${contrId}';
+					bootbox.confirm('${i18n.get('你确定要关联框架协议里的回款规则吗')}?', function(result) {
+						if(result) {
+								ajax({
+										type:'post',
+										url : '${ctx}/standard/pay/refFrameNoPay.html',  
+										data: d,
+										success : function(result) {
+											reload_payLst();
+											alert('${i18n.get('操作成功')}！');  
+										}
+									});
+								}
+					});
+				}
+			},
+			{
+			id:'deleteRowBtn',
+			label : '${i18n.get('删除')}',
+			icon : 'icon-save',
+			own : ${deleteRowPer!'false'},
+			handler : function(e,rowData){
+				var id = $('#payLst').jqGrid('getGridParam','selrow'); 
+			     if(!id){
+			      　　	alert('${i18n.get('请选择要删除的行')}');
+			      　　	return;
+			     }else{           
+			         $('#payLst').jqGrid('delRowData', id);      
+			     } 
+			}
+		},{
+	  			id:'submitLinesBtn',
+	  			label : '${i18n.get('保存')}',
+	  			own : ${submitLinePer!'false'},
+	  			handler : function(e,rowData){
+					$('#payLst').trigger('blur');
+	  				var ids = $('#payLst').jqGrid('getDataIDs');
+	  				//引用框架协议后最后一行删除不掉
+					//if(ids.length <1) {
+					//	alert('请先添加数据');
+					//	return;
+					//}
+	  				var d={};
+					var datas = [];
+					var flg = true; 
+					var curid = '';
+			 		$.each(ids,function(i,id){
+			 			var data = $('#payLst').jqGrid('getRowData',id);
+						if( data.planRatio=='' || data.payTerm=='' || data.origClause==''||data.payPlan==''){
+							 curid = id; 
+							 flg = false;
+						}else{
+			 				datas.push(data);
+			 			}
+						if( data.payPlan==''){
+							alert('${i18n.get('第')} '+(i+1)+' ${i18n.get('行 收款阶段 不能为空')}');
+							return false;
+						}
+						if( data.planRatio==''){
+							alert('${i18n.get('第')} '+(i+1)+' ${i18n.get('行 计划收款比例 不能为空')}');
+							return false;
+						}
+						if( data.origClause==''){
+							alert('${i18n.get('第')} '+(i+1)+' ${i18n.get('行 合同原始条款 不能为空')}');
+							return false;
+						}
+						if( data.payTerm==''){
+							alert('${i18n.get('第')} '+(i+1)+' ${i18n.get('行 收款条件满足时间 不能为空')}');
+							return false;
+						}
+						
+			 		})
+			 		if(flg == false) {   
+						// alert('计划收款比例 和 收款条件满足时间 不能为空');  
+						$('#payLst').editRow(curid,true);
+			 		}else{
+				 		d.listStr= JSON.stringify(datas);
+	 					d.contrId = '${contrId}';
+						bootbox.confirm('${i18n.get('你确定要提交保存数据吗')}?', function(result) {
+							if(result) {
+								ajax({
+									type:'post',
+									url : '${ctx}/standard/pay/submitLins.html',  
+									dataType : 'json',
+									data: d,
+									success : function(result) {
+										reload_payLst();
+										alert('${i18n.get('操作成功')}！');  
+									}
+								});
+							}
+						});
+					}
+				}
+			},{
+				id:'alertRowBtn',
+				label : '${i18n.get('规则提示')}',
+				icon : 'icon-save',
+				own : true,
+				handler : function(e,rowData){
+					alert('${i18n.get('提示')}：${i18n.get('系统自动以外部出货单打印日期')}（${i18n.get('发货当天')}）${i18n.get('加上收款条件满足天数')}，${i18n.get('做为回款计划生成的规则')}，${i18n.get('故收款条件满足天数从发货当天开始计算')}：\\n1、${i18n.get('发货前付清的款项')}（${i18n.get('如预付款、定金、全款到账发货等')}），${i18n.get('收款满足天数填写')}0；\\n2、${i18n.get('发货后支付的款项从发货当天开始并结合合同付款条件中实际约定的回款天数计算填写')}。\\n${i18n.get('例如某合同原始付款条款为')}：${i18n.get('甲方发货前预付合同总价的')}30%，${i18n.get('全部货物验收合格后')}30${i18n.get('日内或货到之日起')}3${i18n.get('个月内')}（${i18n.get('以先到时间为准')}）${i18n.get('支付合同总价的')}60％，${i18n.get('合同总价的')}10％${i18n.get('作为质保金货到之日起')}1${i18n.get('年内付清')}。 \\n${i18n.get('第一笔')} ${i18n.get('签订')}  30%   0${i18n.get('天')}   \\n${i18n.get('第二笔')} ${i18n.get('终验')}  60%   =${i18n.get('到货')}10（${i18n.get('发货后最长不超过')}10${i18n.get('天内到货')}）+90=100${i18n.get('天')}\\n${i18n.get('第三笔')} ${i18n.get('质保')}  10%   =${i18n.get('到货')}10+365=375${i18n.get('天')}');
+				}
+			}
+		]" > 
+	</@form.table>  
+	
+<script type="text/javascript">
+$(document).ready(function(){
+	var editFlag = "${payPlanEditFlag}"; 
+	if(editFlag=="N"){
+		$(".btn_payLst").attr("disabled","disabled");
+		$("#alertRowBtn").removeAttr('disabled');
+	}
+});
+ 
+
+var newrowid = 0;  
+function addRow()  
+{   
+	//alert("${(contr.contrName)!}");
+	var contrAmt = getContrAmt();
+	//alert(contrAmt);
+    //获得新添加行的行号（数据编号）  
+    newrowid = newrowid+1; 
+    var dataRow = {    
+        id: "",
+        totalAmt:contrAmt
+    };      
+    //将新添加的行插入到第一列  
+    $("#payLst").jqGrid("addRowData", newrowid, dataRow, "last");  
+    //设置grid单元格不可编辑  
+    $("#payLst").setGridParam({cellEdit:false});  
+    //设置grid单元格可编辑  
+    //$("#orderLinesForm").jqGrid('editRow', newrowid, false); 
+}
+
+</script>
+</#escape>

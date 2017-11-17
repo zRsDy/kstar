@@ -1,0 +1,138 @@
+<@pui.body>
+<div class="row col-xs-12" style="width: 1000px;margin-right: 0px; margin-left: 0px;" >
+<table style="width: 1000px">
+	<tr>
+	<#if lovGroup?? && lovGroup.treeFlag?? && lovGroup.treeFlag == 'Y'>
+		<td style="width: 330px">
+			<@form.panel title="${i18n.get('维度树')}" style='height:100'>
+				<@plug.tree 
+				checkbox="false" 
+				id="tree2" 
+				asyncUrl='${ctx}/lov/member/tree.html?groupId=${groupId}'
+				onClick=" function(event, treeId, treeNode){
+			  		$('#parentId2').val(treeNode.id);
+			  		reload_all_table2();
+			  	}"
+			  	onRightClick="function(event, treeId, treeNode) {
+				   	var treeObj = $.fn.zTree.getZTreeObj(treeId);
+					var nodes = treeObj.getNodes();
+					if (nodes.length>0) {
+						treeObj.cancelSelectedNode();
+					}
+					$('#parentId2').val('');
+					reload_all_table2();
+				}"
+			  	isParent="function(data){
+			  		return data.leafFlag == 'N';
+			  	}"
+				/>
+			</@form.panel>
+		</td>
+	</#if>
+	
+	<td style="width: 660px">
+<@form.table id="all_table2"
+	shrinkToFit = 'true'
+	title="${i18n.get('全部数据')}"
+	rowNum = "20"
+	class="row col-xs-6"
+	checkbox = 'true'
+	search='false' 
+	url = "${ctx}/common/userPosition.html?groupId=${groupId}"
+	colModel = "[
+	  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:true,align:'center' }, 
+	  { name : 'code', label : '${i18n.get('编码')}', width : 90 ,sortable:true}, 
+	  { name : 'name', label : '${i18n.get('名称')}', width : 150 ,sortable:true },
+	  { name : 'parentId', label : '', hidden : true, width : 150 ,sortable:true },
+	  { name : 'namePath', label : '${i18n.get('路径名称')}', width : 250 ,sortable:true },
+	  { name : 'memo', label : '${i18n.get('备注')}', width : 350 ,sortable:true }
+	  ]"
+	 buttons = "[]"
+	 onSelectRow = "function(data,status){
+	 	if(status){
+	 		var flag = true;
+	 		$.each(selectedList2,function(i,item){
+	 			if(item && data.id === item.id){
+	 				flag = false;
+	 				return;
+	 			}
+	 		});
+	 		if(flag){
+		 		$('#selected_table2').jqGrid('addRowData',data.id,data);
+		 		selectedList2.push(data);
+	 		}
+	 	}else{
+	 		var selectedIds = $('#selected_table2').jqGrid('getDataIDs');
+	 		$.each(selectedIds,function(i,id){
+	 			if(id == data.id){
+	 				$('#selected_table2').jqGrid('delRowData',id);
+	 			}
+	 		})
+	 		$.each(selectedList2,function(i,item){
+	 			if(item && data.id === item.id){
+	 				selectedList2.splice(i,1);
+	 			}
+	 		});
+	 	}
+	 }"
+	 onComplete = "function(){
+		var selectedIds = $('#selected_table2').jqGrid('getDataIDs');
+	 		$.each(selectedIds,function(i,id){
+	 			$.each(selectedList2,function(index,item){
+		 			if(item && id === item.id){
+		 				$('#all_table2').jqGrid('setSelection',id,true);
+		 			}
+	 			});
+	 		})
+	 }"
+	>
+	
+	<input type="hidden" name="parentId" id="parentId2" />
+	
+</@form.table>
+</td>
+<td style="width: 360px">
+
+<@form.table id="selected_table2"
+	shrinkToFit = 'true'
+	title="${i18n.get('已选数据')}"
+	rowNum = "20"
+	class="row col-xs-6"
+	search='false' 
+	data = "[]"
+	datatype = "local"
+	colModel = "[
+	  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:true,align:'center' }, 
+	  { name : 'code', label : '${i18n.get('编码')}', width : 90 ,sortable:true}, 
+	  { name : 'name', label : '${i18n.get('名称')}', width : 150 ,sortable:true },
+	  { name : 'namePath', label : '${i18n.get('路径名称')}', width : 250 ,sortable:true },
+	  { name : 'parentId', label : '', hidden : true, width : 150 ,sortable:true }
+	  ]"
+	 buttons = "[]"
+	/>
+	</td>
+	</tr>
+</table>
+
+<div class="clearfix form-actions">
+	<div class="col-md-offset-5 col-md-7">
+		<button class="btn btn-info" id="selectOK2" type="button">
+			<i class="icon-ok bigger-110"></i>
+			${i18n.get('选择')}
+		</button>
+		&nbsp; &nbsp; &nbsp;
+		<button class="btn" type="button" onclick="javascript:api.close()">
+			<i class="icon-undo bigger-110"></i>
+			${i18n.get('关闭')}
+		</button>
+	</div>
+</div>
+<script type="text/javascript">
+	var selectedList2 = [];
+	$('#selectOK2').click(function(){
+		parent.${pickerId}_callback("position",selectedList2);
+		api.close();
+	})
+</script>
+</div>
+</@pui.body>

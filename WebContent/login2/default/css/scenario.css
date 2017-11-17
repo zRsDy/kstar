@@ -1,0 +1,48 @@
+@charset "utf-8";
+/*--情景分析样式--*/
+.showmessage{color:#222;text-shadow:1px 1px 0 #f96,-1px -1px 0 #f96;height:40px;line-height:40px;text-indent:15px;text-align:center;}
+.color_num1{color:#324f5f;font-size:18px;letter-spacing:10px;font-weight:bold;width:175px;float:left;margin-left:15px;background:#ddedfb;text-align:right;border:1px solid #09c;}
+.color_num2{color:#324f5f;font-size:18px;letter-spacing:10px;text-indent:7px;font-weight:bold;width:20px;float:left;text-align:left;}
+.color_num3{color:#324f5f;font-size:18px;letter-spacing:10px;font-weight:bold;width:170px;float:left;text-align:left;background:#ddedfb;text-indent:5px;border:1px solid #09c;}
+.shownum{height:40px;line-height:30px;overflow:hidden;}
+.overlay_btn{text-align:center;}
+.form_right{float:right;width:85%;padding:5px;}
+.form_right input{margin-left:10px;}
+
+.overlay_btn{text-align:center;}
+.dataTables_length label{margin-left:20px;color:#333;}
+.DataTables_sort_wrapper{text-align:left;width:100%;}
+table.dataTable thead th.noimg{padding:3px 5px;}
+table.dataTable thead th.noimg span{display:none;}
+table.dataTable thead th.noimg div.DataTables_sort_wrapper{text-align:center!important;}
+.scenarioReportpart{width:480px;height:330px;float:left;margin:5px;text-align:center;text-shadow:0 10px 0 rgba(20,20,20,0.25);border:1px solid #c9dcf7;}
+/*--Table表格--*/
+.openable_tbody2 p{font-size:11px;line-height:17px;padding:0;}
+.openable_tbody2 td{padding-bottom:5px;padding-top:5px;vertical-align:middle;}
+.openable_tbody2 th{padding:5px;vertical-align:middle;}
+.openable_tbody2 tr.total td{background:#ddd;font-weight:bold;}
+
+/*--EC模拟报表--*/
+.form_bg{overflow:hidden;zoom:1;background:#fff;border:solid #ccc;border-width:1px;margin:4px;}
+.form_title{height:26px;line-height:26px;padding:0 10px;background:#004cfe;color:#fff;font-size:13px;font-weight:bold;}
+.form_wrap{zoom:1;margin:10px 10px 0;}
+.form_wrap dt{font-size:12px;height:24px;line-height:24px;padding:0 20px;background:#d9e4ff;}
+.form_wrap dd{float:left;}
+.form_wrap dd.three{float:left;width:33%;overflow:;}
+.form_list{margin:0 auto;zoom:1;overflow:hidden;}
+.form_list li{padding:5px 0 0 5px;width:290px;float:left;min-height:26px;}
+.form_list li label{float:left;text-align:right;font-style:normal;height:24px;line-height:24px;}
+.form_list li select{width:180px;height:22px;line-height:22px;border:1px solid #669bdc;}
+.form_list li input.ipt_text{width:178px;height:20px;line-height:20px;text-indent:4px;border:1px solid #669bdc;margin:10px}
+
+.zbjiliang{
+	width:450px;
+}
+.zbjiliang div{
+margin: 5px 0;
+float:left;
+width:163px;
+}
+.zbjiliang div label{
+	margin-right:10px;
+}

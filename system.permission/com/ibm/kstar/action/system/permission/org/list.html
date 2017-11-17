@@ -1,0 +1,221 @@
+<@pui.body> 
+		<div class="col-xs-12">
+			<table style="width: 100%" >
+				<tr>
+					<#if lovGroup?? && lovGroup.treeFlag?? && lovGroup.treeFlag == 'Y'>
+						<td id="treeTd" style="width: 300px" valign="top" rowspan="2">
+							<@form.panel title="${i18n.get('维度树')}" style='height:100'>
+								<@plug.tree 
+								checkbox="false" 
+								id="tree1" 
+								moveEdit = 'true'
+								onMove = "function(dragNode,newParentNode,moveType){
+									var data = {
+										dragNodeId : dragNode[0].id,
+										newParentNodeId : newParentNode != null ? newParentNode.id : null
+									}
+									if(moveType == 'inner'){
+										
+										var dialog = bootbox.dialog({
+										    message: '${i18n.get('岗位调整中......')}',
+										    closeButton: false
+										});
+									
+										ajax({
+											type:'post',
+											url : '${ctx}/org/move.html',
+											data: data,
+											success : function(result) {
+												dialog.modal('hide');
+											},
+											error : function(result) {
+												dialog.modal('hide');
+												alert('${i18n.get('移动失败')}');
+											}
+										});
+									}else{
+										reload_tree1();
+									}
+								}"
+								asyncUrl='${ctx}/lov/member/tree.html?groupId=${lovGroup.id}'
+								onClick=" function(event, treeId, treeNode){
+							  		$('#parentId').val(treeNode.id);
+							  		reload_t1();
+							  		$('#orgId').val(treeNode.id);
+						 			reload_employeeList();
+							  	}"
+							  	
+							  	dataFilter="function(data){
+							  		if(data.leafFlag == 'Y'){
+							  			data.icon = '${ctx}/assets/css/zTreeStyle/img/diy/3.png'
+							  			if(data.optTxt2 == 'Y'){
+							  				data.icon = '${ctx}/assets/css/zTreeStyle/img/diy/5.png'
+							  			}
+							  		}
+							  		return data;
+							  	}"
+							  	
+							  	onRightClick="function(event, treeId, treeNode) {
+								   	var treeObj = $.fn.zTree.getZTreeObj(treeId);
+									var nodes = treeObj.getNodes();
+									if (nodes.length>0) {
+										treeObj.cancelSelectedNode();
+									}
+									$('#parentId').val('');
+									reload_t1();
+								}"
+							  	
+							  	isParent="function(data){
+							  		return data.leafFlag == 'N';
+							  	}"
+								/>
+							</@form.panel>
+						</td>
+					</#if>
+					<td valign="top">
+						<@form.table id="t1"
+						class="col-xs-12"
+						shrinkToFit = 'true'
+						title="${i18n.get('维度 ：')}${lovGroup.name}"
+						url = "${ctx}/org/page.html"
+						editURL="'${ctx}/org/edit.html'"
+						rowNum = "20"
+						colModel = "[
+						  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:false,align:'center' }, 
+						  { name : 'code', label : '${i18n.get('编码')}', width : 90 ,sortable:true}, 
+						  { name : 'name', label : '${i18n.get('名称')}', width : 150 ,sortable:true },
+						  { name : 'parentId', label : '', hidden : true, width : 150 ,sortable:true },
+						  { name : 'leafFlag', label : '', hidden : true, width : 150 ,sortable:true },
+						  { name : 'optTxt3', label : '${i18n.get('组织类型')}', width : 150 ,sortable:true,formatter:function(cellvalue, options){ return  getValuesByCell(cellvalue,'ORG_TYPE')}},
+						  { name : 'memo', label : '${i18n.get('备注')}', width : 150 ,sortable:true }
+						  ]"
+						  
+						 onSelectRow = "function(rowData){
+						 	if(rowData.leafFlag == 'Y'){
+						 		$('#settingLeader').show();
+						 	}else{
+						 		$('#settingLeader').hide();
+						 	}
+						 	
+						 	$('#orgId').val(rowData.id);
+						 	reload_employeeList();
+						 	
+						 }"
+						 buttons = "[
+						  		{
+						  			id:'addOrgButton',
+						  			label : '${i18n.get('新增组织')}',
+						  			icon : 'icon-trash',
+						  			own : true,
+						  			handler : function(e,rowData){
+										var url = '${ctx}/org/add.html?groupId=${lovGroup.id}&parentId=' + $('#parentId').val();
+										parent.dialog('${i18n.get('新增岗位')}',url,window);
+						  			}
+						  		},
+						  		{
+						  			id:'settingLeader',
+						  			label : '${i18n.get('设为领导')}',
+						  			icon : 'icon-trash',
+						  			own : true,
+						  			handler : function(e,rowData){
+										if(!selected_t1){
+											alert('${i18n.get('没有选中任何数据!')}');
+											return;
+										}
+										
+										if(selected_t1.leafFlag == 'N'){
+											alert('${i18n.get('只能将岗位设置为领导岗位!')}');
+											return;
+										}
+										
+										bootbox.confirm('${i18n.get('你确定要设置')}'+selected_t1.name+'${i18n.get('为部门领导岗位?')}', function(result) {
+											if(result) {
+												ajax({
+													type:'post',
+													url : '${ctx}/org/settingLeader.html',
+													data: selected_t1,
+													success : function(result) {
+														reload_tree1(selected_t1.parentId);
+														reload_t1();
+													},
+													error : function(result) {
+														exalert(e,result);
+													}
+												});
+											}
+										});
+						  			}
+						  		},
+						  		{
+						  			id:'deleteBtn',
+						  			label : '${i18n.get('删除')}',
+						  			icon : 'icon-trash',
+						  			own : true,
+						  			
+						  			handler : function(e,rowData){
+										if(!selected_t1){
+											alert('${i18n.get('没有选中任何数据!')}');
+											return;
+										}
+										bootbox.confirm('${i18n.get('你确定要删除该条数据吗?')}', function(result) {
+											if(result) {
+												ajax({
+													type:'post',
+													url : '${ctx}/role/delete.html',
+													data: selected_t1,
+													success : function(result) {
+														reload_t1();
+														reload_tree1();
+													},
+													error : function(result) {
+														exalert(e,result);
+													}
+												});
+											}
+										});
+						  			}
+						  		}
+						  	]"
+						>
+						
+						<div class="col-xs-12" style="padding-left: 12px;margin-top: 5px;height: 35px;">
+							<input type="hidden" id="parentId" name="parentId" />
+							<input type="hidden" id="groupId" name="groupId" value="ORG"/>
+							<div class="form-group col-xs-3">
+								<input type="text" id="searchKey" name="searchKey" placeholder="${i18n.get('查询关键字')}" />
+							</div>	
+							<div class="form-group col-xs-2">
+								<button type="submit" class="btn btn-info" > 
+									<i class="icon-search bigger-110"></i>
+									${i18n.get('查询')}
+								</button>
+							</div>
+						</div>
+						</@form.table>
+					</td>
+				</tr>
+				
+				<tr>
+					<td>
+						<@form.table id="employeeList"
+							class="col-xs-12"
+							title="${i18n.get('员工')}"
+							shrinkToFit = 'true'
+							url = "${ctx}/org/employeePage.html"
+							rowNum = "20"
+							colModel = "[
+							  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:false,align:'center' }, 
+							  { name : 'no', label : '${i18n.get('员工号')}', width : 90 ,sortable:false}, 
+							  { name : 'flag', label : '${i18n.get('类型')}', width : 90 ,sortable:false,formatter:function(cellvalue, options){ return  getValuesByCell(cellvalue,'employeeType')}}, 
+							  { name : 'name', label : '${i18n.get('姓名')}' ,sortable:false }
+							  ]"
+							>
+							<input type="hidden" id="orgId" name="orgId" />
+						</@form.table>
+					</td>
+				</tr>
+				
+			</table>	
+		</div>
+ 	
+</@pui.body>

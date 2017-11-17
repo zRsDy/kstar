@@ -1,0 +1,147 @@
+<@pui.body> 
+				
+
+
+
+
+
+<div class="col-xs-12">
+    <@form.panel title="${i18n.get('新增/编辑')}">
+        <@form.form id="t1"
+        success="function(){
+				parent.currentParent.reload_t1();
+				try{ parent.currentParent.reload_tree1('${(parentLovMember.id)!}'); }catch(e){ }
+			}"
+        class="form-horizontal" >
+
+            <input type="hidden" name="groupCode" value="${lovGroup.code}" />
+            <label class="col-xs-12 left"><h4>${i18n.get('归属维度 ：')} ${lovGroup.name} </h4></label>
+            <#if (lovGroup.treeFlag)?? && lovGroup.treeFlag == 'Y' >
+                <label class="col-xs-12 left"><h4>${i18n.get('上级 ：')} ${(parentLovMember.namePath)!''} </h4></label>
+            </#if>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="code">
+                    <strong style="color: red;">*</strong>${i18n.get('编码:')} </label>
+                    <@form.input id="code" name="code" placeholder="${i18n.get('请输入编码')}" required="${i18n.get('不能为空！')}" value="${(lovMember.code)!}" />
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="desc">
+                    <strong style="color: red;">*</strong>${i18n.get('名称:')} </label>
+                    <@form.input id="name" name="name" placeholder="${i18n.get('请输入名称')}" required="${i18n.get('不能为空！')}" value="${(lovMember.oldName)!}" />
+            </div>
+            
+            <#if dictionary ?? && dictionary='Y'>
+            <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="desc">
+                    ${i18n.get('英文名称:')} </label>
+                    <@form.input id="optTxt7" name="optTxt7" placeholder="${i18n.get('请输入英文名称')}" class="longinput" value="${(lovMember.optTxt7)!}" />
+            </div>
+            
+            <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="desc">
+                    ${i18n.get('繁体名称:')} </label>
+                    <@form.input id="optTxt8" name="optTxt8" placeholder="${i18n.get('请输入繁体名称')}" class="longinput" value="${(lovMember.optTxt8)!}" />
+            </div>
+            </#if>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="no"> <strong style="color: red;">*</strong>${i18n.get('序号:')}</label>
+                <@form.number id="no" name="no" placeholder="${i18n.get('请输入序号')}" required="${i18n.get('不能为空！')}" value="${(lovMember.no)!}" />
+            </div>
+            <#if lovGroup ?? && lovGroup.code='PRODUCTMODE'>
+                <div class="form-group uncompletechoose">
+                    <label class="col-sm-3 control-label no-padding-right" for="optTxt21"><strong style="color: red;">*</strong>${i18n.get('是否报备:')}</label>
+                    <@form.select id="optTxt2" name="optTxt2" style="width:163px;" code="NY" required="${i18n.get('不能为空')}" idKey='code' value="${(lovMember.optTxt2)!'0'}" />
+                </div>
+            </#if>
+
+
+            <#if permission["/LOV/GROUP/MEMO_EDIT"]??>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('备注:')} </label>
+                    <@form.textArea id="memo" name="memo" placeholder="${i18n.get('请输入备注')}" value="${(lovMember.memo)!}" />
+                </div>
+            <#else>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('备注:')} </label>
+                    <label class="col-sm-9" for="code">${(lovMember.memo)!'无备注'}</label>
+                </div>
+            </#if>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="code"> </label>
+                <@plug.showMore area=".showMore">
+                </@plug.showMore>
+            </div>
+
+            <div class="hide showMore">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right" for="optTxt1"> ${i18n.get('扩展字段1:')} </label>
+                    <@form.input id="optTxt1" name="optTxt1" placeholder="${i18n.get('请输入扩展字段1')}" value="${(lovMember.optTxt1)!}" />
+
+                </div>
+
+                <#if lovGroup ?? && lovGroup.code='PRODUCTMODE'>
+                <#else >
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="optTxt1"> ${i18n.get('扩展字段2:')} </label>
+                        <@form.input id="optTxt2" name="optTxt2" placeholder="${i18n.get('请输入扩展字段2')}" value="${(lovMember.optTxt2)!}" />
+                    </div>
+                </#if>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right" for="optTxt1"> ${i18n.get('扩展字段3:')} </label>
+                    <@form.input id="optTxt3" name="optTxt3" placeholder="${i18n.get('请输入扩展字段3')}" value="${(lovMember.optTxt3)!}" />
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right" for="optTxt1"> ${i18n.get('扩展字段4:')} </label>
+                    <@form.input id="optTxt4" name="optTxt4" placeholder="${i18n.get('请输入扩展字段4')}" value="${(lovMember.optTxt4)!}" />
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right" for="optTxt1"> ${i18n.get('扩展字段5:')} </label>
+                    <@form.input id="optTxt5" name="optTxt5" placeholder="${i18n.get('请输入扩展字段5')}" value="${(lovMember.optTxt5)!}" />
+                </div>
+            </div>
+
+            <#if lovGroup.treeFlag?? && lovGroup.treeFlag == 'Y' >
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right" for="type"> ${i18n.get('叶子节点:')} </label>
+                    <div class="radio">
+                        <label>
+                            <@form.radio name="leafFlag" value="Y" selectValue=(lovMember.leafFlag)!'N'/>
+                            <span class="lbl"> ${i18n.get('是')}</span>
+                        </label>
+
+                        <label>
+                            <@form.radio name="leafFlag" value="N" selectValue=(lovMember.leafFlag)!'N'/>
+                            <span class="lbl">  ${i18n.get('否')}</span>
+                        </label>
+                    </div>
+                </div>
+            <#else>
+                <input type="hidden" name="leafFlag" value="Y" />
+            </#if>
+
+            <div class="clearfix form-actions">
+                <div class="col-md-offset-5 col-md-7">
+                    <button class="btn btn-info submit" type="button">
+                        <i class="icon-ok bigger-110"></i>
+                       ${i18n.get('保存')}
+                    </button>
+                    &nbsp; &nbsp; &nbsp;
+                    <button class="btn" type="button" onclick="javascript:api.close()">
+                        <i class="icon-undo bigger-110"></i>
+                        ${i18n.get('关闭')}
+                    </button>
+                </div>
+            </div>
+        </@form.form>
+    </@form.panel>
+    <div class="col-xs-12">
+    </div>
+
+</@pui.body>

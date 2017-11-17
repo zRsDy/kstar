@@ -1,0 +1,492 @@
+<@pui.body>
+<#if (permission["P01-1ProductSeriesDemandAdd"])??>
+	<#assign addURL_t8="true" />
+</#if>
+<#if (permission["P01-1ProductSeriesDemandEdit"])??>
+	<#assign editURL_t8="true" />
+</#if>
+<#if (permission["P01-1ProductSeriesDemandDelete"])??>
+	<#assign deleteURL_t8="true" />
+</#if>
+<#if (permission["P01-1ProductSeriesDemandSubmit"])??>
+	<#assign submitURL_t8="true" />
+</#if>
+<#if (permission["P01-1ProductSeriesDemandTemplete"])??>
+	<#assign templateURL_t8="true" />
+</#if>
+<div class="col-xs-12">
+<@form.table id="t8" class="col-xs-12" title="${i18n.get('产品需求单')}" 
+	url ="${ctx}/product/demandList.html" 
+	rowNum = "10" 
+	search="true"
+	colModel = "[ 
+		{name:'id',label:'',hidden:true,width:60,sortable:false,align:'center' },
+		{name:'createdById',label:'${i18n.get('创建人id')}',hidden:true,width:60,sortable:false,align:'center' },
+ 		{name:'demandCode',label:'${i18n.get('需求单编号')}',hidden:false,width:100,sortable:false,align:'center' }, 
+ 		{name:'demandName',label:'${i18n.get('需求单名称')}',hidden:false,width:300,sortable:false,align:'left' },
+  		{name:'clientName',label:'${i18n.get('客户名称')}',hidden:false,width:250,sortable:false,align:'left' }, 
+  		{name:'clientAddress',label:'${i18n.get('客户所在地')}',hidden:false,width:300,sortable:false,align:'left' },
+	   	{name:'clientContract',label:'${i18n.get('客户PO/合同')}',hidden:false,width:160,sortable:false,align:'center' }, 
+	   	{name:'hopeDeliverDate',label:'${i18n.get('期望交货日期')}',hidden:false,width:80,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+	   	{name:'demantCategory',label:'${i18n.get('需求种类')}',hidden:true,width:60,sortable:false,align:'center' }, 
+	   	{name:'demantCategoryName',label:'${i18n.get('需求种类')}',hidden:false,width:60,sortable:false,align:'center' }, 
+	   	{name:'demandDepartmentName',label:'${i18n.get('需求部门')}',hidden:false,width:100,sortable:false,align:'center' }, 
+	   	{name:'demandPerson',label:'${i18n.get('需求人员')}',hidden:true,width:80,sortable:false,align:'center' }, 
+	   	{name:'demandPersonName',label:'${i18n.get('需求人员')}',hidden:false,width:80,sortable:false,align:'center' }, 
+	   	{name:'contractNumber',label:'${i18n.get('联系电话')}',hidden:false,width:100,sortable:false,align:'center' },
+    	{name:'demandStatusName',label:'${i18n.get('需求状态')}',hidden:false,width:60,sortable:false,align:'center' }, 
+    	{name:'backReason',label:'${i18n.get('PDM驳回原因')}',hidden:false,width:200,sortable:false,align:'center' },
+    	{name:'proSeriesOrModel',label:'${i18n.get('产品系列/型号')}',hidden:false,width:200,sortable:false,align:'center' }
+	]" 
+	onSelectRow="function(){
+		var userId = '${LOGIN_USER_ID}';
+		$('#demandStatus').val(selected_t8.demandStatusName);
+		$('.productDemandId').val(selected_t8.id);
+		$('.businessId').val(selected_t8.id);//${i18n.get('外部附件文件需要')}
+		if(!canEdit(selected_t8.demandStatusName) && userId == selected_t8.createdById){
+			$('#buttons_add_attachment_productDemand_1').show();
+			$('#buttons_delete_attachment_productDemand_1').show();
+			$('#buttons_add_attachment_productDemand_2').show();
+			$('#buttons_delete_attachment_productDemand_2').show();
+		}else{
+			$('#buttons_add_attachment_productDemand_1').hide();
+			$('#buttons_delete_attachment_productDemand_1').hide();
+			$('#buttons_add_attachment_productDemand_2').hide();
+			$('#buttons_delete_attachment_productDemand_2').hide();
+		}
+		try{
+			reload_attachment_productDemand_1();
+			reload_attachment_productDemand_2();
+		}catch(e){
+		}
+		reload_product();
+	}"
+	onComplete="function(){
+		$('#buttons_add_attachment_productDemand_1').hide();
+		$('#buttons_delete_attachment_productDemand_1').hide();
+		$('#buttons_add_attachment_productDemand_2').hide();
+		$('#buttons_delete_attachment_productDemand_2').hide();
+		
+		$('.productDemandId').val('');
+		$('.businessId').val('xx');//${i18n.get('外部附件文件需要')}
+		try{
+			reload_attachment_productDemand_1();
+			reload_attachment_productDemand_2();
+		}catch(e){
+		}
+		reload_product();
+	}"
+	buttons = "[
+		{
+			id:'add_t8',
+			label : '${i18n.get('新增')}',
+			icon : 'icon-plus',
+			own : ${addURL_t8!'false'},
+			handler : function(e,rowData){
+				var requestPath = '${ctx}/product/demandAdd.html?seriesDemand=1';
+				parent.dialog('${i18n.get('需求单')}', requestPath, window);
+			}
+		},
+		{
+			id:'edit_t8',
+			label : '${i18n.get('修改')}',
+			icon : 'icon-pencil',
+			own : ${editURL_t8!'false'},
+			handler : function(e,rowData){
+				if(!selected_t8){
+					exalert(e,'${i18n.get('请选择要修改数据！')}');
+					return;
+				}else{
+					var statusEdit = !canEdit(selected_t8.demandStatusName);
+					var requestPath = '${ctx}/product/demandAdd.html?seriesDemand=1&id='+selected_t8.id+'&statusEdit='+statusEdit;
+					parent.dialog('${i18n.get('需求单')}', requestPath, window);
+				}
+			}
+		},
+		{
+			id:'delete_t8',
+			label : '${i18n.get('删除')}',
+			icon : 'icon-trash',
+			own : ${deleteURL_t8!'false'},
+			handler : function(e,rowData){
+				if(!selected_t8){
+					exalert(e,'${i18n.get('请选择需要删除的数据！')}');
+					return;
+				}else if(canEdit(selected_t8.demandStatusName)){
+					myAlert(e,'${i18n.get('删除')}');
+					return;
+				}else{
+					bootbox.confirm('${i18n.get('您确定要删除吗？')}' , function(result) {		
+						if(result) {
+							ajax({
+								url: '${ctx}/product/demandDelete.html',
+								type: 'POST',
+								data: {id:selected_t8.id},
+								success : function(result) {
+									reload_t8();
+									exalert(e,'${i18n.get('删除成功！')}');
+								}
+							});
+						}
+					});	
+				}
+			}
+		},
+		{
+			id:'submit_t8',
+			label : '${i18n.get('提交')}',
+			icon : 'icon-save',
+			own : ${submitURL_t8!'false'},
+			handler : function(e,rowData){
+				var demanddata = $('#attachment_productDemand_1').jqGrid('getRowData');
+				var productdata = $('#product').jqGrid('getRowData');
+				var all0005 = true;
+				$.each(productdata,function(i,item){
+		 			if(item.crmCategory != '0005'){
+		 				all0005 = false;
+		 			}
+		 		});
+			 		
+				if(!selected_t8){
+					exalert(e,'${i18n.get('请选择需要提交的数据！')}');
+					return;
+				}else if(canEdit(selected_t8.demandStatusName)){
+					myAlert(e,'${i18n.get('提交')}');
+					return;
+				}else if(demanddata.length == 0 && !all0005){
+	 				exalert(e,'${i18n.get('特殊产品规格需求单没有上传附件，不能提交！')}');
+					return;
+					
+				}else if(productdata.length == 0){
+	 				exalert(e,'${i18n.get('没有选择产品，不能提交！')}');
+					return;
+				}else{
+					bootbox.confirm('${i18n.get('您确定要提交吗？')}' , function(result) {		
+						if(result) {
+							ajax({
+								url: '${ctx}/product/demandSubmit.html',
+								type: 'POST',
+								data: {id:selected_t8.id},
+								success : function(result) {
+									reload_t8();
+									exalert(e,'${i18n.get('提交成功！')}');
+								}
+							});
+						}
+					});	
+				}
+			}
+		},
+		{
+			id:'export_t8',
+			label : '${i18n.get('模板导出')}',
+			icon : 'icon-save',
+			own : ${templateURL_t8!'false'},
+			handler : function(e,rowData){
+				var requestPath = '${ctx}/product/exportDemandTemplate.html';
+				parent.dialog('${i18n.get('需求单模板')}', requestPath, window);
+			}
+		}
+	]" > 
+	<div class="col-xs-12">
+		<div class="form-group col-xs-2" align="right">${i18n.get('需求单编号 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="demandCode" size="30" />
+		</div>	
+		<div class="form-group col-xs-2" align="right">${i18n.get('需求单名称 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="demandName" size="30" />
+		</div>	
+	</div>
+</@form.table>
+<input type="hidden" id="productDemandId" class="productDemandId" />
+<div id="sonDiv">
+<div id="attachmentId_t8_1"></div>
+<div id="attachmentId_t8_2"></div>
+<#if (permission["P01-1DemandProductSelect"])??>
+	<#assign selectURL="true" />
+</#if>
+<#if (permission["P01-1DemandProductDelete"])??>
+	<#assign deleteURL="true" />
+</#if>
+<@form.table id="product" 
+	class="col-xs-12"
+	title="${i18n.get('产品列表')}" 
+	url = "${ctx}/product/queryDemandProducts.html" 
+	rowNum = "20" 
+	search='true'
+	checkbox="true"
+	colModel = "[
+		{name:'prepareBefore',label:'${i18n.get('需要提前备料')}',hidden:false,width:80,sortable:false,align:'center',formatter:function(cellvalue, options, rowObject){ return editPrepareBefore(cellvalue, options, rowObject) }},
+		{name:'demandNumber',label:'${i18n.get('需求数量')}',hidden:false,width:120,sortable:true,align:'left',formatter:function(cellvalue, options, rowObject){ return editActualGetQuantity(cellvalue, options, rowObject) } },
+		{name:'id',label:'${i18n.get('关联ID')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'productCode',label:'${i18n.get('产品编码')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'vmaterCode',label:'${i18n.get('预定义物料号')}',hidden:false,width:100,sortable:false,align:'center'},
+		{name:'productName',label:'${i18n.get('产品名称')}',hidden:false,width:100,sortable:false,align:'left' },
+		{name:'proModel',label:'${i18n.get('产品型号')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'publishStatusName',label:'${i18n.get('发布状态')}',hidden:false,width:60,sortable:false,align:'center' },
+		{name:'priceStatusName',label:'${i18n.get('订价状态')}',hidden:false,width:60,sortable:false,align:'center' },
+		{name:'saleStatusName',label:'${i18n.get('转销状态')}',hidden:false,width:60,sortable:false,align:'center' },
+		
+		{name:'erpCategoryName',label:'${i18n.get('ERP产品类别')}',hidden:false,width:80,sortable:false,align:'center' },
+		{name:'crmCategoryName',label:'${i18n.get('CRM产品类别')}',hidden:false,width:80,sortable:false,align:'center' },
+		{name:'crmCategory',label:'${i18n.get('CRM产品类别')}',hidden:true,width:80,sortable:false,align:'center' },
+		{name:'proBrand',label:'${i18n.get('品牌')}',hidden:false,width:100,sortable:false,align:'center' },
+		
+		{name:'cproCategory',label:'${i18n.get('产品分类')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'cproType',label:'${i18n.get('产品类别')}',hidden:false,width:120,sortable:false,align:'center' },
+		{name:'proSeries',label:'${i18n.get('产品系列')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'clientCategory',label:'${i18n.get('客户型号')}',hidden:false,width:80,sortable:false,align:'center' },
+		
+		{name:'modifyHardware',label:'${i18n.get('修改硬件')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'addFunction',label:'${i18n.get('增加功能')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'modifyParamter',label:'${i18n.get('更改参数')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'chassisSize',label:'${i18n.get('机箱尺寸/外观变更')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'commercialData',label:'${i18n.get('商品化资料')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'randomAttach',label:'${i18n.get('增加随机附件')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'other',label:'${i18n.get('其他')}',hidden:false,width:100,sortable:false,align:'center' }
+	]" 
+	buttons = "[
+		{
+  			id:'select_product',
+  			label : '${i18n.get('选择')}',
+  			icon : 'icon-save',
+  			own : ${selectURL!'false'},
+  			handler : function(e,rowData){
+  				if(!selected_t8){
+					exalert(e,'${i18n.get('请选择需求单！')}');
+					return;
+				}else if(canEdit(selected_t8.demandStatusName)){
+					myAlert(e,'${i18n.get('选择')}');
+					return;
+				}else{
+					var requestPath = '${ctx}/product/demandSelectProducts.html?demandId='+selected_t8.id;
+					parent.dialog('${i18n.get('产品选择')}', requestPath, window);
+				}
+  			}
+  		},
+  		{
+  			id:'delete_product',
+  			label : '${i18n.get('删除')}',
+  			icon : 'icon-trash',
+  			own : ${deleteURL!'false'},
+  			handler : function(e,rowData){
+  				var selectedIds = [];
+  				var flag = true;
+				if(!selected_t8){
+					exalert(e,'${i18n.get('请选择需求单！')}');
+					return;
+				}else if(canEdit(selected_t8.demandStatusName)){
+					myAlert(e,'${i18n.get('删除')}');
+					flag = false;
+					return;
+				}else if(selectedList_product.length == 0){
+					exalert(e,'${i18n.get('没有选中任何数据!')}');
+					flag = false;
+					return;
+				}
+				$.each(selectedList_product,function(i,item){
+	 				selectedIds.push(item.id);
+		 		});
+		 		if(flag){
+					bootbox.confirm('${i18n.get('确认删除选中的数据吗？')}' , function(result) {
+				    	if(result) {
+				            ajax({
+						        url: '${ctx}/product/deleteDemandProducts.html',
+						        type: 'POST',
+						        data: {ids:selectedIds},
+						        success : function(result) {
+							        reload_product();
+							        exalert(e,'${i18n.get('删除成功！')}');
+						        }
+					        });
+                       	}
+                	});		
+            	}
+  			}
+  		}
+	]" > 
+	<div class="col-xs-12">
+		<input type="hidden" id="demandId" name="demandId" class="productDemandId" />
+		<div class="form-group col-xs-2" align="right">${i18n.get('产品编码 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="productCode" size="30" />
+		</div>	
+		<div class="form-group col-xs-2" align="right">${i18n.get('产品名称 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="productName" size="30" />
+		</div>
+		<div class="form-group col-xs-2" align="right">${i18n.get('产品型号 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="proModel" size="30" />
+		</div>	
+		<div class="form-group col-xs-2" align="right">${i18n.get('品牌 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="proBrand" size="30" />
+		</div>
+		<div class="form-group col-xs-2" align="right">${i18n.get('CRM产品类别 ：')}</div>
+		<div class="form-group col-xs-4">
+			<select name="crmCategory">
+				<option value="">${i18n.get('全部')}</option>
+				<#list crmCategoryLst as element>
+					<option value="${element.code}">${element.name}</option>
+				</#list>
+			</select>
+		</div>
+		<div class="form-group col-xs-2" align="right">${i18n.get('ERP产品类别 ：')}</div>
+		<div class="form-group col-xs-4">
+			<select name="erpCategory">
+				<option value="">${i18n.get('全部')}</option>
+				<#list erpCategoryLst as element>
+					<option value="${element.code}">${element.name}</option>
+				</#list>
+			</select>
+		</div>
+		<div class="form-group col-xs-2" align="right">${i18n.get('发布状态 ：')}</div>
+		<div class="form-group col-xs-4">
+			<select name="publishStatus">
+				<option value="">${i18n.get('全部')}</option>
+				<#list publishStatus as element>
+					<option value="${element.id}">${element.name}</option>
+				</#list>
+			</select>
+		</div>
+		<div class="form-group col-xs-2" align="right">${i18n.get('订价状态 ：')}</div>
+		<div class="form-group col-xs-4">
+			<select name="priceStatus">
+				<option value="">${i18n.get('全部')}</option>
+				<#list priceStatus as element>
+					<option value="${element.id}">${element.name}</option>
+				</#list>
+			</select>
+		</div>
+		<div class="form-group col-xs-2" align="right">${i18n.get('转销状态 ：')}</div>
+		<div class="form-group col-xs-4">
+			<select name="saleStatus">
+				<option value="">${i18n.get('全部')}</option>
+				<#list saleStatus as element>
+					<option value="${element.id}">${element.name}</option>
+				</#list>
+			</select>
+		</div>
+		<div class="form-group col-xs-2" align="right">${i18n.get('客户型号 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="clientCategory" size="30" />
+		</div>
+		<div class="form-group col-xs-2" align="right">${i18n.get('产品分类 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="cproCategory" size="30" />
+		</div>
+		<div class="form-group col-xs-2" align="right">${i18n.get('产品类别 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="cproType" size="30" />
+		</div>
+		<div class="form-group col-xs-2" align="right">${i18n.get('产品系列 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="proSeries" size="30" />
+		</div>
+		<div class="form-group col-xs-2" align="right">${i18n.get('修改硬件 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="modifyHardware" size="30" />
+		</div>
+		<div class="form-group col-xs-2" align="right">${i18n.get('增加功能 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="addFunction" size="30" />
+		</div>
+		<div class="form-group col-xs-2" align="right">${i18n.get('更改参数 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="modifyParamter" size="30" />
+		</div>
+		<div class="form-group col-xs-2" align="right">${i18n.get('机箱尺寸/外观变更 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="chassisSize" size="30" />
+		</div>
+		<div class="form-group col-xs-2" align="right">${i18n.get('商品化资料 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="commercialData" size="30" />
+		</div>
+		<div class="form-group col-xs-2" align="right">${i18n.get('增加随机附件 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="randomAttach" size="30" />
+		</div>
+		<div class="form-group col-xs-2" align="right">${i18n.get('其他 ：')}</div>
+		<div class="form-group col-xs-4">
+			<input type="text" name="other" size="30" />
+		</div>
+	</div> 
+</@form.table> 
+</div>
+<input type="hidden" id="demandStatus" />
+
+</div>
+</@pui.body>
+<script type="text/javascript">
+	$(document).ready(function() {
+		showAttachmentPage('attachmentId_t8_1','${ctx}/common/attachment/attachment.html?docGroupCode=SpecProReqDocType&businessType=productDemand_1&title=special');
+		showAttachmentPage('attachmentId_t8_2','${ctx}/common/attachment/attachment.html?docGroupCode=CusDataDocType&businessType=productDemand_2&title=customInfo');
+	});
+	
+	
+	function getExternUrl(){
+		var externUrl = "";
+		var templateURL_t8 = ${templateURL_t8!'false'}
+		if(templateURL_t8){
+			externUrl = "&templateURL=1";
+		}
+		return externUrl;
+	}
+	function showAttachmentPage(tabId, url){
+		url = url + "&businessId=xx";
+		$('#applytab a[href="#'+tabId+'"]').tab('show');
+		$('#'+tabId).load(url,function(response,status,xhr){
+			if(status === 'error'){
+				$('#'+tabId).html(url+'<br> ${i18n.get('页面加载失败')}');
+			}
+		});
+	}
+	function canEdit(status){
+		return status != '${i18n.get('新建')}' && status != '${i18n.get('已驳回')}' && status != '${i18n.get('PDM驳回')}';
+	}
+	function myAlert(e,type){
+		exalert(e,'${i18n.get('只有新建或已驳回或PDM驳回的数据可')}'+type+'!');
+	}
+	
+	function editPrepareBefore(cellvalue, options, rowObject){
+		if(cellvalue == undefined){
+			cellvalue = '';
+		}
+		var demandStatusName = $('#demandStatus').val();
+		if(!canEdit(demandStatusName)){
+			if(cellvalue == '${i18n.get('是')}'){
+				return'<select name="activityType" onChange="submit(\''+options.rowId+'\',\'prepareBefore\',this.value)">'+
+					'<option value="${i18n.get('否')}">${i18n.get('否')}</option><option value="${i18n.get('是')}" selected = "selected">${i18n.get('是')}</option></select>';
+			}else{
+				return'<select name="activityType" onChange="submit(\''+options.rowId+'\',\'prepareBefore\',this.value)">'+
+				'<option value="${i18n.get('否')}" selected = "selected">${i18n.get('否')}</option><option value="${i18n.get('是')}">${i18n.get('是')}</option></select>';
+			}
+		}else{
+			return '<div align="left">'+cellvalue+'</div>';
+		}
+	}
+	
+	function editActualGetQuantity(cellvalue, options, rowObject){
+		if(cellvalue == undefined){
+			cellvalue = '';
+		}
+		var demandStatusName = $('#demandStatus').val();
+		if(!canEdit(demandStatusName)){
+			return '<input type="number" onBlur="submit(\''+options.rowId+'\',\'demandNumber\',this.value)" value="'+cellvalue+'" />';
+		}else{
+			return '<div align="left">'+cellvalue+'</div>';
+		}
+	}
+	function submit(id,column,value){
+		ajax({
+	        url: '${ctx}/product/submitColumnValue.html',
+	        type: 'POST',
+	        data: {relationId:id,column:column,value:value},
+	        success : function(result) {
+	        }
+	    });
+	}
+</script>

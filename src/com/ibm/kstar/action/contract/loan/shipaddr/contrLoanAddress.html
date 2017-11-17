@@ -1,0 +1,75 @@
+<@pui.body>
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="loanaddressf"
+			success="function(){ alert('${i18n.get('保存成功')}！');parent.currentParent.reload_loanaddress(); }" 
+			class="form-horizontal">
+				<div class="form-group" >
+				
+					<label class="col-sm-3 control-label no-padding-right" for=""> ${i18n.get('合同编号')} : </label>
+					<@form.input
+					id="contrNo"  name="contrNo" 
+					placeholder="" 
+					tip="${i18n.get('合同编号')}" 
+					required="${i18n.get('不能为空')}！"
+					readonly ="readonly"
+					value="${(contr.contrNo)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for=""> ${i18n.get('发货地址')} : </label>
+					<@form.input
+					id="delivAddr"  name="delivAddr" 
+					placeholder="" 
+					tip="${i18n.get('发货地址')}" 
+					required="${i18n.get('不能为空')}！"
+					value="${(contrAddr.delivAddr)!}" 
+					/>
+				</div>		
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for=""> ${i18n.get('收货人')} : </label>
+					<@form.input
+					id="receiver"  name="receiver" 
+					placeholder="" 
+					tip="${i18n.get('收货人')}" 
+					required="${i18n.get('不能为空')}！"
+					value="${(contrAddr.receiver)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for=""> ${i18n.get('电话')} : </label>
+					<@form.input
+					id="phone"  name="phone" 
+					placeholder="" 
+					tip="${i18n.get('电话')}" 
+					required="${i18n.get('不能为空')}！"
+					value="${(contrAddr.phone)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for=""> ${i18n.get('备注')} : </label>
+					  
+					<@form.input
+					id="remark"  name="remark" 
+					placeholder="" 
+					tip="${i18n.get('备注')}" 
+					value="${(contrAddr.remark)!}" 
+					/>
+				</div>
+	
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+</@pui.body>

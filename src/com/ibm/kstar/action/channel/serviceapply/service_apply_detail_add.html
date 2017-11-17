@@ -1,0 +1,112 @@
+<@cui.body2>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1" success="function(){ parent.currentParent.reload_equip_2('${(equipInfo.id)!}'); }" class="form-horizontal">	
+			<div align="center">
+				<table>
+					<#if serviceTypeName == '备件申请'>
+					<tr>
+						<td align="right" width="100px">${i18n.get('产品线 :')}</td>
+						<td width="280px">
+							<@form.select childId="equipModel" id="productLine" name="productLine" style="width:163px;" tip="${i18n.get('设备产品线')}" viewKey="name" 
+								idKey='id' url="function(){return '${ctx}/serviceApply/selectProLines.html'}" value="${(equipInfo.productLine)!}" />
+						</td>
+						<td align="right" width="100px">${i18n.get('设备型号 :')}</td>
+						<td width="280px">
+							<@form.select parentId="productLine" childId="brand" id="equipModel" name="equipModel" style="width:163px;" 
+								 tip="${i18n.get('产品型号')}" viewKey="name" idKey='id' url="function(){return selectEquipModel()}" value="${(equipInfo.equipModel)!}" />
+						</td>
+						<td align="right" width="100px">${i18n.get('品牌 :')}</td>
+						<td width="280px">
+							<@form.select parentId="equipModel" id="brand" name="brand" style="width:163px;" tip="${i18n.get('设备产品的品牌')}" viewKey="name" idKey='id'
+								 url="function(){return selectBrand()}" value="${(equipInfo.brand)!}" />
+						</td>
+					</tr>
+					<#else>
+					<tr>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('产品线 :')}</td>
+						<td width="280px">
+							<@form.select childId="equipModel" id="productLine" name="productLine" style="width:163px;" required="${i18n.get('不能为空')}" tip="${i18n.get('设备产品线')}" viewKey="name" 
+								idKey='id' url="function(){return '${ctx}/serviceApply/selectProLines.html'}" value="${(equipInfo.productLine)!}" />
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('设备型号 :')}</td>
+						<td width="280px">
+							<@form.select parentId="productLine" childId="brand" id="equipModel" name="equipModel" style="width:163px;" required="${i18n.get('不能为空')}"
+								 tip="${i18n.get('产品型号')}" viewKey="name" idKey='id' url="function(){return selectEquipModel()}" value="${(equipInfo.equipModel)!}" />
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('品牌 :')}</td>
+						<td width="280px">
+							<@form.select parentId="equipModel" id="brand" name="brand" style="width:163px;" tip="${i18n.get('设备产品的品牌')}" viewKey="name" idKey='id'
+								 required="${i18n.get('不能为空')}" url="function(){return selectBrand()}" value="${(equipInfo.brand)!}" />
+						</td>
+					</tr>
+					</#if>
+					<tr>
+						<td align="right" width="100px">${i18n.get('设备系列号 :')}</td>
+						<td width="280px">
+							<@form.select childId="equipMateriel" id="equipSeries" name="equipSeries" style="width:163px;" tip="${i18n.get('产品的序列号')}" viewKey="name" 
+								idKey='id' url="function(){return '${ctx}/orderForecast/selectProSeries.html'}" value="${(equipInfo.equipSeries)!}" />
+						</td>
+						<td align="right" width="100px">${i18n.get('备件物料号 :')}</td>
+						<td width="280px">
+							<@form.select parentId="equipSeries" id="equipMateriel" name="equipMateriel" style="width:163px;" tip="${i18n.get('备件物料号')}" viewKey="name" idKey='id'
+								 url="function(){return selectMaterCode()}" value="${(equipInfo.equipMateriel)!}" />
+						</td>
+						<td align="right" width="100px">
+						</td>
+						<td width="280px">
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">${i18n.get('单价 :')}</td>
+						<td width="280px">
+							<@form.number id="servicePrice" name="servicePrice" style="width:163px;" tip="${i18n.get('设备服务单价或备件单价')}" value="${(equipInfo.servicePrice)!}" />
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('数量  :')}</td>
+						<td width="280px">
+							<@form.number id="serviceQuantity" name="serviceQuantity" style="width:163px;" tip="${i18n.get('服务设备数量或备件数量')}" required="${i18n.get('不能为空')}" value="${(equipInfo.serviceQuantity)!}" />
+						</td>
+						<td align="right" width="100px"></td>
+						<td width="280px">
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">${i18n.get('备注 :')}</td>
+						<td colspan="5">
+							<@form.textArea id="remark" style="width:913px;" name="remark" tip="${i18n.get('服务需求行备注说明')}" value="${(equipInfo.remark)!}" />
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<#if !equipInfo?? || !equipInfo.id?? || statusEdit>
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					</#if>
+					<button class="btn" type="button" onclick="javascript:frameElement.api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+	</@form.panel>
+</@cui.body2>
+<script>
+function selectEquipModel(){
+	var proLine= $("#productLine").val();
+	return '${ctx}/serviceApply/selectProModel.html?proLine='+proLine;
+}
+function selectBrand(){
+	var equipModel= $("#equipModel").val();
+	return '${ctx}/serviceApply/selectProBrand.html?proModel='+equipModel;
+}
+function selectMaterCode(){
+	var equipSeries = $("#equipSeries").val();
+	return '${ctx}/serviceApply/selectMaterCode.html?equipSeries='+equipSeries;
+}
+</script>

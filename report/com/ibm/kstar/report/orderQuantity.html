@@ -1,0 +1,113 @@
+<div style="width:80%;float:left">
+<@cui.body2>
+
+<div class="col-xs-12" style="padding-left: 1px;padding-right: 1px"> 
+		<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+		<div class="container-fluid" style="margin-bottom:10px;">
+			<div class="row" style="margin-left: auto; margin-right: auto;">
+				<div style="float: left;margin-left: auto; margin-right: auto;">
+					<div class="span5" style="float: left; margin-left: 2px; margin-right: auto;">
+							<div id="chart1" style="width: 1200px;height:500px;border: 1px solid #000;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+		<script type="text/javascript">
+            // 基于准备好的dom，初始化echarts实例
+            var myChart1 = echarts.init(document.getElementById('chart1'));
+            // 指定图表的配置项和数据
+            option = {
+			    tooltip: {
+			        trigger: 'axis',
+			        axisPointer: {
+			            type: 'cross',
+			            crossStyle: {
+			                color: '#999'
+			            }
+			        }
+			    },
+			    toolbox: {
+			    	show : true,
+			        feature: {
+			        	mark : {show: true},
+			            dataView: {show: true, readOnly: false},
+			            magicType: {show: true, type: ['bar']},
+			            restore: {show: true},
+			            saveAsImage: {show: true}
+			        }
+			    },
+			    calculable : true,
+			    legend: {
+			        data:['${i18n.get('接单量')}','${i18n.get('已出货')}','${i18n.get('未出货')}']
+			    },
+			    xAxis: [
+			        {
+			            type: 'category',
+			            data: ['${i18n.get('1月')}','${i18n.get('2月')}','${i18n.get('3月')}','${i18n.get('4月')}','${i18n.get('5月')}','${i18n.get('6月')}','${i18n.get('7月')}','${i18n.get('8月')}','${i18n.get('9月')}','${i18n.get('10月')}','${i18n.get('11月')}','${i18n.get('12月')}'],
+			            position: 'bottom',
+			            boundaryGap: true,
+			            axisPointer: {
+			                type: 'shadow'
+			            }
+			        },
+			        {
+			            type : 'category',
+			            data : ['${i18n.get('1月')}','${i18n.get('2月')}','${i18n.get('3月')}','${i18n.get('4月')}','${i18n.get('5月')}','${i18n.get('6月')}','${i18n.get('7月')}','${i18n.get('8月')}','${i18n.get('9月')}','${i18n.get('10月')}','${i18n.get('11月')}','${i18n.get('12月')}']
+			        },
+			        {
+			            type : 'category',
+			            data : ['${i18n.get('1月')}','${i18n.get('2月')}','${i18n.get('3月')}','${i18n.get('4月')}','${i18n.get('5月')}','${i18n.get('6月')}','${i18n.get('7月')}','${i18n.get('8月')}','${i18n.get('9月')}','${i18n.get('10月')}','${i18n.get('11月')}','${i18n.get('12月')}']
+			        },
+			    ],
+			    yAxis: [
+			        {
+			            type: 'value',
+			            name: '${i18n.get('金额')}',
+			            min: 0,
+			            axisLabel: {
+			                formatter: '<#if currency == "RMB" >￥<#else> $ </#if>{value} '
+			            }
+			        }
+			    ],
+			    series: [
+			        {
+			            name:'${i18n.get('接单量')}',
+			            type:'bar',
+			            data:${orderQuantity}
+			        },
+			        {
+			            name:'${i18n.get('已出货')}',
+			            type:'bar',
+			            data:${delivery}
+			        },
+			        {
+			            name:'${i18n.get('未出货')}',
+			            type:'bar',
+			            data:${notDelivery}
+			        }
+			    ]
+			};
+            // 使用刚指定的配置项和数据显示图表。
+            myChart1.setOption(option);
+		</script>
+	</div>
+	<style>
+	table{border-collapse: separate;border-spacing: 1px;}
+	table th{background:none;}
+	.table thead tr{background:none;}
+	.table thead > tr > th {
+	    vertical-align: bottom;
+	    border-bottom: 0;
+	}
+	.tableC{
+		border-collapse: collapse;border-spacing: 0px;
+	}
+	.tableC thead > tr > td, .tableC tbody > tr > td, .tableC tfoot > tr > td{
+		border-bottom:0;
+	}
+	</style>
+</@cui.body2>

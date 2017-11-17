@@ -1,0 +1,178 @@
+<@pui.body> 
+	<script type="text/javascript">
+		parent.currentDatas = ${roles!'[]'};
+	</script>
+	<div class=" col-xs-12" >
+		<@form.form id="t1"
+			success="function(){ 
+				try{ 
+					parent.currentParent2.reload_t1();
+					parent.currentParent2.reload_tree1('${(parentLovMember.id)!}'); 
+				}catch(e){
+					parent.currentParent.reload_t1();
+					parent.currentParent.reload_tree1('${(parentLovMember.id)!}'); 
+				}
+			}"
+			class="form-horizontal"
+			postData="function(){
+				var selectedIds = $('#role2').jqGrid('getDataIDs');
+				var selectedDatas = [];
+		 		$.each(selectedIds,function(i,id){
+		 			var data = $('#role2').jqGrid('getRowData',id);
+		 			selectedDatas.push(data);
+		 		})
+		 		var obj = {'list':selectedDatas};
+		 		return obj;
+			}"
+			
+			
+			before="function(){
+				var roles='';
+			 	var selectedIds = $('#selected_table').jqGrid('getDataIDs');
+		 		$.each(selectedIds,function(i,id){
+		 			roles = roles + id;
+			 		if(i< selectedIds.length-1){
+			 			roles = roles + ',';
+			 		}
+			 		$('#roles').val(roles);
+		 		})
+			}"
+			
+			>
+			
+			<label class="col-xs-12 left"><h4>${i18n.get('岗位')} </h4></label>
+			<#if (lovGroup.treeFlag)?? && lovGroup.treeFlag == 'Y' >
+				<label class="col-xs-12 left"><h4>${i18n.get('上级 ：')} ${(parentLovMember.namePath)!''} </h4></label>
+			</#if>
+			
+			<div class="form-group">
+				<label class="col-sm-3 control-label no-padding-right" for="code"> <strong style="color: red;">*</strong>${i18n.get('编码:')} </label>
+				<@form.input 
+				id="code"
+				name="code"
+				placeholder="${i18n.get('请输入编码')}" 
+				required="${i18n.get('不能为空！')}" 
+				tip="${i18n.get('请输入编码')}" 
+				value="${(lovMember.code)!}"
+				/>
+			</div>
+			
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" for="desc"> <strong style="color: red;">*</strong>${i18n.get('名称:')} </label>
+				<@form.input 
+				id="name" 
+				name="name" 
+				placeholder="${i18n.get('请输入名称')}" 
+				required="${i18n.get('不能为空！')}" 
+				tip="${i18n.get('请输入名称')}" 
+				value="${(lovMember.name)!}"
+				/>
+			</div>
+			
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" for="desc"> <strong style="color: red;">*</strong>${i18n.get('岗位类型:')} </label>
+				<@form.select id="optTxt3" name="optTxt3"
+							code="POSITION_TYPE"
+							style="width:300px;"
+							viewKey="name"
+							required="${i18n.get('不能为空！')}" 
+							idKey='code'
+							value="${(lovMember.optTxt3)!}" />				
+			</div>
+			
+			<div class="form-group">
+				<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('备注:')} </label>
+				<@form.textArea 
+					id="memo" 
+					name="memo" 
+					placeholder="${i18n.get('请输入备注')}" 
+					tip="${i18n.get('备注')}"
+					value="${(lovMember.memo)!}"
+					/>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('归属组织:')} </label>
+				<span id="path">  </span> 
+				<input type="text" id="parentOrgName" readonly="readonly" value="${(parentOrgLovmember.namePath)!}" style="width: 300px" />
+				<input type="hidden" name="parentOrgId" id="parentOrgId" value="${(parentOrgLovmember.id)!}" />
+				<@biz.picker_lov_tree id="picker_lov_tree" leafFlag="N" groupId="ORG" button="${i18n.get('选择归属组织')}" defaultSelect="selectedDatas_picker_lov_tree" callback="function(datas){
+				 	if(datas){
+					 	$('#parentOrgName').val(datas.namePath);
+					 	$('#parentOrgId').val(datas.id);
+					 	selectedDatas_picker_lov_tree = datas;
+				 	}
+				}" />
+			</div>
+			
+			
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" for="desc"> ${i18n.get('角色路径: ')}</label>
+				<div class="col-sm-9" id="rolesHTML"></div>
+			</div>
+			
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" for="desc"> ${i18n.get('角色:')} </label>
+				<input type="hidden" id="roles" name="roles" />
+				<@biz.picker_lov id="picker_role" groupId="ROLE" button="${i18n.get('选择角色')}" leafFlag="Y" defaultSelect="parent.currentDatas" callback="function(datas){
+				 	if(datas){
+				 		parent.currentDatas = datas;
+				 		$('#selected_table').jqGrid('clearGridData');
+					 	$('#selected_table').jqGrid('setGridParam',{data:datas}).trigger('reloadGrid');
+					 	var html ='';
+						$.each(parent.currentDatas,function(i,data){
+					 		html = html + '<p><label> '+data.namePath+' </label></p>';
+					 		$('#rolesHTML').html(html);
+						})
+				 	}
+				}" />
+			</div>
+			
+			<input type="hidden" name="leafFlag" value="N" /> 
+			<input type="hidden" name="optTxt1"  value="Y" />
+			
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+	</div>
+	
+<div class="col-xs-12" style="display: none">
+<@form.panel title="${i18n.get('新增/编辑')}">
+<@form.table 
+		id="selected_table"
+		shrinkToFit = 'true'
+		title="${i18n.get('已选数据')}"
+		class="col-xs-12"
+		rowNum = "20"
+		search='false' 
+		data = "parent.currentDatas"
+		datatype = "local"
+		colModel = "[
+		  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:false,align:'center' }, 
+		  { name : 'code', label : '${i18n.get('编码')}', width : 90 ,sortable:false}, 
+		  { name : 'name', label : '${i18n.get('名称')}', width : 150 ,sortable:false },
+		  { name : 'namePath', label : '${i18n.get('路径')}', hidden : true, width : 150 ,sortable:false }
+		  ]"
+		 buttons = "[]"
+		/>		
+</@form.panel>
+</div>
+	
+	<script type="text/javascript">
+		var html = "";
+		$.each(parent.currentDatas,function(i,data){
+	 		html = html + '<p><label> '+data.namePath+' </label></p>';
+	 		$('#rolesHTML').html(html);
+		})
+	</script>
+</@pui.body>

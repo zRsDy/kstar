@@ -1,0 +1,62 @@
+/* Basic styling */
+
+/* Draw the lines */
+.jOrgChart .line{height:10px;width:2px;}
+.jOrgChart .down{background-color:#252c70;margin:0 auto;}
+.jOrgChart .top{border-top:2px solid #252c70;}
+.jOrgChart .left{border-right:1px solid #252c70;}
+.jOrgChart .right{border-left:1px solid #252c70;}
+
+/* node cell */
+.jOrgChart td{text-align:center;vertical-align:top;padding:0;}
+/* The node */
+.jOrgChart .node{display:inline-block;min-width:15px;min-height:15px;z-index:10;margin:0 2px;font-weight:bold;}
+
+/* jQuery drag 'n drop */
+.drag-active{border-style:dotted!important;}
+.drop-hover{border-color:#E05E00!important;border-style:solid!important;}
+
+.brand{color:#E05E00!important;}
+#org{background-color:#FFF;margin:10px;padding:10px;}
+#show-list{cursor:pointer;}
+.alert-message{margin:2px 0;}
+
+.jOrgChart{ padding-top:50px;}
+.jOrgChart table{margin:0 auto;}
+
+.jOrgChart .node{background-color:#fff;border-radius:4px;border:2px solid #252c70;-moz-border-radius:4px;}
+.node p{padding:2px;}
+
+.chart_blue{background-color:#006dd4;padding:5px 7px;color:#fffb97;}
+.chart_blue a{color:#fffb97; text-decoration:none;}
+.chart_blue:hover{background-color:#005eb6; text-decoration:underline;}
+
+.chart_blue1{background-color:#2b98d0;padding:5px 7px;color:#fffb97;}
+.chart_blue1:hover{background-color:#73bde3;}
+
+.chart_ablue{background-color:#fffa7d;padding:5px 7px;color:#252c70;}
+.chart_ablue:hover{ background-color:#f5f067;}
+
+.chart_red{background-color:#de1e1e;padding:7px 7px;color:#fffb97; min-width:90px; min-height:50px; font-size:16px; line-height:50px}
+.chart_red:hover{background-color:#ad0000; }
+
+.chart_green{background-color:#62be00;padding:7px 7px;color:#fffb97; min-width:90px; min-height:50px; font-size:16px; line-height:50px}
+.chart_green:hover{background-color:#56a403;}
+
+.chart_yellow{background-color:#ff8502;padding:7px 7px;color:#FFF; min-width:90px; min-height:50px; font-size:16px; line-height:50px}
+.chart_yellow:hover{background-color:#f3b700; }
+
+.chart_pink{background-color:#f54590;padding:7px 7px;color:#fffb97; min-width:90px; min-height:50px; font-size:16px; line-height:50px}
+.chart_pink:hover{background-color:#e43881; }
+
+.chart_violet{background-color:#9c01fe;padding:7px 7px;color:#fffb97; min-width:90px; min-height:50px; font-size:16px; line-height:50px}
+.chart_violet:hover{background-color:#9d05e3;}
+
+.chart_bluenohover{background-color:#006dd4;padding:5px 7px;color:#fffb97;}
+.chart_blue1nohover{background-color:#2b98d0;padding:5px 7px;color:#fffb97;}
+.chart_abluenohover{background-color:#fffa7d;padding:5px 7px;color:#252c70;}
+.chart_rednohover{background-color:#de1e1e;padding:7px 7px;color:#fffb97; min-width:90px; min-height:50px; font-size:16px; line-height:50px}
+.chart_greennohover{background-color:#62be00;padding:7px 7px;color:#fffb97; min-width:90px; min-height:50px; font-size:16px; line-height:50px}
+.chart_yellownohover{background-color:#ff8502;padding:7px 7px;color:#FFF; min-width:90px; min-height:50px; font-size:16px; line-height:50px}
+.chart_pinknohover{background-color:#f54590;padding:7px 7px;color:#fffb97; min-width:90px; min-height:50px; font-size:16px; line-height:50px}
+.chart_violetnohover{background-color:#9c01fe;padding:7px 7px;color:#fffb97; min-width:90px; min-height:50px; font-size:16px; line-height:50px}

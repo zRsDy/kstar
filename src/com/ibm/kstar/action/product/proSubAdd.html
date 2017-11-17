@@ -1,0 +1,91 @@
+<@pui.body nav1="${i18n.get('选配清单编辑')}" nav2="${i18n.get('新增/编辑')}" type="popup">
+
+<div class="col-xs-12" >
+
+<@form.form success="function(){
+try{
+	parent.currentParent.reload_t9(); 
+}catch(e){
+	parent.currentParent2.reload_t9(); 
+}
+}" class="form-horizontal" upload="true">
+		<input type="hidden" id="id" name="id" value="${(proSub.id)!}">
+		<input type="hidden" id="productID" name="productID" value="${(proSub.productID)!}">
+		<input type="hidden" id="proSubID" name="proSubID" value="${(proSub.proSubID)!}">
+		<div class="hr hr-18 dotted hr-double"></div>
+		<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" for="productCode"><strong style="color: red;">*</strong>${i18n.get('产品编码 :')} </label> 
+		<@form.input id="productCode" name="productCode" readonly="true" tip="${i18n.get('CRM产品编号')}" required="${i18n.get('不能为空')}" value="${(proSub.productBean.productCode)!}" />
+	 		<@biz.picker_product id="selectProduct" url="${ctx}/common/product/selectList.html" 
+				callback="function(data){
+					if(data){
+						$('#proSubID').val(data.proId);
+						$('#productCode').val(data.productCode);
+						$('#productName').val(data.productName);
+						$('#proEName').val(data.proEName);
+						$('#proDesc').val(data.proDesc);
+						$('#saleStatus').val(data.saleStatusLable);
+						$('#crmCategory').val(data.crmCategoryLable);
+						$('#unit').val(data.unitLable);
+					 }
+				}"
+			/>
+		</div>
+
+ 		<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" for="auTestDesc">${i18n.get('产品名称  :')} </label> 
+		 <@form.input id="productName" name="productName" readonly="true" value="${(proSub.productBean.productName)!}" />
+		</div>
+		
+		<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" for="auTestDesc">${i18n.get('产品英文名称  :')} </label> 
+		 <@form.input id="proEName" name="proEName" readonly="true" value="${(proSub.productBean.proEName)!}" />
+		</div>
+
+		<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" for="auTestDesc">${i18n.get('产品描述  :')} </label> 
+		 <@form.input id="proDesc" name="proDesc" readonly="true" value="${(proSub.productBean.proDesc)!}" />
+		</div>
+
+		<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" for="auTestDesc">${i18n.get('转销状态  :')} </label> 
+		 <@form.input id="saleStatus" name="saleStatus" readonly="true" value="${(proSub.productBean.saleStatusName)!}" />
+		</div>
+
+		<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" for="auTestDesc">${i18n.get('CRM产品类别  :')} </label> 
+		 <@form.input id="crmCategory" name="crmCategory" readonly="true" value="${(proSub.productBean.crmCategoryName)!}" />
+		</div>
+
+		<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" for="auTestDesc">${i18n.get('单位  :')} </label> 
+			<@form.input id="unit" name="unit" readonly="true" value="${(proSub.productBean.unitName)!}" />
+		 </div>
+		
+		<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" for="auTestDesc">${i18n.get('说明  : ')}</label> 
+		 <@form.input id="proSubDesc" name="proSubDesc" value="${((proSub.proSubDesc)!)}" />
+		</div>
+
+		<div class="hr hr-18 dotted hr-double"></div>
+		<div class="clearfix form-actions">
+			<div class="col-md-offset-5 col-md-7">
+				<button class="btn btn-info submit" type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				&nbsp; &nbsp; &nbsp;
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+		</@form.form>
+
+</div>
+<script type="text/javascript">
+$(document).ready(function(){  
+});	
+</script>
+</@pui.body>

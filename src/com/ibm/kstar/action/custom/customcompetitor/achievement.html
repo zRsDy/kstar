@@ -1,0 +1,158 @@
+<#escape x as x?html>
+<div class="form-group" >
+<#if (permission["P02CompetitorReportT1ComAdd"]?? && ("${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign addT1ComURL = "'${ctx}/custom/report/analyse/add.html?id=${(customCompetitorReport.id)!}'"    />
+</#if>
+
+<#if (permission["P02CompetitorReportT1ComEdit"]?? && ("${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign editT1ComURL= "'${ctx}/custom/report/analyse/edit.html'"  />
+</#if>
+
+<#if (permission["P02CompetitorReportT1ComDelete"]?? && ("${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign deleteT1ComURL= "'${ctx}/custom/report/analyse/delete.html'"    />
+</#if>
+
+<#if (permission["P02CompetitorReportT1ProdAdd"]?? && ("${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign addProdURL = "'${ctx}/custom/report/product/add.html?achiId=' + $('#achiIdProduct').val() + '&reportId=' + $('#reportIdProduct').val()"   />
+</#if>
+
+<#if (permission["P02CompetitorReportT1ProdEdit"]?? && ("${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign editProdURL= "'${ctx}/custom/report/product/edit.html'"   />
+</#if>
+
+<#if (permission["P02CompetitorReportT1ProdDelete"]?? && ("${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign deleteProdURL= "'${ctx}/custom/report/product/delete.html'"    />
+</#if>
+
+<#if (permission["P02CompetitorReportT1IndustryAdd"]?? && ("${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign addIndustryURL = "'${ctx}/custom/report/business/add.html?achiId=' + $('#achiIdIndustry').val() + '&reportId=' + $('#reportIdIndustry').val()"   />
+</#if>
+
+<#if (permission["P02CompetitorReportT1IndustryEdit"]?? && ("${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign editIndustryURL= "'${ctx}/custom/report/business/edit.html'"    />
+</#if>
+
+<#if (permission["P02CompetitorReportT1IndustryDelete"]?? && ("${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customCompetitorReport.status)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign deleteIndustryURL= "'${ctx}/custom/report/business/delete.html'"    />
+</#if>
+
+<table>
+	<tr>
+		<td width="500px" rowspan="2">
+			<div class="col-xs-12">
+			<@form.table id="achi" 
+			class="col-xs-12"
+			title="${i18n.get('竞争对手概况')}" 
+			url = "${ctx}/custom/report/analyse/page.html?id=${(customCompetitorReport.id)!}"
+			rowNum = "5" 
+			height="320px"
+addURL = "${addT1ComURL!}"
+editURL = "${editT1ComURL!}"
+deleteURL= "${deleteT1ComURL!}" 
+			colModel = "[
+				{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+				{name:'reportId',label:'${i18n.get('提报编码')}',hidden:true,width:100,sortable:true,align:'center' },
+				{name:'competitorName',label:'${i18n.get('竞争对手名称')}',hidden:false,width:200,sortable:true,align:'center' },
+				{name:'compYearResult',label:'${i18n.get('今年已完成业绩')}',hidden:false,width:200,sortable:true,align:'center' }
+				]" 
+			
+			onSelectRow= "function(selectedData){
+				$('#achiIdProduct').val(selectedData.id);
+				$('#reportIdProduct').val(selectedData.reportId);
+				
+				reload_achiDeepProduct();
+				
+				$('#achiIdIndustry').val(selectedData.id);
+				$('#reportIdIndustry').val(selectedData.reportId);
+				
+				reload_achiDeepIndustry();
+				}"
+				>
+			</@form.table>
+			</div>
+		</td>
+		<td width="800px">
+			<div class="col-xs-12">
+			<@form.table id="achiDeepProduct" 
+			class="col-xs-12"
+			height="100"
+			title="${i18n.get('业绩分解')}" 
+			url = "${ctx}/custom/report/product/page.html?reportIdProduct=${(customCompetitorReport.id)!}"
+			rowNum = "5" 
+addURL = "${addProdURL!}"
+editURL = "${editProdURL!}"
+deleteURL= "${deleteProdURL!}" 
+			colModel = "[
+				{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+				{name:'productCode',label:'${i18n.get('竞争对手主推产品名称')}',hidden:false,width:200,sortable:true,align:'center' },
+				{name:'result',label:'${i18n.get('去年业绩分解')}',hidden:false,width:150,sortable:true,align:'center' },
+				{name:'comment',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:true,align:'center' }
+				]"
+			
+				>
+			<input id="achiIdProduct" name= "achiIdProduct" type="hidden"  >
+			<input id="reportIdProduct" name= "reportIdProduct" type="hidden"  >
+			</@form.table> 
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td width="800px">
+			<div class="col-xs-12">
+			<@form.table id="achiDeepIndustry" 
+			class="col-xs-12"
+			title="${i18n.get('业绩分解')}" 
+			height="100"
+			url = "${ctx}/custom/report/business/page.html?reportIdIndustry=${(customCompetitorReport.id)!}"
+			rowNum = "5" 
+addURL = "${addIndustryURL!}"
+editURL = "${editIndustryURL!}"
+deleteURL= "${deleteIndustryURL!}" 
+			colModel = "[
+				{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+				{name:'industryCode',label:'${i18n.get('竞争对手主推行业')}',hidden:false,width:200,sortable:true,align:'center' },
+				{name:'result',label:'${i18n.get('去年业绩分解')}',hidden:false,width:150,sortable:true,align:'center' },
+				{name:'comment',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:true,align:'center' }
+				]"
+			
+				>
+			<input id="achiIdIndustry" name= "achiIdIndustry" type="hidden"  >
+			<input id="reportIdIndustry" name= "reportIdIndustry" type="hidden"  >
+			</@form.table> 
+			</div>
+		</td>
+	</tr>
+</table>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#add_achiDeepIndustry').unbind('click').bind('click', function(){
+			_achiIdIndustry = $("#achiIdIndustry").val();
+			_reportIdIndustry = $("#reportIdIndustry").val();
+			if (!_achiIdIndustry || !_reportIdIndustry) {
+				alert("${i18n.get('请先选择竞争对手')}");
+				return false;
+			}
+			
+		var url = '${ctx}/custom/report/business/add.html?achiId=' + _achiIdIndustry + '&reportId=' + _reportIdIndustry;
+		parent.dialog("${i18n.get('新增')}/${i18n.get('编辑')}",url,window);
+		});
+	});
+	
+	$(document).ready(function() {
+		$('#add_achiDeepProduct').unbind('click').bind('click', function(){
+			_achiIdProduct = $("#achiIdProduct").val();
+			_reportIdProduct = $("#reportIdProduct").val();
+			if (!_achiIdProduct || !_reportIdProduct) {
+				alert("${i18n.get('请先选择竞争对手')}");
+				return false;
+			}
+			
+		var url = '${ctx}/custom/report/product/add.html?achiId=' + _achiIdProduct + '&reportId=' + _reportIdProduct;
+		parent.dialog("${i18n.get('新增')}/${i18n.get('编辑')}",url,window);
+		});
+	});
+	
+</script>
+</#escape>

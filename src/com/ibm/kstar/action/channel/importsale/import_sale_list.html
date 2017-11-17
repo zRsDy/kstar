@@ -1,0 +1,321 @@
+<@cui.body>
+<#if (permission["P09ImportSaleAdd"])??>
+	<#assign addURL="'${ctx}/importSale/addOrEdit.html'" />
+</#if>
+<#if (permission["P09ImportSaleEdit"])??>
+	<#assign editURL="true" />
+</#if>
+<#if (permission["P09ImportSaleDelete"])??>
+	<#assign deleteURL="true" />
+</#if>
+<#if (permission["P09ImportSaleSubmit"])??>
+	<#assign submitURL="true" />
+</#if>
+<div style="display: none;" >
+	<@biz.picker_product id="selectOrder"
+	urlFunction="function(){
+	            var param = window._selectOrder_param;
+				return '${ctx}/importSale/selectOrder.html?id='+ param.id +
+				'&type=' + (param.type || '') +
+				'&employeeId=' + (param.employeeId || '') +
+				'&positionId=' + (param.positionId || '') +
+				'&orgId=' + (param.orgId || '');
+			}"
+	button="${i18n.get('选择订单')}"
+	callback="function(data){
+				if(data){
+					$('#detail').jqGrid('addRowData', data.id, data, 'first');
+	                //设置grid单元格不可编辑
+	                $('#detail').setGridParam({cellEdit:false});
+				 }
+
+			}"
+	/>
+</div>
+<div class="col-xs-12">
+		<@form.table id="apply"
+			class="col-xs-12"
+			title="${i18n.get('引入销量申请')}"
+			url = "${ctx}/importSale/page.html"
+			rowNum = "10"
+			addURL = "${addURL!}"
+			colModel = "[
+				{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+				{name:'applyCode',label:'${i18n.get('申请单号')}',hidden:false,width:100,sortable:true,align:'center' }, 
+				{name:'applyUnitName',label:'${i18n.get('申请单位')}',hidden:false,width:150,sortable:true,align:'left' }, 
+				{name:'applyTypeName',label:'${i18n.get('申请类型')}',hidden:false,width:70,sortable:true,align:'center' }, 
+				{name:'importName',label:'${i18n.get('销量转入单位')}',hidden:false,width:150,sortable:true,align:'left' },
+				{name:'importEmpoyeeId',label:'${i18n.get('销量转入员工')}',hidden:true,sortable:true,align:'left' },
+				{name:'importPositionId',label:'${i18n.get('销量转入职位')}',hidden:true,sortable:true,align:'left' },
+				{name:'importUnit',label:'${i18n.get('销量转入组织')}',hidden:true,sortable:true,align:'left' },
+				{name:'importRatio',label:'${i18n.get('销量转入比例')}',hidden:false,width:80,sortable:true,align:'center' },
+				{name:'exportName',label:'${i18n.get('销量转出单位')}',hidden:false,width:150,sortable:true,align:'left'},
+				{name:'exportEmployeeId',label:'${i18n.get('销量转出员工')}',hidden:true,sortable:true,align:'left'},
+				{name:'exportPositionId',label:'${i18n.get('销量转出职位')}',hidden:true,sortable:true,align:'left'},
+				{name:'exportUnit',label:'${i18n.get('销量转出组织')}',hidden:true,sortable:true,align:'left'},
+				{name:'exportRatio',label:'${i18n.get('销量转出比例')}',hidden:false,width:80,sortable:true,align:'center' },
+				{name:'statusName',label:'${i18n.get('状态')}',hidden:false,width:60,sortable:true,align:'center' },
+				{name:'currencyName',label:'${i18n.get('货币')}',hidden:false,width:70,sortable:true,align:'center'},
+				{name:'applyAmount',label:'${i18n.get('申请金额')}',hidden:false,width:80,sortable:true,align:'left' }, 
+				{name:'applyDate',label:'${i18n.get('申请日期')}',hidden:false,width:80,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+				{name:'organizationName',label:'${i18n.get('组织')}',hidden:false,width:150,sortable:true,align:'left' }, 
+				{name:'applierName',label:'${i18n.get('申请人')}',hidden:false,width:70,sortable:true,align:'center'}, 
+				{name:'applierPhone',label:'${i18n.get('申请人电话')}',hidden:false,width:100,sortable:true,align:'center' }, 
+				{name:'explain',label:'${i18n.get('说明')}',hidden:false,width:400,sortable:true,align:'left' }
+			]"
+			onSelectRow="function(){
+				$('#applyId').val(selected_apply.id);
+				reload_detail();
+			}"
+			onComplete="function(){
+				$('#applyId').val('');
+			}"
+			buttons = "[
+				{
+		  			id:'edit_apply',
+		  			label : '${i18n.get('修改')}',
+		  			icon : 'icon-pencil',
+		  			own : ${editURL!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_apply){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}else{
+							var statusEdit = !canEdit(selected_apply.statusName);
+							parent.dialog('${i18n.get('新增')}','${ctx}/importSale/addOrEdit.html?id='+selected_apply.id+'&statusEdit='+statusEdit,window);
+							$('#applyId').val('');
+						}
+		  			}
+		  		},
+				{
+		  			id:'delete_apply',
+		  			label : '${i18n.get('删除')}',
+		  			icon : 'icon-trash',
+		  			own : ${deleteURL!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_apply){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}else if(canEdit(selected_apply.statusName)){
+						    myAlert(e,'${i18n.get('删除')}');
+							return;
+						}else{
+							bootbox.confirm('${i18n.get('你确定要删除数据吗？')}' , function(result) {
+                                if( result ){	
+									ajax({
+										url: '${ctx}/importSale/delete.html',
+										type: 'POST',
+										data: {id:selected_apply.id},
+										success : function(result) {
+											exalert(e,'${i18n.get('删除成功！')}');
+											$('#applyId').val('');
+											reload_apply();
+											reload_detail();
+										}
+									});
+								}
+							});
+						}
+		  			}
+		  		},
+				{
+		  			id:'submit_apply',
+		  			label : '${i18n.get('提交')}',
+		  			icon : 'icon-save',
+		  			own : ${submitURL!'false'},
+		  			handler : function(e,rowData){
+		  				var detaildata = $('#detail').jqGrid('getRowData');
+						if(!selected_apply){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}else if(canEdit(selected_apply.statusName)){
+							myAlert(e,'${i18n.get('提交')}');
+							return;
+						}else if(detaildata.length == 0){
+							exalert(e,'${i18n.get('没有引入销量明细，不能提交！')}');
+							return;
+						}else{
+							bootbox.confirm('${i18n.get('你确定要提交数据吗？')}', function(result) {
+                                if(result){	
+									ajax({
+										url: '${ctx}/importSale/submit.html',
+										type: 'POST',
+										data: {id:selected_apply.id},
+										success : function(result) {
+											exalert(e,'${i18n.get('提交成功！')}');
+											reload_apply();
+										}
+									});
+								}
+							});
+						}
+		  			}
+		  		}
+			]" > 
+			
+			<div class="col-xs-12">
+				<div class="form-group col-xs-2" align="right">${i18n.get('申请单号 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="applyCode" size="30" />
+				</div>
+				<div class="form-group col-xs-2" align="right">${i18n.get('申请单位 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="applyUnit" size="30" />
+				</div>
+				<div class="form-group col-xs-2" align="right">${i18n.get('申请类型 ：')}</div>
+				<div class="form-group col-xs-4">
+					<select name="applyType">
+						<option value="">${i18n.get('全部')}</option>
+						<#list importTypeLst as element>
+							<option value="${element.id}">${element.name}</option>
+						</#list>
+					</select>
+				</div>
+			</div>
+		</@form.table>
+		
+		<#if (permission["P09ImportSaleDetailAdd"])??>
+			<#assign addURL_detail="true" />
+		</#if>
+		<#if (permission["P09ImportSaleDetailEdit"])??>
+			<#assign editURL_detail="true" />
+		</#if>
+		<#if (permission["P09ImportSaleDetailDelete"])??>
+			<#assign deleteURL_detail="true" />
+		</#if>
+		<div id="detailDiv">
+		<@form.table id="detail" 
+			class="col-xs-12"
+			title="${i18n.get('引入销量明细')}"
+			url = "${ctx}/importSale/pageDetail.html"
+			rowNum = "10"
+			colModel = "[
+				{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' },
+				{name:'orderCode',label:'${i18n.get('订单单号')}',hidden:false,width:150,sortable:true,align:'center' },
+				{name:'orderLineNo',label:'${i18n.get('订单行号')}',hidden:false,width:60,sortable:true,align:'center' },
+				{name:'productSeries',label:'${i18n.get('产品系列')}',hidden:false,width:150,sortable:true,align:'center' },
+				{name:'productKind',label:'${i18n.get('产品型号')}',hidden:false,width:150,sortable:true,align:'center' },
+				{name:'materielCode',label:'${i18n.get('物料号	')}',hidden:false,width:150,sortable:true,align:'center' },
+				{name:'importDate',label:'${i18n.get('引入日期')}',hidden:false,width:80,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+				{name:'orderQuantity',label:'${i18n.get('订单数量')}',hidden:false,width:100,sortable:true,align:'center'},
+				{name:'importQuantity',label:'${i18n.get('引入数量')}',hidden:false,width:100,sortable:true,align:'center'},
+				{name:'importPrice',label:'${i18n.get('单价')}',hidden:false,width:100,sortable:true,align:'left' },
+				{name:'importAmount',label:'${i18n.get('金额')}',hidden:false,width:100,sortable:true,align:'left' }
+			]"
+			buttons = "[
+				{
+		  			id:'add_detail',
+		  			label : '${i18n.get('新增')}',
+		  			icon : 'icon-plus',
+		  			own : ${addURL_detail!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_apply){
+							exalert(e,'${i18n.get('请选择申请单数据！')}');
+							return;
+						}else if(canEdit(selected_apply.statusName)){
+							myAlert(e,'${i18n.get('新增')}');
+							return;
+						}
+						var type;
+						var employeeId;
+						var positionId;
+						var orgId;
+                        if (selected_apply.exportEmployeeId && selected_apply.exportPositionId) {
+                            type = 'E';
+                            employeeId = selected_apply.exportEmployeeId;
+                            positionId = selected_apply.exportPositionId;
+                        } else if (selected_apply.exportUnit) {
+                            type = 'ORG';
+                            orgId = selected_apply.exportUnit;
+                        } else {
+                            exalert(e,'${i18n.get('转出单位为空！')}');
+                            return;
+                        }
+                        window._selectOrder_param = {id:selected_apply.id,'type':type,'employeeId':employeeId,'positionId':positionId,'orgId':orgId};
+						$('#selectOrder').click();
+		  			}
+		  		},
+		  		{
+		  			id:'delete_detail',
+		  			label : '${i18n.get('删除')}',
+		  			icon : 'icon-trash',
+		  			own : ${deleteURL_detail!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_detail){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}else if(canEdit(selected_apply.statusName)){
+							myAlert(e,'${i18n.get('删除')}');
+							return;
+						}else{
+							bootbox.confirm('${i18n.get('你确定要删除数据吗？')}' , function(result) {
+                                if( result ){	
+									ajax({
+										url: '${ctx}/importSale/deleteDetail.html',
+										type: 'POST',
+										data: {id:selected_detail.id},
+										success : function(result) {
+											exalert(e,'${i18n.get('删除成功！')}');
+											reload_detail();
+										}
+									});
+								}
+							});
+						}
+		  			}
+		  		}
+			]" > 
+
+			<div class="col-xs-12">	
+				<input type="hidden" id="applyId" name="applyId" />
+				<div class="form-group col-xs-2" align="right">${i18n.get('订单单号 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="orderCode" size="30" />
+				</div>	
+				<div class="form-group col-xs-2" align="right">${i18n.get('产品系列 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="productSeries" size="30" />
+				</div>
+				<div class="form-group col-xs-2" align="right">${i18n.get('产品型号 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="productKind" size="30" />
+				</div>
+			</div> 
+		</@form.table>
+		</div>
+		<input type="hidden" id="detailId" />
+	</div>
+</@cui.body>
+<script type="text/javascript">
+
+$(function () {
+    parent.reload_apply = reload_apply;
+});
+
+function reload_apply_2(applyId){
+	$("#applyId").val(applyId);
+	$("#detailId").val('');
+	reload_apply();
+}
+function onComplete_apply(){
+	var applyId = $("#applyId").val();
+	$('#'+applyId).trigger('click');
+}
+
+function reload_detail_2(applyId,detailId){
+	$("#applyId").val(applyId);
+	$("#detailId").val(detailId);
+	reload_apply();
+}
+function onComplete_detail(){
+	var detailId = $("#detailId").val();
+	$('#'+detailId).trigger('click');
+}
+
+function canEdit(status){
+	return status != '新建' && status != '已驳回';
+}
+function myAlert(e,type){
+	exalert(e,'${i18n.get('只有新建或已驳回的数据可')}'+type+'!');
+}
+</script>

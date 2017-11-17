@@ -1,0 +1,69 @@
+<#escape x as x?html>
+<@pui.body >
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="achiForm" success="function(){ 
+		try{
+			parent.currentParent2.reload_achi(); 
+		}catch(e){
+			parent.currentParent.reload_achi(); 
+		}
+		
+	}" class="form-horizontal" >
+		<input id="reportId" name="reportId" type="hidden"  value="${(customCompetitorAchi.reportId)!}">
+		<input id="customCode" name="customCode" type="hidden"  value="${(customCompetitorAchi.customCode)!}">
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>${i18n.get('竞争对手名称')}  : 
+			</label>
+			
+			<input id="competitorCode" name="competitorCode" type="hidden"  value="${(customCompetitorAchi.competitorCode)!}">
+			<@form.autocomplete  id="competitorName" name="competitorName" 
+				idKey='customNameDisp'
+				style="width: 145px;"
+				required="${i18n.get('请选择客户编号')}"
+				formatResult="function(data) {return '<div >' +data.customNameDisp + '</div>';}"
+				url="function(){ return '${ctx}/lovcustom/autocompleteCompetitor.html?customCode=${(customCompetitorAchi.customCode)!}'; }"
+				value="{customNameDisp:'${(customCompetitorAchi.competitorName)!}'
+				,customCodeDisp: '${(customCompetitorAchi.competitorCode)!}'
+				}"
+				
+				onSelect="function(data){
+					if( data.customCodeDisp != null && data.customCodeDisp !='' && data.customCodeDisp != 'undefined'){
+						$('#competitorCode').val(data.customCodeDisp);
+					}
+				}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>${i18n.get('今年已完成业绩')} : 
+			</label>
+			<@form.input
+			id="compYearResult"  
+			name="compYearResult" 
+			placeholder="" 
+			required="${i18n.get('不能为空！')}"
+			tip="" 
+			value="${(customCompetitorAchi.compYearResult)!}" 
+			/>
+		</div>
+		
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+		<div class="clearfix form-actions">
+			<div class="col-md-offset-5 col-md-7">
+				<button class="btn btn-info submit" type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				&nbsp; &nbsp; &nbsp;
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+	</@form.form>
+	</@form.panel>
+</@pui.body>
+</#escape>

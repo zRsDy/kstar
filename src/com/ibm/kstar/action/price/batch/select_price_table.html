@@ -1,0 +1,66 @@
+<@pui.body>
+<div class="row col-xs-12" style="width: 1000px;margin-right: 0px; margin-left: 0px;" >
+	<table style="width: 1000px">
+		<tr>
+			<td style="width: 1000px">
+				<@form.table id="price" 
+					class="col-xs-12"
+					title="${i18n.get('价格表')}" 
+					url = "${ctx}/proprice/pricetableList.html" 
+					rowNum = "20" 
+					colModel = "[
+						{name:'id',label:'${i18n.get('价格头表')}ID',hidden:true,width:100,sortable:false,align:'center' },
+						{name:'priceTableName',label:'${i18n.get('价格表名称')}',hidden:false,width:150,sortable:false,align:'center' },
+						{name:'clientPrice',label:'${i18n.get('是否客户价格')}',hidden:false,width:80,sortable:false,align:'center',formatter:function(cellvalue, options, rowObject){ return checkForm(cellvalue)} },
+						{name:'clientName',label:'${i18n.get('客户')}',hidden:false,width:120,sortable:false,align:'center'},
+						{name:'currencyName',label:'${i18n.get('货币')}',hidden:false,width:50,sortable:false,align:'center' },
+						{name:'startDate',label:'${i18n.get('有效期开始时间')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+						{name:'endDate',label:'${i18n.get('有效期结束时间')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }},
+						{name:'organization',label:'${i18n.get('组织')}',hidden:true,width:180,sortable:false,align:'center' },
+						{name:'organizationName',label:'${i18n.get('组织')}',hidden:false,width:180,sortable:false,align:'center' },
+						{name:'comments',label:'${i18n.get('说明')}',hidden:false,width:190,sortable:false,align:'center' }
+					]" 
+					ondblClickRow="function(){
+						parent.currentParent.${pickerId}_callback(selected_price);
+						api.close();
+					}"> 
+				</@form.table> 
+			</td>
+		</tr>
+	</table>
+
+	<div class="clearfix form-actions">
+		<div class="col-md-offset-5 col-md-7">
+			<button class="btn btn-info" id="selectOK" type="button" onclick="$('#price').trigger('blur')" >
+				<i class="icon-ok bigger-110"></i>
+				${i18n.get('选择')}
+			</button>
+			&nbsp; &nbsp; &nbsp;
+			<button class="btn" type="button" onclick="javascript:api.close()">
+				<i class="icon-undo bigger-110"></i>
+				${i18n.get('关闭')}
+			</button>
+		</div>
+	</div>
+</div>
+</@pui.body>
+<script type="text/javascript">
+	function checkForm(cellvalue){
+		var html="<input type=\"checkbox\"  onclick=\"return false;\" />";
+		if(cellvalue == '0'){
+			
+		}else if(cellvalue == '1'){
+			 html="<input type=\"checkbox\" checked=\"checked\"  onclick=\"return false;\"/>";
+		}
+		return html;
+	}
+	$('#selectOK').click(function(){
+		if(!selected_price || selected_price == ''){
+			exalert(e,'${i18n.get('请选择数据')}');
+			return;
+		}else{
+			parent.currentParent.${pickerId}_callback(selected_price);
+			api.close();
+		}
+	})
+</script>

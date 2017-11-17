@@ -1,0 +1,96 @@
+<@pui.body> 
+		<div class="col-xs-12">
+			<table style="width: 100%" >
+				<tr>
+					<td valign="top">
+						<@form.table id="t1"
+						class="col-xs-12"
+						shrinkToFit = 'true'
+						title="${i18n.get('待办任务列表')}"
+						url = "${ctx}/flow/allTaskPage.html"
+						search="false"
+						rowNum = "20"
+						colModel = "[
+						  { name : 'id', label : 'id', hidden : true , width : 60,sortable:true,align:'center' }, 
+						  { name : 'processInstanceId', label : 'processInstanceId',hidden : true, width : 90 ,sortable:true},							  
+						  { name : 'title', label : '${i18n.get('标题')}', width : 90 ,sortable:true},
+						  { name : 'activityName', label : '${i18n.get('环节')}', width : 90 ,sortable:true},
+						  { name : 'businessKey', label : '${i18n.get('业务主键')}', hidden : true, width : 90 ,sortable:true},
+						  { name : 'startTime', label : '${i18n.get('开始时间')}', width : 90 ,sortable:true,formatter:function(cellvalue, options){ return formatDate(cellvalue) }},
+						  { name : 'stayTime', label : '${i18n.get('停留时间')}', width : 90 ,sortable:true,formatter:function(cellvalue, options){ return formatDate(cellvalue) }}
+						  ]"
+						 buttons = "[
+					  		{
+					  			id:'view',
+					  			label : '${i18n.get('流程图')}',
+					  			icon : 'icon-trash',
+					  			own : true,
+					  			handler : function(e,rowData){
+					  				if(!selected_t1){
+					  					alert('${i18n.get('没有选中任何数据!')}'); 
+										return;
+									}
+									window.open('${ctx}/flow/history.html?taskId='+selected_t1.id+'&id='+selected_t1.businessKey);
+					  			}
+					  		},{
+					  			id:'assignee',
+					  			label : '${i18n.get('指定办理人')}',
+					  			icon : 'icon-trash',
+					  			own : true,
+					  			handler : function(e,rowData){
+					  				if(!selected_t1){
+					  					alert('${i18n.get('没有选中任何数据!')}'); 
+										return;
+									}
+									
+									var dialog = parent.dialog('${i18n.get('指定办理人')}','${ctx}/flow/assignee.html?taskId='+selected_t1.id,window);
+					  			}
+					  		},{
+					  			id:'close',
+					  			label : '${i18n.get('关闭流程')}',
+					  			icon : 'icon-trash',
+					  			own : true,
+					  			handler : function(e,rowData){
+					  				if(!selected_t1){
+										alert('${i18n.get('没有选中任何数据!')}'); 
+										return;
+									}
+									
+									bootbox.confirm('${i18n.get('你确定要删除这个正在运行的流程?')}', function(result) {
+										if(result) {
+											ajax({
+												type:'post',
+												url : '${ctx}/flow/closeProcess.html',
+												data: selected_t1,
+												success : function(result) {
+													reload_t1();
+												},
+												error : function(result) {
+													exalert(e,result);
+												}
+											});
+										}
+									});
+																		
+
+					  			}
+					  		}
+					  	]" 
+						>
+						<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">
+							<div class="form-group col-xs-3">
+								<input type="text" id="searchKey" name="title" placeholder='查询关键字' />
+							</div>	
+							<div class="form-group col-xs-2">
+								<button type="submit" class="btn btn-info" > 
+									<i class="icon-search bigger-110"></i>
+									${i18n.get('查询')}
+								</button>
+							</div>
+						</div>
+						</@form.table>
+					</td>
+				</tr>
+			</table>	
+		</div>
+</@pui.body>

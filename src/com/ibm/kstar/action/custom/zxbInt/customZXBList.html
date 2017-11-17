@@ -1,0 +1,115 @@
+<@pui.body>
+    <@form.table
+        id="tableCustomList"
+        class="col-xs-12"
+        title="${i18n.get('中信保买家代码申请')}"
+        url="${ctx}/customZXB/customListPage.html"
+        rowNum="5"
+        addURL="'${ctx}/customZXB/add.html'"
+        editURL="'${ctx}/customZXB/edit.html'"
+        deleteURL="'${ctx}/customZXB/delete.html'"
+        colModel="[
+					{name:'id',label:'ID',hidden:true,width:200,sortable:false,align:'center' },
+					{name:'corpSerialNo',label:'${i18n.get('流水号')}',hidden:false,width:100,sortable:false,align:'center' },
+					{name:'chnName',label:'${i18n.get('客户中文名称')}',hidden:false,width:200,sortable:false,align:'center' },
+					{name:'engName',label:'${i18n.get('客户英文名称')}',hidden:false,width:200,sortable:false,align:'center' },
+					{name:'apl_status_desc',label:'${i18n.get('申请状态')}',hidden:false,width:100,sortable:false,align:'center' },
+					{name:'apply_status',label:'${i18n.get('申请状态code')}',hidden:true,width:100,sortable:false,align:'center' },
+					{name:'app_status_desc',label:'${i18n.get('批复状态')}',hidden:false,width:100,sortable:false,align:'center' },
+					{name:'policyNo',label:'${i18n.get('保险单号')}',hidden:false,width:200,sortable:false,align:'center' },
+					{name:'createdAt',label:'${i18n.get('创建时间')} ',hidden:false,width:100,sortable:false,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+					{name:'appr_date',label:'${i18n.get('批复时间')}',hidden:false,width:100,sortable:false,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+					{name:'zxb_buyer_code',label:'${i18n.get('买家代码')}',hidden:false,width:100,sortable:false,align:'center' },
+					{name:'applicant',label:'${i18n.get('申请人')}',hidden:false,width:100,sortable:false,align:'center' },
+					{name:'applyTime',label:'${i18n.get('申请时间')}',hidden:false,width:100,sortable:false,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }
+					]"
+		onSelectRow= "function(selectedData){
+							var status = selectedData.apply_status;
+							switch (status){
+								case 'Drfat':
+								  $('#edit_tableCustomList').removeAttr('disabled');
+								  $('#delete_tableCustomList').removeAttr('disabled');
+								  $('#submit_tableCustomList').removeAttr('disabled');
+								  break;
+								case 'Sumited':
+								  $('#edit_tableCustomList').attr({'disabled':'true'});
+								  $('#delete_tableCustomList').attr({'disabled':'true'});
+								  $('#submit_tableCustomList').attr({'disabled':'true'});
+								  break;
+								case 'Responded':
+								  $('#edit_tableCustomList').attr({'disabled':'true'});
+								  $('#delete_tableCustomList').attr({'disabled':'true'});
+								  $('#submit_tableCustomList').attr({'disabled':'true'});
+								  break;
+							 }
+						}"
+		buttons = "[
+				{
+		  			id:'submit_tableCustomList',
+		  			label : '${i18n.get('提交申请')}',
+		  			icon : 'icon-ok',
+		  			own : true,
+		  			handler : function(e,rowData){
+		  					if(!selected_tableCustomList){
+								exalert(e,'${i18n.get('没有选中任何数据!')}');
+								return;
+							}
+							if('Drfat' !== selected_tableCustomList['apply_status']){
+								exalert(e,'${i18n.get('请选择申请状态为新建(Drfat)的信息记录')}');
+								return;
+							}
+							bootbox.confirm('${i18n.get('确定要提交申请单号')}：'+ selected_tableCustomList['corpSerialNo'] + ' ? ', function(res) {
+								if(res) {
+									ajax({
+										url: '${ctx}/customZXB/submit.html',
+										type: 'POST',
+										data: {id:selected_tableCustomList.id},
+										success : function(result) {
+											exalert(e,result);
+											reload_tableCustomList();
+										}
+									});
+								}
+							});
+						}
+		  		 },
+				
+		  		{ id:'copy_tableCustomList',
+		  			label : '${i18n.get('复制')}',
+		  			icon : 'icon-copy',
+		  			own : true,
+		  			handler : function(e,rowData){
+		  					if(!selected_tableCustomList){
+								exalert(e,'${i18n.get('没有选中任何数据!')}');
+								return;
+							}
+							bootbox.confirm('${i18n.get('确定要复制单号')}：'+ selected_tableCustomList['corpSerialNo'] + ' ? ', function(res) {
+						        if(res) {
+									ajax({
+										url: '${ctx}/customZXB/copy.html',
+										type: 'POST',
+										data: {id:selected_tableCustomList.id},
+										success : function(result) {
+											exalert(e,result);
+											reload_tableCustomList();
+										}
+									});
+								}
+              				});
+						}
+		  		 }
+			]">
+			
+        <div class="col-xs-12" style="padding-top: 20px;">
+            <div class="form-group col-xs-3">
+                <input type="text" id="searchKey" name="searchKey" placeholder="'${i18n.get('请输入流水号或者客户名称')}'" size="30"/>
+            </div>
+            <div class="form-group col-xs-2">
+                <button type="submit" class="btn btn-info">
+                    <i class="icon-search bigger-110"></i>
+                    	${i18n.get('查询')}
+                </button>
+            </div>
+        </div>
+    </@form.table>
+</@pui.body>
