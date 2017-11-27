@@ -1,0 +1,138 @@
+<@pui.body>
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="address"
+			success="function(){ alert('${i18n.get('保存成功')}！');parent.currentParent.reload_addressLst(); }" 
+			class="form-horizontal">
+				<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" > <strong style="color: red;">*</strong>${i18n.get('所属区域')}  ${i18n.get('国家')}: </label>
+			<@form.select 
+			code="ADDRESSREGION"
+			level="1"
+			childId="layer2"
+			id="layer1"  name="layer1" 
+			style="width: 250px"
+			placeholder="" 
+			tip="" 
+			value="${(contrAddr.layer1)!}"
+			required="${i18n.get('不能为空')}"
+			onChange="function(){
+				$('#layer2').val('');
+				$('#layer3').val('');
+				$('#layer4').val('');
+				reload_layer2();
+				reload_layer3();
+				reload_layer4();
+			}"
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" >${i18n.get('省份')} :</label>
+			<@form.select 
+			code="ADDRESSREGION"
+			level="2"
+			parentId="layer1"
+			childId="layer3"
+			style="width: 250px"
+			id="layer2" name="layer2" 
+			placeholder="" 
+			tip="" 
+			value="${(contrAddr.layer2)!}"
+			onChange="function(){
+				$('#layer3').val('');
+				$('#layer4').val('');
+				reload_layer3();
+				reload_layer4();
+			}"
+			/>
+		</div>
+		
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" >${i18n.get('城市')} :</label>
+			<@form.select 
+			code="ADDRESSREGION"
+			level="3"
+			parentId="layer2"
+			childId="layer4"
+			style="width: 250px"
+			id="layer3" name="layer3" 
+			placeholder="" 
+			tip="" 
+			value="${(contrAddr.layer3)!}"
+			onChange="function(){
+				$('#layer4').val('');
+				reload_layer4();
+			}"
+			/>
+		</div>
+		
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" >${i18n.get('区/县')} :</label>
+			<@form.select 
+			code="ADDRESSREGION"
+			level="4"
+			parentId="layer3"
+			style="width: 250px"
+			id="layer4" name="layer4" 
+			placeholder="" 
+			tip="" 
+			value="${(contrAddr.layer4)!}"
+			/>
+		</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for=""> ${i18n.get('发货地址')} : </label>
+					<@form.input
+					id="delivAddr"  name="delivAddr" 
+					placeholder="" 
+					tip="${i18n.get('发货地址')}" 
+					required="${i18n.get('不能为空')}！"
+					value="${(contrAddr.delivAddr)!}" 
+					/>
+				</div>		
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for=""> ${i18n.get('收货人')} : </label>
+					<@form.input
+					id="receiver"  name="receiver" 
+					placeholder="" 
+					tip="${i18n.get('收货人')}" 
+					required="${i18n.get('不能为空')}！"
+					value="${(contrAddr.receiver)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for=""> ${i18n.get('电话')} : </label>
+					<@form.input
+					id="phone"  name="phone" 
+					placeholder="" 
+					tip="${i18n.get('电话')}" 
+					required="${i18n.get('不能为空')}！"
+					value="${(contrAddr.phone)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for=""> ${i18n.get('备注')} : </label>
+					  
+					<@form.input
+					id="remark"  name="remark" 
+					placeholder="" 
+					tip="${i18n.get('备注')}" 
+					value="${(contrAddr.remark)!}" 
+					/>
+				</div>
+	
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+</@pui.body>

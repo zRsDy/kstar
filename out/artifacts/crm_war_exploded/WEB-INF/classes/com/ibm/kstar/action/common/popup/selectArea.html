@@ -1,0 +1,171 @@
+<#escape x as x?html>
+<@pui.body>
+
+<div class="row col-xs-12" style="width: 1000px;margin-right: 0px; margin-left: 0px;" >
+
+	<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" > ${i18n.get('区域 :')} </label>
+		<@form.select 
+		code="TERRITORY"
+		level="1"
+		childId="layer2"
+		id="layer1"  name="layer1" 
+		style="width: 250px"
+		placeholder=""
+		value="${(layerValue1)!}" 
+		tip="" 
+		onChange="function(){
+			$('#layer2').val('');
+			$('#layer3').val('');
+			$('#layer4').val('');
+			$('#layer5').val('');
+			$('#layer6').val('');
+			reload_layer2();
+			reload_layer3();
+			reload_layer4();
+			reload_layer5();
+			reload_layer6();
+		}"
+		/>
+	</div>
+	<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" ></label>
+		<@form.select 
+		code="TERRITORY"
+		level="2"
+		parentId="layer1"
+		childId="layer3"
+		style="width: 250px"
+		id="layer2" name="layer2" 
+		placeholder="" 
+		tip="" 
+		value="${(layerValue2)!}" 
+		onChange="function(){
+			$('#layer3').val('');
+			$('#layer4').val('');
+			$('#layer5').val('');
+			$('#layer6').val('');
+			reload_layer3();
+			reload_layer4();
+			reload_layer5();
+			reload_layer6();
+		}"
+		/>
+	</div>
+	
+	<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" ></label>
+		<@form.select 
+		code="TERRITORY"
+		level="3"
+		parentId="layer2"
+		childId="layer4"
+		style="width: 250px"
+		id="layer3" name="layer3" 
+		placeholder="" 
+		tip="" 
+		value="${(layerValue3)!}" 
+		onChange="function(){
+			$('#layer4').val('');
+			$('#layer5').val('');
+			$('#layer6').val('');
+			reload_layer4();
+			reload_layer5();
+			reload_layer6();
+		}"
+		/>
+	</div>
+	
+	<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" ></label>
+		<@form.select 
+		code="TERRITORY"
+		level="4"
+		parentId="layer3"
+		childId="layer5"
+		style="width: 250px"
+		id="layer4" name="layer4" 
+		placeholder="" 
+		tip="" 
+		value="${(layerValue4)!}" 
+		onChange="function(){
+			$('#layer5').val('');
+			$('#layer6').val('');
+			reload_layer5();
+			reload_layer6();
+		}"
+		/>
+	</div>
+	
+	<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" ></label>
+		<@form.select 
+		code="TERRITORY"
+		level="5"
+		parentId="layer4"
+		childId="layer6"
+		style="width: 250px"
+		id="layer5" name="layer5" 
+		placeholder="" 
+		tip="" 
+		value="${(layerValue5)!}" 
+		onChange="function(){
+			$('#layer6').val('');
+			reload_layer6();
+		}"
+		/>
+	</div>
+	
+	<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" ></label>
+		<@form.select 
+		code="TERRITORY"
+		level="6"
+		parentId="layer5"
+		style="width: 250px"
+		id="layer6" name="layer6" 
+		placeholder="" 
+		tip="" 
+		value="${(layerValue6)!}" 
+		/>
+	</div>
+
+	<div class="clearfix form-actions">
+		<div class="col-md-offset-5 col-md-7">
+			<button class="btn btn-info" id="selectOK" type="button">
+				<i class="icon-ok bigger-110"></i>
+				${i18n.get('选择')}
+			</button>
+			&nbsp; &nbsp; &nbsp;
+			<button class="btn" type="button" onclick="javascript:api.close()">
+				<i class="icon-undo bigger-110"></i>
+				${i18n.get('关闭')}
+			</button>
+		</div>
+	</div>
+</div>
+	
+<script type="text/javascript">
+
+$('#selectOK').click(function(){
+	
+	if ($("#layer6").val()){
+		parent.currentParent.${pickerId}_callback(JSON.parse($("#layer6 option:selected").attr('data')));
+	} else if ($("#layer5").val()){
+		parent.currentParent.${pickerId}_callback(JSON.parse($("#layer5 option:selected").attr('data')));
+	} else if ($("#layer4").val()){
+		parent.currentParent.${pickerId}_callback(JSON.parse($("#layer4 option:selected").attr('data')));
+	} else if ($("#layer3").val()){
+		parent.currentParent.${pickerId}_callback(JSON.parse($("#layer3 option:selected").attr('data')));
+	} else if ($("#layer2").val()){
+		parent.currentParent.${pickerId}_callback(JSON.parse($("#layer2 option:selected").attr('data')));
+	} else if ($("#layer1").val()){
+		parent.currentParent.${pickerId}_callback(JSON.parse($("#layer1 option:selected").attr('data')));
+	}
+	
+	api.close();
+});
+	
+</script>
+</@pui.body>
+</#escape>

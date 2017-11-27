@@ -1,0 +1,72 @@
+<#escape x as x?html>
+<@pui.body>
+
+<div class="row col-xs-12" style="width: 1000px;margin-right: 0px; margin-left: 0px;" >
+
+	<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" > 
+			<strong style="color: red;">*</strong>${i18n.get('大分类 : ')}
+		</label>
+		<@form.select 
+		code="CUSTOMCATEGORY"
+		level="1"
+		childId="layer2"
+		required="${i18n.get('不能为空')}" 
+		id="layer1"  name="layer1" 
+		style="width: 250px"
+		placeholder="" 
+		tip="" 
+		onChange="function(){
+			$('#layer2').val('');
+			reload_layer2();
+		}"
+		/>
+	</div>
+	<div class="form-group" >
+		<label class="col-sm-3 control-label no-padding-right" > 
+			<strong style="color: red;">*</strong>${i18n.get('小分类 :')}
+		</label>
+		<@form.select 
+		code="CUSTOMCATEGORY"
+		level="2"
+		parentId="layer1"
+		required="${i18n.get('不能为空')}" 
+		style="width: 250px"
+		id="layer2" name="layer2" 
+		placeholder="" 
+		tip="" 
+		/>
+	</div>
+
+	<div class="clearfix form-actions">
+		<div class="col-md-offset-5 col-md-7">
+			<button class="btn btn-info" id="selectOK" type="button">
+				<i class="icon-ok bigger-110"></i>
+				${i18n.get('选择')}
+			</button>
+			&nbsp; &nbsp; &nbsp;
+			<button class="btn" type="button" onclick="javascript:api.close()">
+				<i class="icon-undo bigger-110"></i>
+				${i18n.get('关闭')}
+			</button>
+		</div>
+	</div>
+</div>
+	
+<script type="text/javascript">
+
+$('#selectOK').click(function(){
+	if ($("#layer2").val()) {
+		parent.currentParent.${pickerId}_callback(JSON.parse($("#layer2 option:selected").attr('data')));
+		api.close();
+	} else if ($("#layer1").val()) {
+		alert('${i18n.get('请输入小分类！')}'); 
+	} else {
+		alert('${i18n.get('请输入大分类！')}'); 
+	}
+		
+});
+	
+</script>
+</@pui.body>
+</#escape>

@@ -1,0 +1,87 @@
+<@cui.body2>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1" success="function(){ parent.currentParent.reload_settle_2('${(settle.id)!}'); }" class="form-horizontal">	
+			<div align="center">
+				<table>
+					<tr>
+						<td align="right" width="100px">${i18n.get('抵扣单号 :')}</td>
+						<td width="280px">
+							<@form.input id="deductionCode" name="deductionCode" tip="${i18n.get('返利抵扣单据编号')}" readonly="true" value="${(settle.deductionCode)!}" />
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('客户名称 :')}</td>
+						<td width="280px">
+							<@form.autocomplete 
+								id="customId"
+								name="customId"
+								idKey='id'
+								placeholder="${i18n.get('请选择客户')}" 
+								required="${i18n.get('不能为空')}"
+								tip="${i18n.get('返利抵扣客户名称')}"
+								style="width:163px;"
+								url="function(){ return '${ctx}/lovcustom/autoCompleteCustomAll.html'; }"
+								formatResult="function(data) {return '<div >' +data.customFullName + '【' +data.customCode +'】 </div>';}"
+								value="${customInfo!'{}'}"
+							/>
+						</td>
+						<td align="right" width="100px"></td>
+						<td width="280px">
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">${i18n.get('抵扣金额 :')}</td>
+						<td width="280px">
+							<@form.number id="deductionMoney" name="deductionMoney" tip="${i18n.get('本次返利抵扣金额')}" readonly="true" value="${(settle.deductionMoney)!}" />
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('返利方式 :')}</td>
+						<td width="280px">
+							<@form.select style="width:163px;" id="rebateMode" name="rebateMode" tip="${i18n.get('返利结算方式')}" required="${i18n.get('不能为空')}" code="REBATEMODE" idKey='id' value="${(settle.rebateMode)!}" /> 
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('状态 :')}</td>
+						<td width="280px">
+							<input type="hidden" id="status" name="status" value="${(settle.status)!}" />
+							<@form.select id="uistatus" name="uistatus" style="width:163px;" tip="${i18n.get('申请状态')}" required="${i18n.get('不能为空')}" code="REBATESETTLESTATUS" idKey='id' value="${(settle.status)!}" />
+							<script type="text/javascript">
+		    	                $("#uistatus").attr("disabled","disabled")
+		                    </script>
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('货币  :')}</td>
+						<td width="280px">
+							<@form.select style="width:163px;" id="currency" name="currency" tip="${i18n.get('申请的结算货币')}" required="${i18n.get('不能为空')}" code="CURRENCY" idKey='id' value="${(settle.currency)!}" /> 
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('创建日期 :')}</td>
+						<td width="280px">
+							<@form.date id="createDate" name="createDate" format="yyyy-mm-dd" required="${i18n.get('不能为空')}" tip="${i18n.get('抵扣结算单的创建日期')}" value="${(settle.createDate?date)!}" />
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('组织 :')}</td>
+						<td width="280px">
+							<input type="hidden" name="organization" style="width:163px;" readonly="true" value="${(settle.organization)!}" />
+							<@form.input id="organizationName" name="organizationName" style="width:163px;" tip="${i18n.get('申请单创建的组织')}" readonly="true" value="${(settle.organizationName)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">${i18n.get('说明 :')}</td>
+						<td colspan="5">
+							<@form.textArea id="explain" style="width:923px;" name="explain" tip="${i18n.get('抵扣单据的备注说明')}" value="${(settle.explain)!}" />
+						</td>
+					</tr>
+				</table>
+			</div>	
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:frameElement.api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+	</@form.panel>
+</@cui.body2>

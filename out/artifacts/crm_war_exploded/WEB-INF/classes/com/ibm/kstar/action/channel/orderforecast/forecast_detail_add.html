@@ -1,0 +1,99 @@
+<@cui.body2>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1" success="function(){ parent.currentParent.reload_detail_2('${(detailInfo.id)!}'); }" class="form-horizontal">	
+			<div align="center" class="form-group">
+				<table>
+					<tr>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('产品系列 :')}</td>
+						<td width="320px">
+							<@form.select childId="productKind" id="productSeries" name="productSeries" style="width:163px;" required="${i18n.get('不能为空')}" tip="${i18n.get('销售预测产品的系列名称')}" viewKey="name" 
+								idKey='id' url="function(){return '${ctx}/orderForecast/selectProSeries.html'}" value="${(detailInfo.productSeries)!}" />
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('产品型号 :')}</td>
+						<td width="320px">
+							<@form.select parentId="productSeries" childId="materielCode" id="productKind" name="productKind" style="width:163px;" required="${i18n.get('不能为空')}" tip="${i18n.get('销售预测产品的型号')}"
+								 viewKey="name" idKey='id' url="function(){return selectProModel()}" value="${(detailInfo.productKind)!}" />
+						</td>
+						<#if isDealer == 'true'>
+						<td align="right" width="120px"></td>
+						<td width="320px">
+							<input type="hidden" id="materielCode" name="materielCode" value="${(detailInfo.materielCode)!}" />
+						</td>
+						<#else>
+						<td align="right" width="120px">${i18n.get('物料号 :')}</td>
+						<td width="320px">
+							<@form.select parentId="productKind" id="materielCode" name="materielCode" style="width:163px;" tip="${i18n.get('销售预测产品物料号')}"
+							 viewKey="name" idKey='id' url="function(){return selectMaterCode()}" value="${(detailInfo.materielCode)!}" />
+						</td>
+						</#if>
+					</tr>
+					<tr>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('客户 :')}</td>
+						<td width="320px">
+							<@form.autocomplete 
+								id="customer"
+								name="customer"
+								idKey='id'
+								required="${i18n.get('不能为空')}"
+								placeholder="${i18n.get('请选择客户')}"
+								tip="${i18n.get('销售预测的客户名称')}"
+								style="width:163px;"
+								url="function(){ return '${ctx}/lovcustom/autoCompleteCustomAll.html'; }"
+								formatResult="function(data) {return '<div >' +data.customFullName + '【' +data.customCode +'】 </div>';}"
+								value="${customInfo!'{}'}"
+							/>
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('第一周数量 :')}</td>
+						<td width="320px">
+							<@form.number id="firstWeekQuantity" name="firstWeekQuantity" style="width:163px;" tip="${i18n.get('第一周销售预测下单数量')}" required="${i18n.get('不能为空')}" value="${(detailInfo.firstWeekQuantity)!}" />
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('第二周数量 :')}</td>
+						<td width="320px">
+							<@form.number id="secondWeekQuantity" style="width:163px;" name="secondWeekQuantity" tip="${i18n.get('第二周销售预测下单数量')}" required="${i18n.get('不能为空')}" value="${(detailInfo.secondWeekQuantity)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('第三周数量 :')}</td>
+						<td width="320px">
+							<@form.number id="thirdWeekQuantity" name="thirdWeekQuantity" style="width:163px;" tip="${i18n.get('第三周销售预测下单数量')}" required="${i18n.get('不能为空')}" value="${(detailInfo.thirdWeekQuantity)!}" />
+						</td>
+						<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('第四周数量 :')}</td>
+						<td width="320px">
+							<@form.number id="fourthWeekQuantity" name="fourthWeekQuantity" style="width:163px;" tip="${i18n.get('第四周销售预测下单数量')}" required="${i18n.get('不能为空')}" value="${(detailInfo.fourthWeekQuantity)!}" />
+						</td>
+						<td align="right" width="120px">
+						</td>
+						<td width="320px">
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<#if !detailInfo?? || !detailInfo.id?? || statusEdit>
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					</#if>
+					<button class="btn" type="button" onclick="javascript:frameElement.api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+	</@form.panel>
+</@cui.body2>
+<script type="text/javascript">
+function selectProModel(){
+	var proSeries = $("#productSeries").val();
+	return '${ctx}/orderForecast/selectProModel.html?proSeries='+proSeries;
+}
+function selectMaterCode(){
+	var proModel = $("#productKind").val();
+	return '${ctx}/orderForecast/selectMaterCode.html?proModel='+proModel;
+}
+</script>

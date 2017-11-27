@@ -1,0 +1,283 @@
+<@pui.body> 
+	<script type="text/javascript">
+		parent.currentDatas = ${epositions!"[]"};
+	</script>
+	<div class="row">
+	<div class="col-xs-12" >
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1"
+			success="function(){ 
+				try{
+					parent.currentParent.reload_employeeList();
+				}catch(e){
+					try{parent.currentParent2.reload_employeeList();}catch(e){}
+				}
+			}"
+			
+			before="function(){
+				var positions='';
+			 	var selectedIds = $('#selected_table').jqGrid('getDataIDs');
+		 		$.each(selectedIds,function(i,id){
+		 			positions = positions + id;
+			 		if(i< selectedIds.length-1){
+			 			positions = positions + ',';
+			 		}
+			 		$('#positions').val(positions);
+		 		})
+		 		
+			}"
+			class="form-horizontal"
+			>
+			
+			<div class="form-group">
+				<label class="col-sm-3 control-label no-padding-right" for="code"> <strong style="color: red;">*</strong>${i18n.get('公司邮箱:')} </label>
+			<#if employee??>
+				<@form.input 
+				id="email"
+				name="email"
+				placeholder="${i18n.get('公司邮箱')}" 
+				required="${i18n.get('不能为空！')}" 
+				
+				value="${(employee.email)!}"
+				/>
+			<#else>
+				<@form.input 
+				id="email"
+				name="email"
+				placeholder="${i18n.get('公司邮箱')}" 
+				required="${i18n.get('不能为空！')}" 
+				value="${(employee.email)!}"
+				/>
+			</#if>
+			</div>
+			
+			<#if employee??>
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right" for="code"> <strong style="color: red;">*</strong>${i18n.get('员工号:')} </label>
+					<@form.input 
+					id="no"
+					name="no"
+					placeholder="${i18n.get('员工号')}" 
+					required="${i18n.get('不能为空！')}"
+					
+					value="${(employee.no)!}"
+					/>
+				</div>	
+			<#else>
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right" for="code"> <strong style="color: red;">*</strong>${i18n.get('员工号:')} </label>
+					<@form.input 
+					id="no"
+					name="no"
+					placeholder="${i18n.get('员工号')}" 
+					required="${i18n.get('不能为空！')}" 
+					value="${(employee.no)!}"
+					/>
+				</div>	
+			</#if>
+			
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" for="desc"> <strong style="color: red;">*</strong>${i18n.get('姓名:')} </label>
+				<#if employee??>
+					<@form.input 
+					id="name" 
+					name="name" 
+					placeholder="${i18n.get('姓名')}" 
+					required="${i18n.get('不能为空！')}" 
+					
+					value="${(employee.name)!}"
+					/>
+				<#else>
+					<@form.input 
+					id="name" 
+					name="name" 
+					placeholder="${i18n.get('姓名')}" 
+					required="${i18n.get('不能为空！')}" 
+					value="${(employee.name)!}"
+					/>
+				</#if>
+			</div>
+
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" for="desc"> <strong style="color: red;">*</strong>${i18n.get('性别:')} </label>
+				<#if employee??>
+				<@form.select
+					id="gender"
+					name="gender"
+					style="width:100px;"
+					viewKey="name"
+					idKey='code'
+					code ='GENDER'
+					required="${i18n.get('不能为空！')}"
+					
+					value="${(employee.gender)!}" />
+				<#else>
+					<@form.select
+					id="gender"
+					name="gender"
+					style="width:100px;"
+					viewKey="name"
+					idKey='code'
+					code ='GENDER'
+					required="${i18n.get('不能为空！')}"
+					value="${(employee.gender)!}" />
+				</#if>
+			</div>
+			
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" for="desc"> <strong style="color: red;">*</strong>${i18n.get('失效日期:')} </label>
+				<@form.date 
+				id="endDate" 
+				name="endDate" 
+				placeholder="${i18n.get('失效日期')}" 
+				required="${i18n.get('不能为空！')}" 
+				value="${(employee.endDate)!}"
+				/>
+			</div>
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" for="desc"> ${i18n.get('职位路径:')} </label>
+				<div class="col-sm-9" id="positionsHTML"></div>
+			</div>
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" for="desc"> ${i18n.get('职位:')} </label>
+				<input type="hidden" id="positions" name="positions" />
+				<@biz.picker_lov id="picker_position" groupId="ORG" defaultSelect="parent.currentDatas" button="${i18n.get('选择职位')}" callback="function(datas){
+				 	if(datas){
+				 		debugger;
+				 		if(datas.length > 1){
+				 			$.each(datas,function(i,d){
+				 				if(d.optTxt3 == 'E'){
+				 					return;
+				 				}
+				 			})
+				 		}
+				 		parent.currentDatas = datas;
+				 		$('#selected_table').jqGrid('clearGridData');
+					 	$('#selected_table').jqGrid('setGridParam',{data:datas}).trigger('reloadGrid');
+					 	var html ='';
+						$.each(parent.currentDatas,function(i,data){
+					 		html = html + '<p><label> '+data.namePath+' </label></p>';
+						})
+						$('#positionsHTML').html(html);
+						if(datas.length>0 && datas[0].optTxt3 == 'E'){
+							$('.customer').show();
+							$.ajax({
+								type : 'POST',
+								url : '${ctx}/employee/getCustomer.html',
+								data : 'id='+datas[0].optTxt4,
+								dataType : 'json',
+								success : function(msg) {
+									var data = msg.message;
+									$('#customerName').val(data.customFullName);
+									$('#customerId').val(data.id);
+									reload_keyContact('${(employee.contactId)!}');
+								} 
+							});
+						}else{
+							$('.customer').hide();
+						}
+				 	}
+				}" />
+			</div>
+			
+			<div class="form-group customer" style="display:none">
+				<label class="col-sm-3 control-label no-padding-right" for="desc"> ${i18n.get('员工类型:')} </label>
+				<div class="col-sm-9" > 
+					<input type="text" readonly="readonly" value="代理商" />
+				</div>
+			</div>
+			
+			<div class="form-group customer" style="display:none">
+				<label class="col-sm-3 control-label no-padding-right" for="desc"> ${i18n.get('归属客户:')} </label>
+				<div class="col-sm-9"  > 
+					<input type="text" id="customerName" readonly="readonly" value="" />
+					<input type="hidden" id="customerId" readonly="readonly" value="" />
+				</div>
+			</div>
+			
+			<div class="form-group customer" style="display:none">
+				<label class="col-sm-3 control-label no-padding-right" for="desc"> ${i18n.get('联系人:')} </label>
+				<div class="col-sm-9"  > 
+					<@form.select
+		             	id="keyContact" name="contactId"
+		             	viewKey='contactName'
+					    style="width: 200px;"
+		                url="function(){
+		             	return '${ctx}/lovcustom/select_contact.html?customId='+$('#customerId').val();
+		                }"
+		                
+		                value="${(employee.contactId)!}"
+		              />					
+				</div>
+			</div>
+			
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button" >
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+		</div>
+		</div>
+		
+	<div class="row" style="display:none ;">
+		<div class="col-xs-12" >
+			<@form.panel title="${i18n.get('新增/编辑')}" id="selected_table_width">
+			<@form.table id="selected_table"
+					shrinkToFit = 'true'
+					title="${i18n.get('已选数据')}"
+					class="col-xs-12"
+					rowNum = "20"
+					search='false' 
+					data = "parent.currentDatas"
+					datatype = "local"
+					colModel = "[
+					  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:false,align:'center' }, 
+					  { name : 'code', label : '${i18n.get('编码')}', width : 90 ,sortable:false}, 
+					  { name : 'name', label : '${i18n.get('名称')}' ,sortable:false },
+					   { name : 'namePath', label : '${i18n.get('路径')}' ,sortable:false }
+					  ]"
+					 buttons = "[]"
+					/>		
+			</@form.panel>
+		</div>
+</div>
+	
+	
+	<script type="text/javascript">
+		var html = "";
+		$.each(parent.currentDatas,function(i,data){
+	 		html = html + '<p><label> '+data.namePath+' </label></p>';
+	 		$('#positionsHTML').html(html);
+	 		debugger;
+	 		if(data.optTxt3 == 'E'){
+	 			$('.customer').show();
+				$.ajax({
+					type : 'POST',
+					url : '${ctx}/employee/getCustomer.html',
+					data : 'id='+data.optTxt4,
+					dataType : 'json',
+					success : function(msg) {
+						var data = msg.message;
+						$('#customerName').val(data.customFullName);
+						$('#customerId').val(data.id);
+						reload_keyContact('${(employee.contactId)!}');
+					} 
+				});
+	 		}else{
+	 			$('#customer').hide();
+	 		}
+	 		
+		})
+	</script>
+	
+</@pui.body>

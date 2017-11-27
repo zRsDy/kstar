@@ -1,0 +1,73 @@
+<@pui.body>
+	<div class="col-xs-12">
+			<table style="width: 100%" >
+				<tr>
+					<td id="treeTd" style="width: 300px" valign="top" rowspan="2">
+						<@form.panel title="${i18n.get('维度树')}" style='height:100'>
+							<@plug.tree 
+							checkbox="true" 
+							id="tree1" 
+							moveEdit = 'true'
+							chkboxType="{ 'Y' : 's',  'N' : '' }"
+							asyncUrl='${ctx}/lov/member/selectPriceOrgTree.html?groupId=ORG'
+						  	dataFilter="function(data){
+						  		if(data.leafFlag == 'Y'){
+						  			data.icon = '${ctx}/assets/css/zTreeStyle/img/diy/3.png'
+						  			if(data.optTxt2 == 'Y'){
+						  				data.icon = '${ctx}/assets/css/zTreeStyle/img/diy/5.png'
+						  			}
+						  		}
+						  		return data;
+						  	}"
+						  	isParent="function(data){
+						  		return data.leafFlag == 'Y';
+						  	}"
+							/>
+						</@form.panel>
+					</td>
+				</tr>
+			</table>	
+			<div style="padding-center: 20px;width:100%;height:30px;text-align:center;" >
+				<button class="btn btn-info submit" type="button" onclick="selectData()">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('选择')}
+				</button>
+				&nbsp; &nbsp; &nbsp;
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+<script type="text/javascript">
+function selectData() {
+	var selected_data = {};
+	var treeObj = $.fn.zTree.getZTreeObj('tree1');
+	var nodes = treeObj.getCheckedNodes();
+	var length = nodes.length;
+	var optTxt3 = '';
+	$.each(nodes,function(i,item){
+		if(length>0){
+			if(typeof(selected_data.id)=="undefined"||typeof(selected_data.name)=="undefined"){
+				selected_data.id = item.id;
+				selected_data.name = item.name;
+				selected_data.optTxt3 = item.optTxt3;
+			}else{
+				selected_data.id = selected_data.id+','+item.id;
+				selected_data.name = selected_data.name+','+item.name;
+				selected_data.optTxt3 = item.optTxt3;
+			}
+			if(optTxt3 == 'A'){
+				selected_data.optTxt3 = optTxt3;
+			}
+		}
+		if(item.optTxt3 == 'A'){
+			optTxt3 = selected_data.optTxt3;
+		}
+		length = length-1;
+	});
+	parent.currentParent.${pickerId}_callback(selected_data);
+	api.close();
+}
+</script>
+</@pui.body>

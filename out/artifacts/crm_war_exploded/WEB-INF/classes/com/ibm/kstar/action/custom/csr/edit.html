@@ -1,0 +1,150 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="satInvestForm" success="function(){ parent.currentParent.reload_satInvestList(); }" class="form-horizontal" >
+		
+		<div class="form-group">	
+			<div class="col-md-offset-7 col-md-4">
+				<button class="btn btn-info submit" id="save" type="button">
+					<i class="bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				<!-- <button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button> -->
+				
+			</div>
+		</div>
+		
+		<div class="form-group" >
+			<table>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('季度')} : </label>
+					</td>
+					<td >
+						<@form.input id="investQuarter" name="investQuarter" placeholder="" required="${i18n.get('不能为空！')}" readonly="readonly"
+								tip="" value="${(customSatInvest.investQuarter)!}" />
+					</td>
+					
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('申请人')} : </label>
+					</td>
+					<td >
+						<input id="createEmployee" name="createEmployee" type="hidden" value="${(customSatInvest.createEmployee)!}" >
+						<@form.input id="createEmployeeName" name="createEmployeeName" placeholder="" required="${i18n.get('不能为空！')}" readonly="readonly"
+								tip="" value="${(customSatInvest.createEmployeeName)!}" />
+					</td>
+					
+					<td align="right" width="200px">
+						<label class="no-padding-right" >  ${i18n.get(' 申请时间 ')}: </label>
+					</td>
+					<td >
+						<@form.input id="createDate" name="createDate" placeholder="" required="${i18n.get('不能为空！')}" readonly="readonly"
+								tip="" value="${(customSatInvest.createDate)!}" />
+					</td>
+					
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('申请编码')} : </label>
+					</td>
+					<td >
+						<@form.input id="investCode" name="investCode" placeholder="" required="${i18n.get('不能为空！')}" readonly="readonly"
+								tip="" value="${(customSatInvest.investCode)!}" />
+					</td>
+					
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('负责人')}: </label>
+					</td>
+					<td >
+						<input id="principal" name="principal" type="hidden" value="${(customSatInvest.principal)!}" >
+						<input id="principalName" name="principalName" readonly="readonly" value="${(customSatInvest.principalName)!}" >
+					</td>
+					
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('办事处区域行业')} : </label>
+					</td>
+					<td >
+						<input id="areaOrIndustry" name="areaOrIndustry" type="hidden" value="${(customSatInvest.areaOrIndustry)!}" >
+						<@form.input id="areaOrIndustryPathName" name="areaOrIndustryPathName" placeholder="" required="${i18n.get('不能为空！')}" 
+								readonly="readonly" tip="" value="${(customSatInvest.areaOrIndustryPathName)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('流程 ')} : </label>
+					</td>
+					<td >
+						<input id="procStatusCd" name="procStatusCd" type="hidden" value="${(customSatInvest.procStatusCd)!}" >
+						<@form.input id="procStatusCdName" name="procStatusCdName" placeholder="" required="${i18n.get('不能为空！')}" 
+								readonly="readonly" tip="" value="${(customSatInvest.procStatusCdName)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('服务态度')}: </label>
+					</td>
+					<td>
+						<@form.select id="serviceAttitude" name="serviceAttitude" style="width:260px;" code="serviceEval" required="${i18n.get('不能为空！')}" idKey='id' value="${(customSatInvest.serviceAttitude)!}" />
+
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('服务态度改进')}: </label>
+					</td>
+					<td colspan="3">
+						<@form.textArea id="serviceAttitudeImprove" name="serviceAttitudeImprove" width="100%" height="2" value="${(customSatInvest.serviceAttitudeImprove)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('业务能力')}: </label>
+					</td>
+					<td >
+						<@form.select id="businessAbility" name="businessAbility" style="width:260px;" code="serviceEval" required="${i18n.get('不能为空！')}" idKey='id' value="${(customSatInvest.businessAbility)!}" />
+
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('业务能力改进')}: </label>
+					</td>
+					<td colspan="3">
+						<@form.textArea id="businessAbilityImprove" name="businessAbilityImprove" width="100%" height="2" value="${(customSatInvest.businessAbilityImprove)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('工作配合程度')}: </label>
+					</td>
+					<td >
+						<@form.select id="cooperateAttitude" name="cooperateAttitude" style="width:260px;" code="serviceEval" required="${i18n.get('不能为空！')}" idKey='id' value="${(customSatInvest.cooperateAttitude)!}" />
+
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >  ${i18n.get('工作配合程度改进')}: </label>
+					</td>
+					<td colspan="3">
+						<@form.textArea id="cooperateAttitudeImprove" name="cooperateAttitudeImprove" width="100%" height="2" value="${(customSatInvest.cooperateAttitudeImprove)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px" >
+						<label class="no-padding-right" > ${i18n.get('销售对客服的合理化建议')} : </label>
+					</td>
+					<td colspan="4" >
+						<@form.textArea id="salesmanAdvice" name="salesmanAdvice" width="100%" height="2" value="${(customSatInvest.salesmanAdvice)!}" />
+					</td>
+				</tr>
+			</table>
+			
+		</div>
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+	</@form.form>
+	</@form.panel>
+</@pui.body>
+
+<script type="text/javascript">
+
+</script>
+</#escape>

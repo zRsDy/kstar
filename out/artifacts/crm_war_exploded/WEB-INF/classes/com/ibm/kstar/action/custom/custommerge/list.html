@@ -1,0 +1,51 @@
+<#escape x as x?html>
+<@pui.body>
+<#if permission["P02CusMergeListAdd"]?? >
+	<#assign addMergeURL = "'${ctx}/custom/merge/add.html'"   />
+</#if>
+
+<#if permission["P02CusMergeListEdit"]??>
+	<#assign editMergeURL= "'${ctx}/custom/merge/edit.html'"  />
+</#if>
+
+<#if permission["P02CusMergeListDelete"]??>
+	<#assign deleteMergeURL = "'${ctx}/custom/merge/delete.html'"   />
+</#if>
+<@form.table id="tableMergeList" 
+class="col-xs-12"
+height="131px"
+title="${i18n.get('客户合并一览')}" 
+url = "${ctx}/custom/merge/page.html" 
+rowNum = "5" 
+addURL = "${addMergeURL!}"
+editURL = "${editMergeURL!}"
+deleteURL= "${deleteMergeURL!}" 
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+	{name:'mergeCode',label:'${i18n.get('合并编号')}',hidden:false,width:160,sortable:false,align:'center' },
+	{name:'customCodeFrm',label:'${i18n.get('重复客户编号')}',hidden:false,width:160,sortable:false,align:'center' },
+	{name:'customNameFrm',label:'${i18n.get('重复客户名称')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'customCodeTo',label:'${i18n.get('合并至客户编号')}',hidden:false,width:160,sortable:false,align:'center' },
+	{name:'customNameTo',label:'${i18n.get('合并至客户名称')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'mergeReasonGrid.name',label:'${i18n.get('合并原因')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'applierName',label:'${i18n.get('用户')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'mergeStatusName',label:'${i18n.get('状态')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'mergeDate',label:'${i18n.get('合并日期')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'mergeErpFlgGrid.name',label:'${i18n.get('ERP已合并')}',hidden:false,width:100,sortable:false,align:'center' }
+	]" 
+	> 
+	<div class="col-xs-12" style="padding-top: 20px;">
+		<div class="form-group col-xs-3">
+		<input type="text" id="searchKey" name="searchKey" placeholder='${i18n.get('查询关键字')}' size="30" />
+		</div>	
+		<div class="form-group col-xs-2">
+			<button type="submit" class="btn btn-info" > 
+				<i class="icon-search bigger-110"></i>
+				${i18n.get('查询')}
+			</button>
+		</div>
+	</div>
+</@form.table> 
+
+</@pui.body>
+</#escape>

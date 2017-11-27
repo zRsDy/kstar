@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>客户关系管理平台-登录</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Page-Exit" content="blendTrans(Duration=1.0)" />
+<link rel="stylesheet" href="kstar/css/reset.css" />
+<link rel="stylesheet" href="kstar/css/base.css" />
+<link rel="stylesheet" href="kstar/css/logon.css" />
+
+<script type="text/javascript" src="default/js/jquery/jquery-1.8.2.js">&#160;</script>
+<script type="text/javascript" charset="UTF-8">
+       if(top!=window){
+           top.location = window.location;
+       }
+	
+	   $(document).ready(function() {
+		   $("#loginForm").submit(function(){
+			   if ($.trim($("#j_username").val()) == "" || $.trim($("#j_password").val()) == "") {
+				   $("#error").html("用户名和密码都不能为空白").show();
+				   return false;
+			   }
+			   return true;
+		   });
+		   
+	   });
+		function doReset() {
+			$("#error").hide();
+		}
+	</script>
+<!--[if IE 6]>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/default/js/belatedPNG.js" ></script>
+	<script type="text/javascript">DD_belatedPNG.fix('div,a,a:hover,input'); </script>
+	<![endif]-->
+</head>
+
+<body>
+	<div id="logon">
+		<div id="logonheader">
+			<b>&#160;</b>
+		</div>
+		
+		<!-- flash start -->
+		<div id="loginflash">
+			<div id="YNews">
+				<dl>
+					<dt>
+						<a href="####"><img src="kstar/images/img1.jpg" /></a>
+					</dt>
+				</dl>
+				<dl>
+					<dt>
+						<a href="####"><img src="kstar/images/img2.jpg" /></a>
+					</dt>
+				</dl>
+				<p id="YNIndex">
+					<a href="####" class="current"></a><a href="####"></a>
+				</p>
+			</div>
+			<div id="logon_wrap">
+				<form action="/crm/main.html" id="loginForm" name="loginForm" method="post">
+					<div id="error" style="display: none">&#160;</div>
+					<ul>
+						<li><span class="logon_user"><input value="" id="j_username" name="j_username" type="text" class="input_user" size="24"></span></li>
+						<li><span class="logon_password"><input value="" id="j_password" name="j_password" type="password" class="input_password" size="24"></span></li>
+					</ul>
+					<div class="btn_padding">
+						<input type="submit" value="" class="btn btn_login btn_margin">
+					</div>
+				</form>
+			</div>
+		</div>
+		<div id="logonfooter">
+			<span style="width: 405px;"></span>
+		</div>
+	</div>
+	<script type="text/javascript" src="default/js/slide.js">&#160;</script>
+	<script language="javascript" type="text/javascript">
+  YAO.YTabs({
+		  tabs: YAO.getEl('YNIndex').getElementsByTagName('a'),
+		  contents: YAO.getEl('YNews').getElementsByTagName('dl'),
+		  auto: true,
+		  fadeUp: true
+  });
+</script>
+</body>
+</html>

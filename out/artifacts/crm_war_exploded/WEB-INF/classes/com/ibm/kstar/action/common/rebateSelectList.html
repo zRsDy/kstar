@@ -1,0 +1,76 @@
+<@pui.body>
+<div class="row col-xs-12" style="width: 1000px;margin-right: 0px; margin-left: 0px;" >
+
+<table style="width: 1000px">
+<tr>
+<td style="width: 1000px">
+<@form.table id="all_table" 
+	class="col-xs-12"
+	title="${i18n.get('特价列表')}" 
+	url = "${ctx}/common/rebate/page.html" 
+	rowNum = "10" 
+	search = "true"
+	colModel = "[
+		    {name:'id',label:'${i18n.get('特价申请行ID')}',hidden:true,width:100,sortable:true,align:'center' },
+	        {name:'no',label:'${i18n.get('申请单号')}',hidden:false,width:150,sortable:true,align:'center' },
+	        {name:'type',label:'${i18n.get('申请类型')}',hidden:false,width:150,sortable:true,align:'center' },
+	        {name:'applyAgent',label:'${i18n.get('申请代理商')}',hidden:true,width:200,sortable:true,align:'center' },
+	        {name:'applyAgentName',label:'${i18n.get('申请代理商')}',hidden:false,width:200,sortable:true,align:'center' },
+		    {name:'rebateId',label:'${i18n.get('特价申请id')}',hidden:true,width:100},
+		    {name:'productId',label:'${i18n.get('产品id')}',hidden:true,width:100},
+		    {name:'productName',label:'${i18n.get('产品名称')}',hidden:false,width:150,sortable:true,align:'center' },
+		    {name:'productModel',label:'${i18n.get('产品型号')}',hidden:false,width:150,sortable:true,align:'center' },
+		    {name:'productCode',label:'${i18n.get('产品型号')}',hidden:true,width:150,sortable:true,align:'center' },
+		    {name:'productType',label:'${i18n.get('产品型号')}',hidden:true,width:150,sortable:true,align:'center' },
+		    {name:'applyQty',label:'${i18n.get('申请数量')}',hidden:false,width:100,sortable:true,align:'center' },
+		    {name:'orderQty',label:'${i18n.get('已下单数量')}',hidden:false,width:100,sortable:true,align:'center' },
+		    {name:'sourcePrice',label:'${i18n.get('公开价格')}',hidden:false,width:100,sortable:true,align:'center' },
+		    {name:'applyRebate',label:'${i18n.get('代理商申请折扣(%)')}',hidden:false,width:100,sortable:true,align:'center' },
+		    {name:'approveRebate',label:'${i18n.get('批复折扣(%)')}',hidden:false,width:100,sortable:true,align:'center' },
+		    {name:'approvePrice',label:'${i18n.get('产品执行价格')}',hidden:false,width:100,sortable:true,align:'center' },
+		    {name:'bizName',label:'${i18n.get('商机名称')}',hidden:false,width:300,sortable:true,align:'center' },
+		    {name:'bizId',label:'${i18n.get('商机Id')}',hidden:true,width:100,sortable:true,align:'center' },
+		    {name:'clientId',label:'${i18n.get('终端用户Id')}',hidden:true,width:100,sortable:true,align:'center' },
+		    {name:'clientName',label:'${i18n.get('终端用户名称')}',hidden:false,width:100,sortable:true,align:'center' },
+		    {name:'startDate',label:'${i18n.get('生效时间')}',hidden:false,width:100,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+		    {name:'endDate',label:'${i18n.get('失效时间')}',hidden:false,width:100,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+		    {name:'remark',label:'${i18n.get('备注')}',hidden:false,width:300,sortable:true,align:'center'}
+		]"
+		buttons = "[]" 
+		onSelectRow = "function(data,status){
+		 	if(status){
+		 		selectedData = data ;
+		 	}
+		 }"
+		>
+		
+		<input type="hidden" id="customerId" name="customerId" value="${(customerId)!}"/>
+		<input type="hidden" id="productId" name="productId" value="${(productId)!}"/>
+	</@form.table> 
+</td>
+</tr>
+</table>
+
+<div class="clearfix form-actions">
+	<div class="col-md-offset-5 col-md-7">
+		<button class="btn btn-info" id="selectOK" type="button" >
+			<i class="icon-ok bigger-110"></i>
+			${i18n.get('选择')}
+		</button>
+		&nbsp; &nbsp; &nbsp;
+		<button class="btn" type="button" onclick="javascript:api.close()">
+			<i class="icon-undo bigger-110"></i>
+			${i18n.get('关闭')}
+		</button>
+	</div>
+</div>
+<script type="text/javascript">
+	var selectedData ;
+	$('#selectOK').click(function(){
+		selectedData = $('#all_table').jqGrid('getRowData',selectedData.id);
+		parent.currentParent.${pickerId}_callback(selectedData);
+		api.close();
+	})
+</script>
+</div>
+</@pui.body>

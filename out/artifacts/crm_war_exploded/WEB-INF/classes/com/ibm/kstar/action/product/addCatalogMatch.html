@@ -1,0 +1,170 @@
+<@pui.body nav1="${i18n.get('目录映射关系')}" nav2="${i18n.get('新增/编辑')}" type="popup">
+
+
+<div class="col-xs-12">
+
+    <@form.form id="t3" success="function(){
+            parent.reload_t1();
+        }" class="form-horizontal">
+        <div class="hr hr-18 dotted hr-double"></div>
+        <input type="hidden" id="directID" name="directID" value="${(cmb.directID)!}">
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="directName">${i18n.get('目录名称')} : </label>
+            <@form.input id="directName"  readonly="readOnly" style="width:210px;" name="directName" placeholder="" required="${i18n.get('不能为空')}" tip="" value="${(cmb.directName)!}" />
+        </div>
+
+        <div class="form-group crmCategory">
+            <label class="col-sm-3 control-label no-padding-right" for="">
+                <strong style="color: red;">*</strong>${i18n.get('CRM产品类别')} :
+            </label>
+            <@form.select id="crmCategory" name="crmCategory" multiple="true" required="${i18n.get('请选择CRM产品类别')}" style="width:163px;" code="crmCategory" idKey='code' value="${(cmb.crmCategory)!}" style="width:210px;"
+                    onChange="function(){crmCategoryChange();}"/>
+        </div>
+
+        <div class="form-group cproCategory">
+            <label class="col-sm-3 control-label no-padding-right" for="">
+                ${i18n.get('产品分类')}:
+            </label>
+            <@form.select id="cproCategory" name="cproCategory" style="width:210px;" viewKey="id" viewKey2="" idKey='id' url="function(){return '${ctx}/product/catalog/selectCCategory.html'}" value="${(cmb.cproCategory)!}" style="width:210px;"/>
+        </div>
+
+        <div class="form-group proModel">
+            <label class="col-sm-3 control-label no-padding-right" for="">${i18n.get('产品型号')} :</label>
+            <div class="proModel-content">
+
+            </div>
+            <div class="proModel-template">
+                <div class="proModel-select">
+                    <@form.autocomplete  id="proModel" name="proModel"  idKey='name' style="width: 210px;" formatResult="function(data) {return '<div >' +data.name + '</div>';}"
+                    url="function(){ return selectModel(); }"
+                    value="{name:'${cmb.proModel!''}'}" placeholder="${i18n.get('请选择产品型号')}"
+                    />
+                </div>
+                <div class="proModel-input">
+                    <@form.input id="proModel" name="proModel" style="width:210px;" placeholder="" value="${(cmb.proModel)!}" />
+                </div>
+            </div>
+            <#--<@form.select id="proModel" name="proModel" parentId="cproCategory" style="width:210px;" viewKey="id" viewKey2="" idKey='id' url="function(){ return selectModel()} " value="${(cmb.proModel)!}" style="width:210px;"/>-->
+        </div>
+
+
+
+        <div class="form-group department">
+            <label class="col-sm-3 control-label no-padding-right" for="">${i18n.get('部门')} :</label>
+            <@form.input id="departmentName"  name="" readonly="readOnly" style="width:210px;"  placeholder="${i18n.get('请选择部门')}" tip="" value="${(cmb.departmentName)!}" />
+            <@form.input id="department" type="hidden"  readonly="readOnly" name="department"  tip="" value="${(cmb.department)!}" />
+            <script>
+                $(function () {
+                    $("#departmentName").click(function () {
+                        window.selectDepartmentCallBack = function (selectId, selectName) {
+                            $("#departmentName").val(selectName);
+                            $("#department").val(selectId);
+                        };
+                        parent.dialog('${i18n.get('选择部门')}', '${ctx}/product/catalog/selectDepartment.html', window);
+                    })
+                });
+            </script>
+        </div>
+
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="startTime"><strong style="color: red;">*</strong>${i18n.get('有效期开始时间')}
+                :</label>
+            <@form.date id="startTime"  required="${i18n.get('不能为空')}" name="startTime" style="width:210px;"  placeholder="${i18n.get('有效期开始时间')}" tip="" value="${(cmb.startTime!now)?date}" />
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="endTime">${i18n.get('有效期结束时间:')}</label>
+            <@form.date id="endTime" name="endTime"  style="width:210px;"  placeholder="${i18n.get('有效期结束时间')}" tip="" value="${(cmb.endTime?date)!}" />
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="comment">${i18n.get('有效 :')}</label>
+            <input name="effective" type="checkbox" id="effective" onclick="changeCheckValue3()" <#if (cmb.id)?? && (cmb.id) != ''>value="${(cmb.effective)!}"<#else>checked value="Y"  </#if> />
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label no-padding-right" for="comment">${i18n.get('说明 :')}</label>
+            <#if (cmb.id)??  && (cmb.id) != ''>
+                <@form.input id="comment"    readonly="readOnly" style="width:210px;" name="comment" placeholder="${i18n.get('说明')}"  tip="" value="${(cmb.comment)!}" />
+            <#else>
+                <@form.input id="comment" style="width:210px;" name="comment" placeholder="${i18n.get('说明')}"  tip="" value="${(cmb.comment)!}" />
+            </#if>
+        </div>
+
+        <div class="hr hr-18 dotted hr-double"></div>
+        <div class="clearfix form-actions">
+            <div class="col-md-offset-5 col-md-7">
+                <button class="btn btn-info submit" type="button">
+                    <i class="icon-ok bigger-110"></i>
+                ${i18n.get('保存')}
+                </button>
+                &nbsp; &nbsp; &nbsp;
+                <button class="btn" type="button" onclick="javascript:api.close()">
+                    <i class="icon-undo bigger-110"></i>
+                ${i18n.get('关闭')}
+                </button>
+            </div>
+        </div>
+
+    </@form.form>
+
+    <script type="text/javascript">
+
+        var $proModel_select = $(".proModel-select").remove();
+        var $proModel_input = $(".proModel-input").remove();
+
+        $(document).ready(function () {
+
+            var checkedValue = $("#effective").val();
+            if (checkedValue === 'N') {
+                $("#effective").removeAttr("checked");
+            } else if (checkedValue === 'Y') {
+                $("#effective").attr("checked", "true");
+            }
+
+            crmCategoryChange()
+
+        });
+
+        function changeCheckValue3() {
+            var checked = $("#effective").is(':checked')
+            if (checked == true) {
+                $("#effective").val('Y');
+                $("#effective").attr("checked", "true");
+            } else {
+                $("#effective").val('N');
+                $("#effective").removeAttr("checked");
+            }
+        }
+
+//        $("#cproCategory").change(function(){
+//            reload_proModel();
+//        })
+
+        function selectModel() {
+            return '${ctx}/product/catalog/selectModel.html';
+        }
+
+        function crmCategoryChange() {
+            $proModel_input.remove();
+            $proModel_select.remove();
+            if (isOutsourcing()) {
+                $("div.proModel>div.proModel-content").empty().append($proModel_input.html());
+            } else {
+                $("div.proModel>div.proModel-content").empty().append($proModel_select.html());
+            }
+        }
+
+        function isOutsourcing() {
+            var crmCategorys = $("#crmCategory").val();
+            if (crmCategorys && crmCategorys.length > 0) {
+                if (crmCategorys.length == 1 && crmCategorys[0] == '0005') {
+                    return true;
+                }
+            }
+            return false;
+        }
+    </script>
+</div>
+</@pui.body>

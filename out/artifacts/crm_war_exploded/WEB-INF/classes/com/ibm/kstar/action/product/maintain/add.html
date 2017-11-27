@@ -1,0 +1,202 @@
+<#escape x as x?html>
+<@cui.body2>
+<style type="text/css">
+	table {
+		border-collapse: collapse;
+		border-color: #ff0000;
+	}
+	
+	table td {
+		padding:1px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	select {
+		width: 180px;
+	}
+</style>
+	
+<script type="text/javascript">
+	
+	$(document).ready(function(){
+		
+	});
+	
+	function save_before(){
+		$("#attrModLineList").trigger('blur');
+		$("#catalogModLineList").trigger('blur');
+		$("#saleStatusModLineList").trigger('blur');
+		$("#saveBtn").click(); 
+	}
+	
+	function startProcess(){
+		$("#startProcessBtn").attr("disabled","disabled");
+		
+		var formDatas = $('#form_PMForm').serialize();
+		formDatas = "id=${(prodInfoMaintain.id)!}&"+formDatas;
+		
+		 $.ajax({
+			type : "POST",
+			url : "${ctx}/product/maintain/startMaintainProcess.html",
+			async: true,
+			data : formDatas, 
+			dataType : 'json',
+			success : function(msg) {
+				alert(msg.message);
+				parent.currentParent2.reload_maintainList(); 
+				javascript:api.close();
+			},
+			error: function(e) {
+				 alert("${i18n.get('操作失败请联系管理员')}"+e);
+			} 
+		});
+	}
+	
+</script>
+	<div class="col-xs-12" >
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="PMForm" autoClose="false" 
+			success="function(data){
+			 	$('#maintainId').val(data.id);
+				parent.currentParent2.reload_maintainList(); 
+				window.location.href='${ctx}/product/maintain/edit.html?id='+data.id;
+			}" 
+			class="form-horizontal" 
+			
+			postData="function(){
+				var catalogIds = $('#catalogModLineList').jqGrid('getDataIDs');
+				var catalogDatas = [];
+		 		$.each(catalogIds,function(i,id){
+		 			var data = $('#catalogModLineList').jqGrid('getRowData',id);
+		 			catalogDatas.push(data);
+		 		});
+		 		
+		 		var attrIds = $('#attrModLineList').jqGrid('getDataIDs');
+				var attrDatas = [];
+		 		$.each(attrIds,function(i,id){
+		 			var data = $('#attrModLineList').jqGrid('getRowData',id);
+		 			attrDatas.push(data);
+		 		});
+		 		
+		 		var saleStatusIds = $('#saleStatusModLineList').jqGrid('getDataIDs');
+				var saleStatusDatas = [];
+		 		$.each(saleStatusIds,function(i,id){
+		 			var data = $('#saleStatusModLineList').jqGrid('getRowData',id);
+		 			saleStatusDatas.push(data);
+		 		});
+		 		
+		 		var obj = {'cataLogModLinesList':catalogDatas,'attrModLinesList':attrDatas,'saleStatusModLinesList':saleStatusDatas};
+		 		return obj;
+			}"
+			
+			>
+		<div style="height: 15px;" >
+			<div style="padding-right: 20px; float: right;padding-top: 3px;" >
+				<button id="saveBtn" class="btn btn-info submit" type="button" style="display: none;" >
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				<#if !(canModify??) || canModify>
+					<button id="saveShowBtn" class="btn btn-info" type="button" onclick="save_before()" >
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+				</#if>
+				<#if !(canProcess??) || canProcess>
+					<button id="saveShowBtn" class="btn btn-info" type="button" onclick="startProcess()" id="startProcessBtn">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('发起审批')}
+					</button>
+				</#if>
+			
+				<button class="btn" type="button" onclick="javascript:api.close()" >
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')} 
+				</button>
+			</div>
+		</div>
+		<p style="padding-left:20px; ">${i18n.get('产品维护申请')}</p>
+		<div class="main" id="main" style="padding-left: 1px; border-top: 2px solid #e9e9e9 ;padding-top: 10px;" >
+			<input id="maintainId"  name="maintainId" type="hidden" value="${(prodInfoMaintain.id)!}" />
+			<table border="0" cellpadding="0" cellspacing="0" >
+				<tr align="left">
+		  			<td align="right"  width="120px"><strong style="color: red;">*</strong>${i18n.get('申请编码：')}</td>
+		            <td align="left"  width="200px">
+		            	<@form.input 
+							id="maintainCode"  name="maintainCode" 
+							placeholder="" 
+							tip="" 
+							value="${(prodInfoMaintain.maintainCode)!}" 
+							readonly ="readonly"
+							maxlength = "300"
+						/>
+		            </td>
+		            
+		            <td align="right" width="120px">
+						<label class="no-padding-right" > ${i18n.get('状态')}: </label>
+					</td>
+					<td align="left"  width="200px">
+						<input id="processStatus" name="processStatus" type="hidden" value="${(prodInfoMaintain.processStatus)!}" >
+						<@form.input id="processStatusName" name="processStatusName" placeholder="" required="${i18n.get('不能为空！')}" 
+								readonly="readonly" tip="" value="${(prodInfoMaintain.processStatusName)!}" />
+					</td>
+					<td align="right"  width="120px">${i18n.get('需求完成日期：')}</td>
+		            <td align="left"  width="200px">
+		           		<@form.date  id="reqCompleteDate"  name="reqCompleteDate" placeholder="" tip="" value="${(prodInfoMaintain.reqCompleteDate?date)!}" />
+					</td>
+		  		</tr>
+		    	<tr align="left">
+		    		<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('申请人：')}</td>
+		            <td align="left" width="200px">
+		            	<input id="applicantId"  name="applicantId" type="hidden" value="${(prodInfoMaintain.applicantId)!}" />
+		            	<@form.input 
+							id="applicantName"  name="applicantName" 
+							placeholder="" 
+							tip="" 
+							value="${(prodInfoMaintain.applicantName)!}" 
+							readonly ="readonly"
+							maxlength = "300"
+						/>
+		            </td>
+		  			<td align="right" width="120px">
+		  				 <strong style="color: red;">*</strong>${i18n.get('申请部门：')}
+		            </td>
+		            <td align="left" width="200px" colspan="3">
+		            	<input id="applicantDept"  name="applicantDept" type="hidden" value="${(prodInfoMaintain.applicantDept)!}" />
+		            	<@form.input 
+							id="applicantDeptName"  name="applicantDeptName" 
+							placeholder="" 
+							tip="" 
+							value="${(prodInfoMaintain.applicantDeptName)!}" 
+							readonly ="readonly"
+							maxlength = "300"
+						/>
+		            </td>
+		  		</tr>
+		  		<tr align="left">
+		  			<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('申请类型：')}</td>
+		  			<td align="left" colspan="5">
+		  				<@form.checkboxs id="applyType" name="applyType" checkboxname="applyTypeCbox"  value="${(prodInfoMaintain.applyType)!}" groupCode="PM_APPLY_TYPE"/>
+		  			</td>
+		  		</tr>
+		  		<tr align="left">
+		  			<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('备注：')}</td>
+		  			<td align="left" colspan="5">
+		  				<@form.textArea id="remark" name="remark" width="100%" height="3" value="${(prodInfoMaintain.remark)!}" />
+		  			</td>
+		  		</tr>
+			</table>
+		</div>
+		<div id="info" style="padding-top: 20px;">
+			<@plug.tabs tabMain=tabMain></@plug.tabs>
+		</div>
+		</@form.form>
+	</@form.panel>
+	</div>
+</@cui.body2>
+</#escape>

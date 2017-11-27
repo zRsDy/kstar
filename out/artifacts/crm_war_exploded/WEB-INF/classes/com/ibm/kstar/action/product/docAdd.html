@@ -1,0 +1,93 @@
+<@pui.body nav1="${i18n.get('doc编辑')}" nav2="${i18n.get('新增/编辑')}" type="popup">
+<div class="col-xs-12" >
+    <#assign applyStatusCode=(doc.applyStatusName)!>
+    <#if '新建'=applyStatusCode || '已驳回'=applyStatusCode>
+        <#assign editable=true>
+    <#else>
+        <#assign editable=false>
+    </#if>
+	<@form.form id="t3" success="function(){parent.currentParent.reload_t3(); }" class="form-horizontal" upload="true">
+		<div class="hr hr-18 dotted hr-double"></div>
+
+		<div class="form-group" >
+			<input type="hidden" id ="submitType" name ="submitType"  value="${(doc.submitType)!}">
+			<label class="col-sm-3 control-label no-padding-right" for="docName">*${i18n.get('文档名称 :')} </label>
+		<#if docAttach??>
+	    	<@form.input id="docName" style="width:260px;" name="docName" readonly="true" value="${(doc.docName)!}" />
+		<#else>
+			<@form.input id="docName" style="width:260px;" name="docName" required="${i18n.get('文档名称不能为空')}" value="${(doc.docName)!}" />
+		</#if>
+		</div>
+ 
+ 		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" for="docNote">*${i18n.get('文档说明 :')}</label> 
+		<#if docAttach??>
+	    	<@form.input id="docNote" style="width:260px;" name="docNote" readonly="true" value="${(doc.docNote)!}" />
+		<#else>
+			<@form.input id="docNote" style="width:260px;" name="docNote" required="${i18n.get('文档说明不能为空')}" value="${(doc.docNote)!}" />
+		</#if>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" >${i18n.get('申请人 :')} </label> 
+			<@form.input id="applyPersonName" style="width:260px;" name="applyPersonName" readonly="true" value="${(doc.applyPersonName)!}" />
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" >${i18n.get('申请日期 : ')}</label> 
+			<@form.input id="applyTime" style="width:260px;" name="applyTime" readonly="true" value="${(doc.applyTime?date)!}" />
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" >${i18n.get('申请状态 : ')}</label> 
+ 		 	<input type="hidden" id="applyStatus" name="applyStatus"  value="${(doc.applyStatus)!}"/>
+			<@form.select id="uiapplyStatus" name="uiapplyStatus" style="width:260px;" code="PRODUCT_DOC_PROC" idKey='id' value="${(doc.applyStatus)!}"/>
+		    <script type="text/javascript">
+		    	$("#uiapplyStatus").attr("disabled","disabled")
+		    </script>
+		</div>
+
+		<div class="hr hr-18 dotted hr-double"></div>
+		<div class="clearfix form-actions">
+			<div class="col-md-offset-5 col-md-7">
+				<#if !doc?? || !doc.id?? || statusEdit || ableEdit>
+				<button class="btn btn-info submit" type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				&nbsp; &nbsp; &nbsp;
+				</#if>
+				<#if !ableEdit>
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+				</#if>
+			</div>
+		</div>
+	</@form.form>
+	
+	<div id="attachmentId_t3" <#if !ableEdit>style="display:none;"</#if>></div>
+	
+	<div id="info" style="padding-top: 20px;" class="row">
+		<div class="col-xs-12">
+			<input type="hidden" id="selectedId"  />
+			<#if tabMainInfo??>
+			<@plug.tabs tabMain=tabMainInfo>
+			</@plug.tabs>
+			</#if>
+		</div>
+	</div>
+</div>
+</@pui.body>
+<script type="text/javascript">
+$(document).ready(function() {
+	showAttachmentPage("attachmentId_t3","${ctx}/common/attachment/attachment.html?businessType=productDoc");
+});
+function showAttachmentPage(tabId, url){
+	url = url + "&docGroupCode=ProDocType&businessId=${(doc.id)!}";
+	$('#applytab a[href="#'+tabId+'"]').tab('show');
+	$('#'+tabId).load(url,function(response,status,xhr){
+		if(status === 'error'){
+			$('#'+tabId).html(url+'<br> ${i18n.get('页面加载失败')}');
+		}
+	});
+}
+</script>

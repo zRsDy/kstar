@@ -1,0 +1,51 @@
+<@cui.body2>
+<style type="text/css">
+	table {
+	border-collapse: collapse;
+	border-color: #ff0000;
+	}
+	
+	table td {
+		padding:1px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	select {
+		width: 180px;
+	}
+</style>
+<div class="col-xs-12">
+	<@form.table id="overBidding" 
+		class="col-xs-12"
+		search="false"
+		title="${i18n.get('逾期投标保证金')}" 
+		url = "${ctx}/report/overBidding.html?orgIdOrEmployeeId=${orgIdOrEmployeeId}&reportType=${reportType}"
+		rowNum = "20" 
+		colModel = "[
+			 	{name : 'id', label:'id', width : 20, editable : false, hidden : true}, 
+			 	{name : 'fdEmpNo', label:'${i18n.get('销售员工号')}', width : 80, sortable:false, editable:false, align:'center'}, 
+			 	{name : 'crmPersonName', label:'${i18n.get('销售员')}', width : 80, sortable:false, editable:false, align:'center'}, 
+			 	{name : 'crmPositionName', label:'${i18n.get('CRM岗位')}', width : 100, sortable:false, editable:false, align:'center'},
+			 	{name : 'crmOrgName', label:'${i18n.get('CRM部门')}', width : 100, sortable:false, editable:false, align:'center'},
+			  	{name : 'fdRequestDate', label:'${i18n.get('申请日期')}', width : 100, sortable:false, editable:false, align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+			 	{name : 'fdProject', label:'${i18n.get('项目名称')}', width : 250, sortable:false, editable:false, align:'center'},
+			  	{name : 'fdPayDate', label:'${i18n.get('支付日期')}', width : 120, sortable:false, editable:false, align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+			  	{name : 'fdBackDate', label:'${i18n.get('退还日期')}', width : 120, sortable:false, editable:false, align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+			  	{name : 'fdReceiptName', label:'${i18n.get('收款方')}', width : 250, editable : false}, 
+			  	{name : 'fdBankName', label:'${i18n.get('银行')}', width : 250, editable : false}, 
+			  	{name : 'fdBankNo', label:'${i18n.get('银行账号')}', width : 200, editable:false, align:'center'},
+			  	{name : 'fdAmount',label:'${i18n.get('金额')}',hidden:false,width:100,sortable:true,align:'center' }, 
+				{name : 'fdMemo', label:'${i18n.get('备注')}', width : 250, editable:false ,align:'center',sortable:true}, 
+				{name : 'fdNumber', label:'${i18n.get('申请编号')}', width : 200, editable:false, align:'center',sortable:true}, 
+			  	{name : 'docSubject', label:'${i18n.get('申请内容')}', width : 250, editable:false, align:'center',sortable:true}, 
+			  	{name : 'status', label:'${i18n.get('状态')}', width : 100, editable:false, align:'center',sortable:false}
+			]" 
+			> 
+		</@form.table>
+</div>
+</@cui.body2>

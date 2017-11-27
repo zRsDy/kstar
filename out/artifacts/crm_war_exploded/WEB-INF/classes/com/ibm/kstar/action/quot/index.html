@@ -1,0 +1,192 @@
+<@pui.body>
+
+	<#if (permission["P04Add"])??>
+		<#assign addURL="'${ctx}/quot/add.html'" />
+	</#if>
+	
+	<#if (permission["P04Edit"])??>
+		<#assign editURL="'${ctx}/quot/edit.html'" />
+	</#if>	
+		
+	<#if (permission["P04Delete"])??>
+		<#assign deleteURL="'${ctx}/quot/delete.html'" />
+	</#if>		
+		
+	<#if (permission["P04Query"])??>
+		<#assign listUrl="${ctx}/quot/page.html" />
+	</#if>	
+		
+
+	<@form.table id="quot1" 
+	class="col-xs-12"
+	title="${i18n.get('报价单基本信息列表')}" 
+	url = "${listUrl!}" 
+	rowNum = "9" 
+	addURL = "${addURL!}" 
+	editURL= "${editURL!}" 
+	deleteURL = "${deleteURL!}" 
+	colModel = "[
+		{name:'id',label:'${i18n.get('报价单')}ID',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'quotCode',label:'${i18n.get('报价单编码')}',hidden:false,width:150,sortable:false,align:'center' },
+		{name:'quotName',label:'${i18n.get('报价单名称')}',hidden:false,width:200,sortable:false,align:'center' },
+		{name:'status',label:'${i18n.get('状态')}',hidden:false,width:70,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatstatusArr(cellvalue) } },
+		{name:'quotVersion',label:'${i18n.get('版本')}',hidden:false,width:50,sortable:false,align:'center' },
+		{name:'customerName',label:'${i18n.get('客户')}',hidden:false,width:230,sortable:false,align:'left' },
+		{name:'salesRep',label:'${i18n.get('销售代表')}',hidden:false,width:90,sortable:false,align:'center' },
+		{name:'boName',label:'${i18n.get('商机名称')}',hidden:false,width:200,sortable:false,align:'center'},
+		{name:'priceList',label:'${i18n.get('价格表')}',hidden:false,width:200,sortable:false,align:'center' },
+		{name:'currency',label:'${i18n.get('货币')}',hidden:true,width:80,sortable:false,align:'center' },
+		{name:'currencyGrid.name',label:'${i18n.get('货币')}',hidden:false,width:80,sortable:false,align:'center' },
+		{name:'amount',label:'${i18n.get('总额')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'creator',label:'${i18n.get('创建人')}',hidden:false,width:80,sortable:false,align:'center' },
+		{name:'createTime',label:'${i18n.get('创建日期')}',hidden:false,width:90,sortable:false,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) },align:'center' },
+		{name:'bidResults',label:'${i18n.get('投标结果')}',hidden:true,width:90,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatbidResultsArr(cellvalue) } },
+		{name:'bidResReason',label:'${i18n.get('丢标/赢标原因')}',hidden:true,width:100,sortable:false,align:'center' }
+		]" 
+		ondblClickRow= "function(selectedData){
+				parent.addTab('${i18n.get('报价详细信息管理')}-'+selected_quot1.quotCode,'${ctx}/quot/tabs.html?qid='+selected_quot1.id+'&qnm='+selected_quot1.id+'&typ=0003');
+				<!-- parent.addTab('${i18n.get('合同')}','${ctx}/quot/contract.html?qid='+selected_t1.quotCode); -->
+				<!-- parent.addTab('${i18n.get('合同')}','${ctx}/quot/contract.html?qid='+selectedData); -->
+		}" buttons = "[]" >
+
+<br>
+
+	<table>
+		<tr>
+			<td width="100px" align="right" >${i18n.get('报价单编号')}:</td>
+			<td width="180px"><@form.input id="quotCode"
+				name="quotCode" placeholder="" tip="" style="width: 170px;"
+				/> 
+			</td>
+			<td width="100px" align="right" ><strong style="color: red;">*</strong>${i18n.get('报价单名称')}:</td>
+			<td width="180px"><@form.input id="quotName"
+				name="quotName" placeholder="" tip="" style="width: 170px;"
+				required="${i18n.get('请输入报价单名称')}"
+				 />
+				</td>	
+			<td width="100px" align="right" ><strong style="color: red;">*</strong>${i18n.get('客户名称')}:</td>
+			<td width="180px">			  
+				<input id="customerCode" name="customerCode" type="hidden" >		  
+					<@form.autocomplete  id="customerName" name="customerName" 
+					idKey='customFullName'
+					style="width: 170px;"
+					required="${i18n.get('请选择客户编号')}"
+					formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+					url="function(){ return '${ctx}/lovcontract/autocompletecustomer.html'; }"
+
+				/>
+			</td>		
+		</tr>
+		<tr>
+			<td width="100px" align="right">${i18n.get('销售代表')}:</td>
+			<td width="180px"><@form.input id="salesRep"
+				name="salesRep" placeholder="" tip="" style="width: 170px;"
+				 /></td>
+			<td width="100px" align="right">${i18n.get('销售部门')}:</td>
+			<td width="180px">
+           	<@form.autocomplete  id="salDep" name="salDep" 
+            	idKey='code' style="width: 170px;" required="${i18n.get('请选择组织')}"
+            	formatResult="function(data) {return '<div >' +data.name + '</div>';}"
+				url="function(){ return '${ctx}/lovcontract/autocompleteOrg.html'; }"
+            	
+           	/>
+			</td>		 
+			<td width="100px" align="right"><strong style="color: red;">*</strong>${i18n.get('商机名称')}:</td>
+			<td width="180px">
+				<input id="boCode" name="boCode" type="hidden" >			  
+					<@form.autocomplete  id="boName" name="boName" 
+					idKey='id'
+					style="width: 170px;"
+					required="${i18n.get('请选择商机编号')}"
+					formatResult="function(data) {return '<div >' +data.opportunityName + '</div>';}"
+					url="function(){ return '${ctx}/lovcontract/autocompleteproject.html'; }"
+	 
+				/>
+			</td>	 
+		</tr>
+		<tr>
+			<td width="100px" align="right">${i18n.get('总金额最少')}:</td>
+			<td width="180px"><@form.input id="amount_begin" style="width:170px;"
+				name="amount_begin" placeholder="" tip="" /></td>
+			<td width="100px"  align="right">${i18n.get('创建日期从')}:</td>
+			<td width="180px"><@form.date id="createTime_begin"
+				name="createTime_begin" placeholder="" tip="" style="width:170px;"
+				 /></td>
+			<td width="100px" align="right"><strong style="color: red;">*</strong>${i18n.get('是否投标项目')}:</td>
+			<td width="180px">
+				<@form.select  id="isBidPro" name="isBidPro" code="NY" idKey='code' style="width:170px;"  /> 
+			</td>
+		</tr>
+		<tr>
+			<td width="100px" align="right">${i18n.get('总金额最多')}:</td>
+			<td width="180px"><@form.input id="amount_end" style="width:170px;"
+				name="amount_end" placeholder="" tip="" /></td>
+			<td width="100px"  align="right">${i18n.get('创建日期至')}:</td>
+			<td width="180px"><@form.date id="createTime_end"
+				name="createTime_end" placeholder="" tip="" style="width:170px;"
+				 /></td>
+			<td width="100px" align="right">${i18n.get('状态')}:</td>
+			<td width="180px">
+			<@form.select  id="status" name="status" code="QUOTSTS" idKey='code' style="width:170px;" /> 
+			</td>
+		</tr>
+		<tr>
+			<td width="100px" align="right">${i18n.get('标书审核状态')}:</td>
+			<td width="180px">
+				<@form.select  id="bidAuditStatus" name="bidAuditStatus" code="BDDCST" idKey='code' style="width:170px;"  /> 
+			</td>
+			<td width="100px" align="right">${i18n.get('工程评审状态')}:</td>
+			<td width="180px">
+				<@form.select  id="proReviewStatus" name="proReviewStatus" code="PRJEVLST" idKey='code' style="width:170px;" /> 
+			</td>
+			<td width="100px"  align="right">${i18n.get('投标结果')}:</td>
+			<td width="180px">
+			<@form.select  id="bidResults" name="bidResults" code="BDRST" idKey='code' style="width:170px;"  /> 
+			</td>	
+		</tr>
+		<tr>
+			<td width="100px" align="right">${i18n.get('赢标/丢标/关闭原因')}:</td>
+			<td width="180px">
+				<@form.input
+				id="bidResReason"  name="bidResReason" style="width:170px;"
+				placeholder=""
+				/>
+			</td>	
+		
+		</tr>
+		
+		
+	</table>
+
+
+</@form.table> 
+	<br/>
+</@pui.body>
+
+<script type="text/javascript">
+
+	var bidResultsArr = {
+			"R01" : "${i18n.get('赢标')}",
+			"R02" : "${i18n.get('丢标')}",
+			"R03" : "${i18n.get('无需投标')}",
+			"undefined" : ""
+	};
+
+	
+	var statusArr = {
+			"S01" : "${i18n.get('新建')}",
+			"S02" : "${i18n.get('赢标')}",
+			"S03" : "${i18n.get('丢标')}",
+			"S04" : "${i18n.get('关闭')}",
+			"undefined" : ""
+	};
+
+	function formatbidResultsArr(value){
+		 return bidResultsArr[value];
+	}
+	
+	function formatstatusArr(value){
+		 return statusArr[value];
+	}
+	
+</script>

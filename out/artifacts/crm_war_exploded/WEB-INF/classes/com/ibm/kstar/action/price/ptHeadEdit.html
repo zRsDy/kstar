@@ -1,0 +1,405 @@
+<@pui.body>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t82" success="function(){
+		try{
+			parent.currentParent.reload_t82();
+		}catch(e){
+			parent.currentParent2.reload_t82();
+		}
+		}" class="form-horizontal">
+		
+		<div style="padding-right: 20px;width:100%;height:30px;text-align:right;" >
+			<button class="btn btn-info submit" type="button">
+				<i class="icon-ok bigger-110"></i>
+				${i18n.get('保存')}
+			</button>
+			&nbsp; &nbsp; &nbsp;
+			<button class="btn" type="button" onclick="javascript:api.close()">
+				<i class="icon-undo bigger-110"></i>
+				${i18n.get('关闭')}
+			</button>
+		</div>
+
+		
+		<div align="center" class="form-group">
+			<table>
+				<tr>
+					<td align="right" width="190px"><strong style="color: red;">*</strong>${i18n.get('价格表名称 :')}</td>
+					<td width="450px">
+						<@form.input id="priceTableName" style="width:260px;" name="priceTableName" tip="${i18n.get('价格表名称')}" required="${i18n.get('不能为空')}" value="${(lpc.priceTableName)!}" />
+					</td>
+					<td align="right" width="190px"><strong style="color: red;">*</strong>${i18n.get('是否客户价格:')}</td>
+					<td width="450px">
+						<@form.select onChange="changeShowCustom(this)" id="clientPrice" name="clientPrice" style="width:260px;" code="NY" required="${i18n.get('不能为空')}" tip="${i18n.get('是否客户价格')}" idKey='code' value="${(lpc.clientPrice)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="190px">
+						<div class="showCustom" <#if lpc.clientPrice=='0'>style="display:none;"</#if>>
+							<strong style="color: red;">*</strong>${i18n.get('选择客户:')}
+						</div>
+					</td>
+					<td width="450px">
+						<div class="showCustom" <#if lpc.clientPrice=='0'>style="display:none;"</#if>>
+							<@form.autocomplete 
+								id="clientId"
+								name="clientId"
+								idKey='id'
+								placeholder="${i18n.get('请选择客户')}" 
+								tip="${i18n.get('客户名称')}"
+								style="width:260px;"
+								url="function(){ return '${ctx}/lovcustom/autoCompleteCustomAll.html'; }"
+								formatResult="function(data) {return '<div >' +data.customFullName + '【' +data.customCode +'】 </div>';}"
+								value="${customInfo!'{}'}"
+							/>
+						</div>
+					</td>
+					<td align="right" width="190px"><strong style="color: red;">*</strong>${i18n.get('货币:')}</td>
+					<td width="450px">
+						<@form.select id="currency" name="currency" style="width:260px;" code="CURRENCY" required="${i18n.get('不能为空')}" tip="${i18n.get('货币类别')}" idKey='id' value="${(lpc.currency)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="190px"><strong style="color: red;">*</strong>${i18n.get('有效期开始时间 :')}</td>
+					<td width="450px">
+						<@form.date id="startDate" 	style="width:260px;" name="startDate" required="${i18n.get('不能为空')}" tip="${i18n.get('有效期开始时间')}" value="${(lpc.startDate?date)!}" />
+					</td>
+					<td align="right" width="190px">${i18n.get('有效期结束时间 :')}</td>
+					<td width="450px">
+						<@form.date id="endDate" style="width:260px;" name="endDate" tip="${i18n.get('有效期线束时间')}" value="${(lpc.endDate?date)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="190px"><strong style="color: red;">*</strong>${i18n.get('组织 :')}</td>
+					<td width="450px">
+						<input type="hidden" id="organization" name="organization" value="${(lpc.organization)!}" />
+						<@form.input id="organizationName" name="organizationName" style="width:163px;" tip="${i18n.get('')}组织" readonly="true" required="${i18n.get('不能为空')}" value="${(lpc.organizationName)!}" />
+						<@biz.picker_product id="select" url="${ctx}/proprice/selectPriceOrg.html" 
+							callback="function(data){
+								if(data){
+									$('#organization').val(data.id);
+									$('#organizationName').val(data.name);
+									if(data.optTxt3 == 'A'){
+										$('.commonPriceDiv').show();
+									}else{
+										$('.commonPriceDiv').hide();
+									}
+								 }
+							}"
+						/>
+					</td>
+					<td align="right" width="190px"><div class="shareCreateOrgIds" <#if lpc.clientPrice=='0'>style="display:none;"</#if>>${i18n.get('共享组织')}</div></td>
+					<td width="450px">
+						<div class="shareCreateOrgIds" <#if lpc.clientPrice=='0'>style="display:none;"</#if>>
+						<input type="hidden" id="shareCreateOrgId" name="shareCreateOrgId" value="${(lpc.shareCreateOrgId)!}" />
+						<@form.input id="shareCreateOrgName" name="shareCreateOrgName" style="width:163px;" tip="${i18n.get('共享组织')}" readonly="true" required="${i18n.get('')}不能为空" value="${(lpc.shareCreateOrgName)!}" />
+						<@biz.picker_product id="multiSelect" url="${ctx}/proprice/multiSelectPriceOrg.html" 
+							callback="function(data){
+								console.log(data);
+								if(data){
+									$('#shareCreateOrgId').val(data.id);
+									$('#shareCreateOrgName').val(data.name);
+									if(data.optTxt3 == 'A'){
+										$('.commonPriceDiv').show();
+									}else{
+										$('.commonPriceDiv').hide();
+									}
+								 }
+							}"
+						/>
+					</div>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="190px">${i18n.get('创建人 :')}</td>
+					<td width="450px">
+						<input type="hidden" id="creater" name="creater" value="${(lpc.creater)!}" />
+						<@form.input id="createrName" name="createrName" style="width:163px;" readonly="true" tip="${i18n.get('创建人')}" value="${(lpc.createrName)!}" />
+					</td>
+					<td align="right" width="190px">${i18n.get('创建日期')}</td>
+					<td width="450px">
+						<@form.input id="createDate" name="createDate" style="width:163px;" readonly="true" tip="${i18n.get('创建日期')}" value="${(lpc.createDate?date)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="190px">${i18n.get('创建组织')}</td>
+					<td width="450px">
+						<input type="hidden" id="createOrg" name="createOrg" value="${(lpc.createOrg)!}" />
+						<@form.input id="createOrgName" name="createOrgName" style="width:163px;" readonly="true" tip="${i18n.get('创建组织')}" value="${(lpc.createOrgName)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="190px">
+						<div class="commonPriceDiv" <#if !org1?? || org1.optTxt3!='A'>style="display:none;"</#if>>
+							<strong style="color: red;">*</strong>${i18n.get('统一标准价格:')}
+						</div>
+					</td>
+					<td width="450px">
+						<div class="commonPriceDiv" <#if !org1?? || org1.optTxt3!='A'>style="display:none;"</#if>>
+						<@form.select id="commonPrice" name="commonPrice" style="width:163px;" code="NY" required="${i18n.get('不能为空')}" tip="${i18n.get('是否统一标准价格')}" idKey='code' value="${(lpc.commonPrice)!}" />
+						</div>
+					</td>
+					<td align="right" width="190px" class="showIsDiscount">${i18n.get('是否批发价：')}</td>
+					<td width="450px" class="showIsDiscount">
+						<@form.select onChange="changeWholesale(this)" id="isWholesale" name="isWholesale" style="width:260px;" code="NY" required="${i18n.get('不能为空')}" tip="${i18n.get('是否批发价')}" idKey='code' value="${(lpc.isWholesale)!'0'}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="190px">${i18n.get('说明 :')}</td>
+					<td colspan="3">
+						<@form.textArea id="comments" style="width:900px;" name="comments" tip="${i18n.get('价格表说明性备注')}" value="${(lpc.comments)!}" />
+					</td>
+				</tr>
+			</table>
+			
+			<table class="wholesale" style="display:none;">
+				<tr>
+					<td width="100" align="right">${i18n.get('层一价折扣率：')}</td>
+					<td width="250">
+						<@form.number id="discounts[0].retio" style="width:80%;" name="discounts[0].retio" tip="${i18n.get('层一价折扣率')}" value="${(map['wholesale1'].retio)!}" />
+					</td>
+					<td width="100" align="right">${i18n.get('层一价格：')}</td>
+					<td width="250">
+						<input type="hidden" name="discounts[0].id" class="id" value="${(map['wholesale1'].id)!''}" />
+						<input type="hidden" name="discounts[0].orderNo" class="orderNo" value="1" />
+						<input type="hidden" name="discounts[0].type" class="type" value="wholesale" />
+						<@form.number id="discounts[0].prive" style="width:80%;" name="discounts[0].prive" tip="${i18n.get('层一价格')}" value="${(map['wholesale1'].prive)!}" />
+					</td>
+					<td width="100" align="right">${i18n.get('层一数量级：')}</td>
+					<td width="250"><@form.number id="discounts[0].quantity" style="width:80%;" name="discounts[0].quantity" tip="${i18n.get('层金额级')}" value="${(map['wholesale1'].quantity)!}" /></td>
+				</tr>
+				<tr>
+					<td align="right">${i18n.get('层二价折扣率：')}</td>
+					<td>
+						<@form.number id="discounts[1].retio" style="width:80%;" name="discounts[1].retio" tip="${i18n.get('层二价折扣率')}" value="${(map['wholesale2'].retio)!}" />
+					</td>
+					<td align="right">${i18n.get('层二价格：')}</td>
+					<td>
+						<input type="hidden" name="discounts[1].id" class="id" value="${(map['wholesale2'].id)!''}" />
+						<input type="hidden" name="discounts[1].orderNo" class="orderNo" value="2" />
+						<input type="hidden" name="discounts[1].type" class="type" value="wholesale" />
+						<@form.number id="discounts[1].prive" style="width:80%;" name="discounts[1].prive" tip="${i18n.get('层二价格')}" value="${(map['wholesale2'].prive)!}" />
+					</td>
+					<td align="right">${i18n.get('层二数量级：')}</td>
+					<td><@form.number id="discounts[1].quantity" style="width:80%;" name="discounts[1].quantity" tip="${i18n.get('层二数量级')}" value="${(map['wholesale2'].quantity)!}" /></td>
+				</tr>
+				<tr>
+					<td align="right">${i18n.get('层三价折扣率：')}</td>
+					<td>
+						<@form.number id="discounts[2].retio" style="width:80%;" name="discounts[2].retio" tip="${i18n.get('层三价折扣率')}" value="${(map['wholesale3'].retio)!}" />
+					</td>
+					<td align="right">${i18n.get('层三价格：')}</td>
+					<td>
+						<input type="hidden" name="discounts[2].id" class="id" value="${(map['wholesale3'].id)!}" />
+						<input type="hidden" name="discounts[2].orderNo" class="orderNo" value="3" />
+						<input type="hidden" name="discounts[2].type" class="type" value="wholesale" />
+						<@form.number id="discounts[2].prive" style="width:80%;" name="discounts[2].prive" tip="${i18n.get('层三价格')}" value="${(map['wholesale3'].prive)!}" />
+					</td>
+					<td align="right">${i18n.get('层三数量级：')}</td>
+					<td><@form.number id="discounts[2].quantity" style="width:80%;" name="discounts[2].quantity" tip="${i18n.get('层三数量级')}" value="${(map['wholesale3'].quantity)!}" /></td>
+				</tr>
+				<tr>
+					<td align="right">${i18n.get('层四价折扣率：')}</td>
+					<td>
+						<@form.number id="discounts[3].retio" style="width:80%;" name="discounts[3].retio" tip="${i18n.get('层四价折扣率')}" value="${(map['wholesale4'].retio)!}" />
+					</td>
+					<td align="right">${i18n.get('层四价格：')}</td>
+					<td>
+						<input type="hidden" name="discounts[3].id" class="id" value="${(map['wholesale4'].id)!}" />
+						<input type="hidden" name="discounts[3].orderNo" class="orderNo" value="4" />
+						<input type="hidden" name="discounts[3].type" class="type" value="wholesale" />
+						<@form.number id="discounts[3].prive" style="width:80%;" name="discounts[3].prive" tip="${i18n.get('层四价格')}" value="${(map['wholesale4'].prive)!}" />
+					</td>
+					<td align="right">${i18n.get('层四数量级：')}</td>
+					<td><@form.number id="discounts[3].quantity" style="width:80%;" name="discounts[3].quantity" tip="${i18n.get('层四数量级')}" value="${(map['wholesale4'].quantity)!}" /></td>
+				</tr>
+				<tr>
+					<td align="right">${i18n.get('层五价折扣率：')}</td>
+					<td>
+						<@form.number id="discounts[4].retio" style="width:80%;" name="discounts[4].retio" tip="${i18n.get('层五价折扣率')}" value="${(map['wholesale5'].retio)!}" />
+					</td>
+					<td align="right">${i18n.get('层五价格：')}</td>
+					<td>
+						<input type="hidden" name="discounts[4].id" class="id" value="${(map['wholesale5'].id)!}" />
+						<input type="hidden" name="discounts[4].orderNo" class="orderNo" value="5" />
+						<input type="hidden" name="discounts[4].type" class="type" value="wholesale" />
+						<@form.number id="discounts[4].prive" style="width:80%;" name="discounts[4].prive" tip="${i18n.get('层五价格')}" value="${(map['wholesale5'].prive)!}" />
+					</td>
+					<td align="right">${i18n.get('层五数量级：')}</td>
+					<td><@form.number id="discounts[4].quantity" style="width:80%;" name="discounts[4].quantity" tip="${i18n.get('层五数量级')}" value="${(map['wholesale5'].quantity)!}" /></td>
+				</tr>
+				<tr>
+					<td align="right">${i18n.get('层六价折扣率：')}</td>
+					<td>
+						<@form.number id="discounts[5].retio" style="width:80%;" name="discounts[5].retio" tip="${i18n.get('层六价折扣率')}" value="${(map['wholesale6'].retio)!}" />
+					</td>
+					<td align="right">${i18n.get('层六价格：')}</td>
+					<td>
+						<input type="hidden" name="discounts[5].id" class="id" value="${(map['wholesale6'].id)!}" />
+						<input type="hidden" name="discounts[5].orderNo" class="orderNo" value="6" />
+						<input type="hidden" name="discounts[5].type" class="type" value="wholesale" />
+						<@form.number id="discounts[5].prive" style="width:80%;" name="discounts[5].prive" tip="${i18n.get('层六价格')}" value="${(map['wholesale6'].prive)!}" />
+					</td>
+					<td align="right">${i18n.get('层六数量级：')}</td>
+					<td><@form.number id="discounts[5].quantity" style="width:80%;" name="discounts[5].quantity" tip="${i18n.get('层六数量级')}" value="${(map['wholesale6'].quantity)!}" /></td>
+				</tr>
+				
+				<!-- <tr>
+					<td align="right">是否叠加优惠：</td>
+					<td><@form.select onChange="changeDiscount(this)" id="isDiscount" name="isDiscount" style="width:260px;" code="NY" required="不能为空" tip="是否叠加优惠" idKey='code' value="${(lpc.isDiscount)!'0'}" /></td>
+					<td></td>
+					<td></td>
+				</tr> -->
+			</table>
+			
+			<!-- <table class="discount" style="display:none;">
+				<tr>
+					<td align="right" width="190">层一折扣：</td>
+					<td width="450">
+						<input type="hidden" name="discounts[6].id" class="id" value="${(map['discount1'].id)!}" />
+						<input type="hidden" name="discounts[6].orderNo" class="orderNo" value="1" />
+						<input type="hidden" name="discounts[6].type" class="type" value="discount" />
+						<@form.number id="discounts[6].retio" style="width:260px;" name="discounts[6].retio" tip="层一折扣" value="${(map['discount1'].retio)!}" />
+					</td>
+					<td align="right" width="190">层一金额：</td>
+					<td width="450"><@form.number id="discounts[6].sum" style="width:260px;" name="discounts[6].sum" tip="层一金额" value="${(map['discount1'].sum)!}" /></td>
+				</tr>
+				<tr>
+					<td align="right">层二折扣：</td>
+					<td>
+						<input type="hidden" name="discounts[7].id" class="id" value="${(map['discount2'].id)!}" />
+						<input type="hidden" name="discounts[7].orderNo" class="orderNo" value="2" />
+						<input type="hidden" name="discounts[7].type" class="type" value="discount" />
+						<@form.number id="discounts[7].retio" style="width:260px;" name="discounts[7].retio" tip="层二折扣" value="${(map['discount2'].retio)!}" />
+					</td>
+					<td align="right">层二金额：</td>
+					<td><@form.number id="discounts[7].sum" style="width:260px;" name="discounts[7].sum" tip="层二金额" value="${(map['discount2'].sum)!}" /></td>
+				</tr>
+				<tr>
+					<td align="right">层三折扣：</td>
+					<td>
+						<input type="hidden" name="discounts[8].id" class="id" value="${(map['discount3'].id)!}" />
+						<input type="hidden" name="discounts[8].orderNo" class="orderNo" value="3" />
+						<input type="hidden" name="discounts[8].type" class="type" value="discount" />
+						<@form.number id="discounts[8].retio" style="width:260px;" name="discounts[8].retio" tip="层三折扣" value="${(map['discount3'].retio)!}" />
+					</td>
+					<td align="right">层三金额：</td>
+					<td><@form.number id="discounts[8].sum" style="width:260px;" name="discounts[8].sum" tip="层三金额" value="${(map['discount3'].sum)!}" /></td>
+				</tr>
+				<tr>
+					<td align="right">层四折扣：</td>
+					<td>
+						<input type="hidden" name="discounts[9].id" class="id" value="${(map['discount4'].id)!}" />
+						<input type="hidden" name="discounts[9].orderNo" class="orderNo" value="4" />
+						<input type="hidden" name="discounts[9].type" class="type" value="discount" />
+						<@form.number id="discounts[9].retio" style="width:260px;" name="discounts[9].retio" tip="层四折扣" value="${(map['discount4'].retio)!}" />
+					</td>
+					<td align="right">层四金额：</td>
+					<td><@form.number id="discounts[9].sum" style="width:260px;" name="discounts[9].sum" tip="层四金额" value="${(map['discount4'].sum)!}" /></td>
+				</tr>
+				<tr>
+					<td align="right">层五折扣：</td>
+					<td>
+						<input type="hidden" name="discounts[10].id" class="id" value="${(map['discount5'].id)!}" />
+						<input type="hidden" name="discounts[10].orderNo" class="orderNo" value="5" />
+						<input type="hidden" name="discounts[10].type" class="type" value="discount" />
+						<@form.number id="discounts[10].retio" style="width:260px;" name="discounts[10].retio" tip="层五折扣" value="${(map['discount5'].retio)!}" />
+					</td>
+					<td align="right">层五金额：</td>
+					<td><@form.number id="discounts[10].sum" style="width:260px;" name="discounts[10].sum" tip="层五金额" value="${(map['discount5'].sum)!}" /></td>
+				</tr>
+				<tr>
+					<td align="right">层六折扣：</td>
+					<td>
+						<input type="hidden" name="discounts[11].id" class="id" value="${(map['discount6'].id)!}" />
+						<input type="hidden" name="discounts[11].orderNo" class="orderNo" value="6" />
+						<input type="hidden" name="discounts[11].type" class="type" value="discount" />
+						<@form.number id="discounts[11].retio" style="width:260px;" name="discounts[11].retio" tip="层六折扣" value="${(map['discount6'].retio)!}" />
+					</td>
+					<td align="right">层六金额：</td>
+					<td><@form.number id="discounts[11].sum" style="width:260px;" name="discounts[11].sum" tip="层六数量级" value="${(map['discount6'].sum)!}" /></td>
+				</tr>
+				
+			</table> -->
+			
+			
+		</div>
+		</@form.form>
+		<#if tabMain??>
+		<@plug.tabs  tabMain=tabMain></@plug.tabs>
+		</#if>
+	</@form.panel>
+</@pui.body>
+<script type="text/javascript">
+$(function(){
+	if('${(lpc.clientPrice)!}' == '1'){
+		$(".showIsDiscount").hide();
+		$("#multiSelect").attr({"disabled":false});
+	}else{
+		$(".showIsDiscount").show();
+		$("#multiSelect").attr({"disabled":"disabled"});
+	}
+	if('${(lpc.isWholesale)!}' == '1'){
+		$(".wholesale").show();
+	}else{
+		$(".wholesale").hide();
+	}
+	if('${(lpc.isDiscount)!}' == '1'){
+		$(".discount").show();
+	}else{
+		$(".discount").hide();
+	}
+});
+
+
+function changeShowCustom(obj){
+	if(obj.value == '1'){
+		$('#clientName').val('');
+		$('.showCustom').show();
+		$('.showIsDiscount').hide();
+		$('.wholesale').hide();
+		$('.discount').hide();
+		$("#multiSelect").removeAttr("disabled");
+		$(".shareCreateOrgIds").show();
+	}else{
+		$("#multiSelect").attr({"disabled":"disabled"});
+		$(".shareCreateOrgIds").hide();
+		$("#shareCreateOrgName").val('');
+		$('#clientName').val('');
+		$('.showCustom').hide();
+		$('.showIsDiscount').show();
+		if($("#isDiscount").val() == '1'){
+			$('.discount').show();
+		}
+		if($("#isWholesale").val() == '1'){
+			$('.wholesale').show();
+		}else{
+			$('.wholesale').hide();
+			$('.discount').hide();
+		}
+		
+	}
+}
+
+function changeWholesale(obj){
+	if(obj.value == '1'){
+		$('.wholesale').show();
+		if($("#isDiscount").val() == '1'){
+			$('.discount').show();
+		}
+	}else{
+		$('.wholesale').hide();
+		$('.discount').hide();
+	}
+}
+
+function changeDiscount(obj){
+	if(obj.value == '1'){
+		$('.discount').show();
+	}else{
+		$('.discount').hide();
+	}
+}
+
+
+</script>

@@ -1,0 +1,68 @@
+package com.anne.impl.${modelName};
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.xsnake.remote.server.Remote;
+import org.xsnake.web.dao.BaseDao;
+import org.xsnake.web.page.IPage;
+import org.xsnake.web.utils.BeanUtils;
+import org.xsnake.web.utils.StringUtil;
+
+import com.anne.api.AnneException;
+import com.anne.api.PageCondition;
+import com.anne.api.${modelName}.I${shortClassName}Service;
+import ${className};
+
+@Service
+@Remote
+@Transactional(readOnly=false,rollbackFor=Exception.class)
+public class ${shortClassName}ServiceImpl implements I${shortClassName}Service{
+
+	@Autowired
+	BaseDao baseDao;
+	
+	@Override
+	public void save${shortClassName}(${shortClassName} ${dShortClassName}) throws AnneException {
+		${dShortClassName}.setCreationBy("sys");
+		${dShortClassName}.setCreationDate(new Date());
+		${dShortClassName}.setLastUpdatedBy("sys");
+		${dShortClassName}.setLastUpdatedDate(new Date());
+		baseDao.save(${dShortClassName});
+	}
+
+	@Override
+	public void update${shortClassName}(${shortClassName} ${dShortClassName}) throws AnneException {
+		${shortClassName} old${shortClassName} = baseDao.get(${shortClassName}.class, ${dShortClassName}.getId());
+		if(old${shortClassName} == null){
+			throw new AnneException(I${shortClassName}Service.class.getName() + " save${shortClassName} : ${i18n.get('没有找到要更新的数据')}");
+		}
+		BeanUtils.copyPropertiesIgnoreNull(${dShortClassName}, old${shortClassName});
+		old${shortClassName}.setLastUpdatedBy("sys");
+		old${shortClassName}.setLastUpdatedDate(new Date());
+		baseDao.update(old${shortClassName});
+	}
+
+	@Override
+	public IPage query${shortClassName}s(PageCondition condition) throws AnneException {
+		List<Object> args = new ArrayList<Object>();
+		StringBuffer hql = new StringBuffer(" from ${shortClassName} r where 1 = 1 ");
+		hql.append(" order by r.lastUpdatedDate desc ");
+		return baseDao.search(hql.toString(),args.toArray(),condition.getRows(), condition.getPage());
+	}
+
+	@Override
+	public void delete${shortClassName}(String ${dShortClassName}Id) throws AnneException {
+		baseDao.deleteById(${shortClassName}.class, ${dShortClassName}Id);
+	}
+
+	@Override
+	public ${shortClassName} get${shortClassName}(String ${dShortClassName}Id) throws AnneException {
+		return baseDao.get(${shortClassName}.class, ${dShortClassName}Id);
+	}
+
+}

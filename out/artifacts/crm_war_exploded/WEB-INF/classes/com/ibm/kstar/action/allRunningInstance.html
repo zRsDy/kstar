@@ -1,0 +1,31 @@
+<@pui.body>
+
+<@form.table id="t1"
+	class="col-xs-12"
+	shrinkToFit = 'true'
+	title="${i18n.get('运行中流程')}"
+	url = "${ctx}/flow/page.html"
+	rowNum = "20"
+	colModel = "[
+	  { name : 'id', label : 'id', hidden : true , width : 60,sortable:true,align:'center' }, 
+	  { name : 'title', label : '${i18n.get('标题')}', width : 90 ,sortable:true},
+	  { name : '', label : '${i18n.get('流程类型')}', width : 90 ,sortable:true},
+	  { name : '', label : '${i18n.get('流程开始时间')}', width : 90 ,sortable:true,formatter:function(cellvalue, options){ return formatDate(cellvalue) }}
+	  ]"
+/>
+
+<@form.table id="t2"
+	class="col-xs-12"
+	shrinkToFit = 'true'
+	title="${i18n.get('当前任务')}"
+	url = "${ctx}/flow/page.html"
+	rowNum = "20"
+	colModel = "[
+	  { name : 'id', label : 'id', hidden : true , width : 60,sortable:true,align:'center' }, 
+	  { name : '', label : '${i18n.get('当前环节')}', width : 90 ,sortable:true},
+	  { name : '', label : '${i18n.get('当前办理人')}', width : 90 ,sortable:true},
+	  { name : '', label : '${i18n.get('流程开始时间')}', width : 90 ,sortable:true,formatter:function(cellvalue, options){ return formatDate(cellvalue) }}
+	  ]"
+/>
+
+</@pui.body>

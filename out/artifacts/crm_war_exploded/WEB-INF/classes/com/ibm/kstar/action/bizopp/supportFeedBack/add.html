@@ -1,0 +1,171 @@
+<@pui.body>
+
+<style type="text/css">
+
+	table {
+		border-collapse: collapse;
+		border-color: #ff0000;
+	}
+
+
+	table td {
+		padding:2px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		height: 24px;
+		border-width: 0px 0px 0px 0px;
+	}
+	input {
+		width: 180px;
+	}
+	select {
+		width: 180px;
+	}
+</style>
+
+<div class="col-xs-12" >
+	<@form.panel title="${i18n.get('新增/编辑')}">
+	<@form.form id="sfb"
+	success="function(){
+		parent.currentParent2.reload_salesOutTable();
+		api.close();
+	}"
+	class="form-horizontal">
+	<div class="main" id="main" style="padding-left: 1px; border-top: 2px solid #e9e9e9 ;" >
+		<table border="0" cellpadding="0" cellspacing="0" >
+			<tr>
+				<td align="right">
+					${i18n.get('支持人员:')}
+				</td>
+				<td align="left">
+					<@form.autocomplete  id="sales" name="sales"
+					idKey='id'
+					required="${i18n.get('请选择人员')}"
+					formatResult="function(data) {return '<div >' +data.name + '</div>';}"
+					url="function(){ return '${ctx}/employee/findList.html'; }"
+					value="{id: '${(receipts.salesmanId)!}',name:'${(receipts.salesmanName)!}'}"
+
+					onSelect="function(data){
+					if( data.id != null && data.id !='' && data.id != 'undefined'){
+					$('#sales').val(data.id);
+					}
+					}"
+					/>
+				</td>
+				<td align="right">
+					${i18n.get('支持日期从:')}
+				</td>
+				<td align="left">
+					<@form.date id="supportBegin" name="supportBegin" format="yyyy-mm-dd" required="${i18n.get('不能为空')}" value="${(entity.supportBegin?date)!}" />
+				</td>
+				<td align="right">
+					${i18n.get('支持日期至:')}
+				</td>
+				<td align="left">
+					<@form.date id="supportEnd" name="supportEnd" format="yyyy-mm-dd" required="${i18n.get('不能为空')}" value="${(entity.supportEnd?date)!}" />
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="5%">
+					${i18n.get('分配日期:')}
+				</td>
+				<td align="left" width="20%">
+					<@form.input name="distributeDate"
+					id="distributeDate" value="${(entity.distributeDate?date)!}"
+					readonly ="readonly"
+					/>
+				</td>
+				<td align="right">
+					${i18n.get('结果描述:')}
+				</td>
+				<td align="left">
+					<@form.textArea
+					id="resultDesc"
+					name="resultDesc"
+					placeholder="${i18n.get('结果描述')}"
+					value="${(entity.resultDesc)!}"
+					/>
+				</td>
+				<td align="right">
+					${i18n.get('支持满意度:')}
+				</td>
+				<td align="left">
+					<@form.select  style="width: 147px;"
+						id="eventResult" name="eventResult" 
+						code="SATISFATION" 
+						value ="${(entity.eventResult)!}"
+						/>
+				</td>
+			</tr>
+				<td align="right">
+					${i18n.get('具体交接内容')}
+				</td>
+				<td align="left" width="20%">
+					<@form.input 
+					id="concreteContent"
+					name="concreteContent"
+					placeholder=""
+					value="${(entity.concreteContent)!}"
+					/>
+				</td>
+				<td align="right">
+					${i18n.get('客户关注问题:')}
+				</td>
+				<td align="left">
+					<@form.input style="width:385px;"
+					id="attentionTrouble"
+					name="attentionTrouble"
+					placeholder=""
+					value="${(entity.attentionTrouble)!}"
+					/>
+				</td>
+				<td align="right">
+					${i18n.get('客户待解决问题:')}
+				</td>
+				<td align="left">
+					<@form.input style="width:200px;"
+					 id="solveTrouble"
+					 name="solveTrouble"
+					 placeholder=""
+					 value="${(entity.solveTrouble)!}"
+					/>
+				</td>
+			<tr>
+			</tr>
+				<td align="right">
+					${i18n.get('客户资料及截至时间:')}
+				</td>
+				<td align="left">
+					<@form.input
+					id="customData"
+					name="customData"
+					placeholder=""
+					value="${(entity.customData)!}"
+					/>
+				</td>
+			<tr>
+			</tr>
+		</table>
+
+		<div class="clearfix form-actions">
+			<div class="col-md-offset-5 col-md-7">
+				<button class="btn btn-info submit" type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('提交')}
+				</button>
+				&nbsp; &nbsp; &nbsp;
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+	</@form.form>
+</div>
+</div>
+</@form.panel>
+</@pui.body>
+<script type="text/javascript">
+
+</script>

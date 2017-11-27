@@ -1,0 +1,23 @@
+
+	<@form.table id="attachment" 
+	class="col-xs-12"
+	title="${i18n.get('附件列表')}" 
+	url = "${ctx}/pi/attachment/page.html?contrId=${contrId}" 
+	rowNum = "10" 
+	addURL = "'${ctx}/pi/attachment/add.html?quotCode=${contrId}'" 
+	editURL= "'${ctx}/pi/attachment/edit.html'" 
+	deleteURL = "'${ctx}/pi/attachment/delete.html'" 
+	colModel = "[
+		{name:'id',label:'${i18n.get('文档')}ID',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'docNm',label:'${i18n.get('文档名称')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'updr',label:'${i18n.get('上传人')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'updDt',label:'${i18n.get('上传时间')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'cNotes',label:'${i18n.get('备注')}',hidden:false,width:200,sortable:true,align:'center' }
+		
+		]" 
+		onSelectRow= "function(selectedData){
+		}"
+		buttons = "[]" > 
+	</@form.table> 
+	
+

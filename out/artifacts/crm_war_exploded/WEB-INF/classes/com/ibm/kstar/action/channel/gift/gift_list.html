@@ -1,0 +1,69 @@
+
+<@cui.body>
+<#if (permission["P09GiftManageAdd"])??>
+	<#assign addURL="'${ctx}/gift/addOrEdit.html'" />
+</#if>
+<#if (permission["P09GiftManageEdit"])??>
+	<#assign editURL="'${ctx}/gift/addOrEdit.html'" />
+</#if>
+
+	<div class="col-xs-12">
+		<@form.table id="manage" 
+			class="col-xs-12"
+			title="${i18n.get('资料与礼品库')}"
+			url = "${ctx}/gift/page.html"
+			rowNum = "20"
+			addURL = "${addURL!}"
+			editURL = "${editURL!}"
+			colModel = "[
+				{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+				{name:'giftCode',label:'${i18n.get('编号')}',hidden:false,width:80,sortable:true,align:'center' }, 
+				{name:'giftDesc',label:'${i18n.get('描述')}',hidden:false,width:350,sortable:true,align:'left' }, 
+				{name:'giftType',label:'${i18n.get('类型')}',hidden:true,width:150,sortable:true,align:'center' }, 
+				{name:'giftTypeName',label:'${i18n.get('类型')}',hidden:false,width:80,sortable:true,align:'center'},
+				{name:'inboundQuantity',label:'${i18n.get('库存总数')}',hidden:false,width:100,sortable:true,align:'left' }, 
+				{name:'usedQuantity',label:'${i18n.get('已用库存数')}',hidden:false,width:100,sortable:true,align:'left' }, 
+				{name:'inventoryQuantity',label:'${i18n.get('可用库存数')}',hidden:false,width:100,sortable:true,align:'left' }, 
+				{name:'giftUnit',label:'${i18n.get('单位')}',hidden:true,width:50,sortable:true,align:'center' }, 
+				{name:'giftUnitName',label:'${i18n.get('单位')}',hidden:false,width:50,sortable:true,align:'center' }, 
+				{name:'currency',label:'${i18n.get('货币')}',hidden:true,width:80,sortable:true,align:'center'}, 
+				{name:'currencyName',label:'${i18n.get('货币')}',hidden:false,width:80,sortable:true,align:'center'}, 
+				{name:'giftPrice',label:'${i18n.get('单价')}',hidden:false,width:100,sortable:true,align:'left' }, 
+				{name:'startDate',label:'${i18n.get('生效日期')}',hidden:false,width:80,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+				{name:'endDate',label:'${i18n.get('失效日期')}',hidden:false,width:80,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+				{name:'manager',label:'${i18n.get('管理人员')}',hidden:false,width:80,sortable:true,align:'center' }
+			]" buttons = "[]" > 
+			
+			<div class="col-xs-12">
+				<div class="form-group col-xs-2" align="right">${i18n.get('编号 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="giftCode" size="30" />
+				</div>	
+				<div class="form-group col-xs-2" align="right">${i18n.get('描述 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="giftDesc" size="30" />
+				</div>
+				<div class="form-group col-xs-2" align="right">${i18n.get('类型 ：')}</div>
+				<div class="form-group col-xs-4">
+					<select name="giftType">
+						<option value="">${i18n.get('全部')}</option>
+						<#list giftTypeLst as element>
+							<option value="${element.id}">${element.name}</option>
+						</#list>
+					</select>
+				</div>
+			</div> 
+		</@form.table>
+	</div>
+	<input type="hidden" id="manageId" class="manageId">
+</@cui.body>
+<script type="text/javascript">
+function reload_manage_2(manageId){
+	$("#manageId").val(manageId);
+	reload_manage();
+}
+function onComplete_manage(){
+	var manageId = $("#manageId").val();
+	$('#'+manageId).trigger('click');
+}
+</script>

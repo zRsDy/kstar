@@ -1,0 +1,318 @@
+<@cui.body>
+<#if (permission["P09TrainApplyAdd"])??>
+	<#assign addURL="'${ctx}/activityApply/addOrEditTrain.html?businessType=train'" />
+</#if>
+<#if (permission["P09TrainApplyEdit"])??>
+	<#assign editURL="true" />
+</#if>
+<#if (permission["P09TrainApplyDelete"])??>
+	<#assign deleteURL="true" />
+</#if>
+<#if (permission["P09TrainApplySubmit"])??>
+	<#assign submitURL="true" />
+</#if>
+<#if (permission["P09TrainApplyClose"])??>
+	<#assign closeURL="true" />
+</#if>
+<#if (permission["P09TrainApplySummaryEdit"])??>
+	<#assign summaryEditURL="true" />
+</#if>
+
+	<div class="col-xs-12">
+		<@form.table id="apply" 
+			class="col-xs-12"
+			title="${i18n.get('培训申请')}"
+			url = "${ctx}/activityApply/page.html?businessType=train"
+			rowNum = "10"
+			addURL = "${addURL!}"
+			colModel = "[
+				{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+				{name:'createdById',label:'${i18n.get('创建人id')}',hidden:true,width:150,sortable:true,align:'center' },
+				{name:'applyCode',label:'${i18n.get('申请单号')}',hidden:false,width:100,sortable:true,align:'center' }, 
+				{name:'applyUnitName',label:'${i18n.get('申请单位')}',hidden:false,width:150,sortable:true,align:'left' }, 
+				{name:'dealerName',label:'${i18n.get('是否经销商')}',hidden:false,width:70,sortable:true,align:'center' },
+				{name:'industryTypeName',label:'${i18n.get('行业类型')}',hidden:false,width:70,sortable:true,align:'center' }, 
+				{name:'activityPurpose',label:'${i18n.get('培训目的')}',hidden:false,width:150,sortable:true,align:'center'}, 
+				{name:'statusName',label:'${i18n.get('状态')}',hidden:false,width:60,sortable:true,align:'center' },
+				{name:'currencyName',label:'${i18n.get('货币')}',hidden:false,width:80,sortable:true,align:'center' }, 
+				{name:'estimatedExpense',label:'${i18n.get('预估费用')}',hidden:false,width:100,sortable:true,align:'center'}, 
+				{name:'receivableExpense',label:'${i18n.get('应收费用')}',hidden:false,width:100,sortable:true,align:'center' }, 
+				{name:'applyDate',label:'${i18n.get('申请日期')}',hidden:false,width:80,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+				{name:'estimatedStartDate',label:'${i18n.get('预计开始日期')}',hidden:false,width:80,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+				{name:'closeDate',label:'${i18n.get('关闭日期')}',hidden:false,width:80,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+				{name:'applierName',label:'${i18n.get('申请人')}',hidden:false,width:80,sortable:true,align:'center'}, 
+				{name:'applierPhone',label:'${i18n.get('申请人电话')}',hidden:false,width:100,sortable:true,align:'center' }, 
+				{name:'explain',label:'${i18n.get('说明')}',hidden:false,width:400,sortable:true,align:'left' }
+			]" 
+			onComplete="function(){
+				$('.applyId').val('');
+				$('.businessId').val('xx');//外部附件文件需要
+				
+				$('#buttons_add_attachment_content').hide();
+				$('#buttons_delete_attachment_content').hide();
+				$('#buttons_add_attachment_summary').hide();
+				$('#buttons_delete_attachment_summary').hide();
+				
+				$('#startDate').val('');
+				$('#endDate').val('');
+				$('#resultAssess').val('');
+				$('#resultExplain').val('');
+				
+				try{
+					reload_content();
+					reload_innerPerson();
+					reload_outerPerson();
+					reload_expense();
+					reload_attachment_content();
+					reload_attachment_summary();
+				}catch(e){
+				
+				}
+			}"
+			onSelectRow="function(){
+				$('.applyId').val(selected_apply.id);
+				$('.businessId').val(selected_apply.id);//外部附件文件需要
+				var userId = '${LOGIN_USER_ID}';
+				if(selected_apply.statusName == '新建' && userId == selected_apply.createdById){
+					$('#buttons_add_attachment_content').show();
+					$('#buttons_delete_attachment_content').show();
+					$('#buttons_add_attachment_summary').show();
+					$('#buttons_delete_attachment_summary').show();
+				}else{
+					$('#buttons_add_attachment_content').hide();
+					$('#buttons_delete_attachment_content').hide();
+					$('#buttons_add_attachment_summary').hide();
+					$('#buttons_delete_attachment_summary').hide();
+				}
+				
+				try{
+					reload_content();
+					reload_attachment_content();
+					reload_innerPerson();
+					reload_outerPerson();
+					reload_expense();
+					reload_attachment_summary();
+				}catch(e){
+				
+				}
+				
+				ajax({
+					url: '${ctx}/activityApply/querySummary.html',
+					type: 'POST',
+					data: {applyId:selected_apply.id},
+					success : function(result) {
+						summaryData = result;
+						if(result){
+							$('#startDate').val(formatDate_date(result.startDate));
+							$('#endDate').val(formatDate_date(result.endDate));
+							$('#resultAssess').val(result.resultAssessName);
+							$('#resultExplain').val(result.resultExplain);
+						}else{
+							$('#startDate').val('');
+							$('#endDate').val('');
+							$('#resultAssess').val('');
+							$('#resultExplain').val('');
+						}
+					}
+				});
+			}"
+			buttons = "[
+				{
+		  			id:'edit_apply',
+		  			label : '${i18n.get('修改')}',
+		  			icon : 'icon-pencil',
+		  			own : ${editURL!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_apply){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}else{
+							var statusEdit = !canEdit(selected_apply.statusName);
+							parent.dialog('${i18n.get('新增')}','${ctx}/activityApply/addOrEditTrain.html?businessType=train&id='+selected_apply.id+'&statusEdit='+statusEdit,window);
+						}
+		  			}
+		  		},
+		  		{
+		  			id:'delete_apply',
+		  			label : '${i18n.get('删除')}',
+		  			icon : 'icon-trash',
+		  			own : ${deleteURL!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_apply){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}else if(canEdit(selected_apply.statusName)){
+							myAlert(e,'${i18n.get('删除')}');
+							return;
+						}else{
+							bootbox.confirm('${i18n.get('你确定要删除？')}' , function(result) {
+						        if(result) {
+									ajax({
+										url: '${ctx}/activityApply/delete.html',
+										type: 'POST',
+										data: {id:selected_apply.id},
+										success : function(result) {
+											exalert(e,'${i18n.get('删除成功！')}');
+											reload_apply();
+										}
+									});
+								 }
+                            });
+						}
+		  			}
+		  		},
+				{
+		  			id:'submit',
+		  			label : '${i18n.get('提交')}',
+		  			icon : 'icon-save',
+		  			own : ${submitURL!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_apply){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}else if(canEdit(selected_apply.statusName)){
+							myAlert(e,'${i18n.get('提交')}');
+							return;
+						}else{
+							ajax({
+								url: '${ctx}/activityApply/checkSubmit.html',
+								type: 'POST',
+								data: {id:selected_apply.id},
+								success : function(result) {
+		                            bootbox.confirm('${i18n.get('你确定要提交申请？')}' , function(result) {
+		                                if( result ){						    
+											ajax({
+												url: '${ctx}/activityApply/submitTrain.html',
+												type: 'POST',
+												data: {id:selected_apply.id},
+												success : function(result) {
+													exalert(e,'${i18n.get('提交成功！')}');
+													reload_apply();
+												}
+											});
+										}
+									});
+								}
+							});
+						}
+		  			}
+		  		},
+		  		{
+		  			id:'close',
+		  			label : '${i18n.get('关闭')}',
+		  			icon : 'icon-trash',
+		  			own : ${closeURL!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_apply){
+		  			        exalert(e,'${i18n.get('请选择要修改的申请！')}');
+						}else{
+							ajax({
+								url: '${ctx}/activityApply/checkClose.html',
+								type: 'POST',
+								data: {id:selected_apply.id},
+								success : function(result) {
+									bootbox.confirm('${i18n.get('关闭后数据不可再修改,你确定要关闭？')}' , function(result) {
+		                                if( result ){
+											ajax({
+												url: '${ctx}/activityApply/close.html',
+												type: 'POST',
+												data: {id:selected_apply.id},
+												success : function(result) {
+													exalert(e,'${i18n.get('关闭成功！')}');
+													reload_apply();
+												}
+											});
+										}
+									});
+								}
+							});
+						}
+		  			}
+		  		},
+		  		{
+		  			id:'summary_apply',
+		  			label : '${i18n.get('总结')}',
+		  			icon : 'icon-save',
+		  			own : ${summaryEditURL!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_apply){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}else if( selected_apply.statusName == '已关闭' ){
+						    exalert(e,'${i18n.get('已关闭的申请不能进行总结!')}');
+						    return;
+						}else{
+							ajax({
+								url: '${ctx}/activityApply/checkSummary.html',
+								type: 'POST',
+								data: {applyId:selected_apply.id},
+								success : function(result) {
+									parent.dialog('${i18n.get('新增')}','${ctx}/activityApply/addOrEditSummary.html?businessType=train&applyId='+selected_apply.id,window);
+								}
+							});
+						}
+		  			}
+		  		}
+			]" > 
+			
+			<div class="col-xs-12">
+				<div class="form-group col-xs-2" align="right">${i18n.get('申请单号 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="applyCode" size="30" />
+				</div>	
+				<div class="form-group col-xs-2" align="right">${i18n.get('活动目的 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="activityPurpose" size="30" />
+				</div>
+				<div class="form-group col-xs-2" align="right">${i18n.get('行业类型 ：')}</div>
+				<div class="form-group col-xs-4">
+					<select name="industryType">
+						<option value="">${i18n.get('全部')}</option>
+						<#list busTypeLst as element>
+							<option value="${element.id}">${element.name}</option>
+						</#list>
+					</select>
+				</div>
+			</div> 
+		</@form.table>
+		<div id="traintabDiv">
+ 		<@plug.tabs tabMain=tabMain>
+		</@plug.tabs>
+		</div>
+		<input type="hidden" id="applyId" class="applyId">
+		<input type ="hidden" id="expenseId" />
+	</div>
+</@cui.body>
+<script type="text/javascript">
+function reload_apply_2(applyId){
+	$(".applyId").val(applyId);
+	$("#expenseId").val('');
+	reload_apply();
+}
+
+function onComplete_apply(){
+	var applyId = $("#applyId").val();
+	$('#'+applyId).trigger('click');
+}
+
+var summaryData = '';
+var activityloadimg="<img src ='${ctx}/assets/img/loading.gif' /> ";
+//子页面附件用
+function showAttachmentPage(tabId, url){
+	url = url + "&businessId=xx";
+	$('#applytab a[href="#'+tabId+'"]').tab('show');
+	$('#'+tabId).html(url +'<br>'+ activityloadimg +' 页面加载中，请稍后...');
+	$('#'+tabId).load(url,function(response,status,xhr){
+		if(status === 'error'){
+			$('#'+tabId).html(url+'<br> 页面加载失败');
+		}
+	});
+}
+
+function canEdit(status){
+	return status != '新建' && status != '已驳回';
+}
+function myAlert(e,type){
+	exalert(e,'只有新建或已驳回的数据可'+type+'!');
+}
+</script>

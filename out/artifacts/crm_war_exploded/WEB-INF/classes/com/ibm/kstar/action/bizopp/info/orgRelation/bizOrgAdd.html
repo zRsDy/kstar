@@ -1,0 +1,39 @@
+<@pui.body>
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1"
+		    success="function(){parent.currentParent.reload_orgRelation(); }"
+			class="form-horizontal">	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" > ${i18n.get('干系方名称 :')} </label>
+						<@form.input
+						id="enterpriseName"  name="enterpriseName" 
+						placeholder="" 
+						tip="${i18n.get('干系方名称 ')}" 
+						required="${i18n.get('不能为空！ ')}"
+						value="${(entity.enterpriseName)!}" 
+						/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" > ${i18n.get('业务关系 :')} </label>
+						<@form.select  
+		             		id="bizRelationship" name="bizRelationship" 
+		             		code="BUSINESS_RELATION" 
+		             		value ="${(entity.bizRelationship)!}"
+		             	/>
+				</div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+</@pui.body>

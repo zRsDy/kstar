@@ -1,0 +1,219 @@
+<#if (permission["P06PaymentDaysT1DetailDelete"])??>
+	<#assign accountsDetailList_deleteRow="true" />
+</#if>
+<#if (permission["P06PaymentDaysT1DetailAddOne"])??>
+	<#assign accountsDetailList_addRow="true" />
+</#if>
+<#if (permission["P06PaymentDaysT1DetailAbstractOrder"])??>
+	<#assign accountsDetailList_addRowBatch="true" />
+</#if>
+
+<@form.table id="accountsDetailListForm" 
+	class="col-xs-12" 
+	title="${i18n.get('申请明细')}" 
+	checkbox="true" 
+	url = "${ctx}/accounts/accountsLines.html?accountsCode=${(accountsCode)!}" 
+	rowNum = "500"  
+	rowNumList = "[500]"
+	search = "false"
+	colModel = "[ 
+		{name:'act',label:'${i18n.get('选择订单行')}',hidden:false,width:80,sortable:false,align:'center'},
+		{name:'id',label:'',hidden:true,width:100,sortable:false,align:'center' }, 
+		{name:'boCode',label:'${i18n.get('商机编号')}',hidden:false,width:100,sortable:false,align:'center' }, 
+		{name:'boName',label:'${i18n.get('商机名称')}',hidden:false,width:100,sortable:false,align:'center' }, 
+		{name:'orderId',label:'${i18n.get('订单ID')}',hidden:true,width:100,sortable:false,align:'center' }, 
+		{name:'orderCode',label:'${i18n.get('订单编号')} ',hidden:false,width:100,sortable:false,align:'center' }, 
+		{name:'deliveryDate',label:'${i18n.get('出货日期')}',hidden:false,width:100,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+		{name:'materielCode',label:'${i18n.get('物料编码')}',hidden:false,width:100,sortable:false,align:'center' }, 
+		{name:'materielName',label:'${i18n.get('物料名称')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'qty',label:'${i18n.get('数量')}',hidden:false,width:100,sortable:false,align:'center' },  
+		{name:'price',label:'${i18n.get('单价')}',hidden:false,width:100,sortable:false,align:'center' }, 
+		{name:'amount',label:'${i18n.get('金额')}',hidden:false,width:100,sortable:false,align:'center' }, 
+		{name:'currency',label:'${i18n.get('币种')}',hidden:false,width:100,sortable:false,align:'center' }, 
+		{name:'qty',label:'${i18n.get('出货数量')}',hidden:false,width:100,sortable:false,align:'center' }, 
+		{name:'isDelivery',label:'${i18n.get('是否出货')}',hidden:false,width:100,sortable:false,align:'center' }, 
+		{name:'isInvoice',label:'${i18n.get('是否开票')}',hidden:false,width:100,sortable:false,align:'center' }, 
+		{name:'isDelay',label:'${i18n.get('是否逾期')}',hidden:false,width:100,sortable:false,align:'center' }, 
+		{name:'payableDate',label:'${i18n.get('应付日期')}',hidden:false,width:100,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+		{name:'delayDate',label:'${i18n.get('延期至')}',hidden:false,width:100,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }
+	]" buttons = "[
+	
+	{id:'accountsDetailList_deleteRow', label : '${i18n.get('删除')}', icon : 'icon-remove',own : ${accountsDetailList_deleteRow!'false'},
+		handler : function(e,rowData){
+			delRow('accountsDetailListForm');
+		}
+	},
+	{id:'accountsDetailList_addRow',label : '${i18n.get('增加一行')}', icon : 'icon-add',own : ${accountsDetailList_addRow!'false'},
+		handler : function(e,rowData){
+			addRow();
+		}
+	},
+	{id:'accountsDetailList_addRowBatch', label : '${i18n.get('提取订单')}', icon : 'icon-save',own : ${accountsDetailList_addRowBatch!'false'},
+		handler : function(e,rowData){
+			 var companyId =  $('#companyId').val();
+			 if(companyId){
+				$('#multiSelectOrder').click();
+			 }else{
+				 alert('${i18n.get('请先选择申请单位')}');
+			 }
+		}
+	}	
+
+	]" 
+
+	onComplete = "function() { 
+		var ids = $('#accountsDetailListForm').jqGrid('getDataIDs');
+ 		$.each(ids,function(i,id){
+			 	var cl = ids[i]; 
+			var ps = '<input style=\\'height:22px;width:70px;\\' type=\\'button\\' value=\\'${i18n.get('选择订单')}\\' onclick=orderSelect(\\''+cl+'\\'); />';
+			$('#accountsDetailListForm').jqGrid('setRowData', cl, { act : ps});
+ 		});
+	}"
+	> 
+</@form.table> 
+
+<div style="display: none;" >
+	<@biz.picker_product id="selectOrder"
+		urlFunction="function(){return '${ctx}/common/order/selectList.html?customerId='+ $('#companyId').val()
+										+'&customerName='+$('#companyName').val();
+		}"
+		button="${i18n.get('选择订单')}"
+		callback="function(data){
+			if(data){
+			    delete data.qty;
+				data['orderId'] = data.id;
+				data['qty'] = data.proQty;
+				data['boCode'] = data.sourceCode;
+				data['boName'] = data.sourceName;
+				
+				delete data.id;
+				$('#accountsDetailListForm').jqGrid('setRowData',selectId,data);
+				calculateAmount();
+			 }
+		}"
+	/>
+</div>
+
+<div style="display: none;" >
+	<@biz.picker_product id="multiSelectOrder" 
+			urlFunction="function(){return '${ctx}/common/order/multiSelectList.html?customerId='+ $('#companyId').val()
+					+'&customerName='+$('#companyName').val();
+			}" 
+	 		button="${i18n.get('批量选择订单')}" 
+			callback="function(datas){
+				if(datas){
+                		addRowBatch(datas);
+                		calculateAmount();
+				 }
+			}"
+	/>
+</div>
+
+
+<script type="text/javascript">
+
+	$(window).resize(function(){  
+	 	$("#accountsDetailListForm").setGridWidth($(window).width()-110);
+	});
+	
+	var selectId = "";
+	function orderSelect(rowid){
+		 selectId = rowid ;
+		var companyId =  $('#companyId').val();
+		 if(companyId){
+			 $('#selectOrder').click();
+		 }else{
+			 alert('${i18n.get('请先选择开票客户')}');
+		 }
+	}
+	
+	var newrowid = 0;  
+	function addRow(){   
+	    //var selectedId = $("#accountsDetailListForm").jqGrid("getGridParam", "selrow");   
+	    //var ids = jQuery("#accountsDetailListForm").jqGrid('getDataIDs');  
+	    //获得当前最大行号（数据编号）  
+	    //var rowid = Math.max.apply(Math,ids);  
+	    //获得新添加行的行号（数据编号）  
+	    
+	    newrowid = newrowid+1;
+	    var dataRow = {    
+	        id: ""
+	    };      
+	      
+	    //将新添加的行插入到第一列  
+	    $("#accountsDetailListForm").jqGrid("addRowData", newrowid, dataRow, "first");  
+	    //设置grid单元格不可编辑  
+	    $("#accountsDetailListForm").setGridParam({cellEdit:false});  
+	    //设置grid单元格可编辑  
+	    //$("#accountsDetailListForm").jqGrid('editRow', newrowid, false);  
+	    //确定按钮可用    
+	    //给添加的列加选择按钮  
+		var ps = '<input  type=\"button\" value=\"${i18n.get('选择订单')}\" onclick=\"orderSelect(\''+newrowid+'\');\" />'; 
+		jQuery('#accountsDetailListForm').jqGrid('setRowData', newrowid, { act : ps}); 
+	}
+	
+	//批量增加行
+	function addRowBatch(datas){
+		$.each(datas,function(i,data){
+			
+			delete data.qty;
+			data['orderId'] = data.id;
+			data['qty'] = data.proQty;
+			data['boCode'] = data.sourceCode;
+			data['boName'] = data.sourceName;
+			
+			delete data.id;
+			
+			var ids = jQuery("#accountsDetailListForm").jqGrid('getDataIDs');  
+			//获得当前最大行号（数据编号）  
+			//var rowid = Math.max.apply(Math,ids);  
+			newrowid = newrowid+1;  
+		    //将新添加的行插入到第一列  
+		    $("#accountsDetailListForm").jqGrid("addRowData", newrowid, data, "first");  
+		    //设置grid单元格不可编辑  
+		    $("#accountsDetailListForm").setGridParam({cellEdit:false});  
+		    //设置grid单元格可编辑  
+		    //$("#accountsDetailListForm").jqGrid('editRow', newrowid, false);  
+		    //确定按钮可用    
+		    //给添加的列加选择按钮  
+			var ps = '<input  type=\"button\" value=\"${i18n.get('选择订单')}\" onclick=\"orderSelect(\''+newrowid+'\');\" />'; 
+			jQuery('#accountsDetailListForm').jqGrid('setRowData', newrowid, { act : ps}); 
+ 		});
+	}
+	
+	function delRow(table){
+		var ids = jQuery('#'+table).jqGrid('getGridParam','selarrrow'); 
+		var _ids = [];
+		 $.each(ids,function(i,id){
+			 _ids.push(id);
+		 });
+	     if(!ids || ids.length <= 0 ){
+	      　　	alert('${i18n.get('请选择要删除的行')}');
+	      　　	return;
+	     }else{
+	    	 if(confirm('${i18n.get('是否删除选择的行')}')){
+		    	 $.each(_ids,function(i,id){
+		    		 $('#'+table).jqGrid('delRowData', id);
+		    	 });
+	    	 }
+	     } 
+	}
+	//计算金额
+	function calculateAmount(){
+		$('#accountsDetailListForm').trigger('blur');
+		var delayAmount = 0;
+		var overdueAmount = 0;
+		var ids = $('#accountsDetailListForm').jqGrid('getDataIDs');
+ 		$.each(ids,function(i,id){
+			var rowData = $("#accountsDetailListForm").jqGrid("getRowData",id);
+			if(rowData.amount){
+				delayAmount = delayAmount +  parseFloat(rowData.amount);
+			}
+			if(rowData.isDelay =="1"){
+				overdueAmount = overdueAmount + parseFloat(rowData.amount);
+			}
+ 		});
+ 		$("#delayAmount").val(delayAmount);
+ 		$("#overdueAmount").val(overdueAmount);
+	}
+</script>

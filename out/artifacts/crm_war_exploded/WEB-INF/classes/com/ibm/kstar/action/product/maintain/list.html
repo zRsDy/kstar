@@ -1,0 +1,35 @@
+<#escape x as x?html>
+<@cui.body>
+
+		<#assign addURL = "'${ctx}/product/maintain/add.html'"/>
+
+		<#assign editURL = "'${ctx}/product/maintain/edit.html'"/>
+
+		<#assign delURL = "'${ctx}/product/maintain/delete.html'"/>
+	
+	<@form.table id="maintainList" 
+		class="col-xs-12"
+		title="${i18n.get('产品维护申请')}" 
+		url = "${ctx}/product/maintain/page.html" 
+		rowNum = "20" 
+		addURL = "${addURL!}"
+		editURL= "${editURL!}"
+		deleteURL= "${delURL!}"
+		colModel = "[
+			{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+			{name:'maintainCode',label:'${i18n.get('申请编号')}',hidden:false,width:200,sortable:false,align:'center' },
+			{name:'applicantId',label:'${i18n.get('申请人Id')}',hidden:true,width:100,sortable:false,align:'center' },
+			{name:'applicantName',label:'${i18n.get('申请人')}',hidden:false,width:150,sortable:false,align:'center' },
+			{name:'applicantDept',label:'${i18n.get('申请部门Id')}',hidden:true,width:100,sortable:false,align:'center' },
+			{name:'applicantDeptName',label:'${i18n.get('申请部门')}',hidden:false,width:400,sortable:false,align:'left' },
+			{name:'reqCompleteDate',label:'${i18n.get('需求完成时间')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }  },
+			{name:'processStatus',label:'${i18n.get('处理状态')}',hidden:true,width:100,sortable:false,align:'center' },
+			{name:'processStatusName',label:'${i18n.get('处理状态')}',hidden:false,width:150,sortable:false,align:'center' },
+			{name:'status',label:'${i18n.get('状态')}',hidden:true,width:100,sortable:false,align:'center' },
+			{name:'statusName',label:'${i18n.get('状态')}',hidden:true,width:150,sortable:false,align:'center' }
+			]" 
+		>
+	</@form.table> 
+
+</@cui.body>
+</#escape>

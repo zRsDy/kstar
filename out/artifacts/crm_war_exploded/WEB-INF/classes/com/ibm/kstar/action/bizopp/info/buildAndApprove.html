@@ -1,0 +1,107 @@
+<#escape x as x?html>
+<@pui.body> 
+				
+	<div class="col-xs-12" >
+		<@form.panel title="${i18n.get('立项类型')}">
+		<@form.form id="t10" success="function(){
+			alert('${i18n.get('立项审批提交成功！')}'); 
+			parent.currentParent2.closeButton();
+			api.close();
+		}" class="form-horizontal">
+
+			<div class="form-group">
+				<div class="radio" style="height:70px">
+					<label>
+						<@form.radio  name="projectType" id='c1' value="1" selectValue=(lovMember.leafFlag)!'1'/>
+						<span class="lbl">${i18n.get('报价单')}</span>
+					</label>
+					
+					<label>
+						<@form.radio  name="projectType" id='c2' value="2" selectValue=(lovMember.leafFlag)!'1'/>
+						<span class="lbl">${i18n.get('框架协议')}</span>
+					</label>
+				</div>
+				<div id="bidProject" class="radio">
+                    <label id="l1">
+
+						<strong style="color: red;">*</strong>${i18n.get('报价单名称:')}
+                        <@form.input name="quotName" type="text"
+                        id="quotName" value=""
+                        />
+
+						<strong style="color: red;">*</strong><span class="lbl">${i18n.get('是否工程评审：')}</span>
+						<input type="checkbox" id="isProReview" name="isProReview" value=""/>
+                        <input type="hidden" id="isProReviewBox" name="isProReviewBox" value="0"/>
+
+						<strong style="color: red;">*</strong><span class="lbl">${i18n.get('是否投标类型：')}</span>
+						<input type="checkbox" id="isBidProject" name="isBidProject" value=""/>
+                        <input type="hidden" id="isBidProjectBox" name="isBidProjectBox" value="0"/>
+
+                    </label>
+                    <label id="l2">
+
+						<strong style="color: red;">*</strong>${i18n.get('合同名称:')}
+                        <@form.input name="contrName" type="text"
+                        id="contrName" value=""
+                        />
+
+                    </label>
+				</div>
+			</div>
+				
+			
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+				<#-- 商机界面-立项审批-提交 --><#-- /bizopp/buildAndApprove.html -->
+					<#if permission["P03BizOppoProjApprovalSubmit"]??>
+					<button class="btn btn-info submit" type="button" >
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+					</#if>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+		
+		<script type="text/javascript">
+                $(document).ready(function () {
+                    $("#l1").show();
+                    $("#l2").hide();
+                });
+		    	$("#c1").click(function(){
+                    $("#l1").show();
+                    $("#l2").hide();
+		    	});
+		    	
+		    	$("#c2").click(function(){
+                    $("#l2").show();
+                    $("#l1").hide();
+		    	});
+		    	
+		    	$("#isBidProject").click(function(){
+		    		_isSelect = $('#isBidProject').prop('checked');
+		    		if (_isSelect == true) {
+		    			$("#isBidProjectBox").val("1");
+		    		} else {
+		    			$("#isBidProjectBox").val("0");
+		    		}
+		    	});
+
+
+            $("#isProReview").click(function () {
+                _isSelect2 = $('#isProReview').prop('checked');
+                if (_isSelect2 == true) {
+                    $("#isProReviewBox").val("1");
+                } else {
+                    $("#isProReviewBox").val("0");
+                }
+            });
+		</script>
+</@pui.body>
+</#escape>

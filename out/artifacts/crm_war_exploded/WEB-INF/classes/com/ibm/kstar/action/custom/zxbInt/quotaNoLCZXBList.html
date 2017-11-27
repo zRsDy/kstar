@@ -1,0 +1,117 @@
+<@pui.body>
+    <@form.table
+        id="tableQuotaNoLCList"
+        class="col-xs-12"
+        title="${i18n.get('中信保限额申请(非LC)')}"
+        url="${ctx}/quotaNoLCZXB/quotaNoLCZXBList.html"
+        rowNum="5"
+        addURL="'${ctx}/quotaNoLCZXB/add.html'"
+        editURL="'${ctx}/quotaNoLCZXB/edit.html'"
+        deleteURL="'${ctx}/quotaNoLCZXB/delete.html'"
+        colModel="[
+					{name:'id',label:'ID',hidden:true,width:200,sortable:false,align:'center' },
+					{name:'corpSerialNo',label:'${i18n.get('流水号')}',hidden:false,width:100,sortable:false,align:'center' },
+					{name:'buyerChnName',label:'${i18n.get('客户中文名称')}',hidden:false,width:200,sortable:false,align:'center' },
+					{name:'buyerEngName',label:'${i18n.get('客户英文名称')}',hidden:false,width:200,sortable:false,align:'center' },
+					{name:'apl_status_desc',label:'${i18n.get('申请状态')}',hidden:false,width:100,sortable:false,align:'center' },
+					{name:'apply_status',label:'${i18n.get('申请状态CODE')}',hidden:true,width:100,sortable:false,align:'center' },
+					{name:'app_status_desc',label:'${i18n.get('批复状态')}',hidden:false,width:100,sortable:false,align:'center' },
+					{name:'policyNo',label:'${i18n.get('保险单号')}',hidden:false,width:100,sortable:false,align:'center' },
+					{name:'notifyTime',label:'${i18n.get('批复日期')}',hidden:false,width:100,sortable:false,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+					{name:'sinosureBuyerNo',label:'${i18n.get('买家代码')}',hidden:false,width:100,sortable:false,align:'center' },
+					{name:'quotaSumApply',label:'${i18n.get('批复额度')}',hidden:false,width:100,sortable:false,align:'center' },
+					{name:'applicant',label:'${i18n.get('申请人')}',hidden:false,width:100,sortable:false,align:'center' },
+					{name:'applyTime',label:'${i18n.get('申请时间')}',hidden:false,width:100,sortable:false,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }
+					]"
+					
+		onSelectRow= "function(selectedData){
+							var status = selectedData.apply_status;
+							switch (status){
+								case 'Drfat':
+								  $('#edit_tableQuotaNoLCList').removeAttr('disabled');
+								  $('#delete_tableQuotaNoLCList').removeAttr('disabled');
+								  $('#submit_tableQuotaNoLCList').removeAttr('disabled');
+								  break;
+								case 'Sumited':
+								  $('#edit_tableQuotaNoLCList').attr({'disabled':'true'});
+								  $('#delete_tableQuotaNoLCList').attr({'disabled':'true'});
+								  $('#submit_tableQuotaNoLCList').attr({'disabled':'true'});
+								  break;
+								case 'Responded':
+								  $('#edit_tableQuotaNoLCList').attr({'disabled':'true'});
+								  $('#delete_tableQuotaNoLCList').attr({'disabled':'true'});
+								  $('#submit_tableQuotaNoLCList').attr({'disabled':'true'});
+								  break;
+							 }
+						}"
+						
+		buttons = "[
+				{
+		  			id:'submit_tableQuotaNoLCList',
+		  			label : '${i18n.get('提交申请')}',
+		  			icon : 'icon-ok',
+		  			own : true,
+		  			handler : function(e,rowData){
+		  					if(!selected_tableQuotaNoLCList){
+								exalert(e,'${i18n.get('没有选中任何数据!')}');
+								return;
+							}
+							if('Drfat' !== selected_tableQuotaNoLCList['apply_status']){
+								exalert(e,'${i18n.get('请选择申请状态为新建(Drfat)的信息记录')}');
+								return;
+							}
+							bootbox.confirm('${i18n.get('确定要提交申请单号')}：'+ selected_tableQuotaNoLCList['corpSerialNo'] + ' ? ', function(res) {
+								if(res) {
+									ajax({
+										url: '${ctx}/quotaNoLCZXB/submit.html',
+										type: 'POST',
+										data: {id:selected_tableQuotaNoLCList.id},
+										success : function(result) {
+											exalert(e,result);
+											reload_tableQuotaNoLCList();
+										}
+									});
+								}
+							});
+						}
+		  		 },
+
+		  		{ id:'copy_tableQuotaNoLCList',
+		  			label : '${i18n.get('复制')}',
+		  			icon : 'icon-copy',
+		  			own : true,
+		  			handler : function(e,rowData){
+		  					if(!selected_tableQuotaNoLCList){
+								exalert(e,'${i18n.get('没有选中任何数据!')}');
+								return;
+							}
+							bootbox.confirm('${i18n.get('确定要复制单号')}：'+ selected_tableQuotaNoLCList['corpSerialNo'] + ' ? ', function(res) {
+						        if(res) {
+									ajax({
+										url: '${ctx}/quotaNoLCZXB/copy.html',
+										type: 'POST',
+										data: {id:selected_tableQuotaNoLCList.id},
+										success : function(result) {
+											exalert(e,result);
+											reload_tableQuotaNoLCList();
+										}
+									});
+								}
+              				});
+						}
+		  		 }
+			]">
+
+        <div class="col-xs-12" style="padding-top: 20px;">
+            <div class="form-group col-xs-3">
+                <input type="text" id="searchKey" name="searchKey" placeholder="'${i18n.get('请输入流水号或者客户名称')}'" size="30"/>
+            </div>
+            <div class="form-group col-xs-2">
+                <button type="submit" class="btn btn-info">
+                    <i class="icon-search bigger-110"></i>
+                    	${i18n.get('查询')}
+                </button>
+            </div>
+        </div>
+    </@form.table>
+</@pui.body>

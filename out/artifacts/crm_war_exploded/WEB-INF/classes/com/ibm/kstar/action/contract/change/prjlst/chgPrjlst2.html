@@ -1,0 +1,144 @@
+<div style="overflow:hidden;">
+	<div>
+	<@form.panel title="">
+		
+		<table style="width: 800px;" >
+				<tr>
+						<td id="treeTd" style="width:100px" valign="top">
+							<@form.panel title="${i18n.get('工程清单目录')}" style='height:100'>
+								<@plug.tree 
+								checkbox="false" 
+								id="chgPrjlsttree1" 
+								asyncUrl='${ctx}/change/prjlst/treePrjlst.html?groupId=PRJLSTPRDCAT&contrId=${contrId}'
+								onClick=" function(event, treeId, treeNode){
+							  		$('#parentId').val(treeNode.id);
+							  		reload_chgPrjlst();
+							  		if(treeNode.leafFlag == 'Y'){
+							  			$('#add_prjlst').hide();
+							  		}else{
+							  			$('#add_prjlst').show();
+							  		}				  		
+							  	}"
+							  	
+							  	 viewName="function(data){
+										return data.name ;
+									}"
+								/>
+							</@form.panel>
+						</td>
+				
+					<td valign="top">
+						<@form.table id="chgPrjlst"
+						class="col-xs-12"
+						shrinkToFit = 'true'
+						title="${i18n.get('工程清单列表')}"
+						url = "${ctx}/change/prjlst/prjLstPage.html?contrId=${contrId}"
+						rowNum = "20"
+						addURL = "'${ctx}/change/prjlst/addPrjlst.html?contrId=${contrId}&groupId=PRJLSTPRDCAT&parentId=' + $('#parentId').val()"
+						editURL = "'${ctx}/change/prjlst/editPrjlst.html?contrId=${contrId}'"
+						<!-- deleteURL = "'${ctx}/change/prjlst/deletePrjlst.html?contrId=${contrId}'" --> 
+						colModel = "[
+						  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:true,align:'center' }, 
+						  { name : 'lvmenber.code', label : '${i18n.get('编码')}',hidden : true, width : 90 ,sortable:true}, 
+						  { name : 'prjlst.prdNm', label : '${i18n.get('产品名称')}', width : 100 ,sortable:true },
+						  { name : 'prjlst.prdCtg', label : '${i18n.get('产品分类')}', width : 80 ,sortable:true ,editable : false },
+						  { name : 'prjlst.prdTyp', label : '${i18n.get('产品型号')}', width : 80 ,sortable:true ,editable : false },
+						  { name : 'prjlst.materCode', label : '${i18n.get('物料号')}', width : 80 ,sortable:true ,editable : false },
+						  { name : 'prjlst.prdUnt', label : '${i18n.get('单位')}', width : 50 ,sortable:true ,editable : false },
+						  { name : 'prjlst.prdSprc', label : '${i18n.get('定价')}', width : 50 ,sortable:true  ,editable : false},
+						  { name : 'prjlst.prdPrc', label : '${i18n.get('报价')}', width : 50 ,sortable:true ,editable : false},
+						  { name : 'prjlst.amt', label : '${i18n.get('数量')}', width : 50 ,sortable:true },
+						  { name : 'prjlst.ttlUnt', label : '${i18n.get('单品总金额')}', width : 80 ,sortable:true ,editable : false},
+						  { name : 'prjlst.avgTtl', label : '${i18n.get('平均总单价')}', width : 80 ,sortable:true ,editable : false},
+						  { name : 'prjlst.newPrdPrc', label : '${i18n.get('新报价')}', width : 50 ,sortable:true ,editable : false},
+						  { name : 'prjlst.newAmt', label : '${i18n.get('新数量')}', width : 50 ,sortable:true },
+						  { name : 'prjlst.newTtlUnt', label : '${i18n.get('新单品总金额')}', width : 80 ,sortable:true ,editable : false},
+						  { name : 'prjlst.newAvgTtl', label : '${i18n.get('新平均总单价')}', width : 80 ,sortable:true ,editable : false},
+						  { name : 'prjlst.updtFlag', label : '${i18n.get('是否变更')}', width : 150 ,sortable:true ,editable : false,align:'center', formatter:function(cellvalue, options, rowObject){ return chekFlag(cellvalue)} },
+						  { name : 'prjlst.updatType', label : '${i18n.get('变更类型')}', width : 150 ,sortable:true ,editable : false},
+						  
+						  { name : 'prjlst.proDesc', label : '${i18n.get('产品描述')}', width : 150 ,sortable:true ,editable : false},
+						  { name : 'prjlst.cusProDesc', label : '${i18n.get('客户产品描述')}', width : 150 ,sortable:true ,editable : false},
+						  
+						  { name : 'prjlst.notes', label : '${i18n.get('备注')}', width : 50 ,sortable:true }
+						  ]"
+						  
+						  onComplete="function(){}"
+						  
+						 buttons = "[
+						  		{
+						  			id:'deleteButton',
+						  			label : '${i18n.get('删除')}',
+						  			icon : 'icon-trash',
+						  			own : true,
+						  			handler : function(e,rowData){
+										if(!selected_chgPrjlst){
+											alert('${i18n.get('没有选中任何数据')}!');
+											return;
+										}
+										bootbox.confirm('${i18n.get('你确定要删除该条数据')}【'+selected_chgPrjlst.code+','+selected_chgPrjlst.name+'】?', function(result) {
+											if(result) {
+												ajax({
+													type:'post',
+													url : '${ctx}/lov/member/delete.html',
+													data: selected_chgPrjlst,
+													success : function(result) {
+														try{ reload_chgPrjlsttree1(selected_chgPrjlst.parentId); }catch(e){ }
+														reload_chgPrjlst();
+														selected_chgPrjlst = null;
+													},
+													error : function(result) {
+														alert(result);
+													}
+												});
+											}
+										});
+						  			}
+						  		}
+						  	]"
+						>
+						
+						<div class="col-xs-12">
+							<input type="hidden" id="parentId" name="parentId" />
+							<div class="form-group col-xs-3">
+								<input type="text" id="searchKey" name="searchKey" placeholder='${i18n.get('查询关键字')}' />
+							</div>	
+							<div class="form-group col-xs-2">
+								<button class="btn btn-info submit" type="button">
+									<i class="icon-search bigger-110"></i>
+									${i18n.get('查询')}
+								</button>
+							</div>
+						</div>
+						</@form.table>
+					</td>
+				</tr>
+			</table>
+	
+	
+		
+<script type="text/javascript">
+function checkForm(cellvalue){
+	//alert("*****" + cellvalue);
+	var html="<input type=\"checkbox\"  onclick=\"return false;\" />";
+	if(cellvalue == 'N'){
+		 return "<input type=\"checkbox\" checked=\"checked\"  onclick=\"return false;\"/>";
+		
+	}else if(cellvalue == 'Y'){
+		return html;
+	}
+}
+
+function chekFlag(cellvalue){
+	if(cellvalue=="1"){
+		var html="<input type='checkbox' checked='checked' />";
+	}
+	return html;
+}
+
+</script>
+</@form.panel>
+</div>
+
+</div>
+

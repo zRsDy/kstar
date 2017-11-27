@@ -1,0 +1,147 @@
+<@pui.body>
+<#if !unableAdd>
+	<#assign addURL="'${ctx}/common/attachment/add.html?bizId=${bizId}&docGroupCode=${docGroupCode}&needDocType=${needDocType!}&bizType=${bizType}&bizId1='+$('#businessId_${bizType!}').val()" />
+</#if>
+<#if !unableDelete>
+	<#assign deleteURL="'${ctx}/common/attachment/delete.html'" />
+</#if>
+<#if templateURL??>
+	<#assign templateURL="true" />
+</#if>
+<#if editURL??>
+	<#assign demandsTemplate="true" />
+</#if>
+<#if editURL??>
+	<#assign editURL="'${ctx}/common/attachment/edit.html?docGroupCode=${docGroupCode}'" />
+</#if>
+<script type="text/javascript">
+function att(cellvalue){
+	var html="<a href=\""+cellvalue+"\" target=\"_blank\" id=\"downPdf\"><img src=\"${ctx}/assets/img/attach.png\" border=\"0\"></a>";
+	return html;
+}
+
+function getSelectId(e,rowData){
+	var prjrows= $('#attachment_${bizType!}').jqGrid('getGridParam','selarrrow'); 
+	var ids=[];
+	var idsStr = '';
+	$.each(prjrows,function(i,id){
+		var item = $('#attachment_${bizType!}').jqGrid('getRowData',id);
+		ids.push(item.id);
+		idsStr +=   item.id +',';
+	});	
+	idsStr = idsStr.substring(0,idsStr.length-1);
+	var d = {};
+	return idsStr;
+}
+
+function deleteList(e,rowData){
+		var da={} ; 
+		var prjrows= $('#attachment_${bizType!}').jqGrid('getGridParam','selarrrow'); 
+		var ids=[];
+		var idsStr = '';
+ 		$.each(prjrows,function(i,id){
+				var item = $('#attachment_${bizType!}').jqGrid('getRowData',id);
+ 			ids.push(item.id);
+ 			idsStr +=   item.id +',';
+ 		});	
+ 		idsStr = idsStr.substring(0,idsStr.length-1);
+ 		var d = {};
+ 		d.idsStr = idsStr;
+		bootbox.confirm('${i18n.get('您确定要删除选中的数据吗')}？' , function(result) {
+		if(result) {
+			ajax({
+				type:'post',
+				url : '${ctx}/common/attachment/deleteList.html',  
+				async : false,
+				data: d,
+				success : function(result) {
+					alert('${i18n.get('删除成功！')}');
+					window.location.reload();
+				}
+			});
+		}
+	});
+}
+</script>
+	<input type="hidden" id="${bizType!}"  name="docGroupCode"   value="${(docGroupCode)!}"/>
+	<@form.table id="attachment_${bizType!}" 
+		checkbox="${demandsTemplate!'false'}"
+		class="col-xs-12"
+		title="${title!'附件列表111'}" 
+		url = "${ctx}/common/attachment/page.html?bizId=${bizId}&docGroupCode=${docGroupCode}&bizType=${bizType}" 
+		rowNum = "10" 
+		addURL = "${addURL!}" 
+		editURL = "${editURL!}"
+		deleteURL = "${deleteURL!}" 
+		colModel = "[
+			{name:'id',label:'文档ID',hidden:true,width:100,sortable:true,align:'center' },
+			{name:'docNm',label:'${i18n.get('文档名称')}',hidden:false,width:450,sortable:true,align:'center' },
+			{name:'docTp',label:'${i18n.get('文档类型')}',hidden:true,width:200,sortable:true,align:'center' },
+			{name:'docTpDesc',label:'${i18n.get('文档类型')}',hidden:false,width:100,sortable:true,align:'center' },
+			{name:'notes',label:'${i18n.get('备注')}',hidden:false,width:200,sortable:true,align:'center' },
+			{name:'docUrl',label:'${i18n.get('附件')}',hidden:false,width:100,sortable:true,align:'center',formatter:function(cellvalue, options, rowObject){ return att(cellvalue)} },
+			{name:'docUpdr',label:'${i18n.get('上传人')}',hidden:true,width:200,sortable:true,align:'center' },
+			{name:'docUpdrNm',label:'${i18n.get('上传人')}',hidden:false,width:150,sortable:true,align:'center' },
+			{name:'dtUpdDt',label:'${i18n.get('上传时间')}',hidden:false,width:200,sortable:true,align:'center' , formatter:function(cellvalue, options){ return formatDate(cellvalue) }}
+			]" 
+			onSelectRow= "function(selectedData){
+			}"
+			
+			onComplete="function(){
+				if($('#${bizType!}').val()=='ATTACHMENTTYPEGROUP' || $('#${bizType!}').val()==null || $('#${bizType!}').val()== 'undefined'|| $('#${bizType!}').val()==''){
+					$('#attachment').jqGrid('hideCol', ['docTpDesc']);
+				}
+			}"
+		buttons = "[
+			{
+				id:'export_t8',
+				label : '${i18n.get('模板导出')}',
+				icon : 'icon-save',
+				own : ${templateURL!'false'},
+				handler : function(e,rowData){
+					var requestPath = '${ctx}/product/exportDemandTemplate.html';
+					parent.dialog('${i18n.get('需求单模板')}', requestPath, window);
+				},
+			},{
+				id:'export_t9',
+				label : '${i18n.get('批量新增')}',
+				icon : 'icon-save',
+				own : ${demandsTemplate!'false'},
+				handler : function(e,rowData){
+					var requestPath = '${ctx}/common/attachment/addFileList.html?bizId=${bizId}&docGroupCode=${docGroupCode}&bizType=${bizType}&bizId1='+$('#businessId_${bizType!}').val();
+					parent.dialog('${i18n.get('需求单模板')}', requestPath, window);
+				},
+			},{
+				id:'export_t10',
+				label : '${i18n.get('批量修改')}',
+				icon : 'icon-edit',
+				own : ${demandsTemplate!'false'},
+				handler : function(e,rowData){
+					var ids =  getSelectId(e,rowData);
+					var requestPath = '${ctx}/common/attachment/editList.html?docGroupCode=${docGroupCode}&id='+ids;
+					parent.dialog('${i18n.get('需求单模板')}', requestPath, window);
+				},
+			},{
+				id:'export_t11',
+				label : '${i18n.get('批量删除')}',
+				icon : 'icon-trash',
+				own : ${demandsTemplate!'false'},
+				handler : function(e,rowData){
+		  				deleteList(e,rowData);
+					}
+			}
+		]" >
+		<div class="col-xs-12">
+			<input type="hidden" id="businessId_${bizType!}" class="businessId" name="businessId" /> 
+			<div class="form-group col-xs-2" align="right">${i18n.get('文档名称 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="docNm" size="30" />
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('备注 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="notes" size="30" />
+			</div>
+		</div>
+	</@form.table> 
+
+</@pui.body>

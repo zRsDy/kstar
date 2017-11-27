@@ -1,0 +1,689 @@
+<@pui.body>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	initialPage();
+});
+
+
+	
+function initialPage(){
+	setCheckboxStat();
+	setSelectStat();
+}	
+
+function setSelectStat(){
+    $("#okcHeader input[type='text']").attr("readonly", "readonly");
+    $("#okcHeader textarea").attr("readonly", "readonly");
+    $("#okcHeader select").attr("disabled", "disabled");
+    $("#okcHeader input[type='search']").attr("disabled", "disabled");
+    $("#okcHeader input[type='checkbox']").attr("disabled", "disabled");
+    $("#okcHeaderOrder input[type='radio']").attr("disabled", "disabled");
+}
+ 
+function setCheckboxStat(){
+	//初始化checkbox
+	 //我司先盖章标识
+	 var checked1= $("#isSealFirst").val();
+	  if (checked1 == '1'){
+	  $("#isSealFirstBox").attr("checked","true"); 
+	 }else{
+		 $("#isSealFirst").val('0');
+	  $("#isSealFirstBox").removeAttr("checked"); 
+	 }
+	 //有效标识
+	 var checked2= $("#isValid").val();
+	 if (checked2 == '1'){
+	  $("#isValidBox").attr("checked","true"); 
+	 }else{
+		 $("#isValid").val('0');
+	  $("#isValidBox").removeAttr("checked"); 
+	 }
+	 //变更标识
+	 var checked3= $("#isChange").val();
+	  if (checked3 == '1'){
+	  $("#isChangeBox").attr("checked","true"); 
+	 }else{
+		 $("#isChange").val('0');
+	  $("#isChangeBox").removeAttr("checked"); 
+	 }
+	 //是否成套标识
+	 var checked4= $("#isWholeSet").val();
+	  if (checked4 == '1'){
+	  $("#isWholeSetBox").attr("checked","true"); 
+	 }else{
+		 $("#isWholeSet").val('0');
+	  $("#isWholeSetBox").removeAttr("checked"); 
+	 }
+	 //有配置清单标识
+	 var checked5= $("#isConfList").val();
+	 if (checked5 == '1'){
+	  $("#isConfListBox").attr("checked","true"); 
+	 }else{
+		 $("#isConfList").val('0');
+	  $("#isConfListBox").removeAttr("checked"); 
+	 } 
+	 //是否送货上门标识
+	 var checked6= $("#isDelivHome").val();
+	 if (checked6 == '1'){
+	  	$("#isDelivHomeBox").attr("checked","true"); 
+	 } else{
+		 $("#isDelivHome").val('0');
+	 	 $("#isDelivHomeBox").removeAttr("checked"); 
+	 }
+	 //是否需卸货
+	 var checked7= $("#isUnload").val();
+	 if (checked7 == '1'){
+	  $("#isUnloadBox").attr("checked","true"); 
+	 }else{
+		 $("#isUnload").val('0');
+	  $("#isUnloadBox").removeAttr("checked"); 
+	 }
+	 //是否上门安装
+	 var checked8= $("#isHomeInstall").val();
+	 if (checked8 == '1'){
+	  $("#isHomeInstallBox").attr("checked","true"); 
+	 } else{
+		 $("#isHomeInstall").val('0');
+	  $("#isHomeInstallBox").removeAttr("checked"); 
+	 }  
+	 //是否提供安装辅材
+	 var checked9= $("#isAux").val();
+	 if (checked9 == '1'){
+	  $("#isAuxBox").attr("checked","true"); 
+	 }else{
+		 $("#isAux").val('0');
+	  $("#isAuxBox").removeAttr("checked"); 
+	 }  
+	 //是否归档
+	 var checked10= $("#isArchive").val();
+	 if (checked10 == '1'){
+	  $("#isArchiveBox").attr("checked","true"); 
+	 }else{
+		 $("#isArchive").val('0');
+	  $("#isArchiveBox").removeAttr("checked"); 
+	 } 
+}
+
+//我司先盖章标识
+function checkValIsSealFirst(){	
+	var checked =  $("#isSealFirstBox").is(':checked')	
+	if(checked == true){	
+		$("#isSealFirst").val('1');
+		$("#isSealFirstBox").attr("checked","true"); 
+	}else {
+		$("#isSealFirst").val('0');
+		$("#isSealFirstBox").removeAttr("checked"); 		
+	}
+}
+//有效标识
+function checkValIsValidBox(){	
+	var checked =  $("#isValidBox").is(':checked')	
+	if(checked == true){	
+		$("#isValid").val('1'); 
+		$("#isValidBox").attr("checked","true"); 
+	}else {
+		$("#isValid").val('0'); 
+		$("#isValidBox").removeAttr("checked"); 		
+	}
+}
+//变更标识
+function checkValisChangeBox(){	
+	var checked =  $("#isChangeBox").is(':checked')	
+	if(checked == true){	
+		$("#isChange").val('1'); 
+		$("#isChangeBox").attr("checked","true"); 
+	}else {
+		$("#isChange").val('0'); 
+		$("#isChangeBox").removeAttr("checked"); 		
+	}
+}
+
+//是否成套
+function checkValIsWholeSet(){	
+	var checked =  $("#isWholeSetBox").is(':checked')	
+	if(checked == true){	
+		$("#isWholeSet").val('1');
+		$("#isWholeSetBox").attr("checked","true"); 
+	}else {
+		$("#isWholeSet").val('0');
+		$("#isWholeSetBox").removeAttr("checked"); 		
+	}
+}
+
+//是否有配置清单
+function checkValIsConfList(){	
+	var checked =  $("#isConfListBox").is(':checked')	
+	if(checked == true){	
+		$("#isConfList").val('1');
+		$("#isConfListBox").attr("checked","true"); 
+	}else {
+		$("#isConfList").val('0');
+		$("#isConfListBox").removeAttr("checked"); 		
+	}
+}
+
+//是否送货上门
+function checkValIsDelivHomeBox(){	
+	var checked =  $("#isDelivHomeBox").is(':checked')	
+	if(checked == true){	
+		$("#isDelivHome").val('1');
+		$("#isDelivHomeBox").attr("checked","true"); 
+	}else {
+		$("#isDelivHome").val('0');
+		$("#isDelivHomeBox").removeAttr("checked"); 		
+	}
+}
+
+//是否需卸货
+function checkValIsUnload(){	
+	var checked =  $("#isUnloadBox").is(':checked')	
+	if(checked == true){	
+		$("#isUnload").val('1');
+		$("#isUnloadBox").attr("checked","true"); 
+	}else {
+		$("#isUnload").val('0');
+		$("#isUnloadBox").removeAttr("checked"); 		
+	}
+}
+
+//是否上门安装
+function checkValIsHomeInstall(){	
+	var checked =  $("#isHomeInstallBox").is(':checked')	
+	if(checked == true){	
+		$("#isHomeInstall").val('1');
+		$("#isHomeInstallBox").attr("checked","true"); 
+	}else {
+		$("#isHomeInstall").val('0');
+		$("#isHomeInstallBox").removeAttr("checked"); 		
+	}
+}
+
+//是否提供安装辅材
+function checkValIsAux(){	
+	var checked =  $("#isAuxBox").is(':checked')	
+	if(checked == true){	
+		$("#isAux").val('1');
+		$("#isAuxBox").attr("checked","true"); 
+	}else {
+		$("#isAux").val('0');
+		$("#isAuxBox").removeAttr("checked"); 		
+	}
+}
+
+//是否已归档
+function checkValIsArchiveBox(){	
+	var checked =  $("#isArchiveBox").is(':checked')	
+	if(checked == true){	
+		$("#isArchive").val('1'); 
+		$("#isArchiveBox").attr("checked","true"); 
+	}else {
+		$("#isArchive").val('0'); 
+		$("#isArchiveBox").removeAttr("checked"); 		
+	}
+}
+
+function startTrialProcess(){
+	var d = {};
+	d.contrId = '${id}';
+	bootbox.confirm('${i18n.get('您确定要开启此合同的初审吗')}？' , function(result) {		
+		if(result) {
+			ajax({
+				type:'post',
+				url : '${ctx}/standard/startContractTrialProcess.html',  
+				data: d,
+				success : function(result) {
+					alert('${i18n.get('合同初审流程已开启')}');
+					reload_trialStat();
+					reload_trialStatDesc();
+				}
+			});
+		}
+	});		
+}
+
+function startFinalProcess(){ 
+	var d = {};
+	d.contrId = '${id}';
+	bootbox.confirm('${i18n.get('您确定要开启此合同的合同书评审吗')}？' , function(result) {		
+		if(result) {
+			ajax({
+				type:'post',
+				url : '${ctx}/standard/startContractFinalProcess.html',  
+				data: d,
+				success : function(result) {
+					alert('${i18n.get('合同书评审流程已开启')}');  
+				}
+			});
+		}
+	});		
+}
+
+function reviseContract(){
+	var d = {};
+	d.contrId = '${id}';
+	bootbox.confirm('${i18n.get('您确定要修订合同吗')}？' , function(result) {		
+		if(result) {
+			ajax({
+				type:'post',
+				url : '${ctx}/standard/reviseContract.html',  
+				data: d,
+				success : function(result) {
+					alert('${i18n.get('合同修订成功')}'); 
+					reload_finalReviewStat();
+					reload_finalReviewStatDesc();
+				}
+			});
+		}
+	});	
+}
+
+function signUpContract(){
+	var d = {};
+	d.contrId = '${id}';
+	bootbox.confirm('${i18n.get('您确定要签订合同吗')}？' , function(result) {		
+		if(result) {
+			ajax({
+				type:'post',
+				url : '${ctx}/standard/signUpContract.html',  
+				data: d,
+				success : function(result) {
+					alert('${i18n.get('合同签订成功')}'); 
+					//reload_finalReviewStat();
+				}
+			});
+		}
+	});	
+}
+
+function changeContract(){
+	var d = {};
+	d.contrId = '${id}';
+	/* var data1 = JSON.parse($('#contrStatName option:selected').attr('data'));
+	if(data1.name=='新建') {
+		alert('当前状态为新建，还未签订无法变更，请直接进行修改即可！');
+		return;
+	} */
+	bootbox.confirm('${i18n.get('您确定要变更合同吗')}？' , function(result) {		
+		if(result) {
+			parent.dialog('${i18n.get('合同变更信息')}' ,'${ctx}/change/add.html?contrId=${id}' );
+		}
+	});	
+}
+
+function genOrder(){
+	bootbox.confirm('${i18n.get('您确定要生成订单吗')}？' , function(result) {		
+		if(result) {
+			parent.dialog('${i18n.get('订单信息')}' ,'${ctx}/order/add.html?source=${sourceType}&sourceId=${id}' );
+		}
+	});	
+}
+
+
+</script>
+
+	<!-- <h5 style="background-color: #E9E9E9;">基本信息</h5> -->
+	<@form.panel title="${i18n.get('基本信息')}">
+	<@form.form id="t1" success="function(){ alert('${i18n.get('操作成功')}！'); }" class="form-horizontal"> 
+	
+		
+	<div style="height: 20px;">
+			<div style="padding-right: 20px; float: right;" >	
+			<!-- <button id="trialStatBtn" class="btn btn-info" type="button" disabled="disabled" onclick="startTrialProcess()">
+					<i class="icon-undo bigger-110"></i>
+					合同初审
+				</button>			
+				<button id="finalReviewStatBtn" class="btn btn-info" type="button" disabled="disabled" onclick="startFinalProcess()">
+					<i class="icon-ok bigger-110"></i>
+					合同书评审
+				</button>
+				<button id="signUpBtn" class="btn btn-info" type="button"  disabled="disabled" onclick="signUpContract()">
+					<i class="icon-undo bigger-110"></i>
+					签订
+				</button>
+				<button id="reviseBtn" class="btn btn-info" type="button"  disabled="disabled" onclick="reviseContract()">
+					<i class="icon-undo bigger-110"></i>
+					修订
+				</button>
+				<button id="changeBtn" class="btn btn-info" type="button" disabled="disabled"  onclick="changeContract()">
+					<i class="icon-undo bigger-110"></i>
+					申请变更
+				</button>
+				<button id="genOrderBtn" class="btn btn-info" type="button"  disabled="disabled" onclick="genOrder()">
+					<i class="icon-undo bigger-110"></i>
+					生成订单
+				</button> -->
+				<button id="trialStatBtn" class="btn btn-info" type="button"onclick="startTrialProcess()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('合同初审')}
+				</button>			
+				<button id="finalReviewStatBtn" class="btn btn-info" type="button"onclick="startFinalProcess()">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('合同书评审')}
+				</button>
+				<button id="signUpBtn" class="btn btn-info" type="button" onclick="signUpContract()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('签订')}
+				</button>
+				<button id="reviseBtn" class="btn btn-info" type="button" onclick="reviseContract()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('修订')}
+				</button>
+				<button id="changeBtn" class="btn btn-info" type="button" onclick="changeContract()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('申请变更')}
+				</button>
+				<button id="genOrderBtn" class="btn btn-info" type="button" onclick="genOrder()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('生成订单')}
+				</button>
+			</div>
+		</div>
+		<br/>	
+	
+	
+	<@form.input id="id" name="id" placeholder="" tip="" type="hidden" value="${(contr.id)!}" />
+		<table id="okcHeader">
+		<tr>
+			<td width="100px" align="left">${i18n.get('合同编号')}:</td>
+			<td width="180px"><@form.input id="contrNo" name="contrNo" placeholder="" readonly ="readonly" tip="" value="${(contr.contrNo)!}" /></td>
+			<td width="100px" align="left">${i18n.get('项目名称')}:</td>
+			<td width="180px">			
+			<input type="hidden" id="projName"  name="projName"  value="${(contr.projName)!}" />	
+           	<@form.autocomplete  id="projNo" name="projNo"  idKey='id' style="width: 160px;" 
+            	formatResult="function(data) {return '<div >' +data.opportunityName + '</div>';}"
+				url="function(){ return '${ctx}/lovcontract/autocompleteproject.html'; }"
+            	value="${(project)!}" placeholder="${i18n.get('输入查询项目名称')}" 
+            	onSelect="function(data){ 
+            		if( data.number != null && data.number !='' && data.number != 'undefined'){
+            			$('#projName').val(data.opportunityName); 
+            		}
+            	}" 
+           	/>	
+           	</td>
+           	<td width="100px" align="left">${i18n.get('合同状态')}:</td>
+			<td width="180px">		
+             	<input type="hidden" id="contrStat"  name="contrStat"  value="${(contr.contrStat)!}" />
+             	<@form.select style="width: 160px;" id="contrStatName" name="contrStatName" 
+             		code="CONTRACTSTATUS"  value ="${(contr.contrStat)!}" 
+             		/>
+			</td>
+			<td width="100px" align="left">${i18n.get('初审状态')}:</td>
+			<td width="180px">	
+			<input type="hidden" id="trialStat"  name="trialStat"  value="${(contr.trialStat)!}" />
+             	<@form.select style="width: 160px;" id="trialStatDesc" name="trialStatDesc" 
+             		code="CONTRACTREVIEWSTATUS"  value ="${(contr.trialStat)!}" 
+             		/>	
+			</td>
+		</tr>
+		<tr>
+			<td width="100px" align="left">${i18n.get('合同名称')}:</td>
+			<td width="180px"><@form.input id="contrName" name="contrName" placeholder="" tip="" value="${(contr.contrName)!}" /></td>
+			<td width="100px" align="left">${i18n.get('框架协议编号')}:</td>
+			<td width="180px">
+           	<@form.autocomplete  id="frameNo" name="frameNo" 
+            	idKey='id' style="width: 160px;" required="${i18n.get('请选择框架协议号')}"
+            	formatResult="function(data) {return '<div >' +data.contrNo + '</div>';}"
+				url="function(){ return '${ctx}/lovcontract/autocompleteFrameno.html'; }"
+            	value="${(frameContr)!}"            	
+           	/>	
+			</td>
+			<td width="100px" align="left">${i18n.get('评审状态')}:</td>
+			<td width="180px">
+			<input type="hidden" id="reviewStat"  name="reviewStat"  value="${(contr.reviewStat)!}" />
+             	<@form.select style="width: 160px;" id="reviewStatDesc" name="reviewStatDesc" 
+             		code="CONTRACTREVIEWSTATUS"   value ="${(contr.reviewStat)!}" 
+             		/>             	
+			 </td>
+			<td width="100px" align="left">${i18n.get('合同书评审状态')}:</td>
+			<td width="180px">	
+			<input type="hidden" id="finalReviewStat"  name="finalReviewStat"  value="${(contr.finalReviewStat)!}" />
+             	<@form.select style="width: 160px;" id="finalReviewStatDesc" name="finalReviewStatDesc" 
+             		code="CONTRACTREVIEWSTATUS"   value ="${(contr.finalReviewStat)!}"
+             		<!-- onLoadSuccess="function(){
+	                	var data = JSON.parse($('#finalReviewStatDesc option:selected').attr('data'));
+	                	var data1 = JSON.parse($('#contrStatName option:selected').attr('data'));
+            	     if(data.name=='${i18n.get('已审批')}' && data1.name=='${i18n.get('新建')}') {$('#signUpBtn').removeAttr('disabled');}
+	                	var data2 = JSON.parse($('#reviewStatDesc option:selected').attr('data'));
+	                	if(data2.name=='${i18n.get('已审批')}' && data.name=='${i18n.get('未启动')}' ) {$('#finalReviewStatBtn').removeAttr('disabled');}
+	                	if(data1.name=='${i18n.get('已签订')}') {
+	                		$('#changeBtn').removeAttr('disabled');
+	                		$('#genOrderBtn').removeAttr('disabled');
+	                	}
+	                	var data3 = JSON.parse($('#trialStatDesc option:selected').attr('data'));
+	                	if(data3.name=='${i18n.get('未启动')}' && data1.name=='${i18n.get('新建')}') {$('#trialStatBtn').removeAttr('disabled');}
+            	     }" -->
+             		/>		    			
+			</td>
+		</tr>
+		<tr>
+			<td width="100px" align="left">${i18n.get('合同类型')}:</td>
+			<td width="180px">	
+			 <@form.select style="width: 160px;" id="contrType" name="contrType" code="CONTRACTTYPE" 
+             url="function(){ return '${ctx}/lovcontract/selectContrType.html?contrTpCd=CONTRSTANDARD';}"	
+              level="3" 	value ="${(contr.contrType)!}" viewKey='name' viewKey2='' />    	
+			</td>
+			<td width="100px" align="left">${i18n.get('付款方式')}:</td>
+			<td width="180px">						
+             	<@form.select style="width: 160px;" id="payWay" name="payWay" 
+             		code="PAYMENTTYPE"  value ="${(contr.payWay)!}"
+             	/>
+			</td>
+			
+			<td width="100px" align="left">${i18n.get('报价单')}:</td>
+			<td width="180px"><@form.input id="quotNo" name="quotNo" placeholder="" readonly ="readonly" tip="" value="${(contr.quotNo)!}" /></td>
+			
+			<td width="100px" align="left">${i18n.get('创建人')}:</td>
+			<td width="180px"><@form.input id="creator" name="creator" placeholder="" readonly ="readonly" tip="" value="${(contr.creator)!}" /></td>
+					
+		</tr>
+		<tr>
+			<td width="100px" align="left">${i18n.get('客户名称')}:</td>
+			<td width="180px">		
+			<input type="hidden" id="custName"  name="custName"  value="${(contr.custName)!}" />		
+           	<@form.autocomplete  id="custCode" name="custCode" idKey='id' style="width: 160px;"  
+            	formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+				url="function(){ return '${ctx}/lovcontract/autocompletecustomer.html'; }"
+            	value="${(customer)!}" 
+            	onSelect="function(data){ 
+            		if( data.id != null && data.id !='' && data.id != 'undefined'){
+            			$('#custName').val(data.customFullName); 
+            		}
+            	}"            	  
+           	/>	
+			</td>
+			<td width="100px" align="left">${i18n.get('合同总金额')}:</td>
+			<td width="180px"><@form.input id="totalAmt" name="totalAmt" placeholder="" tip="" value="${(contr.totalAmt)!}" /></td>
+			
+			<td width="100px" align="left">${i18n.get('价格表')}:</td>
+			<td width="180px">
+			<input type="hidden" id="pricTable"  name="pricTable"  value="${(contr.pricTable)!}" />
+           	<@form.autocomplete  id="pricNo" name="pricNo"  idKey='id' style="width: 160px;" 
+            	formatResult="function(data) {return '<div >' +data.priceTableName + '</div>';}"
+				url="function(){ return '${ctx}/lovcontract/autocompletePriceTable.html?custCode='+$('#custCode').val(); }"
+            	value="${(priceTable)!}"     
+            	onSelect="function(data){ 
+            		if( data.id != null && data.id !='' && data.id != 'undefined'){
+            			$('#pricTable').val(data.priceTableName); 
+            		}
+            	}"  
+           	/>
+			</td>
+			
+			<td width="100px" align="left">${i18n.get('创建时间')}:</td>
+			<td width="180px"> 
+			<@form.input id="createTime" name="createTime" placeholder="" readonly="readonly" tip="" value="${(contr.createTime?datetime)!}" />
+			
+			</td>
+		</tr>
+		<tr>
+			<td width="100px" align="left">${i18n.get('客户合同号')}:</td>
+			<td width="180px"><@form.input id="custContrNo" name="custContrNo" placeholder="" tip="" value="${(contr.custContrNo)!}" /></td>
+			<td width="100px" align="left">${i18n.get('组织')}:</td>
+			<td width="180px">
+           	<@form.autocomplete  id="org" name="org" 
+            	idKey='id'
+            	style="width: 160px;"
+            	required="${i18n.get('请选择组织')}"
+            	formatResult="function(data) {return '<div >' +data.name + '</div>';}"
+				url="function(){ return '${ctx}/lovcontract/autocompleteOrg.html'; }"
+            	value="${org}"
+           	/>
+           	</td>
+           	
+			<td width="100px" align="left">${i18n.get('交货日期')}:</td>
+			<td width="180px">			
+			<@form.date 
+	  			style="width: 160px;"     
+				id="delivDate"  name="delivDate" 
+				placeholder="" 
+				tip="" 
+				value="${(contr.delivDate?datetime)!}" 
+				/>
+			</td>
+			
+			<td width="100px" align="left">${i18n.get('系统签订日期')}:</td>
+			<td width="180px"><@form.input id="sysSignDate" name="sysSignDate" placeholder="" readonly="readonly" tip="" value="${(contr.sysSignDate?datetime)!}" />
+		</tr>
+		<tr>
+			<td width="100px" align="left">${i18n.get('客户联系人')}:</td>
+			<td width="180px"><@form.input id="custLink" name="custLink" placeholder="" tip="" value="${(contr.custLink)!}" /></td>
+			<td width="100px" align="left">${i18n.get('合同版本')}:</td>
+			<td width="180px"><@form.input id="contrVer" name="contrVer" placeholder="" tip="" readonly ="readonly" value="${(contr.contrVer)!}" /></td>
+			
+			<td width="100px" align="left">${i18n.get('邮寄快递单号')}:</td>
+			<td width="180px"><@form.input id="postNo" name="postNo" placeholder="" tip="" value="${(contr.postNo)!}" /></td>
+			
+			<td width="100px" align="left">${i18n.get('实际签订日期')}:</td>
+			<td width="180px"> <@form.input id="actSignDate" name="actSignDate" placeholder="" readonly="readonly" tip="" value="${(contr.actSignDate)!}" />
+		</tr>
+		<tr>
+			<td width="100px" align="left">${i18n.get('业务实体')}:</td>
+			<td width="180px">					
+             	<@form.select style="width: 160px;" id="bussEnity" name="bussEnity" 
+             		code="CONTRACEBUSINESSOBJECT"  
+             		value ="${(contr.bussEnity)!}"
+             	/>
+			</td>
+			<td width="100px" align="left">${i18n.get('是否我司先盖章')}:</td>
+			<td width="180px">						
+			<input name="isSealFirstBox" type="checkbox" id="isSealFirstBox" onclick="checkValIsSealFirst()" />
+			<input name="isSealFirst" type="hidden" id="isSealFirst" value="${(contr.isSealFirst)!}"/>
+			</td>
+			<td width="100px" align="left">${i18n.get('归档日期')}:</td>
+			<td width="180px">
+			<@form.date 
+	  			style="width: 160px;"     
+				id="archiveDate"  name="archiveDate" 
+				placeholder="" 
+				tip="" 
+				value="${(contr.archiveDate)!}" 
+				/>
+			</td>		
+			<td width="100px" align="left">${i18n.get('合同邮寄日期')}:</td>
+			<td width="180px">
+			<@form.date 
+	  			style="width: 160px;"     
+				id="postDate"  name="postDate" 
+				placeholder="" 
+				tip="" 
+				value="${(contr.postDate)!}" 
+				/>
+			</td>	
+						
+		</tr>
+		
+		<tr>		
+			<td width="100px" align="left">${i18n.get('备注')}:</td>
+			<td colspan="3"><@form.textArea id="remark" name="remark" placeholder="" tip="" value="${(contr.remark)!}" /></td>
+		  
+		<td colspan="4">
+		<table>
+		<tr>
+			<td width="100px" align="left">${i18n.get('收款计划维护状态')}:</td>
+			<td width="180px">	
+			<input type="hidden" id="payStat"  name="payStat"  value="${(contr.payStat)!}" />
+             	<@form.select style="width: 160px;" id="payStatDesc" name="payStatDesc" 
+             		code="CONTRACTPAYSTAT"  value ="${(contr.payStat)!}" />
+			</td>	
+			<td width="100px" align="left">${i18n.get('归档备注')}:</td>
+			<td ><@form.input id="achiveRemark" name="achiveRemark" placeholder="" tip="" value="${(contr.achiveRemark)!}" /></td>
+		  
+		</tr>
+		<tr>
+			<td width="100px" align="left">${i18n.get('变更标识')}:</td>
+			<td width="180px">			
+			<input name="isChangeBox" type="checkbox" id="isChangeBox" onclick="checkValIsChangeBox()" />
+			<input name="isChange" type="hidden" id="isChange" value="${(contr.isChange)!}"/>
+			</td>
+			<td width="100px" align="left">${i18n.get('有效标识')}:</td>
+			<td width="180px">
+			<input name="isValidBox" type="checkbox" id="isValidBox" onclick="checkValIsValidBox()" />
+			<input name="isValid" type="hidden" id="isValid" value="${(contr.isValid)!}"/>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px" align="left">${i18n.get('原件是否已归档')}:</td>
+			<td width="180px">			
+			<input name="isArchiveBox" type="checkbox" id="isArchiveBox" onclick="checkValIsArchiveBox()"/>
+			<input name="isArchive" type="hidden" id="isArchive"  value="${(contr.isArchive)!}"/>
+			</td>
+		</tr>
+		</table>
+		
+		</td>			
+		</tr>
+		
+	</table>
+	 
+	
+	  <h5 style="background-color: #E9E9E9;">${i18n.get('下单信息')}</h5>   
+	<table id="okcHeaderOrder">
+		<tr>
+			<td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('是否成套')}:</td>
+			<td width="180px"> 
+			<@form.radio name="isWholeSet" value="1" selectValue=(contr.isWholeSet)!'N'/><span class="lbl">${i18n.get('是')}</span>
+			<@form.radio name="isWholeSet" value="0" selectValue=(contr.isWholeSet)!'N'/><span class="lbl">${i18n.get('否')}</span>
+			</td>
+			<td width="120px" align="left"><strong style="color: red;">*</strong>${i18n.get('是否有配置清单')}:</td>
+			<td width="180px">
+			<@form.radio name="isConfList" value="1" selectValue=(contr.isConfList)!'N'/><span class="lbl">${i18n.get('是')}</span>
+			<@form.radio name="isConfList" value="0" selectValue=(contr.isConfList)!'N'/><span class="lbl">${i18n.get('否')}</span>
+			</td>
+			<td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('是否送货上门')}:</td>
+			<td width="180px">			
+			<@form.radio name="isDelivHome" value="1" selectValue=(contr.isDelivHome)!'N'/><span class="lbl">${i18n.get('是')}</span>
+			<@form.radio name="isDelivHome" value="0" selectValue=(contr.isDelivHome)!'N'/><span class="lbl">${i18n.get('否')}</span>
+			<td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('是否需卸货')}:</td>
+			<td width="180px">
+			<@form.radio name="isUnload" value="1" selectValue=(contr.isUnload)!'N'/><span class="lbl">${i18n.get('是')}</span>
+			<@form.radio name="isUnload" value="0" selectValue=(contr.isUnload)!'N'/><span class="lbl">${i18n.get('否')}</span>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px" align="left"><strong style="color: red;">*</strong>${i18n.get('是否上门安装')}:</td>
+			<td width="180px">
+			<@form.radio name="isHomeInstall" value="1" selectValue=(contr.isHomeInstall)!'N'/><span class="lbl">${i18n.get('是')}</span>
+			<@form.radio name="isHomeInstall" value="0" selectValue=(contr.isHomeInstall)!'N'/><span class="lbl">${i18n.get('否')}</span>
+			</td>
+			<td width="120px" align="left"><strong style="color: red;">*</strong>${i18n.get('是否提供安装辅材')}:</td>
+			<td width="180px">
+			<@form.radio name="isAux" value="1" selectValue=(contr.isAux)!'N'/><span class="lbl">${i18n.get('是')}</span>
+			<@form.radio name="isAux" value="0" selectValue=(contr.isAux)!'N'/><span class="lbl">${i18n.get('否')}</span>
+		</tr>
+			
+	</table>   
+</@form.form>
+
+	<div id="info" style="padding-top: 20px;" class="row">
+		<div class="col-xs-12">
+		<input type="hidden" id="selectedId"  />
+			<@plug.tabs tabMain=tabMainInfo>
+			</@plug.tabs>
+		</div>
+	 </div> 
+
+</@form.panel>
+
+</@pui.body>

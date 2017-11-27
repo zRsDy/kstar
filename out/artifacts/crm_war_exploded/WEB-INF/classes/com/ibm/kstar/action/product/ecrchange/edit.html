@@ -1,0 +1,101 @@
+<@pui.body>
+<@form.panel title="${i18n.get('新增/编辑')}">
+<@form.form id="t1" success="function(){parent.currentParent.reload_t1(); }" class="form-horizontal">
+	<div align="center" class="form-group">
+		<input type="hidden" id="productID" name="productID" value="${(ecr.productID)!}" />
+		<table>
+			<tr>
+				<td align="right" width="140px">${i18n.get('变更单号')} :</td>
+				<td width="300px">
+					<@form.input id="ecrCode" name="ecrCode" readonly="readOnly" value="${(ecr.ecrCode)!}" />
+				</td>
+				<td align="right" width="140px"><strong style="color: red;">*</strong>${i18n.get('紧急程度')} :</td>
+				<td width="300px">	
+					<@form.select id="ergent" name="ergent" code="urgent" style="width:163px;" required="${i18n.get('不能为空')}" idKey='id' value="${(ecr.ergent)!}"/>
+				</td>
+				<td align="right" width="140px"><strong style="color: red;">*</strong>${i18n.get('变更原因类型')} :</td>
+				<td width="300px">
+					<@form.select id="changeType" name="changeType" style="width:163px;" required="${i18n.get('不能为空')}" code="ecrChangeType" idKey='id' value="${(ecr.changeType)!}"/>
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="140px">${i18n.get('申请人')} :</td>
+				<td width="300px">
+					<@form.input id="applyPerson" readonly="readOnly" name="applyPerson" value="${(ecr.applyPerson)!}" />
+				</td>
+				<td align="right" width="140px">${i18n.get('ECN单号')} :</td>
+				<td width="300px">	
+					<@form.input id="ecnNumber" readonly="readOnly" name="ecnNumber" value="${(ecr.ecnNumber)!}" />
+				</td>
+				<td align="right" width="140px">${i18n.get('提交时间')} :</td>
+				<td width="300px">
+					<@form.input id="createTime" readonly="readOnly" name="createTime" value="${(ecr.createTime)!}" />
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="140px">${i18n.get('生效时间')} :</td>
+				<td width="300px">
+					<@form.input id="nearEffectTime" readonly="readOnly" name="nearEffectTime" value="${(ecr.nearEffectTime)!}" />
+				</td>
+				<td align="right" width="140px">${i18n.get('参考已有ECR')} :</td>
+				<td width="300px">	
+					<@form.select id="referId" name="referId" viewKey="name" viewKey2="" idKey='id' style="width:163px;"
+					url="function(){return '${ctx}/product/selectEcrRefer.html?id='+ '${(ecr.id)!}'}" value="${(ecr.referId)!}" />
+				</td>
+				<td align="right" width="140px">${i18n.get('状态')} :</td>
+				<td width="300px">
+					<@form.select id="uiecrStatus" name="uiecrStatus" code="PRODUCT_ECR_PROC" idKey='id' style="width:163px;" value="${(ecr.ecrStatus)!}"/>
+					<input type="hidden" id="ecrStatus" name="ecrStatus" value="${(ecr.ecrStatus)!}" />
+					<script type="text/javascript">
+				    	$("#uiecrStatus").attr("disabled","disabled")
+				    </script>
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="140px"><strong style="color: red;">*</strong>${i18n.get('变更原因')} :</td>
+				<td colspan="5">
+					<@form.input id="changeRoot" name="changeRoot" style="width:1043px;" required="${i18n.get('不能为空')}" value="${(ecr.changeRoot)!}" />
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="140px"><strong style="color: red;">*</strong>${i18n.get('变更内容')} :</td>
+				<td colspan="5">
+					<@form.input id="ecrChangeContent" name="ecrChangeContent" style="width:1043px;" required="${i18n.get('不能为空')}" value="${(ecr.ecrChangeContent)!}" />
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="140px">${i18n.get('PDM驳回原因')} :</td>
+				<td colspan="5">
+					<@form.input id="backReason" name="backReason" style="width:1043px;" readonly="true" value="${(ecr.backReason)!}" />
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="hr hr-18 dotted hr-double"></div>
+	<div class="clearfix form-actions">
+		<div class="col-md-offset-5 col-md-7">
+			<#if !ecr?? || !ecr.id?? || statusEdit || ableEdit>
+			<button class="btn btn-info submit" type="button">
+				<i class="icon-ok bigger-110"></i>
+				${i18n.get('保存')}
+			</button>
+			&nbsp; &nbsp; &nbsp;
+			</#if>
+			<#if !ableEdit>
+			<button class="btn" type="button" onclick="javascript:api.close()">
+				<i class="icon-undo bigger-110"></i>
+				${i18n.get('关闭')}
+			</button>
+			</#if>
+		</div>
+	</div>
+</@form.form>
+<div id="info" style="padding-top: 20px;" class="row">
+	<div class="col-xs-12">
+		<input type="hidden" id="selectedId"  />
+		<@plug.tabs tabMain=tabMainInfo>
+	</@plug.tabs>
+</div>
+</@form.panel>
+
+</@pui.body>

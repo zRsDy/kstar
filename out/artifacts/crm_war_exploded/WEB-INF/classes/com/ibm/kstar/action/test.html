@@ -1,0 +1,19 @@
+<html>
+<head>
+    <title></title>
+	<script src="${ctx}/officecontrol/ntkoofficecontrol.js"></script>
+    
+    <script type="text/javascript">
+	    var TANGER_OCX_OBJ;  
+        function init(){
+            TANGER_OCX_OBJ = document.getElementById("TANGER_OCX");
+			TANGER_OCX_OBJ.CreateNew("Word.Document");
+			TANGER_OCX_OBJ.BeginOpenFromURL("http://10.2.14.120:8080/crm/anne/aaa.doc");
+        }
+	</script>
+</head>
+
+<body onload="init()">
+
+</body>
+</html>

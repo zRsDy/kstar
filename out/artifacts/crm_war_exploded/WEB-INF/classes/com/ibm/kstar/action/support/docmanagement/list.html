@@ -1,0 +1,46 @@
+<#escape x as x?html>
+<@pui.body>
+
+<#if permission["P08DocAdminAdd"]?? >
+	<#assign addDocAdminURL = "'${ctx}/docManagement/add.html'"  />
+</#if>
+
+<#if permission["P08DocAdminEdit"]??>
+	<#assign editDocAdminURL= "'${ctx}/docManagement/edit.html'"  />
+</#if>
+
+<#if permission["P08DocAdminDelete"]??>
+	<#assign deleteDocAdminURL = "'${ctx}/docManagement/delete.html'"   />
+</#if>
+
+<@form.table id="SupportTemplateTable" 
+class="col-xs-12"
+title="${i18n.get('文档管理')}" 
+url = "${ctx}/docManagement/page.html" 
+rowNum = "5" 
+addURL = "${addDocAdminURL!}"
+editURL = "${editDocAdminURL!}"
+deleteURL= "${deleteDocAdminURL!}" 
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+	{name:'docType',label:'${i18n.get('目录名称')}',hidden:false,width:400,sortable:false,align:'center' },
+	{name:'updatedAt',label:'${i18n.get('最近更新时间')}',hidden:false,width:200,sortable:false,align:'center', formatter:dateFmatter },
+	{name:'comment',label:'${i18n.get('描述')}',hidden:false,width:400,sortable:false,align:'center' }
+	]" 
+	> 
+<div class="col-xs-12" style="padding-top: 20px;">
+		<div class="form-group col-xs-3">
+		<input type="text" id="searchKey" name="searchKey" placeholder="${i18n.get('查询关键字')}" size="30" />
+		</div>	
+		<div class="form-group col-xs-2">
+			<button type="submit" class="btn btn-info" > 
+				<i class="icon-search bigger-110"></i>
+				${i18n.get('查询')}
+			</button>
+		</div>
+	</div>
+</@form.table> 
+
+</@pui.body>
+<script src="${ctx}/anne/js/util.js"></script>
+</#escape>

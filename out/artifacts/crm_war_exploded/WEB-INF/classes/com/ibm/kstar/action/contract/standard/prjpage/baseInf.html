@@ -1,0 +1,338 @@
+
+<div>
+	<@form.form id="baseinf" action="${ctx}/standard/prjpage/baseInf.html" success="function(){ alert('${i18n.get('保存成功')}！');opener.reload_baseinf(); }"
+	class="form-horizontal"> 
+	<@form.input id="id" name="id" placeholder=""
+	tip="" type="hidden" value="${(baseinfInf.id)!}" />
+	
+	<table>
+		<tr>
+			<td width="100px">${i18n.get('机房图纸')}:</td>
+			<td width="180px">
+				<div>
+					<button class="btn btn-info"
+						onclick="javascript:parent.dialog('${i18n.get('机房图纸')}','${ctx}/kstarDoc/add.html?systemId=${contrId}&systemCode=BASEINFDRFATTM',window)"
+						type="button">${i18n.get('上传附件')}</button>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('项目名称')}:</td>
+			<td width="180px"><@form.input id="prjNm"
+				name="prjNm" placeholder="" tip=""
+				value="${(baseinfInf.prjNm)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('当地海拔')}:</td>
+			<td width="180px"><@form.input id="height"
+				name="height" placeholder="" tip=""
+				value="${(baseinfInf.height)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('建设等级')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="cnLvl" value="A"
+							selectValue="${(baseinfInf.cnLvl)!'N'}" /> <span class="lbl">A${i18n.get('类')}</span>
+						</label> 
+						<label><@form.radio name="cnLvl" value="B"
+							selectValue="${(baseinfInf.cnLvl)!'N'}" /> <span class="lbl">B${i18n.get('类')}</span>
+						</label>
+						<label><@form.radio name="cnLvl" value="C"
+							selectValue="${(baseinfInf.cnLvl)!'N'}" /> <span class="lbl">C${i18n.get('类')}</span>
+						</label>
+						<label><@form.radio name="cnLvl" value="NA"
+							selectValue="${(baseinfInf.cnLvl)!'N'}" /> <span class="lbl">${i18n.get('非机房项目')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('项目地址')}:</td>
+			<td width="180px"><@form.input id="prjAddr"
+				name="prjAddr" placeholder="" tip=""
+				value="${(baseinfInf.prjAddr)!}" />
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('项目预算')}:</td>
+			<td width="180px"><@form.input id="prjBgt"
+				name="prjBgt" placeholder="" tip=""
+				value="${(baseinfInf.prjBgt)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('机房性质')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="rmTyp" value="n"
+							selectValue="${(baseinfInf.rmTyp)!'N'}" /> <span class="lbl">${i18n.get('新建机房')}</span>
+						</label> 
+						<label><@form.radio name="rmTyp" value="m"
+							selectValue="${(baseinfInf.rmTyp)!'N'}" /> <span class="lbl">${i18n.get('改造机房')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('相关产品')}:</td>
+			<td width="400px">
+				<div class ="radio">
+						<label><@form.radio name="relPrd" value="u"
+							selectValue="${(baseinfInf.relPrd)!'N'}" /> <span class="lbl">UPS</span>
+						</label> 
+						<label><@form.radio name="relPrd" value="e"
+							selectValue="${(baseinfInf.relPrd)!'N'}" /> <span class="lbl">${i18n.get('电池')}</span>
+						</label>
+						<label><@form.radio name="relPrd" value="c"
+							selectValue="${(baseinfInf.relPrd)!'N'}" /> <span class="lbl">${i18n.get('精密空调')}</span>
+						</label>
+						<label><@form.radio name="relPrd" value="p"
+							selectValue="${(baseinfInf.relPrd)!'N'}" /> <span class="lbl">${i18n.get('配电')}</span>
+						</label>
+						<label><@form.radio name="relPrd" value="r"
+							selectValue="${(baseinfInf.relPrd)!'N'}" /> <span class="lbl">${i18n.get('机柜')}</span>
+						</label>
+						<label><@form.radio name="relPrd" value="m"
+							selectValue="${(baseinfInf.relPrd)!'N'}" /> <span class="lbl">${i18n.get('监控')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('集成产品')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="intPRDTyp" value="idm"
+							selectValue="${(baseinfInf.intPRDTyp)!'N'}" /> <span class="lbl">IDM</span>
+						</label> 
+						<label><@form.radio name="intPRDTyp" value="idu"
+							selectValue="${(baseinfInf.intPRDTyp)!'N'}" /> <span class="lbl">IDU</span>
+						</label>
+						<label><@form.radio name="intPRDTyp" value="idr"
+							selectValue="${(baseinfInf.intPRDTyp)!'N'}" /> <span class="lbl">IDR</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('机房面积')}:</td>
+			<td width="10px">${i18n.get('长度')}：<@form.input id="rmLng"
+				name="rmLng" placeholder="" tip=""
+				value="${(baseinfInf.rmLng)!}" />m</td>
+			<td width="400px">${i18n.get('宽度')}：<@form.input id="rmWdt"
+				name="rmWdt" placeholder="" tip=""
+				value="${(baseinfInf.rmWdt)!}" />m ${i18n.get('若提供图纸可不填此项')}</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('机房楼层')}:</td>
+			<td width="10px">${i18n.get('楼层')}：<@form.input id="rmLvl"
+				name="rmLvl" placeholder="" tip=""
+				value="${(baseinfInf.rmLvl)!}" /></td>
+			<td width="100px">${i18n.get('若机房分层请单独说明')}：<@form.input id="rmLvlNts"
+				name="rmLvlNts" placeholder="" tip=""
+				value="${(baseinfInf.rmLvlNts)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('机房梁下净高')}:</td>
+			<td width="10px">${i18n.get('净高')}：<@form.input id="rmLvlHgh"
+				name="rmLvlHgh" placeholder="" tip=""
+				value="${(baseinfInf.rmLvlHgh)!}" />m</td>
+			<td width="100px">${i18n.get('若机房分层请单独说明')}：<@form.input id="rmLvlHghNts"
+				name="rmLvlHghNts" placeholder="" tip=""
+				value="${(baseinfInf.rmLvlHghNts)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('楼层承重')}:</td>
+			<td width="10px">${i18n.get('承重')}：<@form.input id="lvlWgh"
+				name="lvlWgh" placeholder="" tip=""
+				value="${(baseinfInf.lvlWgh)!}" />kg</td>
+			<td width="100px">${i18n.get('若机房分层请单独说明')}：<@form.input id="lvlWghNts"
+				name="lvlWghNts" placeholder="" tip=""
+				value="${(baseinfInf.lvlWghNts)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('高架地板')}:</td>
+			<td width="400px">
+				<div class ="radio">
+						<label><@form.radio name="ifHghFlr" value="n"
+							selectValue="${(baseinfInf.ifHghFlr)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+						<label><@form.radio name="ifHghFlr" value="y"
+							selectValue="${(baseinfInf.ifHghFlr)!'N'}" /> <span class="lbl">${i18n.get('有')}</span>
+						</label>
+				</div> 
+			</td>
+			<td width="100px">
+				<label><@form.input id="hghFlr"
+					name="hghFlr" placeholder="" tip="" value="${(baseinfInf.hghFlr)!}"/>mm</label>
+			</td>
+			<td width="100px">${i18n.get('若机房分层请单独说明')}：<@form.input id="hghFlrNts"
+				name="hghFlrNts" placeholder="" tip=""
+				value="${(baseinfInf.hghFlrNts)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('其他情况说明')}:</td>
+			<td width="180px"><@form.input id="prjThrNts"
+				name="prjThrNts" placeholder="" tip=""
+				value="${(baseinfInf.prjThrNts)!}" /></td>
+		</tr>
+	</table>
+	<h5 style="background-color: #E9E9E9;">${i18n.get('负载情况')}</h5>
+	<table>
+		<tr>
+			<td width="250px">${i18n.get('多通道或机柜功率不均提供设备布局图')}:</td>
+			<td width="180px"><@form.input id="mhLyt"
+				name="mhLyt" placeholder="" tip=""
+				value="${(baseinfInf.mhLyt)!}" /></td>
+		</tr>
+		<tr>
+			<td width="60px">${i18n.get('负载类型')}:</td>
+			<td width="400px">
+				<div class ="radio">
+						<label><@form.radio name="ldTyp" value="s"
+							selectValue="${(baseinfInf.ldTyp)!'N'}" /> <span class="lbl">${i18n.get('服务器负载')}</span>
+						</label> 
+						<label><@form.radio name="ldTyp" value="r"
+							selectValue="${(baseinfInf.ldTyp)!'N'}" /> <span class="lbl">${i18n.get('容性负载')}</span>
+						</label>
+						<label><@form.radio name="ldTyp" value="g"
+							selectValue="${(baseinfInf.ldTyp)!'N'}" /> <span class="lbl">${i18n.get('感性负载')}</span>
+						</label>
+						<label><@form.radio name="ldTyp" value="n"
+							selectValue="${(baseinfInf.ldTyp)!'N'}" /> <span class="lbl">${i18n.get('其他')}</span>
+						</label>
+				</div>
+			</td>
+			<td width="180px"><@form.input id="ldTypnts"
+				name="ldTypnts" placeholder="" tip=""
+				value="${(baseinfInf.ldTypnts)!}" /></td>
+		</tr>
+		<tr>
+			<td width="250px">${i18n.get('服务器机柜（若有）')}:</td>
+			<td width="180px">${i18n.get('机柜数量')}<@form.input id="srvNm"
+				name="srvNm" placeholder="" tip=""
+				value="${(baseinfInf.srvNm)!}" /></td>
+		</tr>
+		<tr>
+			<td width="250px">${i18n.get('单机柜功率')}:</td>
+			<td width="180px"><@form.input id="srvPwr"
+				name="srvPwr" placeholder="" tip=""
+				value="${(baseinfInf.srvPwr)!}" />KW</td>
+		</tr>
+		<tr>
+			<td width="250px">${i18n.get('机柜尺寸要求(宽×高×长)')}:</td>
+			<td width="180px"><@form.input id="srvSz"
+				name="srvSz" placeholder="" tip=""
+				value="${(baseinfInf.srvSz)!}" /></td>
+		</tr>
+		<tr>
+			<td width="250px">${i18n.get('后期扩容要求')}:</td>
+			<td width="180px"><@form.input id="extn"
+				name="extn" placeholder="" tip=""
+				value="${(baseinfInf.extn)!}" /></td>
+		</tr>
+		<tr>
+			<td width="250px">${i18n.get('其他情况说明')}:</td>
+			<td width="180px"><@form.input id="ldThrNts"
+				name="ldThrNts" placeholder="" tip=""
+				value="${(baseinfInf.ldThrNts)!}" /></td>
+		</tr>
+	</table>
+	<h5 style="background-color: #E9E9E9;">${i18n.get('外购件情况')}</h5>
+	<table>
+		<tr>
+			<td width="250px">${i18n.get('外购件技术要求')}:</td>
+			<td width="180px"><@form.input id="tchRqPrs"
+				name="tchRqPrs" placeholder="" tip=""
+				value="${(baseinfInf.tchRqPrs)!}" /></td>
+		</tr>
+		<tr>
+			<td width="250px">${i18n.get('外购件安装服务要求')}:</td>
+			<td width="180px"><@form.input id="intRqPrs"
+				name="intRqPrs" placeholder="" tip=""
+				value="${(baseinfInf.intRqPrs)!}" /></td>
+		</tr>
+		<tr>
+			<td width="250px">${i18n.get('外购件物流要求')}:</td>
+			<td width="180px"><@form.input id="lgstRqPrs"
+				name="lgstRqPrs" placeholder="" tip=""
+				value="${(baseinfInf.lgstRqPrs)!}" /></td>
+		</tr>
+	</table>
+	<h5 style="background-color: #E9E9E9;">${i18n.get('施工界面')}</h5>
+	<table>
+		<tr>
+			<td width="400px">
+				<div class ="radio">
+						<label><@form.radio name="trnOn" value="trn"
+							selectValue="${(baseinfInf.trnOn)!'N'}" /> <span class="lbl">${i18n.get('只负责开机')} ${i18n.get('相关产品')}: </span>
+							<@form.input id="trnOnPrd" name="trnOnPrd" placeholder="" tip="" value="${(baseinfInf.trnOnPrd)!}" />
+						</label> 
+						<label><@form.radio name="insMntr" value="inm"
+							selectValue="${(baseinfInf.insMntr)!'N'}" /> <span class="lbl">${i18n.get('安装督导')} ${i18n.get('相关产品')}: </span>
+							<@form.input id="insMntrPrd" name="insMntrPrd" placeholder="" tip="" value="${(baseinfInf.insMntrPrd)!}" />
+						</label> 
+						<label><@form.radio name="ins" value="ins"
+							selectValue="${(baseinfInf.ins)!'N'}" /> <span class="lbl">${i18n.get('安装')}（${i18n.get('不含施工材料')}）${i18n.get('相关产品')} : </span>
+							<@form.input id="insPrd" name="insPrd" placeholder="" tip="" value="${(baseinfInf.insPrd)!}" />
+						</label> 
+						<br/>
+						<label><@form.radio name="cKey" value="ck"
+							selectValue="${(baseinfInf.cKey)!'N'}" /> <span class="lbl">${i18n.get('交钥匙工程')} ${i18n.get('相关产品')}: </span>
+							<@form.input id="cKeyPrd" name="cKeyPrd" placeholder="" tip="" value="${(baseinfInf.cKeyPrd)!}" />
+						</label> 
+				</div>
+			</td>
+		</tr>
+	</table>
+	<h5 style="background-color: #E9E9E9;">${i18n.get('商务部分')}</h5>
+	<table>
+		<tr>
+			<td width="250px">${i18n.get('要求到货时间')}:</td>
+			<td width="180px"><@form.date id="dtDelRdy"
+				name="dtDelRdy" placeholder="" tip=""
+				value="${(baseinfInf.dtDelRdy)!}" /></td>
+		</tr>
+		<tr>
+			<td width="250px">${i18n.get('要求详细的到货地点（具体到楼层）')}:</td>
+			<td width="180px"><@form.input id="delAddr"
+				name="delAddr" placeholder="" tip=""
+				value="${(baseinfInf.delAddr)!}" /></td>
+		</tr>
+		<tr>
+			<td width="250px">${i18n.get('分批发货说明（若有）')}:</td>
+			<td width="180px"><@form.input id="btchDl"
+				name="btchDl" placeholder="" tip=""
+				value="${(baseinfInf.btchDl)!}" /></td>
+		</tr>
+		<tr>
+			<td width="250px">${i18n.get('包装标签需求')}:</td>
+			<td width="180px"><@form.input id="pkgRq"
+				name="pkgRq" placeholder="" tip=""
+				value="${(baseinfInf.pkgRq)!}" /></td>
+		</tr>
+		<tr>
+			<td width="250px">${i18n.get('其他特殊需求')}:</td>
+			<td width="180px"><@form.input id="bssThrNts"
+				name="bssThrNts" placeholder="" tip=""
+				value="${(baseinfInf.bssThrNts)!}" /></td>
+		</tr>
+		<tr>
+			<td width="250px">${i18n.get('要货申请')}:</td>
+			<td width="180px"><@form.input id="ordRq"
+				name="ordRq" placeholder="" tip=""
+				value="${(baseinfInf.ordRq)!}" /></td>
+		</tr>
+	</table>
+	
+	<div class="clearfix form-actions">
+		<div class="col-md-offset-5 col-md-7">
+			<button class="btn btn-info submit" type="button" align="left">
+				<i class="icon-ok bigger-110"></i> ${i18n.get('修订')}
+			</button>
+			&nbsp; &nbsp; &nbsp;
+		</div>
+	</div>
+	</@form.form>
+
+</div>

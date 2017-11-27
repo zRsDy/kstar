@@ -1,0 +1,214 @@
+<@pui.body>
+	<#if permission["P06ReceiptVerT1PlanVerify"]?? >
+		<#assign veriReceipts= "true"   />
+	</#if>
+
+	<#if permission["P06ReceiptVerT1CustomerVerify"]?? >
+	<#assign customerVerify= 'true'   />
+	</#if>
+
+	<div class="col-xs-12" >
+		<@form.table id="contractReceiptListForm" 
+			class="col-xs-12" 
+			title="${i18n.get('合同收款计划明细')}" 
+			checkbox = "true"
+			url = "${ctx}/receipts/getContractReceiptList.html" 
+			rowNum = "500"
+			rowNumList = "[500]"
+			colModel = "[ 
+			{name:'id',label:'',hidden:true,width:100,sortable:false,align:'center' },
+			{name:'businessEntity',label:'',hidden:true,sortable:false } ,
+			{name:'contractId',label:'${i18n.get('合同ID')}',hidden:true,width:100,sortable:false,align:'center' },  
+			{name:'contractCode',label:'${i18n.get('合同编号')}',hidden:false,width:150,sortable:false,align:'center' },  
+			{name:'receiptsPlan',label:'${i18n.get('合同收款计划行')}',hidden:false,width:100,sortable:false,align:'center',hidden:true}, 
+			{name:'receiptsPlanLable',label:'${i18n.get('合同收款计划行')}',hidden:false,width:100,sortable:false,align:'center' }, 
+			{name:'receiptsStage',label:'${i18n.get('收款阶段')}',hidden:false,width:70,sortable:false,align:'center',hidden:true },
+			{name:'receiptsStageLable',label:'${i18n.get('收款阶段')}',hidden:false,width:100,sortable:false,align:'center' }, 
+			{name:'deliveryId',label:'${i18n.get('出货申请ID')}',hidden:false,width:100,sortable:false,align:'center',hidden:true }, 
+			{name:'deliveryCode',label:'${i18n.get('出货申请编码')}',hidden:false,width:190,sortable:false,align:'center' },
+			{name:'planAmount',label:'${i18n.get('计划金额')}',hidden:false,width:100,sortable:false,align:'center'},
+			{name:'veriAmount',label:'${i18n.get('已核销金额')}',hidden:false,width:100,sortable:false,align:'center' }, 
+			{name:'amount',label:'${i18n.get('本次核销金额')}',hidden:false,width:100,sortable:false,align:'center', editable:true }, 
+			{name:'balance',label:'${i18n.get('未核销金额')}',hidden:false,width:100,sortable:false,align:'center'}, 
+			{name:'receiptsType',label:'${i18n.get('币种')}',hidden:false,width:60,sortable:false,align:'center',hidden:false },
+			{name:'paymentDate',label:'${i18n.get('到期日')}',hidden:false,width:90,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+			{name:'businessEntityLable',label:'${i18n.get('业务实体')}',hidden:false,width:230,sortable:false,align:'center' ,hidden:false},
+			{name:'bizDept',label:'${i18n.get('业务部门')}',hidden:false,width:100,sortable:false,align:'center' ,hidden:true},
+			{name:'bizDeptLable',label:'${i18n.get('业务部门')}',hidden:false,width:100,sortable:false,align:'center' },
+			{name:'salesmanId',label:'${i18n.get('销售人员ID')}',hidden:true,width:100,sortable:false,align:'center' }, 
+			{name:'salesmanName',label:'${i18n.get('销售人员')}',hidden:false,width:100,sortable:false,align:'center' }, 
+			{name:'explain',label:'${i18n.get('说明')}',hidden:false,width:150,sortable:false,align:'center', editable:true  },
+			{name:'remarks',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:false,align:'center', editable:true  },
+			{name:'status',label:'${i18n.get('状态ID')}',hidden:true,width:100,sortable:false,align:'center' }, 
+			{name:'statusLable',label:'${i18n.get('状态')}',hidden:false,width:100,sortable:false,align:'center' },
+			
+			]"
+			buttons = "[
+				{
+					id:'veriReceipts',
+					label : '${i18n.get('核销收款')}',
+					icon : 'icon-save',
+					own : ${veriReceipts!'false'},
+					handler : function(e,rowData){
+						 verification_receipts();
+					}
+				},
+				{
+					id:'contractReceipts',
+					label : '${i18n.get('借货合同核销')}',
+					icon : 'icon-save',
+					own : false,
+					handler : function(e,rowData){
+						var ids = $('#contractReceiptListForm').jqGrid('getGridParam','selarrrow'); 
+						if(ids.length != 1){
+							alert('${i18n.get('有且只能选择一条借货合同')}');
+						}else{
+							var item = $('#contractReceiptListForm').jqGrid('getRowData',ids[0]);
+							if(item.contractCode.indexOf('KSTAR-JH') >= 0){
+								contractReceipts_receipts();
+							}else{
+								alert('${i18n.get('只能选择借货合同')}');
+							}
+						}
+					}
+				},
+				{
+					id:'contractReceipts',
+					label : '${i18n.get('按客户核销')}',
+					icon : 'icon-save',
+					own : ${customerVerify!'false'},
+					handler : function(e,rowData){
+						var id = $('#receiptsListFrom').jqGrid('getGridParam','selrow');
+						if(!id){
+							alert('${i18n.get('有且只能选择一条借货合同')}');
+						}else{
+							var item = $('#receiptsListFrom').jqGrid('getRowData',id);
+							if(item.notVeriAmount>0){
+								ajax({
+	                                type:'post',
+	                                url : '${ctx}/receipts/verificationByCustomerVerify.html',
+	                                data: { receiptsId : item.id },
+	                                dataType:'json',
+	                                success : function(result) {
+	                                    reload_contractReceiptListForm();
+	                                    reload_receiptsListFrom();
+	                                    exalert(e,'${i18n.get('核销完成')}');
+	                                }
+	                            });
+							}else{
+								alert('${i18n.get('未核销金额为负数不允许核销')}');
+							}
+						}
+					}
+				}
+			]" 
+			
+			ondblClickRow = "function(id){
+				if (!canVerification) {
+					$(grid_selector).restoreRow(id);
+					return ;
+				}
+				$('#contractReceiptListForm input[id='+id+'_amount]').bind('input',function(event){
+					var rowData = $('#contractReceiptListForm').jqGrid('getRowData',id);
+					var amount = $(this).val();
+					var balance = rowData.balance == null || rowData.balance =='' ? 0:rowData.balance;
+					if(isNaN(amount)){
+						alert('${i18n.get('核销金额必须为数字')}');
+						$(this).val(balance);
+					}
+					if(amount){
+						// 本次核销金额不能大于可核销余额数量 
+						if(parseFloat(amount) > parseFloat(balance)){
+							$(this).val(balance);
+						}
+					}
+			 	});
+			 	//var item = $('#contractReceiptListForm').jqGrid('getRowData',id);
+			 	//if(item.contractCode.indexOf('KSTAR-JH') >= 0){
+			 	// 	$(grid_selector).trigger('blur');
+			 	//}
+			}"
+			
+			onComplete = "function() { 
+				$('#contractReceiptListForm').setGridWidth($(window).width()-60);
+			}"
+			footerrow = "true"
+			gridComplete = "function() {
+				colSumOrderLinesForm();
+			}"
+			onLineEditAfter = "function(id,rowData){
+				colSumOrderLinesForm();
+			}"
+			> 
+			<input type="hidden" id="paymentCustId" name="paymentCustId" />
+			<input type="hidden" id="correctCustId" name="correctCustId" />
+			<input type="hidden" id="contractCode" name="contractCode" />
+			
+			<div class="main" id="main" style="padding-top: 10px;padding-bottom:10px; border-top: 1px solid #e9e9e9 ; float: Left; width: 100%;" >
+				<table border="0" cellpadding="0" cellspacing="0" >
+					<tr align="left">
+						<td align="right" width="80px">${i18n.get('合同编号：')}</td>
+						<td align="left" width="250px">
+							<@form.input id="contractCode_seach" name="contractCode_seach" value=''  /> 
+						</td>
+					</tr>
+				</table>
+			</div>
+		</@form.table> 
+	</div>
+	
+	<div style="display: none;" >
+		<@biz.picker_product id="contractReceipts_receipts" urlFunction="function(){return '${ctx}/common/product/installAuxPrdSelectLst.html?priceTableId=1';}"
+				button="${i18n.get('批量选择产品')}" 
+				callback="function(datas){
+					if(datas){
+                 		addRowBatch(datas);
+					 }
+				}"
+		/>
+	</div>
+	
+<script>
+function contractReceipts_receipts(){
+	var receid = $('#contractReceiptListForm').jqGrid('getGridParam','selrow'); 
+	if(!receid || receid.length <= 0 ){
+		alert('${i18n.get('请至少选择一行收款单')}');
+		return false;
+	}
+	
+	var data = $('#contractReceiptListForm').jqGrid('getRowData',receid);
+	
+	var addURL='${ctx}/receipts/contractReceipts.html?id='+data.id+"&receiptsId="+$('#receiptsId').val()+"&contractId="+data.contractId;
+	parent.dialog('${i18n.get('编辑')}', addURL ,window);
+	
+	/* $.ajax({
+		type:'post',
+		url : '${ctx}/receipts/isLoan.html',  
+		dataType : 'json',
+		data: 'contractId='+data.contractId,
+		success : function(result) {
+			var addURL='${ctx}/receipts/contractReceipts.html?id='+data.id+"&contractId="+data.contractId;
+			parent.dialog('编辑', addURL ,window);
+		},
+		error : function(e) {
+			var msg = eval("(" + e.responseText + ")");
+            if (msg) {
+                alert(msg.message);
+            } else {
+                alert("操作失败，请联系管理员");
+            }
+		}
+	}); */
+	
+}
+
+	function colSumOrderLinesForm(){
+		var rowNum = parseInt($('#contractReceiptListForm').getGridParam('records'),10);
+		$('.ui-jqgrid-sdiv').show();
+		var proQty  = $('#contractReceiptListForm').getCol('planAmount',false,'sum');
+		var veriAmount  = $('#contractReceiptListForm').getCol('veriAmount',false,'sum');
+		var amount  = $('#contractReceiptListForm').getCol('balance',false,'sum');
+		$('#contractReceiptListForm').footerData('set',{'contractCode':'合计：','planAmount':proQty,'veriAmount':veriAmount, 'balance':amount});
+	}
+</script>
+</@pui.body>

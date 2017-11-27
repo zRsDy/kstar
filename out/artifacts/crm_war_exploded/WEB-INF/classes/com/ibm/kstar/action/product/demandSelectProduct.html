@@ -1,0 +1,149 @@
+<@pui.body>
+	<div class="col-xs-12">
+	<@form.table id="t1"
+		class="col-xs-12"
+		title="${i18n.get('产品列表')}"
+		checkbox="true"
+		url = "${ctx}/product/catalog/demandSelectProduct.html"
+		rowNum = "20"
+		colModel = "[
+		  	{ name : 'id',    label : 'id', hidden : true, width : 60,sortable:false,align:'center' }, 
+		  	{ name : 'proCode', label : '${i18n.get('产品编码')}', width : 110 ,sortable:false },
+		  	{ name : 'proName', label : '${i18n.get('产品名称')}', width : 150 ,sortable:false },
+		  	{ name : 'proModel', label : '${i18n.get('产品型号')}', width : 120 ,sortable:false },
+		  	{name:'proBrand',label:'${i18n.get('品牌')}',hidden:false,width:100,sortable:false,align:'center' },
+		  	{name : 'crmCategory', label : '${i18n.get('CRM产品类别')}', width : 90 ,sortable:false },
+		  	{name:'erpCategory',label:'${i18n.get('ERP产品类别')}',hidden:false,width:80,sortable:false,align:'center' },
+			{name:'publishStatus',label:'${i18n.get('发布状态')}',hidden:false,width:60,sortable:false,align:'center' },
+			{name:'priceStatus',label:'${i18n.get('订价状态')}',hidden:false,width:60,sortable:false,align:'center' },
+			{name:'saleStatus',label:'${i18n.get('转销状态')}',hidden:false,width:60,sortable:false,align:'center' },
+			{name:'cproCategory',label:'${i18n.get('产品分类')}',hidden:false,width:150,sortable:false,align:'center' },
+			{name:'cproType',label:'${i18n.get('产品类别')}',hidden:false,width:150,sortable:false,align:'center' },
+			{name:'proSeries',label:'${i18n.get('产品系列')}',hidden:false,width:150,sortable:false,align:'center' },
+		  	{name:'clientCategory',label:'${i18n.get('客户型号')}',hidden:false,width:150,sortable:false,align:'center' }
+		  ]"
+		 buttons = "[
+		 	{
+				id:'select_t1',
+				label : '${i18n.get('选择')}',
+				icon : 'icon-save',
+				own : 'true',
+				handler : function(e,rowData){
+					var selectedIds = [];
+					if(selectedList_t1.length == 0){
+						exalert(e,'${i18n.get('没有选中任何数据!')}');
+						return;
+					}else{
+						$.each(selectedList_t1,function(i,item){
+							selectedIds.push(item.id);
+				 		});
+				 		var demandId = '${demandId}';
+				        ajax({
+					        url: '${ctx}/product/demandSelectProducts.html',
+					        type: 'POST',
+					        data: {ids:selectedIds,demandId:demandId},
+					        success : function(result) {
+					        	parent.currentParent.reload_product();
+					        	frameElement.api.close();
+					        }
+				        });
+					}
+				}
+			},
+			{
+				id:'close_t1',
+				label : '${i18n.get('关闭')}',
+				icon : 'icon-trash',
+				own : 'true',
+				handler : function(e,rowData){
+					frameElement.api.close();
+				}
+			}
+		 ]"
+		>
+		<div class="col-xs-12">
+			<input type="hidden" style="width:260px;" id="parentId" name="parentId" />
+			<input type="hidden" style="width:260px;" id="fromMap" name="fromMap"  value="N"/>
+						
+			<div class="form-group col-xs-2" align="right">${i18n.get('产品编码 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="productCode" size="30" />
+			</div>	
+			<div class="form-group col-xs-2" align="right">${i18n.get('产品名称 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="productName" size="30" />
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('产品型号 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="proModel" size="30" />
+			</div>	
+			<div class="form-group col-xs-2" align="right">${i18n.get('品牌 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="proBrand" size="30" />
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('CRM产品类别 ：')}</div>
+			<div class="form-group col-xs-4">
+				<select name="crmCategory">
+					<option value="">${i18n.get('全部')}</option>
+					<#list crmCategoryLst as element>
+						<option value="${element.code}">${element.name}</option>
+					</#list>
+				</select>
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('ERP产品类别 ：')}</div>
+			<div class="form-group col-xs-4">
+				<select name="erpCategory">
+					<option value="">${i18n.get('全部')}</option>
+					<#list erpCategoryLst as element>
+						<option value="${element.code}">${element.name}</option>
+					</#list>
+				</select>
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('发布状态 ：')}</div>
+			<div class="form-group col-xs-4">
+				<select name="publishStatus">
+					<option value="">${i18n.get('全部')}</option>
+					<#list publishStatus as element>
+						<option value="${element.id}">${element.name}</option>
+					</#list>
+				</select>
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('订价状态 ：')}</div>
+			<div class="form-group col-xs-4">
+				<select name="priceStatus">
+					<option value="">${i18n.get('全部')}</option>
+					<#list priceStatus as element>
+						<option value="${element.id}">${element.name}</option>
+					</#list>
+				</select>
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('转销状态 ：')}</div>
+			<div class="form-group col-xs-4">
+				<select name="saleStatus">
+					<option value="">${i18n.get('全部')}</option>
+					<#list saleStatus as element>
+						<option value="${element.id}">${element.name}</option>
+					</#list>
+				</select>
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('客户型号 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="clientCategory" size="30" />
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('产品分类 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="cproCategory" size="30" />
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('产品类别 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="cproType" size="30" />
+			</div>
+			<div class="form-group col-xs-2" align="right">${i18n.get('产品系列 ：')}</div>
+			<div class="form-group col-xs-4">
+				<input type="text" name="proSeries" size="30" />
+			</div>
+		</div>
+	</@form.table>
+	</div>
+</@pui.body>
+

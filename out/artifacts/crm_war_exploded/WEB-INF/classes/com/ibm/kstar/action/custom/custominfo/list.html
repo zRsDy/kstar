@@ -1,0 +1,293 @@
+<#escape x as x?html>
+<@cui.body>
+<div class="col-xs-12">
+
+	<#if permission["P02CustomerListAdd"]?? >
+		<#assign addCustomerURL = "'${ctx}/custom/baseinfo/add.html'"  />
+	</#if>
+	
+	<#if permission["P02CustomerListEdit"]??>
+		<#assign editCustomerURL= "'${ctx}/custom/baseinfo/edit.html'" />
+	</#if>
+	
+	<#if permission["P02CustomerListDelete"]??>
+		<#assign deleteCustomerURL = "'${ctx}/custom/baseinfo/delete.html'"  />
+	</#if>
+	
+<@form.table id="tableCustomList" 
+class="col-xs-12"
+title="${i18n.get('客户一览')}" 
+url = "${ctx}/custom/baseinfo/page.html" 
+rowNum = "20" 
+addURL = "${addCustomerURL!}"
+editURL = "${editCustomerURL!}"
+deleteURL= "${deleteCustomerURL!}" 
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+	{name:'erpCode',label:'${i18n.get('客户编号')}',hidden:false,width:160,sortable:false,align:'center' },
+	{name:'customFullName',label:'${i18n.get('客户全称')}',hidden:false,width:300,sortable:false,align:'center' },
+	{name:'customWebAddress',label:'${i18n.get('公司网址')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'customClassGrid.name',label:'${i18n.get('客户类别')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'customAreaName',label:'${i18n.get('所属区域')}',hidden:false,width:80,sortable:false,align:'center' },
+	{name:'customGradeName',label:'${i18n.get('客户等级')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'creatorName',label:'${i18n.get('销售人员')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'creatorNo',label:'${i18n.get('销售人员工号')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'customSourceName',label:'${i18n.get('客户来源')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'customCategoryName',label:'${i18n.get('客户行业')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'customStatusName',label:'${i18n.get('客户状态')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'customReportedFlgName',label:'${i18n.get('报备状态')}',hidden:false,width:100,sortable:false,align:'center' }
+	]" 
+	> 
+	
+	<div class="col-xs-12" style="padding-top: 20px;">
+		<table border="0" cellpadding="0" cellspacing="0" >
+			<tr align="left">
+				<td align="right" width="120px">
+					<label class="no-padding-right" > ${i18n.get('客户编号 ')}:</label>
+				</td>
+				<td align="left"  >
+					<@form.input 
+						id="erpCode"  name="erpCode" 
+						placeholder="" 
+						tip="" 
+					/>
+				</td>
+				<td align="right" width="120px">
+					<label class="no-padding-right" > ${i18n.get('客户全称 ')}:</label>
+				</td>
+				<td align="left"  >
+					<@form.input 
+						id="customFullName"  name="customFullName" 
+						placeholder="" 
+						tip="" 
+					/>
+				</td>
+				 <td align="right" width="120px">
+					<label class="no-padding-right" > ${i18n.get('客户别名')} :</label>
+				</td>
+				<td >
+					<@form.input  
+						id="customAliasName"  name="customAliasName" 
+						placeholder="" 
+						tip="" 
+						/>
+				</td>
+			</tr>
+			<tr>
+					<td align="right" >
+						<label class="no-padding-right" >${i18n.get('客户来源')}  :</label>
+					</td>
+					<td >
+						<@form.select style="width: 161px;"
+							id="customSource" name="customSource" 
+							code="CUSTOMSOURCE" 
+						/>
+					</td>
+					<td align="right" >
+						<label class="no-padding-right">${i18n.get('客户类别 ')} :</label>
+					</td>
+					<td >
+						<@form.select style="width: 161px;"
+							id="customClass" name="customClass" 
+							code="CUSTOMCLASS" 
+							level="1"
+							childId="customGrade"
+							onChange="function(){
+								$('#customGrade').val('');
+								reload_customGrade();
+							}"
+						/>
+					</td>
+					<td align="right" >
+						<label class="no-padding-right" >${i18n.get('客户状态')}  :</label>
+					</td>
+					<td >
+						<@form.select 
+							code="CUSTOMSTATUS"
+							style="width: 161px;"
+							id="customStatus" name="customStatus" 
+							placeholder="" 
+							tip="" 
+							/>
+					</td>
+				<tr>
+					<td align="right">
+						<label class="no-padding-right" >${i18n.get('所属区域')} ${i18n.get('国家')} :</label>
+					</td>
+					<td>
+						<@form.select 
+							code="ADDRESSREGION"
+							level="1"
+							childId="customAreaSub1"
+							id="customArea"  name="customArea" 
+							style="width: 161px;"
+							placeholder=""
+							tip="" 
+							onChange="function(){
+								$('#customAreaSub1').val('');
+								$('#customAreaSub2').val('');
+								$('#customAreaSub3').val('');
+								reload_customAreaSub1();
+								reload_customAreaSub2();
+								reload_customAreaSub1();
+							}"
+							/>
+					</td>
+					<td align="right">
+						
+						<label class="no-padding-right"> ${i18n.get('客户等级')} :</label>
+					</td>
+					<td >
+						<@form.select style="width: 161px;"
+							id="customGrade" name="customGrade" 
+							code="CUSTOMCLASS" 
+							level="2"
+							parentId="customClass" 
+						/>
+						
+						
+					</td>
+					<td align="right">
+					</td>
+					<td >
+					</td>
+				</tr>
+				<tr>
+					
+					<td align="right">
+						<label class="no-padding-right" > ${i18n.get('省份')} :</label>
+					</td>
+					<td >
+						<@form.select 
+							code="ADDRESSREGION"
+							level="2"
+							parentId="customArea"
+							childId="customAreaSub2"
+							style="width: 161px;"
+							id="customAreaSub1" name="customAreaSub1" 
+							placeholder="" 
+							tip="" 
+							onChange="function(){
+								$('#customAreaSub2').val('');
+								$('#customAreaSub3').val('');
+								reload_customAreaSub2();
+								reload_customAreaSub1();
+							}"
+							/>
+						
+					</td>
+					<td align="right">
+						<label class="no-padding-right" > ${i18n.get('行业大类 ')}:</label>
+					</td>
+					<td >
+						<@form.select 
+							code="CUSTOMCATEGORY"
+							level="1"
+							childId="customCategorySub"
+							required="${i18n.get('不能为空')}" 
+							style="width: 161px;"
+							id="customCategory"  name="customCategory" 
+							placeholder="" 
+							tip="" 
+							onChange="function(){
+								$('#customCategorySub').val('');
+								reload_customCategorySub();
+							}"
+							/>
+					</td>
+					<td align="right">
+						<label class="no-padding-right" >${i18n.get(' 报备状态')} :</label>
+					</td>
+					<td >
+						<@form.select 
+							code="CUSTOM_NORMAL_STATUS"
+							style="width: 161px;"
+							id="customReportedFlg" name="customReportedFlg" 
+							placeholder="" 
+							tip="" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						<label class="no-padding-right" >${i18n.get(' 城市')} :</label>
+					</td>
+					<td >
+						<@form.select 
+							code="ADDRESSREGION"
+							level="3"
+							parentId="customAreaSub1"
+							childId="customAreaSub3"
+							style="width: 161px;"
+							id="customAreaSub2" name="customAreaSub2" 
+							placeholder="" 
+							tip="" 
+							onChange="function(){
+								$('#customAreaSub3').val('');
+								reload_customAreaSub3();
+							}"
+							/>
+					</td>
+					<td align="right">
+						<label class="no-padding-right" >${i18n.get('行业小类')}  :</label>
+					</td>
+					<td >
+						<@form.select style="width: 161px;"
+							id="customCategorySub" name="customCategorySub" 
+							code="CUSTOMCATEGORY" 
+							style="width: 161px;"
+							level="2"
+							parentId="customCategory"
+							required="${i18n.get('不能为空')}" 
+						/>
+					</td>
+					<td align="right">
+					</td>
+					<td >
+					</td>
+					
+				</tr>
+				<tr>
+					<td align="right">
+						<label class="no-padding-right" >${i18n.get('区/县')}  :</label>
+					</td>
+					<td >
+						<@form.select 
+							code="ADDRESSREGION"
+							level="4"
+							parentId="customAreaSub2"
+							style="width: 161px;"
+							id="customAreaSub3" name="customAreaSub3" 
+							placeholder="" 
+							tip="" 
+							/>
+					</td>
+					 <td align="right" width="120px">
+					<label class="no-padding-right" > ${i18n.get('销售人员 ')}:</label>
+				</td>
+				<td >
+					<@form.autocomplete  id="createdById" name="createdById"
+							style="width: 161px;"  
+							placeholder="${i18n.get('请选择销售人员')}"
+							idKey='employeeId'
+							multiple="false"
+							formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+							url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+						/>
+				</td>
+					<td align="right">
+					</td>
+					<td >
+					</td>
+					<td align="right">
+					</td>
+					<td >
+					</td>
+				</tr>
+		</table>	
+	</div>
+</@form.table> 
+</div>
+</@cui.body>
+
+</#escape>

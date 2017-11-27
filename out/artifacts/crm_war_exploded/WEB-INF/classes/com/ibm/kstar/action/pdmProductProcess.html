@@ -1,0 +1,136 @@
+
+
+<@form.form id="t8" class="form-horizontal">
+	<div align="center" class="form-group" style="margin-top:30px">
+		<table>
+			<tr>
+				<td align="right" width="140px">${i18n.get('需求单编号 :')}</td>
+				<td width="300px">
+					<@form.input id="demandCode" name="demandCode" readonly="true" value="${(demand.demandCode)!}" />
+				</td>
+				<td align="right" width="140px">${i18n.get('需求单名称:')}</td>
+				<td width="300px">	
+					<@form.input id="demandName" name="demandName" readonly="true" value="${(demand.demandName)!}" />
+				</td>
+				<td align="right" width="140px">${i18n.get('期望交货日期:')}</td>
+				<td width="300px">
+					<@form.date id="hopeDeliverDate" name="hopeDeliverDate" readonly="true" value="${(demand.hopeDeliverDate?date)!}" />
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="140px">${i18n.get('客户名称:')}</td>
+				<td width="300px">
+					<@form.autocomplete 
+						id="clientCode"
+						name="clientCode"
+						idKey='id'
+						placeholder="${i18n.get('请选择客户')}"
+						style="width:200px;disabled='disabled'"
+						url="function(){ return '${ctx}/lovcustom/autoCompleteCustomByPosition.html'; }"
+						formatResult="function(data) {
+						return '<div >' +data.customFullName + '【' +data.customCode +'】 </div>';
+						}"
+						value="${customInfo!'{}'}"
+						onSelect="function(data){
+							var address = '';
+							if(data.customAreaName != undefined){
+								address += data.customAreaName;
+							}
+							if(data.customAreaSub1Name != undefined){
+								address += data.customAreaSub1Name;
+							}
+							if(data.customAreaSub2Name != undefined){
+								address += data.customAreaSub2Name;
+							}
+							if(data.customAreaSub3Name != undefined){
+								address += data.customAreaSub3Name;
+							}
+							if(data.corpRegAddress != undefined){
+								address += data.corpRegAddress;
+							}
+							$('#clientAddress').val(address);
+							$('#customCategorySubName').val(data.customCategorySubName);
+						}"
+					/>
+				</td>
+				<td align="right" width="140px">${i18n.get('客户所在地:')}</td>
+				<td width="300px">
+					<@form.input id="clientAddress" name="clientAddress" readonly="true"  value="${(demand.clientAddress)!}" />
+				</td>
+				<td align="right" width="140px">${i18n.get('客户行业:')}</td>
+				<td width="300px">	
+					<@form.input id="customCategorySubName" name="customCategorySubName" readonly="true"  value="${(demand.customCategorySubName)!}" />
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="140px">${i18n.get('需求种类:')}</td>
+				<td width="300px">
+					<@form.select style="width:163px;" id="demantCategory" name="demantCategory" readonly="true" code="PROREQSORT" idKey='id' value="${(demand.demantCategory)!}" />
+				</td>
+				<#if seriesDemand?? || (demand.proSeriesOrModel)??>
+				<td align="right" width="140px">${i18n.get('产品系列或型号:')}</td>
+				<td width="300px">	
+					<@form.input id="proSeriesOrModel" name="proSeriesOrModel" readonly="true"  value="${(demand.proSeriesOrModel)!}" />
+				</td>
+				<td align="right" width="140px"></td>
+				<td width="300px">
+				</td>
+				<#else>
+				<td align="right" width="140px">${i18n.get('需求数量:')}</td>
+				<td width="300px">	
+					<@form.number id="demandNumber" name="demandNumber" readonly="true" value="${(demand.demandNumber)!}" />
+				</td>
+				<td align="right" width="140px">${i18n.get('是否提前备料:')}</td>
+				<td width="300px">
+					<label>
+						<@form.radio style="disabled='disabled'" name="prepareBefore" id='prepareBefore1' value="${i18n.get('是')}" selectValue=(demand.prepareBefore)!"${i18n.get('否')}"/>
+						<span class="lbl"> ${i18n.get('是')}</span>
+					</label>
+					<label>
+						<@form.radio style="disabled='disabled'" name="prepareBefore" id='prepareBefore2' value="${i18n.get('否')}" selectValue=(demand.prepareBefore)!"${i18n.get('否')}"/>
+						<span class="lbl"> ${i18n.get('否')} </span>
+					</label>
+				</td>
+				</#if>
+			</tr>
+			<tr>
+				<td align="right" width="140px">${i18n.get('需求部门:')}</td>
+				<td width="300px">
+					<@form.input id="demandDepartmentName" name="demandDepartmentName" readonly="true"  value="${(demand.demandDepartmentName)!}" />
+				</td>
+				<td align="right" width="140px">${i18n.get('需求人:')}</td>
+				<td width="300px">	
+					<@form.input id="demandPersonName" name="demandPersonName" readonly="true" value="${(demand.demandPersonName)!}" />
+				</td>
+				<td align="right" width="140px">${i18n.get('联系电话:')}</td>
+				<td width="300px">
+					<@form.input id="contractNumber" name="contractNumber" readonly="true" value="${(demand.contractNumber)!}" />
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="140px">${i18n.get('营销部门:')}</td>
+				<td width="300px">
+					<@form.input id="businessUnitName" name="businessUnitName" readonly="true" value="${(demand.businessUnitName)!}" />
+				</td>
+				<td align="right" width="140px">${i18n.get('客户PO或合同:')}</td>
+				<td width="300px">	
+					<@form.input id="clientContract" readonly="true" name="clientContract"  value="${(demand.clientContract)!}" />
+				</td>
+				<td align="right" width="140px"></td>
+				<td width="300px">
+				</td>
+			</tr>
+			<tr>
+				<td align="right" width="140px">${i18n.get('PDM驳回原因:')}</td>
+				<td colspan="5">
+					<@form.input id="backReason" name="backReason" style="width:1043px;" readonly="true" value="${(demand.backReason)!}" />
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="info" style="padding-top: 20px;" class="row">
+		<div class="col-xs-12">
+			<input type="hidden" id="selectedId"  />
+			<@plug.tabs tabMain=tabMainInfo></@plug.tabs>
+	</div>
+</@form.form>

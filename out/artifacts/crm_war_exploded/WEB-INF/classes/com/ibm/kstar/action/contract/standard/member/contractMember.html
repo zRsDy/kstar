@@ -1,0 +1,62 @@
+<#escape x as x?html>
+<@pui.body>
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="teammembers"
+			success="function(){ alert('${i18n.get('保存成功')}！');parent.currentParent.reload_teammembers(); }" 
+			class="form-horizontal"> 
+				<!-- <div class="form-group" >
+				
+					<label class="col-sm-3 control-label no-padding-right" for="contrNo"> 合同编号 : </label>
+					<@form.input
+					id="contrNo"  name="contrNo" 
+					placeholder="" 
+					tip="合同编号" 
+					required="不能为空！"
+					readonly ="readonly"
+					value="${(contr.contrNo)!}" 
+					/>
+				</div>	 -->
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="memName"> ${i18n.get('团队成员')} : </label>
+					<@form.input
+					id="memName"  name="memName" 
+					placeholder="" 
+					tip="${i18n.get('团队成员')}" 
+					required="${i18n.get('不能为空')}！"
+					value="${(memInfo.memName)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="memRole"> ${i18n.get('岗位')} : </label>
+					<@form.select  id="role" name="role" code="PRJROLE" value="${(memInfo.role)!}" /> 
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="notes"> ${i18n.get('备注')} : </label>
+					  
+					<@form.input
+					id="notes"  name="notes" 
+					placeholder="" 
+					tip="${i18n.get('备注')}" 
+					value="${(memInfo.notes)!}" 
+					/>
+				</div>
+	
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+</@pui.body>
+
+</#escape>

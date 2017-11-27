@@ -1,0 +1,595 @@
+<div>
+
+ <script type="text/javascript">
+
+ $(document).ready(function(){	
+	 
+	 if('${ifProReviewStatus}'=="Y"){
+		debugger;
+	 	$("#save_idm").attr("disabled","true");
+	 	$("#support_idm").attr("disabled","true");
+ 	}
+	 
+	 if('${processpage}'=="Y"){
+			debugger;
+		 	$("#save_idm").attr("disabled","true");
+		 	$("#support_idm").attr("disabled","true");
+	 } 
+	 
+	 if('${processpage}'=="P1"){
+		 	$("#save_idm").attr("disabled","true");
+		 	$("#support_idm").attr("disabled","true");
+	 } 
+	 
+	 if('${processpage}'=="P3"){
+		 	$("#save_idm").attr("disabled","true");
+		 	$("#support_idm").attr("disabled","true");
+	 } 
+	 
+	 if('${processpage}'=="P5"){
+		 	$("#save_idm").attr("disabled","true");
+		 	$("#support_idm").attr("disabled","true");
+	 }
+	 
+	 if('${processpage}'=="P6"){
+		 	$("#save_idm").attr("disabled","true");
+		 	$("#support_idm").attr("disabled","true");
+	 } 
+	 
+	 if('${processpage}'=="P7"){
+		 	$("#save_idm").attr("disabled","true");
+		 	$("#support_idm").attr("disabled","true");
+	 } 
+	 
+	 if('${processpage}'=="P8"){
+		 	$("#save_idm").attr("disabled","true");
+		 	$("#support_idm").attr("disabled","true");
+	 } 
+	 
+	 if('${processpage}'=="P9"){
+		 	$("#save_idm").attr("disabled","true");
+		 	$("#support_idm").attr("disabled","true");
+	 } 
+	 
+	 if('${processpage}'=="P10"){
+		 	$("#save_idm").attr("disabled","true");
+		 	$("#support_idm").attr("disabled","true");
+	 } 
+  
+  
+});
+
+ </script> 
+ 
+
+	<@form.form id="idm" action="${ctx}/quot/idm.html?typ=${typ}" 
+	autoClose="false"
+	upload ="true"
+	success="function(){
+		alert('${i18n.get('保存成功')}！');
+		}" 
+	class="form-horizontal">
+	<@form.input id="id" name="id" placeholder="" tip="" type="hidden"
+	value="${(idmInf.id)!}" />
+
+	<h5 style="background-color: #E9E9E9;">IT${i18n.get('设备信息')}</h5>
+	
+	<div style="height: 15px;">
+		<div style="padding-right: 20px; float: right;padding-top: 3px;" >
+		
+			<#if (permission["P04T2ProjFormT3PresaleT2IDMSave"])??>		
+			<button id="save_idm" class="btn btn-info submit" type="button" align="right">
+				<i class="icon-ok bigger-110"></i> ${i18n.get('保存')}
+			</button>
+			</#if>
+			
+		</div>
+		<div style="padding-right: 20px; float: right;padding-top: 3px;" >
+		
+			<#if (permission["P04T2ProjFormT3PresaleT2IDMSubmitSupport"])??>	
+			<button id="support_idm" class="btn btn-info" type="button" align="right" onclick="javascript:parent.dialog('${i18n.get('售前支持界面')}','${ctx}/supportApply/add.html?bid=${bocode}',window)">
+				<i class="icon-ok bigger-110"></i> ${i18n.get('提交售前支持')}
+			</button>
+			</#if>
+			
+		</div>
+		&nbsp; &nbsp; &nbsp;
+	</div>
+	
+	<table>
+		<tr>
+			<td width="100px">${i18n.get('项目技术要求')}:</td>
+			<td width="180px">
+				<div>
+					<input type="file" id="idmDoc1" name="idmDoc1"  size="50" value="${(idmInf.prjtchRq)!}" >
+					<a target="_blank" href='${(idmInf.prjtchRq)!}'> 
+						<button id="doc_idm" type="button" align="right" >
+							<i></i> ${i18n.get('下载文档')}:${(idmInf.prjtchRqnm)!}
+						</button>					
+					</a>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('每个模块机柜数量')}:</td>
+			<td width="180px"><@form.input id="rckNm" name="rckNm"
+				placeholder="" tip="" value="${(idmInf.rckNm)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('机柜尺寸要求')}:</td>
+			<td width="330px">
+				<div class="radio">
+					<label><@form.radio name="rckSz" value="a"
+						selectValue="${(idmInf.rckSz)!'N'}" /> <span class="lbl">600*1100*2000</span>
+					</label> <label><@form.radio name="rckSz" value="b"
+						selectValue="${(idmInf.rckSz)!'N'}" /> <span class="lbl">600*1200*2000</span>
+					</label> <label><@form.radio name="rckSz" value="c"
+						selectValue="${(idmInf.rckSz)!'N'}" /> <span class="lbl">800*1000*2000</span>
+					</label> <label><@form.radio name="rckSz" value="d"
+						selectValue="${(idmInf.rckSz)!'N'}" /> <span class="lbl">${i18n.get('其它')}</span>
+					</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('后期扩容要求')}:</td>
+			<td width="180px"><@form.input id="enextRq" name="enextRq"
+				placeholder="" tip="" value="${(idmInf.enextRq)!}" /></td>
+		</tr>
+	</table>
+	<h5 style="background-color: #E9E9E9;">${i18n.get('配电部分')}</h5>
+	<table>
+		<tr>
+			<td width="100px">${i18n.get('市电输入')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="elecInt" value="a"
+							selectValue="${(idmInf.elecInt)!'N'}" /> <span class="lbl">${i18n.get('1路')}</span>
+						</label> 
+						<label><@form.radio name="elecInt" value="b"
+							selectValue="${(idmInf.elecInt)!'N'}" /> <span class="lbl">${i18n.get('2路')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('电池后备时间')}/min:</td>
+			<td width="180px"><@form.input id="bttrBktm"
+				name="bttrBktm" placeholder="" tip=""
+				value="${(idmInf.bttrBktm)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('配电柜需求')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="elcrckRq" value="a"
+							selectValue="${(idmInf.elcrckRq)!'N'}" /> <span class="lbl">${i18n.get('普通型')}</span>
+						</label> 
+						<label><@form.radio name="elcrckRq" value="b"
+							selectValue="${(idmInf.elcrckRq)!'N'}" /> <span class="lbl">${i18n.get('精密型（含主路监控）')}</span>
+						</label>
+						<label><@form.radio name="elcrckRq" value="c"
+							selectValue="${(idmInf.elcrckRq)!'N'}" /> <span class="lbl">${i18n.get('精密型（含主路监控+支路监控）')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('机柜供电回路')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="rckCrc" value="a"
+							selectValue="${(idmInf.rckCrc)!'N'}" /> <span class="lbl">${i18n.get('单路')}</span>
+						</label> 
+						<label><@form.radio name="rckCrc" value="b"
+							selectValue="${(idmInf.rckCrc)!'N'}" /> <span class="lbl">${i18n.get('双路')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('机房布线')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="rmLndp" value="a"
+							selectValue="${(idmInf.rmLndp)!'N'}" /> <span class="lbl">${i18n.get('机柜顶部走线')}</span>
+						</label> 
+						<label><@form.radio name="rmLndp" value="b"
+							selectValue="${(idmInf.rmLndp)!'N'}" /> <span class="lbl">${i18n.get('地板下走线')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('电池安装位置')}:</td>
+			<td width="180px"><@form.input id="btrInsps" name="btrInsps"
+				placeholder="" tip="" value="${(idmInf.btrInsps)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">PDU${i18n.get('输出插孔')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="pduOut" value="gb"
+							selectValue="${(idmInf.pduOut)!'N'}" /> <span class="lbl">${i18n.get('国标')}</span>
+						</label> 
+						<label><@form.radio name="pduOut" value="un"
+							selectValue="${(idmInf.pduOut)!'N'}" /> <span class="lbl">${i18n.get('万用')}</span>
+						</label>
+						<label><@form.radio name="pduOut" value="iec"
+							selectValue="${(idmInf.pduOut)!'N'}" /> <span class="lbl">IEC，${i18n.get('10A路')}，${i18n.get('16A路')}</span>
+						</label> 
+						<label><@form.radio name="pduOut" value="otr"
+							selectValue="${(idmInf.pduOut)!'N'}" /> <span class="lbl">${i18n.get('其他')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">PDU${i18n.get('输出路数')}:</td>
+			<td width="180px"><@form.input id="pduOtnm"
+				name="pduOtnm" placeholder="" tip=""
+				value="${(idmInf.pduOtnm)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">PDU${i18n.get('选配功能')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="pduExfn" value="swt"
+							selectValue="${(idmInf.pduExfn)!'N'}" /> <span class="lbl">${i18n.get('开关')}</span>
+						</label> 
+						<label><@form.radio name="pduExfn" value="cnt"
+							selectValue="${(idmInf.pduExfn)!'N'}" /> <span class="lbl">${i18n.get('工业连接器')}</span>
+						</label>
+						<label><@form.radio name="pduExfn" value="box"
+							selectValue="${(idmInf.pduExfn)!'N'}" /> <span class="lbl">${i18n.get('接线盒')}</span>
+						</label> 
+						<label><@form.radio name="pduExfn" value="dvc"
+							selectValue="${(idmInf.pduExfn)!'N'}" /> <span class="lbl">${i18n.get('防雷模块')}</span>
+						</label>
+						<label><@form.radio name="pduExfn" value="otr"
+							selectValue="${(idmInf.pduExfn)!'N'}" /> <span class="lbl">${i18n.get('其他')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+	</table>
+	<h5 style="background-color: #E9E9E9;">${i18n.get('空调部分')}</h5>
+	<table>
+		<tr>
+			<td width="100px">${i18n.get('空调制冷方式')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="clrCldtyp" value="wnd"
+							selectValue="${(idmInf.clrCldtyp)!'N'}" /> <span class="lbl">${i18n.get('风冷')}</span>
+						</label> 
+						<label><@form.radio name="clrCldtyp" value="wtr"
+							selectValue="${(idmInf.clrCldtyp)!'N'}" /> <span class="lbl">${i18n.get('水冷')}</span>
+						</label>
+						<label><@form.radio name="clrCldtyp" value="cwt"
+							selectValue="${(idmInf.clrCldtyp)!'N'}" /> <span class="lbl">${i18n.get('冷冻水')}</span>
+						</label> 
+						<label><@form.radio name="clrCldtyp" value="otr"
+							selectValue="${(idmInf.clrCldtyp)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="clrCldnts" name="clrCldnts" placeholder="" tip=""
+							value="${(idmInf.clrCldnts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('空调送风方式')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="clrCldwndtyp" value="wnd"
+							selectValue="${(idmInf.clrCldwndtyp)!'N'}" /> <span class="lbl">${i18n.get('行级送风')}</span>
+						</label> 
+						<label><@form.radio name="clrCldwndtyp" value="wtr"
+							selectValue="${(idmInf.clrCldwndtyp)!'N'}" /> <span class="lbl">${i18n.get('下送风')}</span>
+						</label>
+						<label><@form.radio name="clrCldwndtyp" value="otr"
+							selectValue="${(idmInf.clrCldwndtyp)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="clrCldwndnts" name="clrCldwndnts" placeholder="" tip=""
+							value="${(idmInf.clrCldwndnts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('机型选择')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="mchTyp" value="stw"
+							selectValue="${(idmInf.mchTyp)!'N'}" /> <span class="lbl">${i18n.get('恒温恒湿')}</span>
+						</label> 
+						<label><@form.radio name="mchTyp" value="sgc"
+							selectValue="${(idmInf.mchTyp)!'N'}" /> <span class="lbl">${i18n.get('单冷')}</span>
+						</label>
+						<label><@form.radio name="mchTyp" value="eth"
+							selectValue="${(idmInf.mchTyp)!'N'}" /> <span class="lbl">${i18n.get('带加热')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('室外机位置')}:</td>
+			<td width="180px"><@form.input id="mchPst"
+				name="mchPst" placeholder="" tip=""
+				value="${(idmInf.mchPst)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('冗余需求')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="rdmRq" value="y"
+							selectValue="${(idmInf.rdmRq)!'N'}" /> <span class="lbl">${i18n.get('是')}</span>
+						</label> 
+						<label><@form.radio name="rdmRq" value="n"
+							selectValue="${(idmInf.rdmRq)!'N'}" /> <span class="lbl">${i18n.get('否')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('室外机与室内机之间的高度差')}/m:</td>
+			<td width="180px"><@form.input id="mchHgt"
+				name="mchHgt" placeholder="" tip=""
+				value="${(idmInf.mchHgt)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('室内机与室外机的管程长度')}/m:</td>
+			<td width="180px"><@form.input id="mchppLng"
+				name="mchppLng" placeholder="" tip=""
+				value="${(idmInf.mchppLng)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('是否有给排水')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="ifWtr" value="y"
+							selectValue="${(idmInf.ifWtr)!'N'}" /> <span class="lbl">${i18n.get('是')}</span>
+						</label> 
+						<label><@form.radio name="ifWtr" value="n"
+							selectValue="${(idmInf.ifWtr)!'N'}" /> <span class="lbl">${i18n.get('否')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>	
+	</table>
+	<h5 style="background-color: #E9E9E9;">${i18n.get('封闭通道')}</h5>
+	<table>
+		<tr>
+			<td width="100px">${i18n.get('是否封闭通道')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="ifClspp" value="y"
+							selectValue="${(idmInf.ifClspp)!'N'}" /> <span class="lbl">${i18n.get('是')}</span>
+						</label> 
+						<label><@form.radio name="ifClspp" value="n"
+							selectValue="${(idmInf.ifClspp)!'N'}" /> <span class="lbl">${i18n.get('否')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>	
+		<tr>
+			<td width="100px">${i18n.get('封闭通道形式')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="clsppTyp" value="y"
+							selectValue="${(idmInf.clsppTyp)!'N'}" /> <span class="lbl">${i18n.get('冷通道')}</span>
+						</label> 
+						<label><@form.radio name="clsppTyp" value="n"
+							selectValue="${(idmInf.clsppTyp)!'N'}" /> <span class="lbl">${i18n.get('热通道')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>	
+		<tr>
+			<td width="100px">${i18n.get('机柜品牌')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="rckBrd" value="y"
+							selectValue="${(idmInf.rckBrd)!'N'}" /> <span class="lbl">${i18n.get('科士达')}</span>
+						</label> 
+						<label><@form.radio name="rckBrd" value="n"
+							selectValue="${(idmInf.rckBrd)!'N'}" /> <span class="lbl">${i18n.get('其他')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('封闭通道门')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="clsPp" value="y"
+							selectValue="${(idmInf.clsPp)!'N'}" /> <span class="lbl">${i18n.get('自动')}</span>
+						</label> 
+						<label><@form.radio name="clsPp" value="n"
+							selectValue="${(idmInf.clsPp)!'N'}" /> <span class="lbl">${i18n.get('手动')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+	</table>
+	<h5 style="background-color: #E9E9E9;">${i18n.get('监控部分')}</h5>
+	<table>
+		<tr>
+			<td width="100px">${i18n.get('是否需要监控')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="ifMntr" value="n"
+							selectValue="${(idmInf.ifMntr)!'N'}" /> <span class="lbl">${i18n.get('否')}</span>
+						</label> 
+						<label><@form.radio name="ifMntr" value="yk"
+							selectValue="${(idmInf.ifMntr)!'N'}" /> <span class="lbl">${i18n.get('是(科士达监控)')}</span>
+						</label>
+						<label><@form.radio name="ifMntr" value="yy"
+							selectValue="${(idmInf.ifMntr)!'N'}" /> <span class="lbl">${i18n.get('是(友商监控)')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('告警需求')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="almRq" value="sms"
+							selectValue="${(idmInf.almRq)!'N'}" /> <span class="lbl">${i18n.get('短信')}</span>
+						</label> 
+						<label><@form.radio name="almRq" value="voc"
+							selectValue="${(idmInf.almRq)!'N'}" /> <span class="lbl">${i18n.get('声光')}</span>
+						</label>
+						<label><@form.radio name="almRq" value="lang"
+							selectValue="${(idmInf.almRq)!'N'}" /> <span class="lbl">${i18n.get('语言')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('烟感数量')}:</td>
+			<td width="180px"><@form.input id="smkNm"
+				name="smkNm" placeholder="" tip=""
+				value="${(idmInf.smkNm)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('温湿度数量')}:</td>
+			<td width="180px"><@form.input id="tmpwtNm"
+				name="tmpwtNm" placeholder="" tip=""
+				value="${(idmInf.tmpwtNm)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('红外探测数量')}:</td>
+			<td width="180px"><@form.input id="infNm"
+				name="infNm" placeholder="" tip=""
+				value="${(idmInf.infNm)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('漏水监测数量')}:</td>
+			<td width="180px"><@form.input id="drpNm"
+				name="drpNm" placeholder="" tip=""
+				value="${(idmInf.drpNm)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('门禁门的数量')}:</td>
+			<td width="180px"><@form.input id="drNm"
+				name="drNm" placeholder="" tip=""
+				value="${(idmInf.drNm)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('漏水检测方式')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="drpTyp" value="n"
+							selectValue="${(idmInf.drpTyp)!'N'}" /> <span class="lbl">${i18n.get('非定位')}</span>
+						</label> 
+						<label><@form.radio name="drpTyp" value="y"
+							selectValue="${(idmInf.drpTyp)!'N'}" /> <span class="lbl">${i18n.get('定位')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('开门方式')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="drTyp" value="cd"
+							selectValue="${(idmInf.drTyp)!'N'}" /> <span class="lbl">${i18n.get('刷卡')}</span>
+						</label> 
+						<label><@form.radio name="drTyp" value="fp"
+							selectValue="${(idmInf.drTyp)!'N'}" /> <span class="lbl">${i18n.get('指纹')}</span>
+						</label>
+						<label><@form.radio name="drTyp" value="pw"
+							selectValue="${(idmInf.drTyp)!'N'}" /> <span class="lbl">${i18n.get('密码')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('门锁方式')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="drlckTyp" value="elec"
+							selectValue="${(idmInf.drlckTyp)!'N'}" /> <span class="lbl">${i18n.get('电插锁')}</span>
+						</label> 
+						<label><@form.radio name="drlckTyp" value="mgt"
+							selectValue="${(idmInf.drlckTyp)!'N'}" /> <span class="lbl">${i18n.get('磁力锁')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('视频监控数量')}:</td>
+			<td width="180px"><@form.input id="cctvNm"
+				name="cctvNm" placeholder="" tip=""
+				value="${(idmInf.cctvNm)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('视频像素要求')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="vdRq" value="a"
+							selectValue="${(idmInf.vdRq)!'N'}" /> <span class="lbl">${i18n.get('200万')}</span>
+						</label> 
+						<label><@form.radio name="vdRq" value="b"
+							selectValue="${(idmInf.vdRq)!'N'}" /> <span class="lbl">${i18n.get('130万')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('视频存储时间')}:</td>
+			<td width="180px"><@form.input id="vdTm"
+				name="vdTm" placeholder="" tip=""
+				value="${(idmInf.vdTm)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('原厂安装调试')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="insDbg" value="dbg"
+							selectValue="${(idmInf.insDbg)!'N'}" /> <span class="lbl">${i18n.get('调试')}</span>
+						</label> 
+						<label><@form.radio name="insDbg" value="ins"
+							selectValue="${(idmInf.insDbg)!'N'}" /> <span class="lbl">${i18n.get('安装')}</span>
+						</label>
+						<label><@form.radio name="insDbg" value="na"
+							selectValue="${(idmInf.insDbg)!'N'}" /> <span class="lbl">${i18n.get('不需要')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('电池监控')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="bttMnt" value="na"
+							selectValue="${(idmInf.bttMnt)!'N'}" /> <span class="lbl">${i18n.get('不需要')}</span>
+						</label> 
+						<label><@form.radio name="bttMnt" value="te"
+							selectValue="${(idmInf.bttMnt)!'N'}" /> <span class="lbl"${i18n.get('整组电压、电流')}></span>
+						</label>
+						<label><@form.radio name="bttMnt" value="se"
+							selectValue="${(idmInf.bttMnt)!'N'}" /> <span class="lbl">${i18n.get('单只电压、电流')}</span>
+						</label>
+						<label><@form.radio name="bttMnt" value="rs"
+							selectValue="${(idmInf.bttMnt)!'N'}" /> <span class="lbl">${i18n.get('内阻')}</span>
+						</label>
+						<label><@form.radio name="bttMnt" value="tp"
+							selectValue="${(idmInf.bttMnt)!'N'}" /> <span class="lbl">${i18n.get('温度')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('第三方设备情况')}:</td>
+			<td width="180px"><@form.input id="trdDvc"
+				name="trdDvc" placeholder="" tip=""
+				value="${(idmInf.trdDvc)!}" /></td>
+		</tr>
+	</table>
+
+
+
+	</@form.form>
+
+
+</div>

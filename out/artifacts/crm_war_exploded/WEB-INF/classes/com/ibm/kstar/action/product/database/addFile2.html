@@ -1,0 +1,46 @@
+<@pui.body> 
+
+	<div class="col-xs-12" >
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1"
+			success="function(){ 
+				parent.currentParent.reload_t1();
+				try{ parent.currentParent.reload_tree1('${(parentLovMember.id)!}'); }catch(e){ }
+			}" 
+			class="form-horizontal"
+			upload = "true"
+			>
+			<label class="col-xs-12 left"><h4>${i18n.get('目录')} ： ${(parentLovMember.namePath)!''} </h4></label>
+			<div class="row" style="margin-left: 202px;" >
+				<button class="btn btn-info addFile" type="button"> 
+					${i18n.get('增加附件')}
+				</button>
+			</div>
+			<p />
+			<div class="row" style="margin-left: 202px;" id="files">
+				<div class="form-group" >
+					<input  type="file" name="file" />
+				 </div>
+			</div>
+	</div>
+			
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i> 
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+		
+		
+		<div class="col-xs-12" >
+	</div>
+</@pui.body>

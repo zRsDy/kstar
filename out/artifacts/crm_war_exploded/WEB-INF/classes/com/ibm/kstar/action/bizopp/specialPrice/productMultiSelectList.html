@@ -1,0 +1,200 @@
+<@pui.body>
+<div class="row col-xs-12" style="width: 1000px;margin-right: 0px; margin-left: 0px;" >
+
+<table style="width: 1000px">
+	<tr>
+	<td style="width: 1000px">
+<@form.table id="all_table"
+	shrinkToFit = 'true'
+	title=" ${i18n.get('全部产品')}"
+	rowNum = "10"
+	url = "${ctx}/spePrice/product/page.html"
+	checkbox="true"
+	colModel = "[
+		{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'bizOppId',label:' ${i18n.get('商机id')}',hidden:true},
+		{name:'productId',label:' ${i18n.get('产品id')}',hidden:true},
+		{name:'bizOppName',label:' ${i18n.get('商机名称')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'productName',label:' ${i18n.get('产品名称')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'productModel',label:' ${i18n.get('产品型号')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'productType',label:' ${i18n.get('产品类别')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'planCount',label:' ${i18n.get('预计数量')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'planPrice',label:' ${i18n.get('目录价')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'planPrice',label:' ${i18n.get('预计金额')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'remark',label:' ${i18n.get('备注')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'isStandard',label:'${i18n.get('标准')}',hidden:false,width:100,sortable:true,align:'center'}
+	]"
+	  buttons = "[]"
+		 onSelectRow = "function(data,status){
+		 	if(status){
+		 		var flag = true;
+		 		$.each(selectedList,function(i,item){
+		 			if(item && data.id === item.id){
+		 				flag = false;
+		 				return;
+		 			}
+		 		});
+		 		if(flag){
+			 		$('#selected_table').jqGrid('addRowData',data.id,data);
+			 		selectedList.push(data);
+		 		}
+		 	}else{
+		 		var selectedIds = $('#selected_table').jqGrid('getDataIDs');
+		 		$.each(selectedIds,function(i,id){
+		 			if(id == data.id){
+		 				$('#selected_table').jqGrid('delRowData',id);
+		 			}
+		 		})
+		 		$.each(selectedList,function(i,item){
+		 			if(item && data.id === item.id){
+		 				selectedList.splice(i,1);
+		 			}
+		 		});
+		 	}
+		 }"
+		 onComplete = "function(){
+		  	var ids = $('#all_table').jqGrid('getDataIDs');
+	 		$.each(ids,function(i,id){
+				var cl = ids[i]; 
+				var qty = $('#all_table').jqGrid('getCell', cl, 'nonDeliveryQty');
+				$('#all_table').jqGrid('setRowData', cl, { qty : qty});
+	 		});
+	 		
+	 		var sedIds = $('#selected_table').jqGrid('getDataIDs');
+	 		$.each(sedIds,function(i,id){
+	 			$.each(selectedList,function(index,item){
+		 			if(item && id === item.id){
+		 				$('#all_table').jqGrid('setSelection',id,true);
+		 			}
+	 			});
+	 		})
+		 }"
+		checkAllFunction="function(data){
+			if(data){
+				var obj = $('#all_table').jqGrid('getRowData');
+				$.each(obj,function(i,data){
+					$('#selected_table').jqGrid('addRowData',data.id,data);
+				});
+			}else{
+				$('#selected_table').jqGrid('clearGridData');
+			}
+		}"
+	 
+	>
+	
+		<div class="col-xs-12" style="padding-top: 10px;padding-bottom: 10px;">
+			<table border="0" cellpadding="0" cellspacing="0" >
+		    	<tr align="left">
+		  			<td align="right" width="100px">
+		  				 ${i18n.get('商机名称:')}
+		            </td>
+		            <td align="left" width="230px" >
+		            	<@form.autocomplete  id="bizOppId" name="bizOppId" 
+			            	idKey='id'
+			            	style="width: 200px;"
+			            	placeholder="${i18n.get('请选择客户')}"
+			            	formatResult="function(data) {return '<div >' + data.opportunityName + '</div>';}"
+							url="function(){ return '${ctx}/lovBizopp/autocomplete_bizopp.html'; }"
+			            	value=""
+		            	/>
+		            </td>
+		            <td align="right" width="100px">
+		  				${i18n.get('商机编码:')}
+		            </td>
+		            <td align="left" width="230px" >
+			            <@form.input  id="bizOppName" name="bizOppName" style="width: 200px;" />
+		            </td>
+		    	</tr>
+		    	<tr>
+		            <td align="right">
+		  				${i18n.get('产品名称:')}
+		            </td>
+		             <td align="left" width="230px" >
+		            	<@form.input  id="productName" name="productName" style="width: 200px;" />
+		            </td>
+		            <td align="right">
+		  				${i18n.get('标准型号:')}
+		            </td>
+		             <td align="left" width="230px" >
+		            	<@form.input  id="productModel" name="productModel" style="width: 200px; "/>
+		            </td>
+		            <td align="right" width="100px">
+		  				 <button type="submit" class="btn btn-info" > 
+							<i class="icon-search bigger-110"></i>
+							${i18n.get('查询')}
+						 </button>
+		            </td>
+		       </tr>
+			</table>
+	  </div>
+</@form.table>
+</td>
+</tr>
+<tr>
+	<td>
+	<@form.table id="selected_table"
+	shrinkToFit = 'true'
+	title="${i18n.get('已选订单')}"
+	rowNum = "10"
+	search='false' 
+	datatype = "local"
+	colModel = "[
+			{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'bizOppId',label:'${i18n.get('商机id')}',hidden:true},
+		{name:'productId',label:'${i18n.get('产品id')}',hidden:true},
+		{name:'productName',label:'${i18n.get('产品名称')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'productModel',label:'${i18n.get('产品型号')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'productType',label:'${i18n.get('产品类别')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'planCount',label:'${i18n.get('预计数量')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'planPrice',label:'${i18n.get('目录价')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'planPrice',label:'${i18n.get('预计金额')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'remark',label:'${i18n.get('备注')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'isStandard',label:'${i18n.get('标准')}',hidden:false,width:100,sortable:true,align:'center'}
+		 ]"
+		 
+	 	buttons = "[]"
+	 	
+		/>
+	
+	</td>
+
+</tr>
+</table>
+
+<div class="clearfix form-actions">
+	<div class="col-md-offset-5 col-md-7">
+		<button class="btn btn-info" id="selectOK" type="button" onclick="$('#orderLinesForm').trigger('blur')">
+			<i class="icon-ok bigger-110"></i>
+			${i18n.get('选择')}
+		</button>
+		&nbsp; &nbsp; &nbsp;
+		<button class="btn" type="button" onclick="javascript:api.close()">
+			<i class="icon-undo bigger-110"></i>
+			${i18n.get('关闭')}
+		</button>
+	</div>
+</div>
+<script type="text/javascript">
+	var selectedList = [];
+	$('#selectOK').click(function(){
+		parent.currentParent.${pickerId}_callback(selectedList);
+		api.close();
+	});
+
+    $(function(){
+        $("cb_all_table").click(function(){
+            alert(1);
+            if(!$("#cb_all_table").checked){
+                $("#cb_all_table").checked = true;
+                var obj = $("#all_table").jqGrid("getRowData");
+                $.each(obj,function(i,data){
+                    $('#selected_table').jqGrid('addRowData',data.id,data);
+                });
+			}else{
+                $("#cb_all_table").checked = true;
+			}
+        })
+	});
+</script>
+</div>
+</@pui.body>

@@ -1,0 +1,247 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="customShareInfo" success="function(){ parent.currentParent.reload_tableShareList(); }" class="form-horizontal" >
+		<div class="form-group">	
+			<div style="padding-right: 20px; float: right;padding-top: 3px;">
+				<#if permission["P02CusShareSave"]?? && (customShareInfo.shareStatusName)?? && customShareInfo.shareStatusName != '审批中'>
+					<button class="btn btn-info submit" id="save" type="button">
+						<i class="bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+				</#if>
+				<#if permission["P02CusShareSubmit"]?? && (customShareInfo.shareStatusName)?? && customShareInfo.shareStatusName != '审批中'>
+					<button class="btn btn-info" id="apply" type="button" onclick="applyCustom('submit','20')">
+						<i class="bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+				</#if>
+				
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+				
+			</div>
+		</div>
+		
+		<div class="form-group" >
+			<table>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('申请客户')} : </label>
+					</td>
+					<td>
+						<input id="customCode" name="customCode" type="hidden"  value="${(customShareInfo.customCode)!}">
+						<input id="shareDept" name="shareDept" type="hidden"  value="${(customShareInfo.shareDept)!}">
+						<input id="shareSale" name="shareSale" type="hidden"  value="${(customShareInfo.shareSale)!}">
+					<#if !customShareInfo?? || !(customShareInfo.id)?? >
+						<@form.autocomplete  id="customName" name="customName" 
+							idKey='customFullName'
+							style="width: 162px;"
+							required="${i18n.get('请选择客户编号')}"
+							formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+							url="function(){ return '${ctx}/lovcustom/autoCompleteCustomNoAuth.html'; }"
+							value="{customFullName:'${(customShareInfo.customName)!}',
+								customCode:'${(customShareInfo.customCode)!}',
+								primaryOrgId:'${(customShareInfo.shareDept)!}',
+								primaryOrgName:'${(customShareInfo.shareDeptName)!}',
+								masterEmployeeId:'${(customShareInfo.shareSale)!}',
+								masterEmployeeName:'${(customShareInfo.shareSaleName)!}',
+							}"
+							onSelect="function(data){
+								debugger;
+								if( data.customCode != null && data.customCode !='' && data.customCode != 'undefined'){
+									$('#customCode').val(data.customCode);
+									$('#shareDept').val(data.createdOrgId);
+									$('#shareDeptName').val(data.createdOrgName);
+									$('#shareSale').val(data.createdById);
+									$('#shareSaleName').val(data.creatorName);
+									
+								}
+							}" 
+						/>
+					<#else>
+						<@form.input
+						id="customName"  
+						name="customName" 
+						placeholder="" 
+						tip="${(customShareInfo.customName)!}" 
+						value="${(customShareInfo.customName)!}" 
+						readonly ="readonly"
+						/>
+						
+					</#if>
+					</td>
+					
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('归属部门')} : </label>
+					</td>
+					<td>
+						<@form.input
+						id="shareDeptName"  
+						name="shareDeptName" 
+						placeholder="" 
+						tip="" 
+						value="${(customShareInfo.shareDeptName)!}" 
+						readonly ="readonly"
+						/>
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('申请编号')} : </label>
+					</td>
+					<td>
+						<@form.input
+						id="shareCode"  
+						name="shareCode" 
+						placeholder="" 
+						required="${i18n.get('不能为空')}"
+						readonly ="readonly"
+						tip="" 
+						value="${(customShareInfo.shareCode)!}" 
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('申请人')}  : </label>
+					</td>
+					<td>
+						<input id="applier" name="applier" type="hidden" value="${(customShareInfo.applier)!}" >
+						<input id="applierPos" name="applierPos" type="hidden" value="${(customShareInfo.applierPos)!}" >
+						<input id="applierOrg" name="applierOrg" type="hidden" value="${(customShareInfo.applierOrg)!}" >
+							<@form.input
+							id="applierName"
+							name="applierName"
+							placeholder="" 
+							required="${i18n.get('不能为空！')}"
+							tip="" 
+							value="${(customShareInfo.applierName)!}" 
+							/>
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('归属销售员')} : </label>
+					</td>
+					<td>
+							<@form.input
+							id="shareSaleName"
+							name="shareSaleName"
+							placeholder="" 
+							tip="" 
+							value="${(customShareInfo.shareSaleName)!}" 
+							readonly ="readonly"
+							/>
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('申请状态')} : </label>
+					</td>
+					<td>
+						<input id="shareStatus" name="shareStatus" type="hidden" value="${(customShareInfo.shareStatus)!}" >
+						<@form.input
+							id="shareStatusName"  
+							name="shareStatusName" 
+							placeholder="" 
+							required="${i18n.get('不能为空！')}"
+							readonly="readonly"
+							tip="" 
+							value="${(customShareInfo.shareStatusName)!}" 
+							/>
+							
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<strong style="color: red;">*</strong>
+						<label class="no-padding-right" > ${i18n.get('申请原因')} : </label>
+					</td>
+					<td>
+						<@form.select  style="width: 162px;"
+							id="shareCreateReason" name="shareCreateReason" 
+							code="CREATEREASON" 
+							required="${i18n.get('不能为空！')}"
+							value ="${(customShareInfo.shareCreateReason)!}"
+						/>
+					</td>
+					<td align="right" width="200px">
+						
+					</td>
+					<td >
+						
+					</td>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('申请时间')}  : </label>
+					</td>
+					<td>
+						<@form.input
+							id="shareCreateTime"  
+							name="shareCreateTime" 
+							placeholder="" 
+							tip="" 
+							value="${(customShareInfo.shareCreateTime)!}" 
+							readonly ="readonly"
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px" >
+						<label class="no-padding-right" >${i18n.get('原因描述')}  : </label>
+					</td>
+					<td colspan="5" >
+						<@form.textArea id="shareComment" 
+						name="shareComment" 
+						placeholder="${i18n.get('原因描述')}" 
+						width="143px" 
+						height="3" 
+						value="${(customShareInfo.shareComment)!}" />
+						
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+		
+	</@form.form>
+	
+	<@plug.tabs  tabMain=tabMain>
+	</@plug.tabs>
+	</@form.panel>
+</@pui.body>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+// 		if ('${(customShareInfo.shareStatus)!}' === 'CUSTOM_NORMAL_STATUS_20'
+// 				|| '${(customShareInfo.shareStatus)!}' === 'CUSTOM_NORMAL_STATUS_40'){
+// 			$("#save").attr("disabled","true");
+// 			$("#apply").attr("disabled","true");
+// 		}
+	});
+	
+	function applyCustom(operate,status){
+		var msg= "${i18n.get('确定启动共享流程吗？')}";
+		
+		var formDatas = $('#form_customShareInfo').serialize();
+		formDatas = "id=${(customShareInfo.id)!}&"+formDatas;
+		bootbox.confirm(msg, function(result) {
+			if(result) {
+				$.ajax({
+					type : "POST",
+					url : "${ctx}/custom/shareApply.html",
+					async: true,
+					data : formDatas,
+					dataType : 'json',
+					success : function(msg) {
+						alert(msg.message);
+						parent.currentParent2.reload_tableShareList(); 
+						javascript:api.close();
+					},
+					error: function(e) {
+						alert(e.responseJSON.message);
+					} 
+				});
+			}
+		});
+	}
+</script>
+</#escape>

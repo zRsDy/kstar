@@ -1,0 +1,51 @@
+<#escape x as x?html>
+<#if templateURL!true>
+	<#assign addURL="'${ctx}/loan/eliminate/addtabs.html?contrId=${contrId}&typ=${typ}&ContrNo=${ContrNo}&flag=Y'" />
+</#if>
+<#if templateURL!true>
+	<#assign deleteURL="'${ctx}/loan/eliminate/delete.html'" />
+</#if>
+	<@form.table id="eliminate" 
+	class="col-xs-12"
+	title="${i18n.get('无合同核销申请')}" 
+	shrinkToFit = 'true'
+	url = "${ctx}/loan/eliminate/page.html" 
+	addURL = "${addURL!}"
+	deleteURL = "${deleteURL!}" 
+	rowNum = "15" 	 
+	colModel = "[
+		{name:'id',label:'ID',hidden:true,width:60,sortable:true,align:'center' },
+		{name:'contractId',label:'contractId',hidden:true,width:60,sortable:true,align:'center' },
+		{name:'eliminateNumber',label:'${i18n.get('申请编号')}',hidden:false,sortable:true,align:'center' },
+		{name:'eliminateUser',label:'${i18n.get('申请人')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'eliminateType',label:'${i18n.get('申请状态')}',hidden:true,width:200,sortable:true,align:'center'},
+		{name:'eliminateTypeDesc',label:'${i18n.get('申请状态')}',hidden:false,width:200,sortable:true,align:'center'},
+		{name:'eliminateDate',label:'${i18n.get('申请日期')}',hidden:false,width:100,sortable:true,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }
+		]" 
+		search = "false"
+		ondblClickRow= "function(selectedData){
+				parent.dialog('${i18n.get('无合同核销申请')}','${ctx}/loan/eliminate/addtabs.html?contrId=${contrId}&typ=${typ}&ContrNo=${ContrNo}&flag=N&eliminateId='+selectedData,window);
+		}"
+		onComplete="function(id,rowData){
+			addButtonDisabled();
+		}"	
+		onSelectRow= "function(selectedData){
+		}"
+		buttons = "[]" > 
+		<input type="hidden" id="contrId" name="contrId" value="${(contrId)!}" />
+	</@form.table> 
+	<script type="text/javascript">
+		parent.reload_eliminate = reload_eliminate;
+		
+		function addButtonDisabled(){
+			var eliminate = $("#eliminate").jqGrid("getRowData");
+			$.each(eliminate,function(i,data){
+				if(data.eliminateTypeDesc == '审批中'||data.eliminateTypeDesc == '驳回'){
+					$("#add_eliminate").attr("disabled","disabled"); 
+					$("#add_eliminate").attr("disabled",true); 
+				}
+			})
+		}
+	</script>
+
+</#escape>

@@ -1,0 +1,2418 @@
+<@cui.body>
+<style type="text/css">
+
+    table {
+        border-collapse: collapse;
+        border-color: #ff0000;
+    }
+
+    table td {
+        padding: 2px;
+        vertical-align: middle;
+        word-break: keep-all;
+        border: solid #ededed;
+        height: 24px;
+        border-width: 0px 0px 0px 0px;
+    }
+
+    input {
+        width: 180px;
+    }
+
+    select {
+        width: 180px;
+    }
+    select[name=bizName]{width:95%;}
+</style>
+
+
+
+<@form.panel title="${i18n.get('新增/编辑')}">
+<@form.form id="rebate"
+	before="checkBiz"
+    postData="function() {
+        var data = {};
+        data.rivalList_str = getGrid_rival();
+        data.t1List_str = getGrid_t1();
+        data.t2List_str = getGrid_t2();
+        data.t3List_str = getGrid_t3();
+        data.t4List_str = getGrid_t4();
+		data.t5List_str = getGrid_t5();
+        return data;
+    }"
+    success="function(){
+        alert('${i18n.get('数据保存成功！')}');
+		try{parent.showflowList();}catch(e){}
+		try{parent.currentParent.reload_t1();}catch(e){}
+		try{parent.currentParent2.reload_t1();}catch(e){}
+		try{parent.currentParent.reload_rebateTable();}catch(e){}
+		try{parent.currentParent2.reload_rebateTable();}catch(e){}
+        api.close();
+    }"
+
+>
+<script>
+var rebateLines_t1 = ${(rebateLines_t1)!'[]'};
+var rebateLines_t2 = ${(rebateLines_t2)!'[]'};
+var rebateLines_t3 = ${(rebateLines_t3)!'[]'};
+var rebateLines_t4 = ${(rebateLines_t4)!'[]'};
+var rebateLines_t5 = ${(rebateLines_t5)!'[]'};
+</script>
+
+<#if !(newProcessType?? && newProcessType == 'Y')>
+<div style="height: 50px;">
+    <div style="padding-right: 20px; float: right;">
+        <#if  (entity.status == 'Pending') || (entity.status == 'Rejected')>
+	        <button class="btn btn-info submit" type="button" id="button1">
+	            <i class="icon-ok bigger-110"></i>
+	            	${i18n.get('保存')}
+	        </button>
+	        
+	        <#if entity.status == 'Pending'>
+	        <button class="btn btn-info" type="button" id="button2" onclick="startApplyProcess()">
+	            <i class="icon-ok bigger-110"></i>
+	            	${i18n.get('提交')}
+	        </button>
+	        </#if>
+        </#if>
+        
+        <!-- <button class="btn btn-info submit" id="button3" type="button">
+            <i class="icon-ok bigger-110"></i>
+            	审批确认
+        </button> -->
+        
+        <#if permission["P03SpecialPriceChange"]?? >
+        <#if entity.status == 'Completed'>
+        <button class="btn btn-info" id="button4" type="button" onclick="changeRebate()">
+            <i class="icon-ok bigger-110"></i>
+            	${i18n.get('申请变更')}
+        </button>
+        </#if>
+        </#if>
+        
+        <button class="btn" type="button" onclick="javascript:api.close()">
+            <i class="icon-undo bigger-110"></i>
+           	${i18n.get('关闭')}
+        </button>
+    </div>
+</div>
+</#if>
+
+<#if (permission["P09SpecialCautiousEdit"])??>
+	<#assign deleteRow="true" />
+<#else>
+	<#assign deleteURL="'${ctx}/rebate/deleteLine.html'" />
+</#if>
+
+<div class="radio" style="height:15px">
+    <label>
+        <strong style="color: red;">*</strong>
+        <span class="lbl"> ${i18n.get('特价申请类型')}：</span>
+    </label>
+    <#if !entity.type??>
+        <label>
+            <@form.radio name="type" id='type1' value="常规" selectValue="${(entity.type)!'常规'}" />
+            <span class="lbl">  &nbsp&nbsp${i18n.get('常规')}&nbsp&nbsp  </span>
+        </label>
+        <label>
+            <@form.radio name="type" id='type2' value="电池" selectValue="${(entity.type)!''}" />
+            <span class="lbl">  &nbsp&nbsp${i18n.get('电池')}&nbsp&nbsp  </span>
+        </label>
+        <label>
+            <@form.radio name="type" id='type3' value="行业入围" selectValue="${(entity.type)!''}" />
+            <span class="lbl">&nbsp&nbsp${i18n.get('行业入围')}&nbsp&nbsp</span>
+        </label>
+        <label>
+            <@form.radio name="type" id='type4' value="分销" selectValue="${(entity.type)!''}" />
+            <span class="lbl">  &nbsp&nbsp${i18n.get('分销')}&nbsp&nbsp  </span>
+        </label>
+    <#else>
+        <#if entity.type == '常规'>
+            <label>
+                <@form.radio name="type" id='type1' value="常规" selectValue="${(entity.type)!''}" />
+                <span class="lbl">&nbsp&nbsp${i18n.get('常规')}&nbsp&nbsp</span>
+            </label>
+        <#elseif entity.type == '电池'>
+            <label>
+                <@form.radio name="type" id='type2' value="电池" selectValue="${(entity.type)!''}" />
+                <span class="lbl">&nbsp&nbsp${i18n.get('电池')}&nbsp&nbsp</span>
+            </label>
+        <#elseif entity.type == '行业入围'>
+            <label>
+                <@form.radio name="type" id='type3' value="行业入围" selectValue="${(entity.type)!''}" />
+                <span class="lbl">&nbsp&nbsp${i18n.get('行业入围')}&nbsp&nbsp</span>
+            </label>
+        <#elseif entity.type == '分销'>
+            <label>
+                <@form.radio name="type" id='type4' value="分销" selectValue="${(entity.type)!''}" />
+                <span class="lbl">&nbsp&nbsp${i18n.get('分销')}&nbsp&nbsp</span>
+            </label>
+        </#if>
+    </#if>
+</div>
+<div class="radio" style="height:15px">
+    <label>
+
+        <span class="lbl">${i18n.get('商机编号')}：</span> <@form.input name="biz" type="text" id="biz" value=""  placeholder="${i18n.get('填入商机编号，引入商机配置')}"/>
+        <input type="button" id="bty" name="bty" value="${i18n.get('引入商机配置')}" onclick="getBizMainInfo();">
+
+    </label>
+
+
+</div>
+
+<!-- P09SpecialPriceDate -->
+<!-- specialOffFlag -->
+<#if permission["P09SpecialPriceDate"]??&&newProcessType?? && newProcessType == 'Y'&&specialOffFlag?? &&specialOffFlag == 'Y' >
+	<#assign specialPriceDateEditFlag = "true" />
+<#else>
+	<#assign specialPriceDateEditFlag = "false" />
+</#if>
+
+<#if ( !entity?? || ((entity.status == 'Pending' || entity.status == 'Rejected') && (entity.createdById == LOGIN_USER.employee.id)) ) >
+	<#assign approveFlag = "false" />
+<#else>
+	<#assign approveFlag = "true" />
+</#if>
+<#assign approveFlag = "false" />
+
+<!-- P09SpecialPriceApprove -->
+<#if ( !entity?? || ((entity.status == 'Pending' || entity.status == 'Rejected') && (entity.createdById == LOGIN_USER.employee.id))|| permission["P09SpecialCautiousEdit"]?? ) >
+	<#assign approveEditFlag = "true" />
+<#else>
+	<#assign approveEditFlag = "false" />
+</#if>
+
+<#if ( !entity?? || ((entity.status == 'Pending' || entity.status == 'Rejected' || permission["P09SpecialCautiousEdit"]??) ) ) >
+	<#assign SpecialCautiousEdit = "true" />
+<#else>
+	<#assign SpecialCautiousEdit = "false" />
+</#if>
+
+<div class="main" id="main" style="padding-left: 1px; border-top: 2px solid #e9e9e9 ;">
+    <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="right" width="150px">${i18n.get('申请单号')}:</td>
+            <td align="left">
+                <@form.input name="no" type="text" id="no" value="${(entity.no)!}" readonly="readonly" />
+            </td>
+            <td align="right" width="150px"><strong style="color: red;">*</strong>${i18n.get('申请名称')}:</td>
+            <td align="left">
+                <@form.input name="name" type="text" id="name" value="${(entity.name)!}" required="${i18n.get('不能为空！')}"/>
+            </td>
+            <td align="right" width="150px"></td>
+            <td align="left">
+            </td>
+        </tr> 
+        <tr>
+            <td align="right" width="150px">${i18n.get('所属区域')}:</td>
+            <td align="left">
+                <@form.input name="belongArea" type="text" id="belongArea" value="${(entity.belongArea)!}" readonly="readonly" />
+            </td>
+            <td align="right" width="150px">${i18n.get('申请人')}:</td>
+            <td align="left">
+                <@form.input name="createdByIdName" type="text" id="createdByIdName" value="${entity.createdByIdName}"
+                readonly="readonly" />
+            </td>
+            <td align="right" width="150px">${i18n.get('申请代理商')}:</td>
+            <td align="left">
+                <@form.input name="applyAgentName" type="text" id="applyAgentName" value="${(entity.applyAgentName)!}"
+                readonly="readonly" />
+                <input type="hidden" id="applyAgent" name="applyAgent" value="${(entity.applyAgent)!}">
+				<input type="hidden" id="createdById" name="createdById" value="${(entity.createdById)!''}" />
+            </td>
+        </tr>
+        <tr>
+            <!--<td align="right" width="150px">申请项目所属行业:</td>-->
+            <!--<td align="left">-->
+                <!--<@form.input name="belongIndustry" type="text" id="belongIndustry" value="${(entity.belongIndustry)!}" readonly="readonly"/>-->
+            <!--</td>-->
+            <td align="right" width="150px">${i18n.get('审核状态')}:</td>
+            <td align="left">
+                <@form.select id="status" name="status" code="PROCESS_STATUS" idKey="code" value ="${(entity.status)!}"
+                />
+                <input type="hidden" id="status" name="status" value="${(entity.status)!}">
+            </td>
+            <td align="right" width="150px"> <strong style="color: red;">*</strong>${i18n.get('代理商联系人')}:</td>
+            <td align="left">
+                <@form.input name="agentContact" type="text" id="agentContact" value="${(entity.agentContact)!}" required="${i18n.get('不能为空！')}" />
+            </td>
+            <td align="right" width="150px"><strong style="color: red;">*</strong>${i18n.get('代理商联系电话')}:</td>
+            <td align="left">
+                <@form.input name="phone" type="text" id="phone" value="${(entity.phone)!}" required="${i18n.get('不能为空！')}" />
+            </td>
+        </tr>
+        <tr>
+            <td align="right" width="150px"><strong style="color: red;">*</strong>${i18n.get('折后总金额')}:</td>
+            <td align="left">
+                <@form.input name="rebateAmount" type="text" id="rebateAmount" value="${(entity.rebateAmount)!}"
+                readonly="readonly" />
+            </td>
+            <td align="right" width="150px">${i18n.get('特价生效日期')}</td>
+            <#if permission["P09SpecialPriceDate"]??&&newProcessType?? && newProcessType == 'Y'&&specialOffFlag?? &&specialOffFlag == 'Y' >
+             <td align="left">
+                <@form.date name="startDate"  id="startDate" value="${(entity.startDate?date)! }"
+                readonly="readonly" />
+             </td>
+            <#else>
+             <td align="left">
+				 <@form.input name="startDate"  id="startDate" value="${(entity.startDate?date)! }"
+                readonly="readonly" />
+             </td>
+			</#if>
+            <td align="right" width="150px">${i18n.get('特价失效日期')}:</td>
+            <#if permission["P09SpecialPriceDate"]??&&newProcessType?? && newProcessType == 'Y'&&specialOffFlag?? &&specialOffFlag == 'Y' >
+             <td align="left">
+                <@form.date name="endDate" id="endDate" value="${(entity.endDate?date)!}" readonly="readonly" />
+             </td>
+            <#else>
+             <td align="left">
+                <@form.input name="endDate" id="endDate" value="${(entity.endDate?date)!}" readonly="readonly" />
+             </td>
+            </#if>
+        </tr>
+
+        <tr class="classType3">
+            <td align="right" width="150px"><strong style="color: red;">*</strong>${i18n.get('入围客户')}:</td>
+            <td align="left" colspan="3">
+                <@form.autocomplete  id="belongOperator" name="belongOperator"	
+                    idKey='clientId'
+                    style="width: 520px;"
+                    required="${i18n.get('不能为空！')}"
+                    formatResult="function(data) {return '<div >' +data.clientName + '</div>';}"
+                    url="function(){
+                        return '${ctx}/lovcustom/quotedPriceCustom.html';
+                    }"
+					value="${(productPriceHead)!}"
+                    onSelect="function(data){
+                    	changBelong(data);
+                    }"
+                />
+            </td>
+            <td align="right" width="150px">${i18n.get('采购周期')}:</td>
+            <td align="left">
+                <@form.select
+                id="purchaseType" name="purchaseType"
+                code="cgzq"
+                idKey="code"
+                value ="${(entity.purchaseType)!}"
+                />
+            </td>
+        </tr>
+        <tr>
+        	<td align="right"><strong style="color: red;">*</strong>${i18n.get('商务专员')}:</td>
+			<td >
+			<@form.autocomplete 
+					id="businessExecutive"
+					idKey='id'
+					value="${(employee)!}"
+					url="function(){
+						return '${ctx}/employee/findList.html?userFlag=Y';
+					}"
+					formatResult="function(data) {
+						return '<div>[' +data.no +']'+data.name+'</div>';
+					}"
+					name="businessExecutive"
+					placeholder="商务专员" 
+					required="${i18n.get('不能为空！')}" 
+					/>
+			</td>
+			<td align="right"><strong style="color: red;">*</strong>${i18n.get('特价类型')}:</td>
+			<td >
+			<@form.select id="specialOff"  name="specialOff"  code="SPECIALOFF"
+				required="${i18n.get('不能为空')}"
+				value ="${(entity.specialOff)!}"
+                />
+              	<input type="hidden" id="specialOff" name="specialOff" value="${(entity.specialOff)!}">
+			</td>
+			<td align="right">${i18n.get('特价版本')}：</td>
+			<td width="180px" align="left">
+				<@form.input id="version" name="version" placeholder="" tip="" readonly ="readonly" value="${(entity.version)!}" />
+			</td>
+        </tr>
+        <tr class="classType1 classType2 classType4">
+            <td align="right" width="150px">${i18n.get('项目分析')}:</td>
+            <td align="left" colspan="5">
+                <@form.textArea id="rebateDesc" name="rebateDesc"
+                height="2"
+                style="width: 860px;"
+                placeholder="${i18n.get('项目分析')}"
+                tip=""
+                value="${(entity.rebateDesc)!}"
+                />
+            </td>
+        </tr>
+        <tr class="classType3">
+            <td class="classType3" align="right" width="150px"><strong style="color: red;">*</strong>${i18n.get('入围行业大类')}:</td>
+            <td class="classType3" align="left">
+                <@form.select id="belongIndustry"  name="belongIndustry"  code="CUSTOMCATEGORY" level="1"
+                childId="belongIndustrySub"
+                placeholder="${i18n.get('请选择行业大类')}"
+                placeholder=""
+                required="${i18n.get('请输入！')}"
+                tip=""
+                value="${(entity.belongIndustry)!}"
+                />
+            </td>
+            <td class="classType3" align="right" width="150px"><strong style="color: red;">*</strong>${i18n.get('入围行业小类')}:</td>
+            <td class="classType3" align="left">
+                <@form.select id="belongIndustrySub"  name="belongIndustrySub"  code="CUSTOMCATEGORY" level="2"
+                parentId="belongIndustry"
+                placeholder="${i18n.get('请选择行业小类')}"
+                placeholder=""
+                required="${i18n.get('请输入！')}"
+                tip=""
+                value="${(entity.belongIndustrySub)!}"
+                onLoadSuccess="function(){
+                	if(_customCategorySub){
+                		if(_customCategorySub.customCategorySub){
+		                	$('#belongIndustrySub').val(_customCategorySub.customCategorySub).trigger('change'); 
+                		}
+                	}
+                }"
+                <!-- onChange="function(){
+                reload_belongOperator();
+                }" -->
+                />
+            </td>
+            <td class="classType3" align="right" width="150px"></td>
+            <td class="classType3" align="left">
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="form-group classType1 classType2 classType4 hide">
+    <p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('竞争对手情况')}</p>
+    <@form.table id="rival"
+    class="col-xs-12"
+    height="120px"
+    title="${i18n.get('竞争对手')}"
+    url = "${ctx}/rebate/rivalPage.html?rebateId=${(entity.id)!}"
+    rowNum = "100"
+    deleteURL = "'${ctx}/rebate/deleteRival.html'"
+    colModel = "[
+    {name:'id',label:'${i18n.get('ID')}',hidden:true,width:100,sortable:true,align:'center' },
+    {name:'rebateId',label:'${i18n.get('特价申请id')}',hidden:true,width:100},
+    {name:'agentName',label:'${i18n.get('代理/经销商名称')}',hidden:false,width:100,editable:true},
+    {name:'brand',label:'${i18n.get('品牌')}',hidden:false,width:200,sortable:true,align:'center',editable:true },
+    {name:'productModel',label:'${i18n.get('产品型号')}',hidden:false,width:100,sortable:true,align:'center',editable:true },
+    {name:'priceRange',label:'${i18n.get('价格范围')}',hidden:false,width:200,sortable:true,align:'center',editable:true },
+    {name:'offer',label:'${i18n.get('本次项目报价')}',hidden:false,width:200,sortable:true,align:'center',editable:true,editrules:{number:true}}
+    ]"
+    buttons = "[
+        {
+            id:'rival_addRow',
+            label : '${i18n.get('增加行')}',
+            icon : 'icon-save',
+            own : true,
+            handler : function(e,rowData){
+                addRow_rival();
+            }
+        },
+    ]"
+    >
+</@form.table>
+</div>
+<script type="text/javascript">
+    rival_rowid=0;
+    function addRow_rival() {
+        var dataRow = {
+            rebateId:'${(entity.id)!}',
+        };
+        rival_rowid = rival_rowid+1;
+        $("#rival").jqGrid("addRowData", rival_rowid,dataRow, "first");
+    }
+
+    function getGrid_rival(){
+        $('#rival').trigger('blur');
+        var grid_data =$('#rival').jqGrid('getRowData');
+        return JSON.stringify(grid_data);
+    }
+</script>
+<div class="form-group classType1">
+    <p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px;display:none;">${i18n.get('申请明细')}</p>
+
+    <@form.table id="t1"
+    class="col-xs-12"
+    title="${i18n.get('常规产品')}"
+    url = "${ctx}/rebate/txPage.html?rebateId=${(entity.id)!}&productType=1"
+    checkbox = "true"
+    rowNum = "500" 
+	rowNumList = "[500]"
+    deleteURL = "${deleteURL!}"
+    footerrow = "true"
+    colModel = "[
+    {name:'id',label:'${i18n.get('ID')}',hidden:true,width:100,sortable:true,align:'center' },
+    {name:'rebateId',label:'${i18n.get('特价申请id')}',hidden:true,width:100},
+    {name:'productId',label:'${i18n.get('产品id')}',hidden:true,width:100},
+    {name:'productName',label:'${i18n.get('产品名称')}',hidden:false,width:150,sortable:true,align:'center' },
+    {name:'productSortName',label:'${i18n.get('CRM产品分类')}',hidden:false,width:150,sortable:true,align:'center' },
+    {name:'productSortId',label:'${i18n.get('CRM产品分类ID')}',hidden:true,width:150,sortable:true,align:'center' },
+    {name:'displayCatalogName',label:'${i18n.get('销售产品分类')}',hidden:true,width:150,sortable:true,align:'center' },
+    {name:'cproPowcap',label:'${i18n.get('产品规格')}',hidden:false,width:150,sortable:true,align:'center' },
+    {name:'productModel',label:'${i18n.get('产品型号')}',hidden:false,width:150,sortable:true,align:'center' },
+    {name:'productCode',label:'${i18n.get('产品编码')}',hidden:true,width:150,sortable:true,align:'center' },
+    {name:'productType',label:'${i18n.get('产品型号')}',hidden:true,width:150,sortable:true,align:'center' },
+    {name:'materCode',label:'${i18n.get('物料号')}',hidden:false,width:100,align:'center'},
+    
+    {name:'sourcePrice',label:'${i18n.get('公开价格')}',hidden:false,width:100,sortable:true,align:'center',editrules:{number:true},editrules:{required:true}},
+    {name:'catalogPrice',label:'${i18n.get('金牌价格')}',hidden:false,width:150,sortable:true,align:'center' ,editrules:{number:true},editrules:{required:true}},
+    {name:'applyRebate',label:'${i18n.get('申请折扣(%)')}',hidden:false,width:100,sortable:true,align:'center',editable:true,editrules:{number:true} },
+    {name:'applyPrice',label:'${i18n.get('申请价格')}',hidden:false,width:100,sortable:true,align:'center'},
+    {name:'approveRebate',label:'${i18n.get('批复折扣(%)')}',hidden:false,width:100,sortable:true,align:'center',editable:${approveEditFlag},editrules:{number:true} },
+    {name:'approvePrice',label:'${i18n.get('批复价格')}',hidden:false,width:100,sortable:true,align:'center',editable:${approveEditFlag},editrules:{number:true} },
+    {name:'applyQty',label:'${i18n.get('申请数量')}',hidden:false,width:100,sortable:true,align:'center',editable:true,editrules:{required:true,number:true},formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''} },
+    {name:'applyAmount',label:'${i18n.get('小计申请金额')}',hidden:false,width:100,sortable:true,align:'center' },
+    {name:'amount',label:'${i18n.get('小计批准金额')}',hidden:false,width:100,sortable:true,align:'center' },
+    {name:'bizName',label:'${i18n.get('商机名称')}',hidden:false,width:300,sortable:true,align:'center',editable:true,editoptions:{value:getBizs()} },
+    {name:'bizId',label:'${i18n.get('商机Id')}',hidden:true,width:100,sortable:true,align:'center' },
+    {name:'clientId',label:'${i18n.get('终端用户Id')}',hidden:true,width:100,sortable:true,align:'center' },
+    {name:'clientName',label:'${i18n.get('终端用户名称')}',hidden:false,width:100,sortable:true,align:'center' },
+    {name:'orderQty',label:'${i18n.get('已下单数量')}',hidden:false,width:100,sortable:true,align:'center' },
+    {name:'remark',label:'${i18n.get('备注')}',hidden:false,width:300,sortable:true,align:'center',editable:true },
+    {name:'isBiz',label:'${i18n.get('是否商机带来')}',hidden:true,width:300,sortable:true,align:'center',editable:true },
+    {name:'bizQty',label:'${i18n.get('商机数量')}',hidden:true,width:300,sortable:true,align:'center',editable:true },
+    {name:'editByDisplayCatalogName',label:'${i18n.get('根据销售类型判断是否可编辑')}',hidden:true,width:300,sortable:true,align:'center' },
+    {name:'proDesc',label:'${i18n.get('产品描述')}',hidden:false,width:400,sortable:true,align:'left',editable:true }
+    ]"
+    buttons = "[
+        {
+            id:'t1_addRow',
+            label : '${i18n.get('增加行')}',
+            icon : 'icon-save',
+            own : true,
+            handler : function(e,rowData){
+                $('#multiSelectProduct_t1').click();
+            }
+        },{
+			id:'deleteRow_t1',
+			label : '${i18n.get('删除')}',
+			icon : 'icon-remove',
+			own : ${deleteRow!'false'},
+			handler : function(e,rowData){
+				var ids = $('#t1').jqGrid('getGridParam','selarrrow'); 
+				var _ids = [];
+				 $.each(ids,function(i,id){
+					 _ids.push(id);
+				 });
+			     if(!ids || ids.length <= 0 ){
+			      　　	alert('${i18n.get('请选择要删除的行')}');
+			      　　	return;
+			     }else{
+			     	if(confirm('${i18n.get('是否删除选择的行')}')){
+				    	 $.each(_ids,function(i,id){
+				    	 	 $('#t1').jqGrid('delRowData', id);
+				    	 });
+			    	 }
+			     } 
+			}
+		},
+        {
+        	id:'t1_export',
+            label : '${i18n.get('导出')}',
+            icon : 'icon-save',
+            own : true,
+            handler : function(e,rowData){
+               	var da={} ; 
+	  			var prjrows= $('#t1').jqGrid('getGridParam','selarrrow');  
+	  			var ids=[];
+	  			var idsStr = '';
+	  			if(prjrows.length>0){	
+			 		$.each(prjrows,function(i,id){
+							var item = $('#t1').jqGrid('getRowData',id);
+			 			ids.push(item.id);
+			 			idsStr +=   item.id +',';
+			 		});	
+			 		idsStr = idsStr.substring(0,idsStr.length-1);
+	 					bootbox.confirm('${i18n.get('您确定要导出选中的数据吗？')}' , function(result) {
+					if(result) {
+						window.location.href = '${ctx}/rebate/exportRebateLine.html?idsStr='+idsStr;
+						}
+					});
+	 				}else{
+	 					alert('${i18n.get('请选择数据！')}');
+	 				}
+            }
+        }
+    ]"
+    
+    ondblClickRow = "function(id){
+        var rowData = $('#t1').jqGrid('getRowData',id);
+        _getBizForRow($('#t1'),id,rowData,true);
+        $('#t1 select[rowId='+id+'_bizName]').change(function(){
+               _getBizForRow($('#t1'),id,rowData,false);
+        });
+       
+        
+        $('#t1 input[id='+id+'_approveRebate]').bind('input',function(event){
+				var rowData = $('#t1').jqGrid('getRowData',id);
+		});
+		$('#t1 input[id='+id+'_approvePrice]').bind('input',function(event){
+				var rowData = $('#t1').jqGrid('getRowData',id);
+		});
+    }"
+     onSelectRow = "function(date){
+     	var status = $('#status').val();
+     	var SpecialCautiousEdit = ${SpecialCautiousEdit};
+     	if(status == 'Pending'||status == 'Rejected' || SpecialCautiousEdit == true){
+     		if((date.catalogPrice == 0 || date.catalogPrice === '')&&(date.productSortName == '非标产品'||date.productSortName == '外购产品' )){
+				$('#t1').setColProp('catalogPrice',{editable:true});  
+				if(date.editByDisplayCatalogName||date.editByDisplayCatalogName==''){
+					editByDisplayCatalogNameFlag = 'Y'
+				}
+			}else if(date.editByDisplayCatalogName == 'Y'){
+				$('#t1').setColProp('catalogPrice',{editable:true});  
+			}else{
+				$('#t1').setColProp('catalogPrice',{editable:false}); 
+			}
+     	}
+		
+    }"
+    onComplete="function(){
+        if(rebateLines_t1){
+            $.each(rebateLines_t1,function(i,row){
+                $('#t1').jqGrid('addRowData',20000+i,row);
+            });
+        }
+    }"
+    gridComplete = "function() {
+        $('#t1').footerData('set',{name:'合计',productName:'合计'});
+
+        var rowNum = parseInt($('#t1').getGridParam('records'),10);
+        if(rowNum > 0){
+            $('.ui-jqgrid-sdiv').show();
+            var applyQtyCount  = $('#t1').getCol('applyQty',false,'sum');
+            var amountCount = $('#t1').getCol('amount',false,'sum');
+            var applyAmountCount = $('#t1').getCol('applyAmount',false,'sum');
+            var orderQtyCount = $('#t1').getCol('orderQty',false,'sum');
+            $('#t1').footerData('set',{name:'合计',productName:'合计',applyQty:applyQtyCount,amount:amountCount,orderQty:orderQtyCount,applyAmount:applyAmountCount });
+            calculate('常规');
+        }
+    }"
+    onLineEditAfter = "function(id,rowData){
+        $('#t1').trigger('blur')
+        _getBizForRow($('#t1'), id, rowData, false);
+        
+		var sourcePrice = 0;
+		if(rowData.sourcePrice != 0){
+			sourcePrice = parseFloat(rowData.sourcePrice);
+		}
+		if(rowData.catalogPrice != ''&&rowData.productSortName!='标准产品'){
+			sourcePrice = parseFloat(rowData.catalogPrice)/0.22;
+		}
+		
+        var res_price = parseFloat(rowData.sourcePrice)*parseFloat(rowData.approveRebate)/100;
+        var apply_price = parseFloat(rowData.sourcePrice)*parseFloat(rowData.applyRebate)/100;
+        var res_sum = parseFloat(rowData.applyQty)*parseFloat(rowData.sourcePrice)*parseFloat(rowData.approveRebate)/100;
+        var res_sum_apply = parseFloat(rowData.applyQty)*parseFloat(rowData.sourcePrice)*parseFloat(rowData.applyRebate)/100;
+		
+		var edit_ByDisplayCatalogName = 'N';
+		if(rowData.editByDisplayCatalogName==''){
+			var edit_ByDisplayCatalogName = editByDisplayCatalogNameFlag;
+			editByDisplayCatalogNameFlag = 'N';
+		}else if(rowData.editByDisplayCatalogName == 'Y'){
+			var edit_ByDisplayCatalogName = 'Y';
+		}
+		sourcePrice = sourcePrice.toFixed(2);
+        res_price = res_price.toFixed(2);
+        apply_price = apply_price.toFixed(2);
+        res_sum = res_sum.toFixed(2);
+        res_sum_apply = res_sum_apply.toFixed(2);
+        $('#t1').jqGrid('setRowData',id,{approvePrice:res_price,amount:res_sum,applyAmount:res_sum_apply,applyPrice:apply_price,sourcePrice:sourcePrice,editByDisplayCatalogName:edit_ByDisplayCatalogName});
+
+        var applyQtyCount  = $('#t1').getCol('applyQty',false,'sum');
+        var amountCount = $('#t1').getCol('amount',false,'sum');
+        var applyAmountCount = $('#t1').getCol('applyAmount',false,'sum');
+        var orderQtyCount = $('#t1').getCol('orderQty',false,'sum');
+        $('#t1').footerData('set',{name:'合计',productName:'合计',applyQty:applyQtyCount,amount:amountCount,orderQty:orderQtyCount,applyAmount:applyAmountCount  });
+        calculate('常规');
+    }"
+    >
+    <div class="col-xs-12" style="padding-top: 20px;">
+
+                <tr align="left">
+                    <td align="right" width="120px">
+            			${i18n.get('产品名称:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="pageSearch_productName_like" type="text"
+                        id="pageSearch_productName_like"
+                        />
+                    </td>
+                    <td align="right" width="120px">
+                        ${i18n.get('产品规格:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="pageSearch_cproPowcap_like" type="text"
+                        id="pageSearch_cproPowcap_like"
+                        />
+                    </td>
+                    <td align="right" width="120px">
+                        ${i18n.get('产品型号:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="pageSearch_productModel_like" type="text"
+                        id="pageSearch_productModel_like"
+                        />
+                    </td>
+                </tr>
+                <tr align="left">
+                    <td align="right" width="120px">
+                      ${i18n.get('物料号:')}
+                    </td>
+                    <td align="left" width="180px">
+                         <@form.input name="pageSearch_materCode_like" type="text"
+                        id="pageSearch_materCode_like"
+                        />
+                    </td>
+                    <td align="right" width="120px">
+                        ${i18n.get('商机名称:')}
+                    </td>
+                    <td align="left" width="180px">
+                         <@form.input name="pageSearch_bizName_like" type="text"
+                        id="pageSearch_bizName_like"
+                        />
+                    </td>
+                </tr>
+            </div>
+</@form.table>
+</div>
+<script type="text/javascript">
+    t1_rowid=0;
+    function addRow_t1(datas) {
+        $.each(datas,function(i,data2){
+            var dataRow = {};
+            t1_rowid = t1_rowid+1;
+
+            dataRow.rebateId = '${(entity.id)!}';
+            dataRow.productId = data2.proId;
+            dataRow.productCode = data2.productCode;
+            dataRow.productModel = data2.proModel;
+            dataRow.applyQty = 0;
+            dataRow.productSortId = data2.crmCategory;
+            dataRow.productSortName = data2.crmCategoryLable;
+            dataRow.displayCatalogName = data2.displayCatalogName;
+            if(data2.catalogPriceShow1){
+                dataRow.sourcePrice = data2.catalogPriceShow1;
+            }else{
+                dataRow.sourcePrice = 0;
+            }
+            dataRow.applyRebate = 100;
+            dataRow.approveRebate = 100;
+            if(data2.catalogPriceShow1){
+                dataRow.approvePrice = data2.catalogPriceShow1;
+            }else{
+                dataRow.approvePrice = 0;
+            }
+            dataRow.amount = 0;
+            dataRow.orderQty = 0;
+            dataRow.cproPowcap = data2.cproPowcap;
+            dataRow.productName = data2.productName;
+            if(data2.catalogPriceShow){
+                dataRow.catalogPrice = data2.catalogPriceShow;
+            }else{
+                dataRow.catalogPrice = 0;
+            }
+            dataRow.materCode = data2.materielCode;
+            dataRow.proDesc = data2.proDesc;
+            $("#t1").jqGrid("addRowData", t1_rowid, dataRow, "first");
+        });
+    }
+
+    function getGrid_t1(){
+        $('#t1').trigger('blur');
+        var grid_data =$('#t1').jqGrid('getRowData');
+        return JSON.stringify(grid_data);
+    }
+</script>
+<div class="form-group classType2">
+    <@form.table id="t2"
+    class="col-xs-12"
+    title="${i18n.get('电池')}"
+    url = "${ctx}/rebate/txPage.html?rebateId=${(entity.id)!}&productType=2"
+    rowNum = "500" 
+	rowNumList = "[500]"
+    deleteURL = "${deleteURL!}"
+    colModel = "[
+    {name:'id',label:'${i18n.get('ID')}',hidden:true,width:100,sortable:true,align:'center' },
+    {name:'rebateId',label:'${i18n.get('特价申请id')}',hidden:true,width:100},
+    {name:'productId',label:'${i18n.get('产品id')}',hidden:true,width:100},
+    {name:'productName',label:'${i18n.get('产品名称')}',hidden:false,width:150,sortable:true,align:'center' },
+    {name:'productSortName',label:'${i18n.get('CRM产品分类')}',hidden:false,width:150,sortable:true,align:'center' },
+    {name:'displayCatalogName',label:'${i18n.get('销售产品分类')}',hidden:true,width:150,sortable:true,align:'center' },
+    {name:'cproPowcap',label:'${i18n.get('产品规格')}',hidden:false,width:150,sortable:true,align:'center' },
+    {name:'productModel',label:'${i18n.get('产品型号')}',hidden:false,width:150,sortable:true,align:'center' },
+    {name:'materCode',label:'${i18n.get('物料号')}',hidden:false,width:100,align:'center'},
+    {name:'crmCategory',label:'${i18n.get('CRM产品类别')}',hidden:true,width:100,align:'center'},
+    {name:'productSortId',label:'${i18n.get('产品分类ID')}',hidden:true,width:150,sortable:true,align:'center' },
+    {name:'catalogPriceHide',label:'${i18n.get('金牌价格')}',hidden:true,width:100,align:'center'},
+    
+    {name:'productCode',label:'${i18n.get('产品编码')}',hidden:true,width:150,sortable:true,align:'center' },
+    {name:'productType',label:'${i18n.get('产品型号')}',hidden:true,width:150,sortable:true,align:'center' },
+    {name:'sourcePrice',label:'${i18n.get('公开价格')}',hidden:false,width:100,sortable:true,align:'center',editrules:{number:true},editrules:{required:true}},
+    {name:'catalogPrice',label:'${i18n.get('金牌价格')}',hidden:false,width:150,sortable:true,align:'center',editable:true },
+    {name:'applyPrice',label:'${i18n.get('申请价格')}',hidden:false,width:100,sortable:true,align:'center',editable:true,editrules:{number:true},formatter:'number' },
+    {name:'approvePrice',label:'${i18n.get('批复价格')}',hidden:false,width:100,sortable:true,align:'center',editable:${approveEditFlag},editrules:{number:true} },
+    {name:'approveYo',label:'${i18n.get('批复下浮点数(%)')}',hidden:true,width:100,sortable:true,align:'center',editable:${approveEditFlag},editrules:{number:true} },
+    {name:'applyQty',label:'${i18n.get('申请数量')}',hidden:false,width:100,sortable:true,align:'center',editable:true,editrules:{required:true,number:true},formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''} },
+    {name:'amount',label:'${i18n.get('小计批准金额')}',hidden:false,width:100,sortable:true,align:'center' },
+    {name:'applyAmount',label:'${i18n.get('小计申请金额')}',hidden:false,width:100,sortable:true,align:'center' },
+    {name:'bizName',label:'${i18n.get('商机名称')}',hidden:false,width:300,sortable:true,align:'center',editable:true,editrules:{required:true},edittype:'select',editoptions:{value:getBizs()} },
+    {name:'bizId',label:'${i18n.get('商机Id')}',hidden:true,width:100,sortable:true,align:'center' },
+    {name:'clientId',label:'${i18n.get('终端用户Id')}',hidden:true,width:100,sortable:true,align:'center' },
+    {name:'clientName',label:'${i18n.get('终端用户名称')}',hidden:false,width:100,sortable:true,align:'center' },
+    {name:'orderQty',label:'${i18n.get('已下单数量')}',hidden:false,width:100,sortable:true,align:'center' },
+    {name:'remark',label:'${i18n.get('备注')}',hidden:false,width:300,sortable:true,align:'center',editable:true },
+    {name:'isBiz',label:'${i18n.get('是否商机带来')}',hidden:true,width:300,sortable:true,align:'center',editable:true },
+    {name:'bizQty',label:'${i18n.get('商机数量')}',hidden:true,width:300,sortable:true,align:'center',editable:true },
+    {name:'editByDisplayCatalogName',label:'${i18n.get('根据销售类型判断是否可编辑')}',hidden:true,width:300,sortable:true,align:'center' },
+    {name:'proDesc',label:'${i18n.get('产品描述')}',hidden:false,width:400,sortable:true,align:'left',editable:true }
+    ]"
+    buttons = "[
+        {
+            id:'t2_addRow',
+            label : '${i18n.get('增加行')}',
+            icon : 'icon-save',
+            own : true,
+            handler : function(e,rowData){
+                $('#multiSelectProduct_t2').click();
+            }
+        },{
+			id:'deleteRow_t2',
+			label : '${i18n.get('删除')}',
+			icon : 'icon-remove',
+			own : ${deleteRow!'false'},
+			handler : function(e,rowData){
+				var ids = $('#t2').jqGrid('getGridParam','selarrrow'); 
+				var _ids = [];
+				 $.each(ids,function(i,id){
+					 _ids.push(id);
+				 });
+			     if(!ids || ids.length <= 0 ){
+			      　　	alert('${i18n.get('请选择要删除的行')}');
+			      　　	return;
+			     }else{
+			     	if(confirm('${i18n.get('是否删除选择的行')}')){
+				    	 $.each(_ids,function(i,id){
+				    	 	 $('#t2').jqGrid('delRowData', id);
+				    	 });
+			    	 }
+			     } 
+			}
+		},
+    ]" 
+    onSelectRow = "function(date){
+        var status = $('#status').val();
+     	var SpecialCautiousEdit = ${SpecialCautiousEdit};
+     	if(status == 'Pending'||status == 'Rejected' || SpecialCautiousEdit == true){
+     		if((date.catalogPrice == 0 || date.catalogPrice === '')&&(date.productSortName == '非标产品'||date.productSortName == '外购产品' )){
+				$('#t2').setColProp('catalogPrice',{editable:true});  
+				if(date.editByDisplayCatalogName||date.editByDisplayCatalogName==''){
+					editByDisplayCatalogNameFlag = 'Y'
+				}
+			}else if(date.editByDisplayCatalogName == 'Y'){
+				$('#t2').setColProp('catalogPrice',{editable:true});  
+			}else{
+				$('#t2').setColProp('catalogPrice',{editable:false}); 
+			}
+     	}
+    
+    }"
+    ondblClickRow = "function(id){
+        var rowData = $('#t2').jqGrid('getRowData',id);
+        _getBizForRow($('#t2'),id,rowData,true);
+        $('#t2 select[rowId='+id+'_bizName]').change(function(){
+               _getBizForRow($('#t2'),id,rowData,false);
+        });
+    }"
+    onComplete="function(){
+        if(rebateLines_t2){
+            $.each(rebateLines_t2,function(i,row){
+              $('#t2').jqGrid('addRowData',20000+i,row);
+            });
+        }
+    }"
+    gridComplete = "function() {
+        $('#t2').footerData('set',{name:'合计',productName:'合计'});
+        var rowNum = parseInt($('#t2').getGridParam('records'),10);
+        if(rowNum > 0){
+            $('.ui-jqgrid-sdiv').show();
+            var applyQtyCount  = $('#t2').getCol('applyQty',false,'sum');
+            var amountCount = $('#t2').getCol('amount',false,'sum');
+            var applyAmountCount = $('#t2').getCol('applyAmount',false,'sum');
+            var orderQtyCount = $('#t2').getCol('orderQty',false,'sum');
+            $('#t2').footerData('set',{name:'合计',productName:'合计',applyQty:applyQtyCount,amount:amountCount,orderQty:orderQtyCount,applyAmount:applyAmountCount});
+            calculate('电池');
+        }
+    }"
+    onLineEditAfter = "function(id,rowData){
+        $('#t2').trigger('blur');
+
+        _getBizForRow($('#t2'),id,rowData,false);
+
+        var approvePrice = 0;
+        if(rowData.approvePrice != ''){
+        	approvePrice = rowData.approvePrice;
+        }
+        var res_sum = parseFloat(rowData.applyQty)*parseFloat(approvePrice);
+        var sourcePrice = 0;
+        if(rowData.catalogPrice!=0){
+        	sourcePrice = parseFloat(rowData.sourcePrice);
+        }
+        if(rowData.catalogPrice != ''&&rowData.productSortName!='标准产品'){
+        	sourcePrice = parseFloat(rowData.catalogPrice)/0.22;
+        }
+        
+        var edit_ByDisplayCatalogName = 'N';
+		if(rowData.editByDisplayCatalogName==''){
+			var edit_ByDisplayCatalogName = editByDisplayCatalogNameFlag;
+			editByDisplayCatalogNameFlag = 'N';
+		}else if(rowData.editByDisplayCatalogName == 'Y'){
+			var edit_ByDisplayCatalogName = 'Y';
+		}
+        
+        res_sum = res_sum.toFixed(2);
+        sourcePrice = sourcePrice.toFixed(2);
+        var res_sum_apply = parseFloat(rowData.applyQty)*parseFloat(rowData.applyPrice).toFixed(2);
+
+        $('#t2').jqGrid('setRowData',id,{amount:res_sum,applyAmount:res_sum_apply,sourcePrice:sourcePrice,editByDisplayCatalogName:edit_ByDisplayCatalogName});
+        var applyQtyCount  = $('#t2').getCol('applyQty',false,'sum');
+        var amountCount = $('#t2').getCol('amount',false,'sum');
+        var applyAmountCount = $('#t2').getCol('applyAmount',false,'sum');
+        var orderQtyCount = $('#t2').getCol('orderQty',false,'sum');
+        $('#t2').footerData('set',{name:'合计',productName:'合计',applyQty:applyQtyCount,amount:amountCount,orderQty:orderQtyCount,applyAmount:applyAmountCount });
+        calculate('电池');
+    }"
+    footerrow = "true"
+    >
+    <div class="col-xs-12" style="padding-top: 20px;">
+
+                <tr align="left">
+                    <td align="right" width="120px">
+                      ${i18n.get('产品名称:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="pageSearch_productName_like" type="text"
+                        id="pageSearch_productName_like"
+                        />
+                    </td>
+                    <td align="right" width="120px">
+                       ${i18n.get('产品规格:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="pageSearch_cproPowcap_like" type="text"
+                        id="pageSearch_cproPowcap_like"
+                        />
+                    </td>
+                    <td align="right" width="120px">
+                        ${i18n.get('产品型号:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="pageSearch_productModel_like" type="text"
+                        id="pageSearch_productModel_like"
+                        />
+                    </td>
+                </tr>
+                <tr align="left">
+                    <td align="right" width="120px">
+                       ${i18n.get('物料号:')}
+                    </td>
+                    <td align="left" width="180px">
+                         <@form.input name="pageSearch_materCode_like" type="text"
+                        id="pageSearch_materCode_like"
+                        />
+                    </td>
+                    <td align="right" width="120px">
+                        ${i18n.get('商机名称:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="pageSearch_bizName_like" type="text"
+                        id="pageSearch_bizName_like"
+                        />
+                    </td>
+                </tr>
+            </div>
+</@form.table>
+</div>
+<script type="text/javascript">
+    t2_rowid=0;
+    function addRow_t2(datas) {
+        $.each(datas,function(i,data2){
+            var dataRow = {};
+            t2_rowid = t2_rowid+1;
+
+            dataRow.rebateId = '${(entity.id)!}';
+            dataRow.productId = data2.proId;
+            dataRow.productCode = data2.productCode;
+            dataRow.productModel = data2.proModel;
+            dataRow.applyQty = 0;
+            dataRow.productSortId = data2.crmCategory;
+            dataRow.productSortName = data2.crmCategoryLable;
+            dataRow.displayCatalogName = data2.displayCatalogName;
+            if(data2.catalogPriceShow1){
+                dataRow.sourcePrice = data2.catalogPriceShow1;
+            }else{
+                dataRow.sourcePrice = 0;
+            }
+            if(data2.catalogPriceShow1){
+                dataRow.approvePrice = data2.catalogPriceShow1;
+            }else{
+                dataRow.approvePrice = 0;
+            }
+            dataRow.amount = 0;
+            dataRow.orderQty = 0;
+            dataRow.cproPowcap = data2.cproPowcap;
+            dataRow.productName = data2.productName;
+            if(data2.catalogPriceShow){
+                dataRow.catalogPrice = data2.catalogPriceShow;
+            }else{
+                dataRow.catalogPrice = 0;
+            }
+            dataRow.catalogPriceHide = data2.catalogPriceShow;
+            dataRow.materCode = data2.materielCode;
+            dataRow.proDesc = data2.proDesc;
+            dataRow.crmCategory = data2.crmCategory;
+            $("#t2").jqGrid("addRowData", t2_rowid, dataRow, "first");
+        });
+    }
+
+    function getGrid_t2(){
+        $('#t2').trigger('blur');
+        var grid_data =$('#t2').jqGrid('getRowData');
+        return JSON.stringify(grid_data);
+    }
+</script>
+ <!-- <div class="form-group classType1">
+    <@form.table id="t3"
+    class="col-xs-12"
+    title="非标准产品"
+    url = "${ctx}/rebate/txPage.html?rebateId=${(entity.id)!}&productType=3"
+    checkbox = "true"
+    rowNum = "10"
+    deleteURL = "'${ctx}/rebate/deleteLine.html'"
+    colModel = "[
+    {name:'id',label:'${i18n.get('ID')}',hidden:true,width:100,sortable:true,align:'center' },
+    {name:'rebateId',label:'${i18n.get('特价申请id')}',hidden:true,width:100},
+    {name:'productId',label:'${i18n.get('产品id')}',hidden:true,width:100},
+    {name:'productName',label:'${i18n.get('产品名称')}',hidden:false,width:150,sortable:true,align:'center' },
+    {name:'cproPowcap',label:'${i18n.get('产品规格')}',hidden:false,width:150,sortable:true,align:'center' },
+    {name:'productModel',label:'${i18n.get('产品型号')}',hidden:false,width:150,sortable:true,align:'center' },
+    {name:'materCode',label:'${i18n.get('物料号')}',hidden:false,width:100,align:'center'},
+    
+    {name:'productCode',label:'${i18n.get('产品编码')}',hidden:true,width:150,sortable:true,align:'center' },
+    {name:'productType',label:'${i18n.get('产品型号')}',hidden:true,width:150,sortable:true,align:'center' },
+    {name:'sourcePrice',label:'${i18n.get('公开价格')}',hidden:false,width:100,sortable:true,align:'center',editrules:{number:true},editrules:{required:true}},
+    {name:'catalogPrice',label:'${i18n.get('金牌价格')}',hidden:false,width:150,sortable:true,align:'center',editable:true,editrules:{number:true},editrules:{required:true} },
+    {name:'applyRebate',label:'${i18n.get('申请折扣(%)')}',hidden:false,width:100,sortable:true,align:'center',editable:true,editrules:{number:true} },
+    {name:'applyPrice',label:'${i18n.get('申请价格')}',hidden:false,width:100,sortable:true,align:'center'},
+    {name:'approveRebate',label:'${i18n.get('批复折扣(%)')}',hidden:${approveFlag},width:100,sortable:true,align:'center',editable:${approveEditFlag},editrules:{number:true} },
+    {name:'approvePrice',label:'${i18n.get('批复价格')}',hidden:false,width:100,sortable:true,align:'center' },
+    {name:'applyQty',label:'${i18n.get('申请数量')}',hidden:false,width:100,sortable:true,align:'center',editable:true,editrules:{required:true,number:true},formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''} },
+    {name:'applyAmount',label:'${i18n.get('小计申请金额')}',hidden:false,width:100,sortable:true,align:'center' },
+    {name:'amount',label:'${i18n.get('小计批复金额')}',hidden:false,width:100,sortable:true,align:'center' },
+    {name:'bizName',label:'${i18n.get('商机名称')}',hidden:false,width:300,sortable:true,align:'center',editable:true,edittype:'select',editoptions:{value:getBizs()}  },
+    {name:'bizId',label:'${i18n.get('商机Id')}',hidden:true,width:100,sortable:true,align:'center' },
+    {name:'clientId',label:'${i18n.get('终端用户Id')}',hidden:true,width:100,sortable:true,align:'center' },
+    {name:'clientName',label:'${i18n.get('终端用户名称')}',hidden:false,width:100,sortable:true,align:'center' },
+    {name:'orderQty',label:'${i18n.get('已下单数量')}',hidden:false,width:100,sortable:true,align:'center' },
+    {name:'remark',label:'${i18n.get('备注')}',hidden:false,width:300,sortable:true,align:'center',editable:true },
+    {name:'isBiz',label:'${i18n.get('是否商机带来')}',hidden:true,width:300,sortable:true,align:'center',editable:true },
+    {name:'bizQty',label:'${i18n.get('商机数量')}',hidden:true,width:300,sortable:true,align:'center',editable:true },
+    {name:'proDesc',label:'${i18n.get('产品描述')}',hidden:false,width:400,sortable:true,align:'left',editable:true }
+    ]"
+    buttons = "[
+        {
+            id:'t3_addRow',
+            label : '增加行',
+            icon : 'icon-save',
+            own : true,
+            handler : function(e,rowData){
+                $('#multiSelectProduct_t3').click();
+            }
+        },{
+        	id:'t3_export',
+            label : '导出',
+            icon : 'icon-save',
+            own : true,
+            handler : function(e,rowData){
+               	var da={} ; 
+	  			var prjrows= $('#t3').jqGrid('getGridParam','selarrrow');  
+	  			var ids=[];
+	  			var idsStr = '';
+	  			if(prjrows.length>0){	
+			 		$.each(prjrows,function(i,id){
+							var item = $('#t3').jqGrid('getRowData',id);
+			 			ids.push(item.id);
+			 			idsStr +=   item.id +',';
+			 		});	
+			 		idsStr = idsStr.substring(0,idsStr.length-1);
+	 					bootbox.confirm('您确定要导出选中的数据吗？' , function(result) {
+					if(result) {
+						window.location.href = '${ctx}/rebate/export.html?idsStr='+idsStr;
+						}
+					});
+	 				}else{
+	 					alert('请选择数据！');
+	 				}
+            }
+        }
+    ]"
+    ondblClickRow = "function(id){
+        var rowData = $('#t3').jqGrid('getRowData',id);
+        _getBizForRow($('#t3'),id,rowData,true);
+        $('#t1 select[rowId='+id+'_bizName]').change(function(){
+               _getBizForRow($('#t3'),id,rowData,false);
+        });
+    }"
+    onComplete="function(){
+        if(rebateLines_t3){
+            $.each(rebateLines_t3,function(i,row){
+                $('#t3').jqGrid('addRowData',20000+i,row);
+            });
+        }
+    }"
+    gridComplete = "function() {
+        $('#t3').footerData('set',{name:'合计',productName:'合计'});
+        var rowNum = parseInt($('#t3').getGridParam('records'),10);
+        if(rowNum > 0){
+            $('.ui-jqgrid-sdiv').show();
+            var applyQtyCount  = $('#t3').getCol('applyQty',false,'sum');
+            var amountCount = $('#t3').getCol('amount',false,'sum');
+            var applyAmountCount = $('#t3').getCol('applyAmount',false,'sum');
+            var orderQtyCount = $('#t3').getCol('orderQty',false,'sum');
+            $('#t3').footerData('set',{name:'合计',productName:'合计',applyQty:applyQtyCount,amount:amountCount,orderQty:orderQtyCount,applyAmount:applyAmountCount  });
+            calculate('常规');
+        }
+    }"
+    onLineEditAfter = "function(id,rowData){
+        $('#t3').trigger('blur')
+
+         _getBizForRow($('#t3'),id,rowData,false);
+
+        var res_price = 0;
+        var apply_price = 0;
+        var approve_Price = 0;
+        var approve_sum = 0;
+        
+        if(rowData.catalogPrice != '' ){
+	        res_price = parseFloat(rowData.catalogPrice) / 0.22;
+	        apply_price = res_price * parseFloat(rowData.applyRebate)/100;
+	        approve_Price = res_price *parseFloat(rowData.approveRebate)/100;
+        }else{
+         	res_price = parseFloat(rowData.sourcePrice)*parseFloat(rowData.approveRebate)/100;
+        	approve_Price = parseFloat(rowData.sourcePrice)*parseFloat(rowData.applyRebate)/100;
+        	approve_Price = res_price * parseFloat(rowData.approveRebate)/100;
+        }
+       
+        var res_sum = parseFloat(rowData.applyQty)*res_price;
+        var res_apply_sum = parseFloat(rowData.applyQty)*apply_price;
+
+        res_price = res_price.toFixed(2);
+        apply_price = apply_price.toFixed(2);
+        res_sum = res_sum.toFixed(2);
+        res_apply_sum = res_apply_sum.toFixed(2);
+        approve_Price = approve_Price.toFixed(2);
+		approve_sum = (approve_Price * parseFloat(rowData.applyQty)).toFixed(2);
+
+        $('#t3').jqGrid('setRowData',id,{sourcePrice:res_price, approvePrice:approve_Price,amount:approve_sum,applyAmount:res_apply_sum,applyPrice:apply_price});
+        var applyQtyCount  = $('#t3').getCol('applyQty',false,'sum');
+        var amountCount = $('#t3').getCol('amount',false,'sum');
+        var applyAmountCount = $('#t3').getCol('applyAmount',false,'sum');
+        var orderQtyCount = $('#t3').getCol('orderQty',false,'sum');
+        $('#t3').footerData('set',{name:'合计',productName:'合计',applyQty:applyQtyCount,amount:amountCount,orderQty:orderQtyCount,applyAmount:applyAmountCount  });
+        calculate('常规');
+    }"
+    footerrow = "true"
+    >
+    <div class="col-xs-12" style="padding-top: 20px;">
+
+                <tr align="left">
+                    <td align="right" width="120px">
+                        产品名称:
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="pageSearch_productName_like" type="text"
+                        id="pageSearch_productName_like"
+                        />
+                    </td>
+                    <td align="right" width="120px">
+                        产品规格:
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="pageSearch_cproPowcap_like" type="text"
+                        id="pageSearch_cproPowcap_like"
+                        />
+                    </td>
+                    <td align="right" width="120px">
+                        产品型号:
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="pageSearch_productModel_like" type="text"
+                        id="pageSearch_productModel_like"
+                        />
+                    </td>
+                </tr>
+                <tr align="left">
+                    <td align="right" width="120px">
+                       物料号:
+                    </td>
+                    <td align="left" width="180px">
+                         <@form.input name="pageSearch_materCode_like" type="text"
+                        id="pageSearch_materCode_like"
+                        />
+                    </td>
+                    <td align="right" width="120px">
+                        商机名称:
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="pageSearch_bizName_like" type="text"
+                        id="pageSearch_bizName_like"
+                        />
+                    </td>
+                </tr>
+            </div>
+</@form.table>
+</div>  -->
+<script type="text/javascript">
+    t3_rowid=0;
+    function addRow_t3(datas) {
+        $.each(datas,function(i,data2){
+            var dataRow = {};
+            t3_rowid = t3_rowid+1;
+
+            dataRow.rebateId = '${(entity.id)!}';
+            dataRow.productId = data2.proId;
+            dataRow.productCode = data2.productCode;
+            dataRow.productModel = data2.proModel;
+            dataRow.applyQty = 0;
+            dataRow.productSortId = data2.crmCategory;
+            dataRow.productSortName = data2.crmCategoryLable;
+            dataRow.displayCatalogName = data2.displayCatalogName;
+            if(data2.catalogPriceShow1){
+                dataRow.sourcePrice = data2.catalogPriceShow1;
+            }else{
+                dataRow.sourcePrice = 0;
+            }
+            dataRow.applyRebate = 100;
+            dataRow.approveRebate = 100;
+            if(data2.catalogPriceShow1){
+                dataRow.approvePrice = data2.catalogPriceShow1;
+            }else{
+                dataRow.approvePrice = 0;
+            }
+            dataRow.amount = 0;
+            dataRow.orderQty = 0;
+            dataRow.cproPowcap = data2.cproPowcap;
+            dataRow.productName = data2.productName;
+            if(data2.catalogPriceShow){
+                dataRow.catalogPrice = data2.catalogPriceShow;
+            }else{
+                dataRow.catalogPrice = 0;
+            }
+            dataRow.materCode = data2.materielCode;
+            dataRow.proDesc = data2.proDesc;
+            $("#t3").jqGrid("addRowData", t3_rowid, dataRow, "first");
+        });
+    }
+
+    function getGrid_t3(){
+        $('#t3').trigger('blur');
+        var grid_data =$('#t3').jqGrid('getRowData');
+        return JSON.stringify(grid_data);
+    }
+</script>
+<div class="form-group classType3">
+    <@form.table id="t4"
+    class="col-xs-12"
+    title="${i18n.get('行业入围产品')}"
+    url = "${ctx}/rebate/txPage.html?rebateId=${(entity.id)!}&productType=4"
+    rowNum = "500" 
+	rowNumList = "[500]"
+    deleteURL = "${deleteURL!}"
+    colModel = "[
+    {name:'id',label:'${i18n.get('ID')}',hidden:true,width:100,sortable:true,align:'center' },
+    {name:'rebateId',label:'${i18n.get('特价申请id')}',hidden:true,width:100},
+    {name:'productId',label:'${i18n.get('产品id')}',hidden:true,width:100},
+    {name:'productCode',label:'${i18n.get('产品id')}',hidden:true,width:100},
+    {name:'productName',label:'${i18n.get('入围产品名称')}',hidden:false,width:150,sortable:true,align:'center' },
+    {name:'productSortName',label:'${i18n.get('CRM产品分类')}',hidden:true,width:150,sortable:true,align:'center' },
+    {name:'displayCatalogName',label:'${i18n.get('销售产品分类')}',hidden:true,width:150,sortable:true,align:'center' },
+    {name:'cproPowcap',label:'${i18n.get('入围产品规格')}',hidden:false,width:150,sortable:true,align:'center' },
+    {name:'productType',label:'${i18n.get('产品型号')}',hidden:true,width:150,sortable:true,align:'center' },
+    {name:'productModel',label:'${i18n.get('入围产品型号')}',hidden:false,width:150,sortable:true,align:'center' },
+    {name:'materCode',label:'${i18n.get('物料号')}',hidden:false,width:100,align:'center'},
+    {name:'productSortId',label:'${i18n.get('产品分类ID')}',hidden:true,width:150,sortable:true,align:'center' },
+    {name:'crmCategory',label:'${i18n.get('CRM产品类别')}',hidden:true,width:100,align:'center'},
+    {name:'catalogPriceHide',label:'${i18n.get('金牌价格')}',hidden:true,width:100,align:'center'},
+    
+    {name:'sourcePrice',label:'${i18n.get('入围价格')}',hidden:false,width:100,sortable:true,align:'center',formatter:'number',editrules:{number:true},editrules:{required:true}},
+    {name:'catalogPrice',label:'${i18n.get('金牌价格')}',hidden:true,width:150,sortable:true,align:'center',editable:true,formatter:'number' },
+    {name:'applyRebate',label:'${i18n.get('申请折扣')}',hidden:true,width:100,sortable:true,align:'center' ,editable:true,editrules:{number:true},formatter:'number'},
+    {name:'applyYo',label:'${i18n.get('申请下浮点数(%)')}',hidden:false,width:100,sortable:true,align:'center' ,editable:true,editrules:{number:true},formatter:'number'},
+    {name:'approveRebate',label:'${i18n.get('批复折扣')}',hidden:true,width:100,sortable:true,align:'center',editable:${approveEditFlag},editrules:{number:true} },
+    {name:'applyPrice',label:'${i18n.get('申请价格')}',hidden:false,width:100,sortable:true,align:'center'},
+    {name:'approveYo',label:'${i18n.get('批复下浮点数(%)')}',hidden:false,width:100,sortable:true,align:'center',editable:${approveEditFlag},editrules:{number:true},formatter:'number' },
+    {name:'approvePrice',label:'${i18n.get('批复价格')}',hidden:false,width:100,sortable:true,align:'center' },
+    {name:'applyQty',label:'${i18n.get('申请数量')}',hidden:false,width:100,sortable:true,align:'center',editable:true,editrules:{required:true,number:true},formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''} },
+    {name:'applyAmount',label:'${i18n.get('小计申请金额')}',hidden:false,width:100,sortable:true,align:'center' },
+    {name:'amount',label:'${i18n.get('小计批准金额')}',hidden:false,width:100,sortable:true,align:'center' },
+    {name:'bizName',label:'${i18n.get('商机名称')}',hidden:false,width:300,sortable:true,align:'center',editable:true,editrules:{required:true},edittype:'select',editoptions:{value:getBizs()} },
+    {name:'bizId',label:'${i18n.get('商机Id')}',hidden:true,width:100,sortable:true,align:'center' },
+    {name:'clientId',label:'${i18n.get('终端用户Id')}',hidden:true,width:100,sortable:true,align:'center' },
+    {name:'clientName',label:'${i18n.get('终端用户名称')}',hidden:false,width:100,sortable:true,align:'center' },
+    {name:'orderQty',label:'${i18n.get('已下单数量')}',hidden:false,width:100,sortable:true,align:'center' },
+    {name:'remark',label:'${i18n.get('备注')}',hidden:false,width:300,sortable:true,align:'center',editable:true },
+    {name:'isBiz',label:'${i18n.get('是否商机带来')}',hidden:true,width:300,sortable:true,align:'center',editable:true },
+    {name:'bizQty',label:'${i18n.get('商机数量')}',hidden:true,width:300,sortable:true,align:'center',editable:true },
+    {name:'editByDisplayCatalogName',label:'${i18n.get('根据销售类型判断是否可编辑')}',hidden:true,width:300,sortable:true,align:'center' },
+	{name:'proDesc',label:'${i18n.get('产品描述')}',hidden:false,width:400,sortable:true,align:'left',editable:true }
+    ]"
+    buttons = "[
+        {
+            id:'t4_addRow',
+            label : '${i18n.get('增加行')}',
+            icon : 'icon-save',
+            own : true,
+            handler : function(e,rowData){
+            	var belongOperator = $('#belongOperator').val();
+	        	if(belongOperator == ''){
+	        		alert('${i18n.get('请先选择入围客户，再选择入围产品!')}');
+	        		return false;
+	        	}else{
+                	$('#multiSelectProduct_t4').click();
+            	}
+			}
+        },{
+			id:'deleteRow_t4',
+			label : '${i18n.get('删除')}',
+			icon : 'icon-remove',
+			own : ${deleteRow!'false'},
+			handler : function(e,rowData){
+				var ids = $('#t4').jqGrid('getGridParam','selarrrow'); 
+				var _ids = [];
+				 $.each(ids,function(i,id){
+					 _ids.push(id);
+				 });
+			     if(!ids || ids.length <= 0 ){
+			      　　	alert('${i18n.get('请选择要删除的行')}');
+			      　　	return;
+			     }else{
+			     	if(confirm('${i18n.get('是否删除选择的行')}')){
+				    	 $.each(_ids,function(i,id){
+				    	 	 $('#t4').jqGrid('delRowData', id);
+				    	 });
+			    	 }
+			     } 
+			}
+		},
+    ]"
+    onSelectRow = "function(date){
+		var status = $('#status').val();
+     	var SpecialCautiousEdit = ${SpecialCautiousEdit};
+     	if(status == 'Pending'||status == 'Rejected' || SpecialCautiousEdit == true){
+     		if((date.catalogPrice == 0 || date.catalogPrice === '')&&(date.productSortName == '非标产品'||date.productSortName == '外购产品' )){
+				$('#t4').setColProp('catalogPrice',{editable:true});  
+				if(date.editByDisplayCatalogName||date.editByDisplayCatalogName==''){
+					editByDisplayCatalogNameFlag = 'Y'
+				}
+			}else if(date.editByDisplayCatalogName == 'Y'){
+				$('#t4').setColProp('catalogPrice',{editable:true});  
+			}else{
+				$('#t4').setColProp('catalogPrice',{editable:false}); 
+			}
+     	}
+    
+    }"
+    ondblClickRow = "function(id){
+        var rowData = $('#t4').jqGrid('getRowData',id);
+        _getBizForRow($('#t4'),id,rowData,true);
+        $('#t4 select[rowId='+id+'_bizName]').change(function(){
+               _getBizForRow($('#t4'),id,rowData,false);
+        });
+    }"
+    onComplete="function(){
+        if(rebateLines_t4){
+            $.each(rebateLines_t4,function(i,row){
+                $('#t4').jqGrid('addRowData',20000+i,row);
+            });
+        }
+    }"
+    gridComplete = "function() {
+        $('#t4').footerData('set',{name:'合计',productName:'合计'});
+        var rowNum = parseInt($('#t4').getGridParam('records'),10);
+        if(rowNum > 0){
+            $('.ui-jqgrid-sdiv').show();
+            var applyQtyCount  = $('#t4').getCol('applyQty',false,'sum');
+            var amountCount = $('#t4').getCol('amount',false,'sum');
+            var applyAmountCount = $('#t4').getCol('applyAmount',false,'sum');
+            var orderQtyCount = $('#t4').getCol('orderQty',false,'sum');
+            $('#t4').footerData('set',{name:'合计',productName:'合计',applyQty:applyQtyCount,amount:amountCount,orderQty:orderQtyCount,applyAmount:applyAmountCount  });
+            calculate('行业入围');
+        }
+    }"
+    onLineEditAfter = "function(id,rowData){
+        $('#t4').trigger('blur')
+		
+        _getBizForRow($('#t4'),id,rowData,false);
+
+        var applyYo = 0;
+        if(rowData.applyYo != ''){
+        	applyYo = rowData.applyYo;
+        }
+        var sourcePrice = 0;
+		var sourcePrice = parseFloat(rowData.sourcePrice);
+		
+		if(rowData.catalogPrice != ''&&rowData.productSortName!='标准产品'){
+			sourcePrice = parseFloat(rowData.catalogPrice)/0.22;
+		}
+        
+        var res_price = parseFloat(rowData.sourcePrice)*(100-parseFloat(rowData.approveYo))/100;
+        var apply_price = parseFloat(rowData.sourcePrice)*(100-parseFloat(applyYo))/100;
+        var res_sum = parseFloat(rowData.applyQty)*parseFloat(rowData.sourcePrice)*(100-parseFloat(rowData.approveYo))/100;
+        var res_apply_sum = parseFloat(rowData.applyQty)*parseFloat(rowData.sourcePrice)*(100-parseFloat(applyYo))/100;
+        
+		var edit_ByDisplayCatalogName = 'N';
+		if(rowData.editByDisplayCatalogName==''){
+			var edit_ByDisplayCatalogName = editByDisplayCatalogNameFlag;
+			editByDisplayCatalogNameFlag = 'N';
+		}else if(rowData.editByDisplayCatalogName == 'Y'){
+			var edit_ByDisplayCatalogName = 'Y';
+		}
+		
+        res_price = res_price.toFixed(2);
+        apply_price = apply_price.toFixed(2);
+        res_sum = res_sum.toFixed(2);
+        res_apply_sum = res_apply_sum.toFixed(2);
+        
+        $('#t4').jqGrid('setRowData',id,{approvePrice:res_price,amount:res_sum,applyAmount:res_apply_sum,applyPrice:apply_price,sourcePrice:sourcePrice,editByDisplayCatalogName:edit_ByDisplayCatalogName});
+        var applyQtyCount  = $('#t4').getCol('applyQty',false,'sum');
+        var amountCount = $('#t4').getCol('amount',false,'sum');
+        var applyAmountCount = $('#t4').getCol('applyAmount',false,'sum');
+        var orderQtyCount = $('#t4').getCol('orderQty',false,'sum');
+        $('#t4').footerData('set',{name:'合计',productName:'合计',applyQty:applyQtyCount,amount:amountCount,orderQty:orderQtyCount ,applyAmount:applyAmountCount });
+        calculate('行业入围');
+    }"
+    footerrow = "true"
+    >
+    <div class="col-xs-12" style="padding-top: 20px;">
+
+                <tr align="left">
+                    <td align="right" width="120px">
+                        ${i18n.get('产品名称:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="pageSearch_productName_like" type="text"
+                        id="pageSearch_productName_like"
+                        />
+                    </td>
+                    <td align="right" width="120px">
+                        ${i18n.get('产品规格:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="pageSearch_cproPowcap_like" type="text"
+                        id="pageSearch_cproPowcap_like"
+                        />
+                    </td>
+                    <td align="right" width="120px">
+                       ${i18n.get('产品型号:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="pageSearch_productModel_like" type="text"
+                        id="pageSearch_productModel_like"
+                        />
+                    </td>
+                </tr>
+                <tr align="left">
+                    <td align="right" width="120px">
+                       ${i18n.get('物料号:')}
+                    </td>
+                    <td align="left" width="180px">
+                         <@form.input name="pageSearch_materCode_like" type="text"
+                        id="pageSearch_materCode_like"
+                        />
+                    </td>
+                    <td align="right" width="120px">
+                        ${i18n.get('商机名称:')}
+                    </td>
+                    <td align="left" width="180px">
+                       <@form.input name="pageSearch_bizName_like" type="text"
+                        id="pageSearch_bizName_like"
+                        />
+                    </td>
+                </tr>
+            </div>
+</@form.table>
+</div>
+<script type="text/javascript">
+    t4_rowid=0;
+    function addRow_t4(datas) {
+        $.each(datas,function(i,data2){
+            var dataRow = {};
+            t4_rowid = t4_rowid+1;
+
+            dataRow.rebateId = '${(entity.id)!}';
+            dataRow.productId = data2.proId;
+            dataRow.productCode = data2.productCode;
+            dataRow.productModel = data2.proModel;
+            dataRow.applyQty = 0;
+            dataRow.productSortId = data2.crmCategory;
+            dataRow.productSortName = data2.crmCategoryLable;
+            dataRow.displayCatalogName = data2.displayCatalogName;
+            if(data2.catalogPriceShow1){
+                dataRow.sourcePrice = data2.catalogPriceShow1;
+            }else{
+                dataRow.sourcePrice = 0;
+            }
+            if(data2.catalogPriceShow){
+                dataRow.approvePrice = data2.catalogPriceShow1;
+            }else{
+                dataRow.approvePrice = 0;
+            }
+            if(data2.catalogPriceShow){
+                dataRow.catalogPrice = data2.catalogPriceShow1;
+            }else{
+                dataRow.catalogPrice = 0;
+            }
+            dataRow.approveYo=0;
+            dataRow.applyRebate = 100;
+            dataRow.approveRebate = 100;
+
+            dataRow.amount = 0;
+            dataRow.orderQty = 0;
+            dataRow.cproPowcap = data2.cproPowcap;
+            dataRow.productName = data2.productName;
+
+            dataRow.catalogPriceHide = data2.catalogPriceShow;
+            dataRow.materCode = data2.materielCode;
+            dataRow.proDesc = data2.proDesc;
+            dataRow.crmCategory = data2.crmCategory;
+			
+            $("#t4").jqGrid("addRowData", t4_rowid, dataRow, "first");
+        });
+    }
+
+    function getGrid_t4(){
+        $('#t4').trigger('blur');
+        var grid_data =$('#t4').jqGrid('getRowData');
+        return JSON.stringify(grid_data);
+    }
+</script>
+
+<div class="form-group classType4">
+    <@form.table id="t5"
+    class="col-xs-12"
+    title="${i18n.get('分销产品')}"
+    url = "${ctx}/rebate/txPage.html?rebateId=${(entity.id)!}&productType=5"
+    checkbox = "true"
+    rowNum = "500" 
+	rowNumList = "[500]"
+    deleteURL = "${deleteURL!}"
+    colModel = "[
+        {name:'id',label:'${i18n.get('ID')}',hidden:true,width:100,sortable:true,align:'center' },
+        {name:'rebateId',label:'${i18n.get('特价申请id')}',hidden:true,width:100},
+        {name:'productId',label:'${i18n.get('产品id')}',hidden:true,width:100},
+        {name:'productName',label:'${i18n.get('产品名称')}',hidden:false,width:150,sortable:true,align:'center' },
+    	{name:'productSortName',label:'${i18n.get('CRM产品分类')}',hidden:false,width:150,sortable:true,align:'center' },
+    	{name:'displayCatalogName',label:'${i18n.get('销售产品分类')}',hidden:true,width:150,sortable:true,align:'center' },
+        {name:'cproPowcap',label:'${i18n.get('产品规格')}',hidden:false,width:150,sortable:true,align:'center' },
+        {name:'productModel',label:'${i18n.get('产品型号')}',hidden:false,width:150,sortable:true,align:'center' },
+        {name:'materCode',label:'${i18n.get('物料号')}',hidden:false,width:100,align:'center'},
+        {name:'crmCategory',label:'${i18n.get('CRM产品类别')}',hidden:true,width:100,align:'center'},
+        {name:'productSortId',label:'${i18n.get('产品分类ID')}',hidden:true,width:150,sortable:true,align:'center' },
+        {name:'catalogPriceHide',label:'${i18n.get('金牌价格')}',hidden:true,width:100,align:'center'},
+        
+        {name:'productCode',label:'${i18n.get('产品编码')}',hidden:true,width:150,sortable:true,align:'center' },
+        {name:'productType',label:'${i18n.get('产品型号')}',hidden:true,width:150,sortable:true,align:'center' },
+        {name:'sourcePrice',label:'${i18n.get('公开价格')}',hidden:false,width:100,sortable:true,align:'center',editrules:{number:true}},
+        {name:'catalogPrice',label:'${i18n.get('金牌价格')}',hidden:false,width:150,sortable:true,align:'center',editable:false,formatter:'number' },
+        {name:'applyRebate',label:'${i18n.get('申请折扣(%)')}',hidden:false,width:100,sortable:true,align:'center',editable:true,editrules:{number:true},formatter:'number'},
+        {name:'applyPrice',label:'${i18n.get('申请价格')}',hidden:false,width:100,sortable:true,align:'center'},
+        {name:'approveRebate',label:'${i18n.get('批复折扣(%)')}',hidden:false,width:100,sortable:true,align:'center',editable:${approveEditFlag},editrules:{number:true}},
+        {name:'approvePrice',label:'${i18n.get('批复价格')}',hidden:false,width:100,sortable:true,align:'center' },
+        {name:'applyQty',label:'${i18n.get('申请数量')}',hidden:false,width:100,sortable:true,align:'center',editable:true,formatoptions:{decimalPlaces : 2,defaultValue:''},formatter:'number',editrules:{number:true}},
+        {name:'applyAmount',label:'${i18n.get('小计申请金额')}',hidden:false,width:100,sortable:true,align:'center' },
+        {name:'amount',label:'${i18n.get('小计批复金额')}',hidden:false,width:100,sortable:true,align:'center' },
+        {name:'bizName',label:'${i18n.get('商机名称')}',hidden:false,width:300,sortable:true,align:'center',editable:true,edittype:'select',editoptions:{value:getBizs()}},
+        {name:'bizId',label:'${i18n.get('商机Id')}',hidden:true,width:100,sortable:true,align:'center' },
+        {name:'clientId',label:'${i18n.get('终端用户Id')}',hidden:true,width:100,sortable:true,align:'center' },
+        {name:'clientName',label:'${i18n.get('终端用户名称')}',hidden:false,width:100,sortable:true,align:'center' },
+        {name:'orderQty',label:'${i18n.get('已下单数量')}',hidden:false,width:100,sortable:true,align:'center' },
+        {name:'remark',label:'${i18n.get('备注')}',hidden:false,width:300,sortable:true,align:'center',editable:true },
+        {name:'isBiz',label:'${i18n.get('是否商机带来')}',hidden:true,width:300,sortable:true,align:'center',editable:true },
+        {name:'bizQty',label:'${i18n.get('商机数量')}',hidden:true,width:300,sortable:true,align:'center',editable:true },
+        {name:'editByDisplayCatalogName',label:'${i18n.get('根据销售类型判断是否可编辑')}',hidden:true,width:300,sortable:true,align:'center' },
+        {name:'proDesc',label:'${i18n.get('产品描述')}',hidden:false,width:400,sortable:true,align:'left',editable:true }
+    ]"
+    buttons = "[
+        {
+            id:'t5_addRow',
+            label : '${i18n.get('增加行')}',
+            icon : 'icon-save',
+            own : true,
+            handler : function(e,rowData){
+            $('#multiSelectProduct_t5').click();
+            }
+        },{
+			id:'deleteRow_t5',
+			label : '${i18n.get('删除')}',
+			icon : 'icon-remove',
+			own : ${deleteRow!'false'},
+			handler : function(e,rowData){
+				debugger;
+				var ids = $('#t5').jqGrid('getGridParam','selarrrow'); 
+				var _ids = [];
+				 $.each(ids,function(i,id){
+					 _ids.push(id);
+				 });
+			     if(!ids || ids.length <= 0 ){
+			      　　	alert('${i18n.get('请选择要删除的行')}');
+			      　　	return;
+			     }else{
+			     	if(confirm('${i18n.get('是否删除选择的行')}')){
+				    	 $.each(_ids,function(i,id){
+				    	 	 $('#t5').jqGrid('delRowData', id);
+				    	 });
+			    	 }
+			     } 
+			}
+		},
+        {
+        	id:'t5_export',
+            label : '${i18n.get('导出')}',
+            icon : 'icon-save',
+            own : true,
+            handler : function(e,rowData){
+               	var da={} ; 
+	  			var prjrows= $('#t5').jqGrid('getGridParam','selarrrow');  
+	  			var ids=[];
+	  			var idsStr = '';
+	  			if(prjrows.length>0){	
+			 		$.each(prjrows,function(i,id){
+							var item = $('#t5').jqGrid('getRowData',id);
+			 			ids.push(item.id);
+			 			idsStr +=   item.id +',';
+			 		});	
+			 		idsStr = idsStr.substring(0,idsStr.length-1);
+	 					bootbox.confirm('${i18n.get('您确定要导出选中的数据吗？')}' , function(result) {
+					if(result) {
+						window.location.href = '${ctx}/rebate/exportData.html?idsStr='+idsStr;
+						}
+					});
+	 				}else{
+	 					alert('${i18n.get('请选择数据！')}');
+	 				}
+            }
+        }
+    ]"
+    
+    onSelectRow = "function(date){
+		var status = $('#status').val();
+     	var SpecialCautiousEdit = ${SpecialCautiousEdit};
+     	if(status == 'Pending'||status == 'Rejected' || SpecialCautiousEdit == true){
+     		if((date.catalogPrice == 0 || date.catalogPrice === '')&&(date.productSortName == '非标产品'||date.productSortName == '外购产品' ) ){
+				$('#t5').setColProp('catalogPrice',{editable:true});  
+				if(date.editByDisplayCatalogName||date.editByDisplayCatalogName==''){
+					editByDisplayCatalogNameFlag = 'Y'
+				}
+			}else if(date.editByDisplayCatalogName == 'Y'){
+				$('#t5').setColProp('catalogPrice',{editable:true});  
+			}else{
+				$('#t5').setColProp('catalogPrice',{editable:false}); 
+			}
+     	}
+    
+    }"
+    ondblClickRow = "function(id){
+        var rowData = $('#t5').jqGrid('getRowData',id);
+
+        _getBizForRow($('#t5'),id,rowData,true);
+        $('#t5 select[rowId='+id+'_bizName]').change(function(){
+               _getBizForRow($('#t5'),id,rowData,false);
+        });
+    }"
+    onComplete="function(){
+        if(rebateLines_t5){
+            $.each(rebateLines_t5,function(i,row){
+                $('#t5').jqGrid('addRowData',20000+i,row);
+            });
+        }
+    }"
+    gridComplete = "function() {
+        $('#t5').footerData('set',{name:'合计',productName:'合计'});
+        var rowNum = parseInt($('#t5').getGridParam('records'),10);
+        if(rowNum > 0){
+            $('.ui-jqgrid-sdiv').show();
+            var applyQtyCount = $('#t5').getCol('applyQty',false,'sum');
+            var amountCount = $('#t5').getCol('amount',false,'sum');
+            var applyAmountCount = $('#t5').getCol('applyAmount',false,'sum');
+            var orderQtyCount = $('#t5').getCol('orderQty',false,'sum');
+            $('#t5').footerData('set',{name:'合计',productName:'合计',applyQty:applyQtyCount,amount:amountCount,orderQty:orderQtyCount,applyAmount:applyAmountCount});
+            calculate('分销');
+        }
+    }"
+    onLineEditAfter = "function(id,rowData){
+        $('#t5').trigger('blur')
+
+        _getBizForRow($('#t5'),id,rowData,false);
+
+		var sourcePrice = 0;
+		if(rowData.sourcePrice!=0){
+			sourcePrice = parseFloat(rowData.sourcePrice);
+		}
+		if(rowData.productSortName!='标准产品'&&rowData.catalogPrice != ''){
+			sourcePrice = parseFloat(rowData.catalogPrice)/0.22;
+		}
+		
+        var res_price = parseFloat(rowData.sourcePrice)*parseFloat(rowData.approveRebate)/100;
+        var apply_price = parseFloat(rowData.sourcePrice)*parseFloat(rowData.applyRebate)/100;
+        var res_sum = parseFloat(rowData.applyQty)*res_price;
+        var res_apply_sum = parseFloat(rowData.applyQty)*apply_price;
+		
+		var edit_ByDisplayCatalogName = 'N';
+		if(rowData.editByDisplayCatalogName==''){
+			var edit_ByDisplayCatalogName = editByDisplayCatalogNameFlag;
+			editByDisplayCatalogNameFlag = 'N';
+		}else if(rowData.editByDisplayCatalogName == 'Y'){
+			var edit_ByDisplayCatalogName = 'Y';
+		}
+        res_price = res_price.toFixed(2);
+        apply_price = apply_price.toFixed(2);
+        res_sum = res_sum.toFixed(2);
+        res_apply_sum = res_apply_sum.toFixed(2);
+        sourcePrice = sourcePrice.toFixed(2);
+
+        $('#t5').jqGrid('setRowData',id,{approvePrice:res_price,amount:res_sum,applyAmount:res_apply_sum,applyPrice:apply_price,sourcePrice:sourcePrice,editByDisplayCatalogName:edit_ByDisplayCatalogName});
+        var applyQtyCount = $('#t5').getCol('applyQty',false,'sum');
+        var amountCount = $('#t5').getCol('amount',false,'sum');
+        var applyAmountCount = $('#t5').getCol('applyAmount',false,'sum');
+        var orderQtyCount = $('#t5').getCol('orderQty',false,'sum');
+        $('#t5').footerData('set',{name:'合计',productName:'合计',applyQty:applyQtyCount,amount:amountCount,orderQty:orderQtyCount,applyAmount:applyAmountCount});
+        calculate('分销');
+    }"
+    footerrow = "true"
+    >
+    <div class="col-xs-12" style="padding-top: 20px;">
+
+                <tr align="left">
+                    <td align="right" width="120px">
+                        ${i18n.get('产品名称:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="pageSearch_productName_like" type="text"
+                        id="pageSearch_productName_like"
+                        />
+                    </td>
+                    <td align="right" width="120px">
+                       ${i18n.get('产品规格:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="pageSearch_cproPowcap_like" type="text"
+                        id="pageSearch_cproPowcap_like"
+                        />
+                    </td>
+                    <td align="right" width="120px">
+                       ${i18n.get('产品型号:')}
+                    </td>
+                    <td align="left" width="180px">
+                        <@form.input name="pageSearch_productModel_like" type="text"
+                        id="pageSearch_productModel_like"
+                        />
+                    </td>
+                </tr>
+                <tr align="left">
+                    <td align="right" width="120px">
+                       ${i18n.get('物料号:')}
+                    </td>
+                    <td align="left" width="180px">
+                         <@form.input name="pageSearch_materCode_like" type="text"
+                        id="pageSearch_materCode_like"
+                        />
+                    </td>
+                    <td align="right" width="120px">
+                        ${i18n.get('商机名称:')}
+                    </td>
+                    <td align="left" width="180px">
+                         <@form.input name="pageSearch_bizName_like" type="text"
+                        id="pageSearch_bizName_like"
+                        />
+                    </td>
+                </tr>
+            </div>
+</@form.table>
+</div>
+<script type="text/javascript">
+    var t5_rowid = 0;
+    function addRow_t5(datas) {
+        $.each(datas, function (i, data2) {
+            var dataRow = {};
+            t5_rowid = t5_rowid + 1;
+
+            dataRow.rebateId = '${(entity.id)!}';
+            dataRow.productId = data2.proId;
+            dataRow.productCode = data2.productCode;
+            dataRow.productModel = data2.proModel;
+            dataRow.applyQty = 0;
+            dataRow.productSortId = data2.crmCategory;
+            dataRow.productSortName = data2.crmCategoryLable;
+            dataRow.displayCatalogName = data2.displayCatalogName;
+            if (data2.catalogPriceShow1) {
+                dataRow.sourcePrice = data2.catalogPriceShow1;
+            } else {
+                dataRow.sourcePrice = 0;
+            }
+            dataRow.applyRebate = 100;
+            dataRow.approveRebate = 100;
+            if(data2.catalogPriceShow1){
+                dataRow.approvePrice = data2.catalogPriceShow1;
+            }else{
+                dataRow.approvePrice = 0;
+            }
+            dataRow.amount = 0;
+            dataRow.orderQty = 0;
+            dataRow.cproPowcap = data2.cproPowcap;
+            dataRow.productName = data2.productName;
+            if(data2.catalogPriceShow){
+                dataRow.catalogPrice = data2.catalogPriceShow;
+            }else{
+                dataRow.catalogPrice = 0;
+            }
+            dataRow.catalogPriceHide = data2.catalogPriceShow;
+            dataRow.materCode = data2.materielCode;
+            dataRow.proDesc = data2.proDesc;
+            dataRow.crmCategory = data2.crmCategory;
+            
+            $("#t5").jqGrid("addRowData", t5_rowid, dataRow, "first");
+        });
+    }
+
+    function getGrid_t5() {
+        $('#t5').trigger('blur');
+        var grid_data = $('#t5').jqGrid('getRowData');
+        return JSON.stringify(grid_data);
+    }
+</script>
+<script type="text/javascript">
+
+    function calculate(type){
+        if(type == '常规'){
+            var amountCount_t1 = $('#t1').getCol('amount',false,'sum');
+            //var amountCount_t3 = $('#t3').getCol('amount',false,'sum');
+            //$("#rebateAmount").val(parseFloat(amountCount_t1) + parseFloat(amountCount_t3));
+            $("#rebateAmount").val(parseFloat(amountCount_t1));
+        }
+        if (type == "电池") {
+            var amountCount_t2 = $('#t2').getCol('amount', false, 'sum');
+            $("#rebateAmount").val(parseFloat(amountCount_t2));
+        }
+        if (type == "分销") {
+            var amountCount_t5 = $('#t5').getCol('amount', false, 'sum');
+            $("#rebateAmount").val(parseFloat(amountCount_t5));
+        }
+        if(type == "行业入围"){
+            var amountCount_t4 = $('#t4').getCol('amount',false,'sum');
+            $("#rebateAmount").val(amountCount_t4);
+        }
+
+    }
+
+    
+    $(document).ready(function () {
+        $("#status").attr("disabled", "disabled");
+        var status = "${(entity.status)!''}";
+        var isInner = "${flag?string}";
+        var productPriceHeadFlag = "${(productPriceHeadFlag)!''}";
+        if(productPriceHeadFlag == 'N'){
+        	$("#belongOperator").attr("disabled", "disabled");
+        }
+        if(status == "Pending" || status == "Rejected"){
+            $("#t1").setColProp('applyQty',{editable:true});
+            $("#t1").setColProp('applyRebate',{editable:true});
+            $("#t1").setColProp('approveRebate',{editable:${approveEditFlag}});
+            
+            $("#t2").setColProp('applyQty',{editable:true});
+            $("#t2").setColProp('applyPrice',{editable:true});
+            $("#t2").setColProp('approvePrice',{editable:${approveEditFlag}});
+
+            $("#t3").setColProp('applyQty',{editable:true});
+            $("#t3").setColProp('applyRebate',{editable:true});
+            $("#t3").setColProp('approveRebate',{editable:${approveEditFlag}});
+
+            $("#t5").setColProp('applyQty', {editable: true});
+            $("#t5").setColProp('applyRebate', {editable: true});
+            $("#t5").setColProp('approveRebate', {editable: ${approveEditFlag}});
+
+            $("#t4").setColProp('applyQty',{editable:true});
+            $("#t4").setColProp('applyYo',{editable:true});
+            $("#t4").setColProp('approveYo',{editable:${approveEditFlag}});
+
+            if(isInner == false || isInner === "false"){
+                //$("#t4").jqGrid("hideCol",["sourcePrice"]);
+                //$("#t4").jqGrid("hideCol",["amount"]);
+                //$("#t4").jqGrid("hideCol",["approvePrice"]);
+                //$("#t4").jqGrid("hideCol",["approveYo"]);
+
+            }
+        }
+
+        if(status == "Processing"){
+        	var SpecialCautiousEdit = ${SpecialCautiousEdit};
+            if(SpecialCautiousEdit != true){
+	        	 $("#t1_addRow").hide();
+	             $("#t2_addRow").hide();
+	             $("#t3_addRow").hide();
+	             $("#t4_addRow").hide();
+	             $("#t5_addRow").hide();
+	             $("#delete_t1").hide();
+	             $("#delete_t2").hide();
+	             $("#delete_t3").hide();
+	             $("#delete_t4").hide();
+	             $("#delete_t5").hide();
+	             $("#rival_addRow").hide();
+	             $("#delete_rival").hide();
+	             
+	             $("#button2").hide();
+	             $("#button3").hide();
+	             
+	        	
+	            $("#t1").setColProp('applyQty',{editable:false});
+	            $("#t1").setColProp('applyRebate',{editable:false});
+	            $("#t1").setColProp('approveRebate',{editable:${approveEditFlag}});
+	            $("#t1").setColProp('bizName',{editable:false});
+	
+	            $("#t2").setColProp('applyQty',{editable:false});
+	            $("#t2").setColProp('applyPrice',{editable:false});
+	            $("#t2").setColProp('approvePrice',{editable:${approveEditFlag}});
+	            $("#t2").setColProp('bizName',{editable:false});
+	
+	
+	            $("#t3").setColProp('applyQty',{editable:false});
+	            $("#t3").setColProp('applyRebate',{editable:false});
+	            $("#t3").setColProp('approveRebate',{editable:${approveEditFlag}});
+	            $("#t3").setColProp('bizName',{editable:false});
+	
+	            $("#t5").setColProp('applyQty', {editable:false});
+	            $("#t5").setColProp('applyRebate', {editable:false});
+	            $("#t5").setColProp('approveRebate', {editable: ${approveEditFlag}});
+	            $("#t5").setColProp('bizName', {editable: false});
+	
+	            $("#t4").setColProp('applyQty',{editable:false});
+	            $("#t4").setColProp('applyYo',{editable:false});
+	            $("#t4").setColProp('approveYo',{editable:${approveEditFlag}});
+	            $("#t4").setColProp('bizName',{editable:false});
+	
+	            if(isInner == false || isInner === "false"){
+	               // $("#t4").jqGrid("hideCol",["sourcePrice"]);
+	                //$("#t4").jqGrid("hideCol",["amount"]);
+	                //$("#t4").jqGrid("hideCol",["approvePrice"]);
+	               // $("#t4").jqGrid("hideCol",["approveYo"]);
+	
+	            }	
+            }
+        }
+        if(status == "Completed"){
+        	
+        	 $("#t1_addRow").hide();
+             $("#t2_addRow").hide();
+             $("#t3_addRow").hide();
+             $("#t4_addRow").hide();
+             $("#t5_addRow").hide();
+             $("#delete_t1").hide();
+             $("#delete_t2").hide();
+             $("#delete_t3").hide();
+             $("#delete_t4").hide();
+             $("#delete_t5").hide();
+             $("#rival_addRow").hide();
+             $("#delete_rival").hide();
+             $("#button1").hide();
+             $("#button2").hide();
+             $("#button3").hide();
+        	
+            $("#t1").setColProp('applyQty',{editable:false});
+            $("#t1").setColProp('applyRebate',{editable:false});
+            $("#t1").setColProp('approveRebate',{editable:false});
+            $("#t1").setColProp('bizName',{editable:false});
+            $("#t1").setColProp('remark',{editable:false});
+
+            $("#t2").setColProp('applyQty',{editable:false});
+            $("#t2").setColProp('applyPrice',{editable:false});
+            $("#t2").setColProp('approvePrice',{editable:false});
+            $("#t2").setColProp('bizName',{editable:false});
+            $("#t2").setColProp('remark',{editable:false});
+
+
+            $("#t3").setColProp('applyQty',{editable:false});
+            $("#t3").setColProp('applyRebate',{editable:false});
+            $("#t3").setColProp('approveRebate',{editable:false});
+            $("#t3").setColProp('bizName',{editable:false});
+            $("#t3").setColProp('remark',{editable:false});
+
+            $("#t5").setColProp('applyQty', {editable: false});
+            $("#t5").setColProp('applyRebate', {editable: false});
+            $("#t5").setColProp('approveRebate', {editable: false});
+            $("#t5").setColProp('bizName', {editable: false});
+            $("#t5").setColProp('remark', {editable: false});
+
+            $("#t4").setColProp('applyQty',{editable:false});
+            $("#t4").setColProp('applyYo',{editable:false});
+            $("#t4").setColProp('approveYo',{editable:false});
+            $("#t4").setColProp('bizName',{editable:false});
+            $("#t4").setColProp('remark',{editable:false});
+
+            $("#t1_addRow").hide();
+        }
+
+        var type = "${(entity.type)!''}";
+        if(type){
+            if(type == "常规"){
+                $(".classType2").hide();
+                $(".classType3").hide();
+                $(".classType4").hide();
+                $(".classType1").show();
+                $('#specialOff').attr("disabled",'disabled');
+                calculate("常规");
+            }
+            if (type == "电池") {
+                $(".classType1").hide();
+                $(".classType3").hide();
+                $(".classType4").hide();
+                $(".classType2").show();
+                $('#specialOff').attr("disabled","disabled");
+                calculate("电池");
+            }
+            if(type == "行业入围"){
+                $(".classType1").hide();
+                $(".classType2").hide();
+                $(".classType4").hide();
+                $(".classType3").show();
+                $('#specialOff').attr("disabled","disabled");
+                calculate("行业入围");
+            }
+
+            if (type == "分销") {
+                $(".classType1").hide();
+                $(".classType2").hide();
+                $(".classType3").hide();
+                $(".classType4").show();
+                calculate("分销");
+            }
+        }else{
+            $(".classType2").hide();
+            $(".classType3").hide();
+            $(".classType4").hide();
+            $(".classType1").show();
+            $('#specialOff').attr("disabled","disabled");
+        }
+
+        $("#type1").click(function () {
+            $(".classType2").hide();
+            $(".classType3").hide();
+            $(".classType4").hide();
+            $(".classType1").show();
+            $('#specialOff').attr("disabled","disabled");
+        });
+
+        $("#type2").click(function () {
+            $(".classType1").hide();
+            $(".classType3").hide();
+            $(".classType4").hide();
+            $(".classType2").show();
+            $('#specialOff').attr("disabled","disabled");
+        });
+
+        $("#type3").click(function () {
+            $(".classType1").hide();
+            $(".classType2").hide();
+            $(".classType4").hide();
+            $(".classType3").show();
+            $('#specialOff').attr("disabled","disabled");
+        });
+
+        $("#type4").click(function () {
+            $(".classType1").hide();
+            $(".classType2").hide();
+            $(".classType3").hide();
+            $(".classType4").show();
+            $('#specialOff').attr("disabled",false);
+        });
+
+    });
+
+</script>
+</@form.form>
+<div  style="visibility: hidden;" >
+    <@biz.picker_product
+        id="multiSelectProduct_t1"
+        urlFunction="function(){
+            return '${ctx}/common/product/multiSelectList.html?crmCategoryQuery=0001&priceTableId=${priceTableId}&productType=1';
+        }"
+        button="${i18n.get('批量选择产品')}"
+        callback="function(datas){
+        if(datas){
+            addRow_t1(datas);
+        }
+        }"
+    />
+    <@biz.picker_product
+        id="multiSelectProduct_t2"
+        urlFunction="function(){
+            return '${ctx}/common/product/multiSelectList.html?battery=Y&priceTableId=${priceTableId}';
+        }"
+        button="${i18n.get('批量选择产品')}"
+        callback="function(datas){
+        if(datas){
+            addRow_t2(datas);
+        }
+        }"
+    />
+    <@biz.picker_product
+        id="multiSelectProduct_t3"
+        urlFunction="function(){
+            return '${ctx}/common/product/multiSelectList.html?crmCategoryQuery=0002&priceTableId=${priceTableId}';
+        }"
+        button="${i18n.get('批量选择产品')}"
+        callback="function(datas){
+        if(datas){
+            addRow_t3(datas);
+        }
+        }"
+    />
+    <@biz.picker_product
+        id="multiSelectProduct_t4"
+        urlFunction="function(){
+            return '${ctx}/common/product/multiSelectList.html?inwall=Y&crmCategoryQuery=4&customerId='+$('#belongOperator').val();
+        }"
+        button="${i18n.get('批量选择产品')}"
+        callback="function(datas){
+        if(datas){
+            addRow_t4(datas);
+        }
+    }"
+    />
+    <@biz.picker_product
+        id="multiSelectProduct_t5"
+        urlFunction="function(){
+            return '${ctx}/common/product/multiSelectList.html?distribute=Y&priceTableId=${priceTableId}';
+        }"
+        button="${i18n.get('批量选择产品')}"
+        callback="function(datas){
+        if(datas){
+            addRow_t5(datas);
+        }
+        }"
+        />
+        </div>
+        <script type="text/javascript">
+        var bizMap = {};
+        function _getBizs(rebateNo, productModel, success, failure) {
+            var bizs = null;
+            $.ajax({
+                type: "get",
+                async: false,
+                url: "${ctx}/rebate/getBizsWithProduct.html",
+                data: { rebateNo: rebateNo, productModel: productModel},
+                success: function (data) {
+                    if (data != null) {
+                        bizs = eval(data.message);
+                        if ($.isArray(bizs)) {
+                            $.each(bizs,function(i,e){
+                                bizMap[e.id] = e;
+                            })
+                        }
+                    }
+                    if (success) {
+                        success(bizs);
+                    }
+                },
+                error: function (r, e, s) {
+                    if (failure) {
+                        failure("获取商机失败");
+                    } else {
+                        exalert({}, "获取商机失败")
+                    }
+                }
+            });
+            return bizs;
+        }
+
+        function _getBizForRow($table, id, rowData, edited) {
+            if (edited == true) {
+                var bizs = null;
+                if (rowData.productModel) {
+                    bizs = _getBizs($("#no").val(), rowData.productModel)
+                }
+                var $select = _getSelectForBizs(bizs);
+                if (rowData.bizId) {
+                    $select.find("option[value='" + rowData.bizId + "']").attr("selected", "selected");
+                }
+                $select.val(rowData.bizId || '')
+                $select.attr('rowid', id + '_bizName');
+                $table.jqGrid('setRowData', id, {
+                    bizName: $select[0].outerHTML
+                });
+            } else {
+                var biz = null;
+                var $select = $("select[rowid='" + id + "_bizName']");
+                if ($select.length == 0) {
+                    return;
+                }
+                var value = $select.val();
+                if (value) {
+                    biz = bizMap[value];
+                }
+                var row = null;
+                if (biz) {
+                    row = {
+                        bizName: biz.number  + " | " + biz.opportunityName  ||'',
+                        bizId: biz.id || '',
+                        clientId: biz.clientId || '',
+                        clientName: biz.clientName || ''
+                    }
+                } else {
+                    row = {
+                        bizName: '',
+                        bizId: '',
+                        clientId: '',
+                        clientName: ''
+                    }
+                }
+                $table.jqGrid('setRowData', id, row);
+            }
+        }
+
+        function _getSelectForBizs(bizs) {
+            var $select = $('<select></select>')
+            $select.addClass("editable inline-edit-cell ui-widget-content ui-corner-all")
+            $select.attr("name", "bizName");
+            $select.append($('<option>'+'${i18n.get('请选择')}'+'</option>'));
+            if (bizs && bizs.length > 0) {
+                $.each(bizs, function (i, e) {
+                    var $option = $('<option />')
+                    $option.val(e.id);
+                    $option.text(e.number + " | " + e.opportunityName)
+                    $select.append($option);
+                });
+            }
+            return $select;
+        }
+
+        function getBizs(productModel) {
+            var str = "";
+            $.ajax({
+                type: "get",
+                async: false,
+                url: "${ctx}/rebate/getBizs.html",
+                success: function (data) {
+                    if (data != null) {
+                        var jsonobj = eval(data.message);
+                        var length = jsonobj.length;
+                        if (length < 1) {
+                            str += " : ";
+                        } else {
+                            str += " : ;";
+                        }
+
+                        //str += "KSTAR-SJ-XN01:KSTAR-SJ-XN01 | 虚拟商机;";
+                        if (length > 0) {
+                            for (var i = 0; i < length; i++) {
+                                if (i != length - 1) {
+                                    str += jsonobj[i].id + ":" + jsonobj[i].number + " | " + jsonobj[i].opportunityName + ";";
+                                } else {
+                                    str += jsonobj[i].id + ":" + jsonobj[i].number + " | " + jsonobj[i].opportunityName;// 这里是option里面的 value:label
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            return str;
+        }
+
+
+        function getBizById(bizId, rowid, tableId) {
+            $.ajax({
+                type: "get",
+                async: false,
+                url: "${ctx}/rebate/getBizById.html?bizId=" + bizId,
+                success: function (data) {
+                    if (data.message) {
+                        if (data.message.id === undefined) {
+                            /* var rowData = {
+                                bizName: "KSTAR-SJ-XN01 | 虚拟商机",
+                                bizId: "KSTAR-SJ-XN01",
+                                clientId: "KSTAR-SJ-XN01",
+                                clientName: "虚拟商机"
+                            };
+                            $("#" + tableId).jqGrid("setRowData", rowid, rowData); */
+                        } else {
+                            var rowData = {
+                                bizName: data.message.number + " | " + data.message.opportunityName,
+                                bizId: data.message.id,
+                                clientId: data.message.clientId,
+                                clientName: data.message.clientName
+                            };
+                            $("#" + tableId).jqGrid("setRowData", rowid, rowData);
+                        }
+                    }
+                }
+            });
+        }
+
+    function startApplyProcess() {
+        var entityId = "${entity.id?default('')}";
+        if(''===entityId){
+            alert('${i18n.get('数据未保存，请先保存再提交流程申请。')}');
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "${ctx}/rebate/startProcess.html",
+            async: true,
+            data: "id=" + entityId+"&no=${(entity.no)!}",
+            dataType: 'json',
+            success: function (msg) {
+                alert('${i18n.get('审核流程提交成功')}');
+                api.close();
+            },
+            error: function (e) {
+                var msg = eval("(" + e.responseText + ")");
+                if (msg) {
+                    alert(msg.message);
+                } else {
+                    alert('${i18n.get('操作失败，请联系管理员')}');
+                }
+            }
+        });
+    }
+
+    function getBizMainInfo() {
+        if(!$("#biz").val()){
+            alert('${i18n.get('未输入商机编号')}');
+        }else{
+            $.ajax({
+                type: "get",
+                url: "${ctx}/rebate/getBizMainInfo.html",
+                async: true,
+                data: "bizNo=" + $("#biz").val(),
+                dataType: 'json',
+                success: function (msg) {
+                    window.location.href='${ctx}/rebate/add.html?bizOppId='+msg.message;
+                },
+                error: function (e) {
+                	var msg = eval("(" + e.responseText + ")");
+                    if (msg) {
+                        alert(msg.message);
+                    } else {
+                        alert('${i18n.get('操作失败，请联系管理员')}');
+                    }
+                }
+            });
+        }
+    }
+    
+    function changeRebate(){
+    	var d = {};
+    	d.id = '${(entity.id)!''}';
+    	
+    	bootbox.confirm('${i18n.get('您确定要变更特价吗？')}' , function(result) {		
+    		if(result) {
+    			parent.dialog('${i18n.get('特价变更信息')}' ,'${ctx}/rebate/change/change.html?id=${(entity.id)!''}' );
+    		}
+    	});	
+    }
+    
+    function checkBiz(event){
+    	var type = $('input[name="type"]').filter(':checked').val();
+    	var grid = null;
+        var grid2 = null;
+        if(type == '常规'){
+        	grid = $('#t1').jqGrid("getRowData");
+        	grid2 = $('#t3').jqGrid("getRowData");
+        }
+        if (type == "电池") {
+        	grid = $('#t2').jqGrid("getRowData");
+        }
+        if (type == "分销") {
+        	grid = $('#t5').jqGrid("getRowData");
+        }
+        if(type == "行业入围"){
+        	grid = $('#t4').jqGrid("getRowData");
+        }
+        listStr= JSON.stringify(grid);
+        var listStr2 = '';
+        if (grid2) {
+            listStr2= JSON.stringify(grid2);
+        }
+        var flag = true;
+        if(grid.length>0){
+        	$.ajax({
+                type: "post",
+                url: "${ctx}/rebate/chekcBiz.html",
+                async: false,
+                data: {"rebateNo":$("#no").val(),"data":listStr,"type:":type,"dataT3":listStr2},
+                dataType: 'json',
+                success: function (e) {
+                    if (e.status == 'error') {
+                        alert(e.message || '${i18n.get('未知错误')}');
+                        flag = false;
+                    }
+                },
+                error:function (xhr, status, statusText) {
+                    alert(xhr.responseJSON.message || '${i18n.get('未知错误')}');
+                    flag = false;
+
+                }
+            });
+        }
+        return flag;
+    	
+    }
+	var _customCategorySub=null;
+    function changBelong(data){
+    	_customCategorySub=data;
+    	$("#belongIndustry").val(data.customCategory).trigger("change");
+    }
+
+    function changDateType(dateEditFlag){
+    	var startDate = $("#startDate");
+    	var endDate = $("#endDate");
+    	if(dateEditFlag == true){
+    		if(startDate.val()==''&&endDate.val()==''){
+    			var date = new Date();
+            	var s = new Date();
+            	var now = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
+            	startDate.val(now);
+            	var afterDate = new Date( date.getFullYear(), date.getMonth()+3,date.getDate());
+            	var afterDate = afterDate.getFullYear()+"-"+afterDate.getMonth()+"-"+afterDate.getDate();
+            	endDate.val(afterDate);
+            	startDate.readonly=false;
+            	endDate.readonly=false;
+            	$("#startDate").attr("required", true);
+            	$("#endDate").attr("required", true);
+    		}
+    	}
+	}
+
+</script>
+<script type="text/javascript">
+	var editByDisplayCatalogNameFlag = 'N';
+	window.onload=function(){
+		var dateEditFlag = ${specialPriceDateEditFlag};
+		if(dateEditFlag == true){
+			changDateType(dateEditFlag);
+		}
+	}
+</script>
+<#if (newProcessType?? && newProcessType == 'Y')>
+<#include "process.html" />
+</#if>
+</@form.panel>
+</@cui.body>
+
+<div id="info" style="padding-top: 20px;" class="row">
+    <div class="col-xs-12">
+        <input type="hidden" id="selectedId"  />
+        <@plug.tabs tabMain=tabMainInfo>
+    </@plug.tabs>
+</div>

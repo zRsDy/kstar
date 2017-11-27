@@ -1,0 +1,116 @@
+<div class="row">
+    <div class="col-xs-12">
+        <!-- PAGE CONTENT BEGINS -->
+        <div>
+            <input type="hidden" id="bizId" name="bizId" value="${(bizId)!}">
+            <input type="hidden" id="bizType" name="bizType" value="${(bizType)!}">
+
+            <ul class="ace-thumbnails clearfix">
+
+                <#if attachments?size gt 0>
+                    <#list attachments as attachment>
+                        <li id="img_${(attachment.id)!}">
+                            <img width="150" height="150" alt="150x150"
+                                 src="${(attachment.docUrl)!}"/>
+                            <div class="tools tools-bottom">
+                            	<#if (permission["P01-1ProductImgDelete"])??>
+                                <a href="javascript:void(0);" onclick="imgDelete('${(attachment.id)!}');">
+                                    <i class="ace-icon fa fa-link">${i18n.get('删除')}</i>
+                                </a>
+								</#if>
+								<#if (permission["P01-1ProductImgDownload"])??>
+                                <a href="${(attachment.docUrl)!}" download="${(attachment.docUrl)!}" target="_blank">
+                                    <i class="ace-icon fa fa-paperclip">${i18n.get('下载')}</i>
+                                </a>
+                                </#if>
+                            </div>
+                        </li>
+                    </#list>
+                </#if>
+                <li>
+                    <a href="${ctx}/common/attachment/add.html?bizId=${(bizId)!}&bizType=${(bizType)!}">
+                        <image width="150" height="150" alt="150x150"
+                               src="${ctx}/anne/images/add.png"/>
+                        <div class="text">
+                            <div class="inner">${i18n.get('增加附件')}</div>
+                        </div>
+                    </a>
+					<#if (permission["P01-1ProductImgAdd"])??>
+                    <div class="tools tools-bottom">
+                        <a href="#">
+                            <i class="ace-icon fa fa-link">${i18n.get('新增')}</i>
+                        </a>
+                    </div>
+                    </#if>
+                </li>
+            </ul>
+        </div><!-- PAGE CONTENT ENDS -->
+    </div><!-- /.col -->
+</div><!-- /.row -->
+</div><!-- /.page-content -->
+<!--[if !IE]> -->
+
+<!-- inline scripts related to this page -->
+<script>
+
+    var OriginImage = new Image();
+    function getImageWidth(oImage) {
+        if (OriginImage.src != oImage.src) OriginImage.src = oImage.src;
+        return OriginImage.width;
+    }
+    function getImageHeight(oImage) {
+        if (OriginImage.src != oImage.src) OriginImage.src = oImage.src;
+        return OriginImage.height;
+    }
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $("img").click(function () {
+            var relwidth = getImageWidth(this);
+            var relheight = getImageHeight(this);
+            var width = $(this).width();
+            if (width == 150) {
+                $(this).width(relwidth);
+                $(this).height(relheight);
+            } else {
+                $(this).width(150);
+                $(this).height(150);
+            }
+        });
+    });
+
+    function imgDelete(imgId) {
+        if ('' === imgId) {
+            alert("${i18n.get('未选中删除对象')}");
+            return;
+        }
+        bootbox.confirm('${i18n.get('即将执行图片删除操作，请确认执行或取消！')}', function (result) {
+            if (result) {
+                $.ajax({
+                    type: "POST",
+                    url: "${ctx}/product/imgDelete.html",
+                    async: true,
+                    data: "imgId=" + imgId,
+                    dataType: 'json',
+                    success: function (msg) {
+                        xalert("${i18n.get('图片删除操作成功！')}");
+                        $("#img_"+imgId).remove();
+                    },
+                    error: function (e) {
+                        var msg = eval("(" + e.responseText + ")");
+                        if (msg) {
+                            xalert(msg.message);
+                        } else {
+                            xalert("${i18n.get('操作失败，请联系管理员')}");
+                        }
+                    }
+                });
+            }
+        });
+
+    }
+
+
+</script>
+</script>

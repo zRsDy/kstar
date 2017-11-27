@@ -1,0 +1,39 @@
+<@pui.body>
+<script>
+    function statusName(status){
+        switch(status) {
+            case 1:
+                return "${i18n.get('计划')}";
+            case 4:
+                return "${i18n.get('启动')}";
+            case 5:
+                return "${i18n.get('驳回')}";
+            case 6:
+                return "${i18n.get('暂停')}";
+            case 7:
+                return "${i18n.get('完成')}";
+            default:
+                return "-";
+        }
+    }
+</script>
+<div class="col-xs-12">
+    <@form.table id="pdmFlowHistoryList"
+    title="${i18n.get('PDM审批历史')}"
+    url = "${ctx}/pdm/flow/historyPage.html?no=${no}"
+    rowNum = "20"
+    colModel = "[
+				{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+				{name:'formNo',label:'${i18n.get('编号')}',hidden:false,width:150,sortable:true,align:'center' },
+				{name:'name',label:'${i18n.get('流程名称')}',hidden:false,width:180,sortable:true,align:'center' },
+				{name:'procName',label:'${i18n.get('节点名称')}',hidden:false,width:140,sortable:true,align:'center' },
+				{name:'status',label:'${i18n.get('状态')}',hidden:false,width:80,sortable:true,align:'center',formatter:function(cellvalue, options){ return statusName(cellvalue) }},
+				{name:'startTime',label:'${i18n.get('开始时间')}',hidden:false,width:140,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+				{name:'endTime',label:'${i18n.get('结束时间')}',hidden:false,width:140,sortable:false,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }} ,
+				{name:'proUsers',label:'${i18n.get('用户')}',hidden:false,width:100,sortable:false,align:'center' },
+				{name:'opinions',label:'${i18n.get('意见')}',hidden:false,width:260,sortable:false,align:'center' }
+				]"
+    search='false'
+    buttons = "[]" />
+</div>
+</@pui.body>

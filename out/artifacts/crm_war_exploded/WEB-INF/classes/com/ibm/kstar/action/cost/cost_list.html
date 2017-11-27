@@ -1,0 +1,264 @@
+<@cui.body2>
+<style type="text/css">
+	table {
+	border-collapse: collapse;
+	border-color: #ff0000;
+	}
+	
+	table td {
+		padding:1px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	select {
+		width: 180px;
+	}
+</style>
+
+	<#if permission["P06OaExpensesClaimImport"]?? >
+		<#assign importURL= "'${ctx}/cost/importOaExpensesClaim.html'"   />
+	</#if>
+
+<div class="col-xs-12">
+
+	<@form.table id="costListForm" 
+		class="col-xs-12"
+		title="${i18n.get('费用查询')}" 
+		url = "${ctx}/cost/page.html?orgIdOrEmployeeId=${orgIdOrEmployeeId!}&reportType=${reportType!}&name=${name!}&year=${year!}&month=${month!}" 
+		checkbox = "true"
+		rowNum = "20" 
+		importURL = "${importURL!}" 
+		importTempletURL="importTemplet.html"
+		colModel = "[
+			 	{name : 'id', label:'id', width : 20, editable : false, hidden : true}, 
+			 	{name : 'batchNo', label:'${i18n.get('批号')}', width : 120, sortable:false, editable:false, align:'center'}, 
+			  	{name : 'invoiceNo', label:'${i18n.get('发票编号')}', width : 250, sortable:false, editable:false, align:'center'},
+			  	{name : 'employeeNo', label:'${i18n.get('工号')}', width : 100, editable : false}, 
+			  	{name : 'claimPersonName', label:'${i18n.get('员工姓名')}', width : 100, editable : false}, 
+			  	{name : 'description', label:'${i18n.get('描述')}', width : 200, editable:false, align:'center'}, 
+			  	{name : 'invoiceDate',label:'${i18n.get('发票日期')}',hidden:false,width:100,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+			  	{name : 'invoiceAmount', label:'${i18n.get('发票总金额')}', width : 100, editable:false, align:'center'},
+				{name : 'invoiceLineAmount', label:'${i18n.get('费用金额')}', width : 100, editable:false ,align:'center',sortable:true}, 
+				{name : 'businessEntity', label:'${i18n.get('业务实体')}', width : 250, editable:false, align:'center',sortable:true}, 
+			  	{name : 'submitDate',label:'${i18n.get('提交日期')}',hidden:false,width:150,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+			  	{name : 'accountName', label:'${i18n.get('科目名称')}', width : 250, editable:false, align:'center',sortable:true}, 
+			  	{name : 'accountDept', label:'${i18n.get('部门段')}', width : 200, editable:false, align:'center',sortable:false}, 
+			  	{name : 'importFlag', label:'${i18n.get('导入来源')}', width : 120, editable:false, align:'center',sortable:false}, 
+			  	{name : 'lineDesc', label:'${i18n.get('行备注')}', width : 120, editable:false, align:'center',sortable:false}
+			]" 
+			buttons = "[
+				{
+					id:'refresh',
+					label : '${i18n.get('刷新')}',
+					icon : 'icon-refresh',
+					own : true,
+					handler : function(e,rowData){
+						reload_orderListForm();
+					}
+				},
+		        {
+		        	id:'cost_export',
+		            label : '${i18n.get('导出')}',
+		            icon : 'icon-save',
+		            own : true,
+		            handler : function(e,rowData){
+		               	var da={} ; 
+			  			var prjrows= $('#costListForm').jqGrid('getGridParam','selarrrow');  
+			  			var ids=[];
+			  			var idsStr = '';
+			  			debugger;
+			  			if(prjrows.length>0){	
+					 		$.each(prjrows,function(i,id){
+								var item = $('#costListForm').jqGrid('getRowData',id);
+								if(item.id != undefined&&item.id != ''){
+						 			ids.push(item.id);
+						 			idsStr +=   item.id +',';
+								}
+					 		});	
+					 		idsStr = idsStr.substring(0,idsStr.length-1);
+			 					bootbox.confirm('${i18n.get('您确定要导出选中的数据吗？')}' , function(result) {
+							if(result) {
+								window.location.href = '${ctx}/cost/exportCost.html?idsStr='+idsStr;
+								}
+							});
+			 				}else{
+			 					alert('${i18n.get('请选择数据！')}');
+			 				}
+		            }
+		        }
+			]" > 
+			<input id="contrId"  name="contrId" value = "${(contrId)!}" hidden="hidden" />
+			<table border="0" cellpadding="0" cellspacing="0" >
+		    	<tr align="left">
+		            <td align="right" width="120px">
+		  				${i18n.get('订单编号')}：
+		            </td>
+		            <td align="left"  >
+			  			<@form.input 
+							id="orderCode"  name="orderCode" 
+							placeholder="" 
+							tip="" />
+		            </td>
+		             <td align="right" width="120px">
+		  				${i18n.get('ERP订单编号')}：
+		            </td>
+		            <td width="200px">
+		  				<@form.input  
+							id="erpOrderCode"  name="erpOrderCode" 
+							placeholder="" 
+							tip="" />
+		            </td>
+		            <td align="right">
+		  				${i18n.get('订单类型')}：
+		            </td>
+		             <td align="left">
+		             	<@form.select  
+		             		id="orderType" name="orderType" 
+		             		placeholder="${i18n.get('请选择订单类型')}"
+		             		idKey='code'
+		             		code="OPERATION_UNIT"
+		             		parentId="businessEntity"
+		             		level = "2" />
+		            </td>
+		        </tr>
+		        <tr>
+		        	<td align="right" width="120px">${i18n.get('业务实体')}：</td>
+		            <td align="left" width="200px" >
+						<@form.select id="businessEntity" name="businessEntity"
+							placeholder="${i18n.get('请选择业务实体')}"
+							required="${i18n.get('请选择业务实体')}"
+							code="OPERATION_UNIT"
+							childId = "orderType"
+							level = "1" />
+					</td>
+					<td align="right">
+					${i18n.get('营销中心 :')}
+					</td>
+					<td>
+						<@form.select 
+							id="salesmanCenter" name="salesmanCenter" 
+		             		code="SALES_DEPARTMENT" childId="salesmanDep"
+		             		level = "1"
+		             		/>	
+					</td>
+		        	<td align="right">
+					${i18n.get('业务部门 :')}
+					</td>
+					<td>
+						<@form.select
+							id="salesmanDep"  name="salesmanDep"  code="SALES_DEPARTMENT" 
+							parentId="salesmanCenter"/>
+					</td>
+		        </tr>
+		        <tr>
+		             <td align="right">
+		  				${i18n.get('销售人员')}：
+		            </td>
+		             <td align="left">
+						<@form.autocomplete  id="salesmanId" name="salesmanId" 
+							placeholder="${i18n.get('请选择销售人员')}"
+							idKey='employeeId'
+							multiple="false"
+							formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+							url="function(){ return '${ctx}/common/selectPositionList.html'; }" />
+		            </td>
+		             <td align="right">
+		  				${i18n.get('创建人')}：
+		            </td>
+		             <td align="left">
+						<@form.autocomplete  id="createdById" name="createdById" 
+							placeholder="${i18n.get('请选择创建人')}"
+							idKey='employeeId'
+							multiple="false"
+							formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+							url="function(){ return '${ctx}/common/selectPositionList.html'; }" />
+		            </td>
+		        </tr>
+		        <tr>
+		        	<td align="right" >
+		  				${i18n.get('客户')}：
+		            </td>
+		            <td align="left">
+		            	<@form.autocomplete  id="customerId" name="customerId" 
+			            	idKey='id'
+			            	placeholder="${i18n.get('请选择客户')}"
+			            	formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+							url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html'; }"
+		            	/>
+		            </td>
+		        	<td align="right">
+		  				${i18n.get('客户PO')}：
+		            </td>
+		            <td align="left">
+		  				<@form.input 
+							id="customerPo"  name="customerPo" 
+							placeholder="" 
+							tip="" />
+		            </td>
+		            <td align="right">
+		  				${i18n.get('订单状态')}：
+		            </td>
+		            <td align="left">
+						<@form.select id="executeStatus" name="executeStatus"  
+							code="ORDERSTATUS" 
+							idKey='code' />
+					</td>
+		        </tr>
+		        <tr>
+		        	<td align="right">
+		  				${i18n.get('来源类型')}：
+		            </td>
+		            <td align="left">
+						<@form.select 
+		             		id="sourceType" name="sourceType" 
+		             		placeholder="${i18n.get('请选择来源类型')}"
+		             		idKey='code'
+		             		code="ORDERSOURCE" />
+		            </td>
+		            <td align="right">
+		  				${i18n.get('我司合同编号')}：
+		            </td>
+		            <td align="left">
+		  				<@form.input  
+							id="sourceCode"  name="sourceCode"
+							placeholder="" 
+							tip=""  />
+					</td>
+                    <td align="right">
+                        ${i18n.get('控制状态')}：
+                    </td>
+                    <td align="left">
+						<@form.select id="controlStatus" name="controlStatus"
+						code="ORDER_CONTROL_STATUS"
+						idKey='code' />
+                    </td>
+		        </tr>
+		        <tr>
+		        	 <td align="right">
+		  				${i18n.get('下单日期从')}：
+		            </td>
+		             <td align="left">
+		  				<@form.date  
+							id="orderDate_begin"  name="orderDate_begin" 
+							placeholder="" 
+							tip="" />
+		            </td>
+		             <td align="right">
+		  				${i18n.get('下单日期至')}：
+		            </td>
+		             <td align="left">
+		  				<@form.date  
+							id="orderDate_end"  name="orderDate_end" 
+							placeholder="" 
+							tip="" />
+		            </td>
+		        </tr>
+			</table>
+	</@form.table>
+</div>
+</@cui.body2>

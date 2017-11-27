@@ -1,0 +1,65 @@
+<@pui.body>
+		<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+		<@form.form id="addbidc"
+			success="function(){ exalert(e,'${i18n.get('保存成功')}！');parent.currentParent.reload_biddcevl(); }" 
+			class="form-horizontal">
+
+					<@form.input
+					id="quotCode"  name="quotCode" 
+					type="hidden"
+					value="${(biddcevlInfo.quotCode)!}" 
+					/>
+		
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="curPrsr"> ${i18n.get('当前处理人')} : </label>
+					<@form.input
+					id="curPrsr"  name="curPrsr" 
+					placeholder="" 
+					value="${(biddcevlInfo.curPrsr)!}" 
+					/>
+				</div>	
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right"> ${i18n.get('当前状态')} : </label>
+					<@form.select  id="curStts" name="curStts" code="BDDCST" idKey='code' style="width:160px;" value="${(biddcevlInfo.curStts)!}" />
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="evlSgt"> ${i18n.get('审核意见')} : </label>
+					  
+					<@form.input
+					id="evlSgt"  name="evlSgt" 
+					placeholder="" 
+					value="${(biddcevlInfo.evlSgt)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="snPnt"> ${i18n.get('下级结点')} : </label>
+					  
+					<@form.input
+					id="snPnt"  name="snPnt" 
+					placeholder="" 
+					value="${(biddcevlInfo.snPnt)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" for="docUrl"> ${i18n.get('标书')} : </label>
+					<input type="file" name="upfile2" size="50">
+				</div>
+				
+	
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+</@pui.body>

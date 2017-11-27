@@ -1,0 +1,64 @@
+<@pui.body> 
+	<script type="text/javascript">
+		var selectedPositionList = ${selectedPositionList!'[]'};
+		var allPositionList = ${allPositionList!'[]'};
+		for(var j=0 ; j< allPositionList.length;j++){
+			for(var i =0; i < selectedPositionList.length; i++) {
+	  			if(selectedPositionList[i].id == allPositionList[j].id){
+	  				allPositionList[j].checked = true;
+	  				break;
+	  			}
+			}
+			allPositionList[j].nocheck = allPositionList[j].leafFlag == 'N'
+		}
+	</script>
+		<div class="col-xs-12">
+			<@form.panel title="${i18n.get('维度树')}" style='height:100'>
+								<@plug.tree 
+								checkbox="true" 
+								id="tree1" 
+								async="false"
+								datas="allPositionList"
+								chkboxType="{ 'Y' : 's',  'N' : 's' }"
+								/>
+							</@form.panel>	
+		</div>
+		
+		<div class="col-xs-12">
+			<@form.form id="t1"  
+				before="function(){
+					var treeObj = $.fn.zTree.getZTreeObj('tree1');
+					var nodes = treeObj.getCheckedNodes(true);
+					var html = '';
+					$.each(nodes,function(i,item){
+						html = html + item.id;
+						if(i < nodes.length - 1){
+							html = html + ',';
+						}
+					})
+					$('#positions').val(html);
+				}"
+				
+				success="function(){ 
+					close();
+				}" 
+				
+				>
+				<input type="hidden" name="roleId" value="${roleId}" />
+				<input type="hidden" id="positions" name="positions" />
+				<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit " id="selectOK" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('选择')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+				</div>
+			</@form.form>
+		</div>
+</@pui.body>

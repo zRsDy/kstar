@@ -1,0 +1,32 @@
+<#escape x as x?html>
+<@form.table id="tableOrder" 
+	class="col-xs-12"
+	height="131px"
+	title="${i18n.get('订单列表')}" 
+	url = "${ctx}/custom/baseinfo/info360/order360Show.html?customCode=${(customInfo.customCode)!}" 
+	rowNum = "5" 
+	
+	colModel = "[
+		{name : 'id', label:'id', width : 20, editable : false, hidden : true}, 
+			 	{name : 'businessEntityLable.name', label:'${i18n.get('业务实体')}', width : 250, sortable:false, editable:false, align:'center'}, 
+			  	{name : 'orderTypeLable.name', label:'${i18n.get('订单类型')}', width : 150, sortable:false, editable:false, align:'center'},
+			  	{name : 'orderCode', label:'${i18n.get('订单编号')}', width : 150, editable : false}, 
+			  	{name : 'executeStatusLable', label:'${i18n.get('订单状态')}', width : 100, editable:false, align:'center'}, 
+			  	{name : 'orderDate',label:'${i18n.get('下单日期')}',hidden:false,width:150,sortable:false,align:'center' ,formatter:dateFmatter }, 
+				{name : 'customerName', label:'${i18n.get('客户名称')}', width : 250, editable:false ,align:'center'}, 
+			  	{name : 'customerCode', label:'${i18n.get('客户编号')}', width : 100, editable:false, align:'center'}, 
+			  	{name : 'salesmanCenterLable', label:'${i18n.get('客户所属营销一级部门')}', width : 120, editable:false, align:'center'}, 
+			  	{name : 'salesmanDepLable', label:'${i18n.get('客户所属营销二级部门')}', width : 120, editable:false, align:'center'}, 
+			  	{name : 'salesmanName', label:'${i18n.get('销售人员')}', width : 100, editable:false, align:'center'},
+			  	{name : 'currency', label:'${i18n.get('币种')}', width : 100, editable:false, align:'center'}, 
+			  	{name : 'createdByName', label:'${i18n.get('订单创建人')}', width : 100, editable:false, align:'center'}, 
+			  	{name : 'amount', label:'${i18n.get('金额（元）')}', width : 150, sortable:false, editable:false, align:'center'}, 
+			  	{name : 'erpOrderCode', label:'${i18n.get('ERP订单号')}', width : 100, sortable:false, editable:false, align:'center'},
+			  	{name : 'sourceTypeLable.name', label:'${i18n.get('来源类型')}', width : 100, sortable:false, editable:false, align:'center'}, 
+			  	{name : 'sourceCode', label:'${i18n.get('来源编号')}', width : 200, sortable:false, editable:false, align:'center'},
+			  	{name : 'customerPo', label:'${i18n.get('客户PO')}', width : 150, sortable:false, editable:false, align:'center'}
+		]" 
+		> 
+		<script src="${ctx}/anne/js/util.js"></script>
+</@form.table>
+</#escape>

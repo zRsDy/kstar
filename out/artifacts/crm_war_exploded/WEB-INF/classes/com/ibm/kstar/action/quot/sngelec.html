@@ -1,0 +1,390 @@
+<div>
+
+
+ <script type="text/javascript">
+
+ $(document).ready(function(){	
+	 
+	 if('${ifProReviewStatus}'=="Y"){
+		debugger;
+	 	$("#save_sngelec").attr("disabled","true");
+	 	$("#support_sngelec").attr("disabled","true");
+ 	}
+	 
+	 if('${processpage}'=="Y"){
+			debugger;
+		 	$("#save_sngelec").attr("disabled","true");
+		 	$("#support_sngelec").attr("disabled","true");
+	} 
+  
+	 if('${processpage}'=="P1"){
+		 	$("#save_sngelec").attr("disabled","true");
+		 	$("#support_sngelec").attr("disabled","true");
+	}
+	 
+	 if('${processpage}'=="P3"){
+		 	$("#save_sngelec").attr("disabled","true");
+		 	$("#support_sngelec").attr("disabled","true");
+	} 
+	
+	 if('${processpage}'=="P5"){
+		 	$("#save_sngelec").attr("disabled","true");
+		 	$("#support_sngelec").attr("disabled","true");
+	}
+	 
+	 if('${processpage}'=="P6"){
+		 	$("#save_sngelec").attr("disabled","true");
+		 	$("#support_sngelec").attr("disabled","true");
+	}
+	 
+	 if('${processpage}'=="P7"){
+		 	$("#save_sngelec").attr("disabled","true");
+		 	$("#support_sngelec").attr("disabled","true");
+	}
+	 
+	 if('${processpage}'=="P8"){
+		 	$("#save_sngelec").attr("disabled","true");
+		 	$("#support_sngelec").attr("disabled","true");
+	}
+	 
+	 if('${processpage}'=="P9"){
+		 	$("#save_sngelec").attr("disabled","true");
+		 	$("#support_sngelec").attr("disabled","true");
+	} 
+	 
+	 if('${processpage}'=="P10"){
+		 	$("#save_sngelec").attr("disabled","true");
+		 	$("#support_sngelec").attr("disabled","true");
+	}  
+	 
+	 
+  
+});
+
+ </script>
+
+
+
+	<@form.form id="sngelec" action="${ctx}/quot/sngelec.html?typ=${typ}" 
+	autoClose="false"
+	success="function(){
+		alert('${i18n.get('保存成功')}！');
+		}" 
+	class="form-horizontal">
+	<@form.input id="id" name="id" placeholder="" tip="" type="hidden"
+	value="${(sngelecInf.id)!}" />
+	
+	<h5 style="background-color: #E9E9E9;">${i18n.get('配电部分')}</h5>
+	
+	<div style="height: 15px;">
+		<div style="padding-right: 20px; float: right;padding-top: 3px;" >
+		
+			<#if (permission["P04T2ProjFormT3PresaleT6PowerSave"])??>
+			<button id="save_sngelec" class="btn btn-info submit" type="button" align="right">
+				<i class="icon-ok bigger-110"></i> ${i18n.get('保存')}
+			</button>
+			</#if>
+			
+		</div>
+		<div style="padding-right: 20px; float: right;padding-top: 3px;" >
+		
+			<#if (permission["P04T2ProjFormT3PresaleT6PowerSubmitSupport"])??>
+			<button id="support_sngelec" class="btn btn-info" type="button" align="right" onclick="javascript:parent.dialog('${i18n.get('售前支持界面')}','${ctx}/supportApply/add.html?bid=${bocode}',window)">
+				<i class="icon-ok bigger-110"></i> ${i18n.get('提交售前支持')}
+			</button>
+			</#if>
+			
+		</div>
+		&nbsp; &nbsp; &nbsp;
+	</div>
+	
+	<table>
+		<tr>
+			<td width="100px">${i18n.get('进出线方式')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="lnInot" value="ud"
+							selectValue="${(sngelecInf.lnInot)!'N'}" /> <span class="lbl">${i18n.get('上进下出')}</span>
+						</label> 
+						<label><@form.radio name="lnInot" value="uu"
+							selectValue="${(sngelecInf.lnInot)!'N'}" /> <span class="lbl">${i18n.get('上进上出')}</span>
+						</label>
+						<label><@form.radio name="lnInot" value="dd"
+							selectValue="${(sngelecInf.lnInot)!'N'}" /> <span class="lbl">${i18n.get('下进下出')}</span>
+						</label>
+						<label><@form.radio name="lnInot" value="du"
+							selectValue="${(sngelecInf.lnInot)!'N'}" /> <span class="lbl">${i18n.get('下进上出')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('维护方式')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="mntTyp" value="a"
+							selectValue="${(sngelecInf.mntTyp)!'N'}" /> <span class="lbl">${i18n.get('前后维护')}</span>
+						</label> 
+						<label><@form.radio name="mntTyp" value="b"
+							selectValue="${(sngelecInf.mntTyp)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="mntNts" name="mntNts" placeholder="" tip=""
+							value="${(sngelecInf.mntNts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('开门方式（前门）')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="frdrYyp" value="a"
+							selectValue="${(sngelecInf.frdrYyp)!'N'}" /> <span class="lbl">${i18n.get('右门轴')}</span>
+						</label> 
+						<label><@form.radio name="frdrYyp" value="b"
+							selectValue="${(sngelecInf.frdrYyp)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="frdrNts" name="frdrNts" placeholder="" tip=""
+							value="${(sngelecInf.frdrNts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('开门方式（后门）')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="rrdrTyp" value="a"
+							selectValue="${(sngelecInf.rrdrTyp)!'N'}" /> <span class="lbl">${i18n.get('双开')}</span>
+						</label> 
+						<label><@form.radio name="rrdrTyp" value="b"
+							selectValue="${(sngelecInf.rrdrTyp)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="rrdrNts" name="rrdrNts" placeholder="" tip=""
+							value="${(sngelecInf.rrdrNts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('前门型式')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="frdr" value="a"
+							selectValue="${(sngelecInf.frdr)!'N'}" /> <span class="lbl">${i18n.get('网孔铁门')}</span>
+						</label> 
+						<label><@form.radio name="frdr" value="b"
+							selectValue="${(sngelecInf.frdr)!'N'}" /> <span class="lbl">${i18n.get('钢化玻璃门')}</span>
+						</label>
+						<label><@form.radio name="frdr" value="c"
+							selectValue="${(sngelecInf.frdr)!'N'}" /> <span class="lbl">${i18n.get('无孔铁门')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('进/出线电缆线径')}（mm2）:</td>
+			<td width="180px"><@form.input id="inotLn"
+				name="inotLn" placeholder="" tip=""
+				value="${(sngelecInf.inotLn)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('柜体尺寸(宽×深×高)')}（mm）:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="rckSz" value="a"
+							selectValue="${(sngelecInf.rckSz)!'N'}" /> <span class="lbl">600×1000×2000</span>
+						</label> 
+						<label><@form.radio name="rckSz" value="b"
+							selectValue="${(sngelecInf.rckSz)!'N'}" /> <span class="lbl">800×1000×2000</span>
+						</label> 
+						<label><@form.radio name="rckSz" value="c"
+							selectValue="${(sngelecInf.rckSz)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="rckSznts" name="rckSznts" placeholder="" tip=""
+							value="${(sngelecInf.rckSznts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('柜体防护等级')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="rckprLvl" value="a"
+							selectValue="${(sngelecInf.rckprLvl)!'N'}" /> <span class="lbl">IP20</span>
+						</label> 
+						<label><@form.radio name="rckprLvl" value="b"
+							selectValue="${(sngelecInf.rckprLvl)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="rckprNts" name="rckprNts" placeholder="" tip=""
+							value="${(sngelecInf.rckprNts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('开关品牌')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="swtBrd" value="a"
+							selectValue="${(sngelecInf.swtBrd)!'N'}" /> <span class="lbl">${i18n.get('施耐德')}</span>
+						</label> 
+						<label><@form.radio name="swtBrd" value="b"
+							selectValue="${(sngelecInf.swtBrd)!'N'}" /> <span class="lbl">${i18n.get('其他')}
+							<@form.input id="swtNts" name="swtNts" placeholder="" tip=""
+							value="${(sngelecInf.swtNts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('消防分励脱扣')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="fpTk" value="a"
+							selectValue="${(sngelecInf.fpTk)!'N'}" /> <span class="lbl">${i18n.get('有(提供脱扣动作电压等级)')}</span>
+						</label> 
+						<label><@form.radio name="fpTk" value="b"
+							selectValue="${(sngelecInf.fpTk)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('微型断路器热插拔功能')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="clcPlgin" value="a"
+							selectValue="${(sngelecInf.clcPlgin)!'N'}" /> <span class="lbl">${i18n.get('有')}</span>
+						</label> 
+						<label><@form.radio name="clcPlgin" value="b"
+							selectValue="${(sngelecInf.clcPlgin)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('提供配电系统图')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="elecDrf" value="a"
+							selectValue="${(sngelecInf.elecDrf)!'N'}" /> <span class="lbl">${i18n.get('有')}</span>
+						</label> 
+						<label><@form.radio name="elecDrf" value="b"
+							selectValue="${(sngelecInf.elecDrf)!'N'}" /> <span class="lbl">${i18n.get('无（需要提供以下详细内容）')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('单电源总输入开关')}:</td>
+			<td width="280px">${i18n.get('电流')}<@form.input id="ttlinSwtcrt"
+				name="ttlinSwtcrt" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.ttlinSwtcrt)!}" />A, ${i18n.get('极数')}
+				<@form.input id="ttlinSwtple"
+				name="ttlinSwtple" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.ttlinSwtple)!}" />P, ${i18n.get('数量')}
+				<@form.input id="ttlinSwtnm"
+				name="ttlinSwtnm" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.ttlinSwtnm)!}" />${i18n.get('个')}
+				</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('双电源总输入ATS开关')}:</td>
+			<td width="280px">${i18n.get('电流')}<@form.input id="atsSwtcrt"
+				name="atsSwtcrt" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.atsSwtcrt)!}" />A, ${i18n.get('极数')}
+				<@form.input id="atsSwtple"
+				name="atsSwtple" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.atsSwtple)!}" />P, ${i18n.get('数量')}
+				<@form.input id="atsSwtnm"
+				name="atsSwtnm" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.atsSwtnm)!}" />${i18n.get('个')}
+				</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('市电输出开关')}:</td>
+			<td width="280px">${i18n.get('电流')}<@form.input id="elecotSwtcrt"
+				name="elecotSwtcrt" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.elecotSwtcrt)!}" />A, ${i18n.get('极数')}
+				<@form.input id="elecotSwtple"
+				name="elecotSwtple" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.elecotSwtple)!}" />P, ${i18n.get('数量')}
+				<@form.input id="elecotSwtnm"
+				name="elecotSwtnm" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.elecotSwtnm)!}" />${i18n.get('个')}
+				</td>
+		</tr>
+		<tr>
+			<td width="100px">UPS${i18n.get('输入开关')}:</td>
+			<td width="280px">${i18n.get('电流')}<@form.input id="upsinSwtcrt"
+				name="upsinSwtcrt" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.upsinSwtcrt)!}" />A, ${i18n.get('极数')}
+				<@form.input id="upsinSwtple"
+				name="upsinSwtple" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.upsinSwtple)!}" />P, ${i18n.get('数量')}
+				<@form.input id="upsinSwtnm"
+				name="upsinSwtnm" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.upsinSwtnm)!}" />${i18n.get('个')}
+				</td>
+		</tr>
+		<tr>
+			<td width="100px">UPS${i18n.get('输出开关')}:</td>
+			<td width="280px">${i18n.get('电流')}<@form.input id="upsotSwtcrt"
+				name="upsotSwtcrt" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.upsotSwtcrt)!}" />A, ${i18n.get('极数')}
+				<@form.input id="upsotSwtple"
+				name="upsotSwtple" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.upsotSwtple)!}" />P, ${i18n.get('数量')}
+				<@form.input id="upsotSwtnm"
+				name="upsotSwtnm" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.upsotSwtnm)!}" />${i18n.get('个')}
+				</td>
+		</tr>
+		<tr>
+			<td width="100px">UPS${i18n.get('旁路开关')}:</td>
+			<td width="280px">${i18n.get('电流')}<@form.input id="upsbpSwtcrt"
+				name="upsbpSwtcrt" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.upsbpSwtcrt)!}" />A, ${i18n.get('极数')}
+				<@form.input id="upsbpSwtple"
+				name="upsbpSwtple" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.upsbpSwtple)!}" />P, ${i18n.get('数量')}
+				<@form.input id="upsbpSwtnm"
+				name="upsbpSwtnm" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.upsbpSwtnm)!}" />${i18n.get('个')}
+				</td>
+		</tr>
+		<tr>
+			<td width="100px">1#UPS${i18n.get('输出开关')}:</td>
+			<td width="280px">${i18n.get('电流')}<@form.input id="frtUpscrt"
+				name="frtUpscrt" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.frtUpscrt)!}" />A, ${i18n.get('极数')}
+				<@form.input id="frtUpsple"
+				name="frtUpsple" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.frtUpsple)!}" />P, ${i18n.get('数量')}
+				<@form.input id="frtUpsnm"
+				name="frtUpsnm" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.frtUpsnm)!}" />${i18n.get('个')}
+				</td>
+		</tr>
+		<tr>
+			<td width="100px">2#UPS${i18n.get('输出开关')}:</td>
+			<td width="280px">${i18n.get('电流')}<@form.input id="scdUpscrt"
+				name="scdUpscrt" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.scdUpscrt)!}" />A, ${i18n.get('极数')}
+				<@form.input id="scdUpsple"
+				name="scdUpsple" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.scdUpsple)!}" />P, ${i18n.get('数量')}
+				<@form.input id="scdUpsnm"
+				name="scdUpsnm" placeholder="" tip="" style="width:40px;"
+				value="${(sngelecInf.scdUpsnm)!}" />${i18n.get('个')}
+				</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('其他特殊需求')}:</td>
+			<td width="180px"><@form.input id="othersRq"
+				name="othersRq" placeholder="" tip=""
+				value="${(sngelecInf.othersRq)!}" /></td>
+		</tr>
+	</table>
+	
+
+	</@form.form>	
+
+</div>

@@ -1,0 +1,386 @@
+<@cui.body2>
+
+<style type="text/css">
+
+
+table td {
+	padding:1px;
+	vertical-align: middle;
+	word-break: keep-all;
+	border: solid #ededed;
+	
+	border-width: 0px 0px 0px 0px;
+}
+
+input[type="text"] { width: 180px;}
+input[type="search"] {width: 180px;}
+select {width: 200px;}
+</style>
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		$("#status").attr("disabled","disabled");
+		$("#applyDate").attr("disabled","disabled");
+		
+		/* $("#delivery_submit").hide();
+		$("#delivery_create_receipts").hide();
+		$("#delivery_save_show").hide(); */
+		
+		
+		if("${(employeeType)!}" == "E"){
+			$("#receCustomerId").attr("disabled","disabled");
+			$("#billCustomerId").attr("disabled","disabled");
+		}
+	});
+	
+	function submit_before(){
+		
+	    var deliveryCount = $('#deliveryLinesForm').jqGrid("getCol","deliveryQty",false,"sum");
+	    var receiptCount = $('#receiptsListForm').jqGrid("getCol","deliveryQty",false,"sum");
+	    if(deliveryCount != receiptCount){
+	    	alert('${i18n.get('提交失败，出货数量和签收单数量不一致！')}');
+	    }else{
+	    	$("#status").removeAttr("disabled");
+			$("#status").select2("val", "20");
+	    	save_before();
+	    }
+	}
+	
+	function createReceiptsPlan(){
+		 $.ajax({
+		 	type : "POST",
+			url : "${ctx}/delivery/createReceiptsPlan.html",
+			async: true,
+			data : "code=${(deliveryHeader.deliveryCode)!}",
+			dataType : 'json',
+			success : function(msg) {
+				alert(msg.message);
+				parent.currentParent2.reload_deliveryListForm(); 
+				api.close();
+			},
+			error: function(e) {
+				 var msg = eval("("+e.responseText+")");
+				 if(msg !='' && msg != null && msg != 'undefined'){
+					 alert(msg.message);
+				 }else{
+					alert('${i18n.get('提交失败，出货数量和签收单数量不一致！')}');
+				 }
+			} 
+		});
+	}
+	function save_before(){
+		$("#deliveryLinesForm").trigger('blur');
+		$("#receiptsListForm").trigger('blur');
+		var b = true ;
+		var ids = $('#deliveryLinesForm').jqGrid('getDataIDs');
+ 		$.each(ids,function(i,id){
+			var data = $('#deliveryLinesForm').jqGrid('getRowData', id);
+			var receCustomerId = $('#receCustomerId').val();
+			if(data.singleCustId != receCustomerId){
+				alert('${i18n.get('订单行号为【')}'+data.orderLineNo+'${i18n.get('】的出货行的下单客户和出货头收货客户不一致！')}');
+				b= false;
+				return b;
+			}
+ 		});
+ 		if(b){
+ 			$("#delivery_save").click();
+ 		}
+	}
+	
+	function customerChange(customId){
+		 $.ajax({
+		 	type : "POST",
+			url : "${ctx}/delivery/customerChange.html",
+			async: true,
+			data : "customId="+customId,
+			dataType : 'json',
+			success : function(msg) {
+				if(msg && msg.message){
+					var addrInfo = msg.message['addrInfo'] ;
+					if(addrInfo){
+						reload_deliveryAddressId(addrInfo.id);
+						$("#deliveryAddress").val(addrInfo.fullCustomAddress);
+					}else{
+						reload_deliveryAddressId("");
+						$("#deliveryAddress").val("");
+					}
+					var erpInfo = msg.message['erpInfo'] ;
+					var businessEntity  = $('#businessEntity').val();
+					if(erpInfo && !businessEntity){
+						$('#businessEntity').select2("val", erpInfo.corpErpUnit);
+					}else{
+						reload_businessEntity("");
+					}
+					
+				}else{
+					reload_deliveryAddressId("");
+					$("#deliveryAddress").val("");
+					reload_businessEntity("");
+				}
+			},
+			error: function(e) {
+				 var msg = eval("("+e.responseText+")");
+				 if(msg !='' && msg != null && msg != 'undefined'){
+					 alert(msg.message);
+				 }else{
+					alert('${i18n.get('操作失败，请联系管理员')}');
+				 }
+			} 
+		});
+	}
+</script>
+<div class="col-xs-12" >
+	<@form.panel title="${i18n.get('新增/编辑')}">
+	<@form.form id="t1"  autoClose="false"
+		success="function(data){
+			alert('${i18n.get('操作成功！')}'); 
+			parent.currentParent2.reload_deliveryListForm(); 
+			window.location.href='${ctx}/delivery/edit.html?id='+data;
+		}" 
+		
+		class="form-horizontal"
+		postData="function(){
+				var ids1 = $('#deliveryLinesForm').jqGrid('getDataIDs');
+				var linesList = [];
+		 		$.each(ids1,function(i,id){
+		 			var data = $('#deliveryLinesForm').jqGrid('getRowData',id);
+		 			delete data.act ;
+		 			linesList.push(data);
+		 		})
+		 		
+		 		var ids2 = $('#receiptsListForm').jqGrid('getDataIDs');
+				var receiptList = [];
+		 		$.each(ids2,function(i,id){
+		 			var data = $('#receiptsListForm').jqGrid('getRowData',id);
+		 			delete data.act ;
+		 			receiptList.push(data);
+		 		})
+		 		
+		 		var obj = {'linesList':linesList,'receiptList':receiptList};
+		 		return obj;
+			}"
+	
+	>
+	<div style="height: 15px;">
+		<div style="padding-right: 20px; float: right;padding-top: 3px;" >
+				<button id="delivery_save" class="btn btn-info submit" type="button" style="display: none;">
+						${i18n.get('保存')}
+				</button>
+				<#if (permission["P06OrderIssueSave"]?? && ("${(deliveryHeader.status)!}" == "10" || "${(deliveryHeader.status)!}" == "40") ) 
+					|| (permission["P06OrderIssueSave20"]?? && "${(deliveryHeader.status)!}" == "20" ) 
+					|| (permission["P06OrderIssueSave30"]?? && "${(deliveryHeader.status)!}" == "30" )  >
+					<button  id="delivery_save_show" class="btn btn-info" type="button" onclick="save_before()" style="background-color:#666666; display:none;">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+				</#if>
+				<#if permission["P06OrderIssueSubmit"]?? >
+					<button id="delivery_submit" class="btn btn-info" type="button" onclick="submit_before();" style="background-color:#666666; display:none;">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('提交')}
+					</button>
+				</#if>
+				<#if permission["P06OrderIssueCreatePlan"]?? >
+					<button id="delivery_create_receipts" class="btn btn-info" type="button" onclick="createReceiptsPlan()" style="background-color:#666666; display:none;">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('生成回款计划')}
+					</button>
+				</#if>
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+			</button>
+		</div>
+	</div>
+	<p style="padding-left:20px; ">${i18n.get('出货申请题头')}</p>
+	<div class="main" id="main" style="padding-left: 30px;padding-top: 10px;border-top: 2px solid #e9e9e9 ;" >
+		<table border="0" cellpadding="0" cellspacing="0" style=" table-layout: fixed;" >
+			<tr align="left">
+				<td align="right" width="6%"><strong style="color: red;">*</strong> ${i18n.get('申请编号：')}
+				</td>
+				<td align="left" width="19%">
+					<@form.input id="deliveryCode" name="deliveryCode"
+						placeholder="" 
+						required="${i18n.get('申请编号')}" 
+						tip=""
+						readonly="readonly"
+						value="${(deliveryHeader.deliveryCode)!}" />
+				</td>
+				<td align="right" width="6%">
+					<strong style="color: red;">*</strong> ${i18n.get('收货客户：')}
+				</td>
+				<td align="left" width="19%">
+					<@form.autocomplete  id="receCustomerId" name="receCustomerId" 
+			            	idKey='id'
+			            	placeholder="${i18n.get('请选择收货客户')}"
+			            	required="${i18n.get('请选择收货客户')}"
+			            	formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+							url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html'; }"
+			            	value="{id: '${(deliveryHeader.receCustomerId)!}',customCode:'${(deliveryHeader.receCustomerCode)!}', customFullName:'${(deliveryHeader.receCustomerName)!}'}"
+			            	
+			            	onSelect="function(data){
+			            		if( data.id != null && data.id !='' && data.id != 'undefined'){
+			            			$('#receCustomerCode').val(data.customCode);
+			            			$('#receCustomerName').val(data.customFullName);
+			            			reload_billCustomerId(data);
+			            			customerChange(data.id);
+			            		}
+			            	}" 
+		            	/>
+		            	
+		            <input  id="receCustomerCode"  name="receCustomerCode" type="hidden" value="${(deliveryHeader.receCustomerCode)!}" >
+		            <input  id="receCustomerName"  name="receCustomerName" type="hidden" value="${(deliveryHeader.receCustomerName)!}" >
+				</td>
+					<td align="right"  width="6%">
+					<strong style="color: red;">*</strong> ${i18n.get('收单客户：')}
+				</td>
+				<td align="left" width="19%">
+					<@form.autocomplete  id="billCustomerId" name="billCustomerId" 
+			            	idKey='id'
+			            	style="width:200px"
+			            	placeholder="${i18n.get('请选择收单客户')}" 
+			            	required="${i18n.get('请选择收单客户')}"
+			            	formatResult="function(data) {
+			            		return '<div >' +data.customFullName + '</div>';
+			            	}"
+			            	formatSelection="function(data) {
+			            		return '<div >' +data.customFullName + '</div>';
+			            	}"
+							url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html'; }"
+			            	value="{id: '${(deliveryHeader.billCustomerId)!}',customFullName:'${(deliveryHeader.billCustomerName)!}'}"
+			            	
+			            	onSelect="function(data){
+			            		if( data.id != null && data.id !='' && data.id != 'undefined'){
+			            			$('#billCustomerName').val(data.customFullName);
+			            		}
+			            	}" 
+		            	/>
+		            <input id="billCustomerName"  name="billCustomerName" type="hidden"  value="${(deliveryHeader.billCustomerName)!}" />
+				</td>
+				<td align="right" width="6%">
+					<strong style="color: red;">*</strong> ${i18n.get('收货地址：')}
+				</td>
+				<td align="left" width="19%">
+	                <@form.select  id="deliveryAddressId" name="deliveryAddressId" 
+		             	viewKey='fullCustomAddress'
+		             	placeholder="${i18n.get('请选择收货地址')}" 
+		             	required="${i18n.get('请选择收货地址')}"
+		                url="function(){ 
+		                		var customerId = $('#receCustomerId').val();
+		                		return '${ctx}/lovcustom/select_addr.html?customId='+customerId; 
+		                }"
+		                value ="${(deliveryHeader.deliveryAddressId)!}"
+		              	
+		              	onChange="function(){
+		            			var data = JSON.parse($('#deliveryAddressId option:selected').attr('data')); 
+		            			$('#deliveryAddress').val(data.fullCustomAddress);
+		            		}"
+		              />
+		              <input  id="deliveryAddress" name="deliveryAddress"  type="hidden" value="${(deliveryHeader.deliveryAddress)!}" />
+				</td>
+			</tr>
+			<tr>
+				<td align="right">${i18n.get('申请日期：')}</td>
+				<td align="left">
+					<@form.date id="applyDate" name="applyDate" 
+						placeholder=""
+						tip=""
+						value="${(deliveryHeader.applyDate?date)!}" />
+				</td>
+				<td align="right">${i18n.get('申请人：')}
+				</td>
+				<td align="left">
+					<@form.input id="proposerName" name="proposerName" 
+						placeholder=""
+						tip="" 
+						readonly="readonly"
+						value="${(deliveryHeader.proposerName)!}" />
+					<input id="proposerId" name="proposerId" type="hidden" value="${(deliveryHeader.proposerId)!}" />
+					<input id="proposerCode" name="proposerCode" type="hidden" value="${(deliveryHeader.proposerCode)!}" />
+				</td>
+			
+				<td align="right"><strong style="color: red;">*</strong> ${i18n.get('业务实体：')}
+				</td>
+				<td align="left">
+					<@form.select id="businessEntity" name="businessEntity"  
+						required="${i18n.get('请选择业务实体')}"
+						placeholder="${i18n.get('请选择业务实体')}"
+						code="OPERATION_UNIT"
+						idKey='id' 
+						level = "1"
+						value="${(deliveryHeader.businessEntity)!}"  />  
+				</td>
+				<td align="right">${i18n.get('收货人：')}</td>
+				<td align="left">
+					<@form.input id="consignee" name="consignee" 
+						placeholder=""
+						tip=""
+						value="${(deliveryHeader.consignee)!}" />
+				</td>
+			</tr>
+			<tr>
+				<td align="right"><strong style="color: red;">*</strong> ${i18n.get('申请状态：')}
+				</td>
+				<td align="left">
+					<@form.select id="status" name="status"  
+						code="ORDER_CONTROL_STATUS" 
+						idKey='code' 
+						value="${(deliveryHeader.status)!}"  /> 
+				</td>
+				 <td align="right">
+	  				<strong style="color: red;">*</strong> ${i18n.get('商务专员：')}
+	            </td>
+	             <td align="left" colspan="3">
+	                <input id="businessManagerId"  name="businessManagerId" type ="hidden" value="${(deliveryHeader.businessManagerId)!}" />
+	                <input id="businessManagerCode"  name="businessManagerCode" type ="hidden" value="${(deliveryHeader.businessManagerCode)!}" />
+					<@form.autocomplete  id="businessManagerName" name="businessManagerName" 
+						placeholder="${i18n.get('请选择商务专员')}"
+						idKey='employeeName'
+						required="${i18n.get('请选择商务专员')}"
+						multiple="false"
+						formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+						url="function(){ return '${ctx}/common/selectTradeCommisioner.html'; }"
+						value="{
+							 employeeName:'${(deliveryHeader.businessManagerName)!}',
+							 employeeNo:'${(deliveryHeader.businessManagerCode)!}',
+							 employeeId:'${(deliveryHeader.businessManagerId)!}'
+						}"
+						
+						onSelect="function(data){
+							if( data.id != null && data.id !='' && data.id != 'undefined'){
+								$('#businessManagerId').val(data.employeeId);
+								$('#businessManagerCode').val(data.employeeNo);
+							}
+						}" 
+					/>
+	            </td>
+				<td align="right">${i18n.get('收货人电话：')}</td>
+				<td align="left">
+					<@form.input id="consigneeTel" name="consigneeTel" 
+						placeholder=""
+						tip="" 
+						value="${(deliveryHeader.consigneeTel)!}" />
+				</td>
+			</tr>
+			<tr>
+				<td align="right">${i18n.get('备注：')}</td>
+				<td align="left" colspan="7">	
+					<@form.input id="remarks" name="remarks" 
+						style="width: 870px;"
+						placeholder=""
+						tip=""
+						value="${(deliveryHeader.remarks)!}" />
+				</td>
+			</tr>
+		</table>
+		</div>
+		
+		<div id="info" style="padding-top: 20px;">
+			<@plug.tabs tabMain=tabMain></@plug.tabs>
+		</div>
+		
+		</@form.form>
+		
+		</@form.panel>
+	</div>
+</@cui.body2>

@@ -1,0 +1,36 @@
+
+<@form.table id="mem" 
+	class="col-xs-12"
+	title="${i18n.get('团队成员')}" 
+	url = "${ctx}/quot/memPage.html?qid=${qid}" 
+	rowNum = "5" 
+	addURL = "'${ctx}/quot/addMem.html?qid=${qid}'" 
+	editURL= "'${ctx}/quot/editMem.html?qid=${qid}'" 
+	deleteURL = "'${ctx}/quot/deleteMem.html'" 
+	colModel = "[
+		{name:'id',label:'${i18n.get('内部成员')}ID',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'memName',label:'${i18n.get('团队成员')}',hidden:false,width:200,sortable:false,align:'center' },
+		{name:'role',label:'${i18n.get('角色')}',hidden:false,width:200,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatroleArr(cellvalue) } },
+		{name:'notes',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:false,align:'center' }
+		]" 
+		ondblClickRow= "function(selectedData){
+				 }"
+		buttons = "[]" > 
+	</@form.table> 
+
+<script type="text/javascript">
+	
+	var roleArr = {
+			"R01" : "${i18n.get('项目经理')}",
+			"R02" : "${i18n.get('售前支持')}",
+			"R03" : "${i18n.get('售后支持')}",
+			"R04" : "${i18n.get('商务支持')}"
+	};
+
+	
+	function formatroleArr(value){
+		 return roleArr[value];
+	}
+	
+</script>
+

@@ -1,0 +1,24 @@
+<script type="text/javascript">
+var getFixTree = ${list!'[]'};
+</script>
+			<table style="width: 100%" >
+				<tr>
+						<td id="treeTd" style="width: 300px" valign="top">
+	
+								<@plug.tree 
+								checkbox="false" 
+								id="tree1" 
+								datas="getFixTree"
+								async='false'
+								onClick=" function(event, treeId, treeNode){
+							  		selectedData = treeNode;
+							  		//$('#selected').html(selectedData.namePath);
+							  	}" 
+								/>
+						
+						</td>
+
+				</tr>
+			</table>	
+	
+

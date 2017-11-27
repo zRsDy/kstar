@@ -1,0 +1,75 @@
+<@pui.body>
+<script type="text/javascript">
+var datas = ${sql1_json};
+var datas2 = ${sql2_json};
+</script>
+	<select id='year'>
+		<option value='2016'>2016</option>
+		<option value='2017'>2017</option>
+	</select>
+	<p>year = ${year!''}</p>
+	<p>orgId = ${orgId!''}</p>
+	<div class="row" >
+	<div class="col-xs-12">
+    <div id="main" class="col-xs-6" style="height: 600px"></div>
+    <script type="text/javascript">
+        var myChart = echarts.init(document.getElementById('main'));
+        var option = {
+            title: {
+                text: '维度数据统计1'
+            },
+            tooltip: {},
+            legend: {
+                data:['维度','维度2']
+            },
+            xAxis: {
+                data: datas.GROUP_CODE
+            },
+            yAxis: {},
+            series: [{
+                name: '总数',
+                type: 'bar',
+                data: datas.COUNT_NUM
+            },{
+                name: '总数2',
+                type: 'bar',
+                data: datas.COUNT_NUM
+            }]
+        };
+        myChart.setOption(option);
+    </script>
+    
+    <div id="main2" class="col-xs-6" style="height: 200px"></div>
+    <script type="text/javascript">
+        var myChart = echarts.init(document.getElementById('main2'));
+        var option = {
+            title: {
+                text: '产品数据统计'
+            },
+            tooltip: {},
+            legend: {
+                data:['型号']
+            },
+            xAxis: {
+                data: datas2.C_PRO_MODEL
+            },
+            yAxis: {},
+            series: [{
+                name: '总数',
+                type: 'bar',
+                data: datas2.COUNT_NUM
+            }]
+        };
+        myChart.setOption(option);
+    </script>
+    </div>
+    </div>
+    <table class="table">
+	    <#list sql1 as item>
+	    	<tr>
+	    		<td>${item.GROUP_CODE}</td>
+	    		<td>${item.COUNT_NUM}</td>
+	    	</tr>
+	    </#list>
+    </table>
+</@pui.body>

@@ -1,0 +1,109 @@
+<@pui.body>
+<script type="text/javascript">
+var selectedItems = ${temeListJson![]};
+     $(function() {
+     	$('#OK').click(function(){
+     		var positionIds = "";
+     		var employeeIds = "";
+     		var ids = selectedItems;
+     		$.each(ids,function(i,item){
+     			var row = item;
+      			positionIds = positionIds  + row.id + ",";
+				employeeIds = employeeIds  + row.employeeId + ",";
+    			})
+     		ajax({
+     			data:{positionIds:positionIds,employeeIds:employeeIds},
+     			url:'${ctx}/team/config.html?businessType=${businessType}&businessId=${businessId}',
+     			success:function(){
+     				if(typeof(parent.currentParent.reload_teamPositionTable) === 'function'){
+     					parent.currentParent.reload_teamPositionTable();
+     				}
+     				close();
+     			}
+     		})
+     	});
+     })
+</script>
+
+<div class="row col-xs-12" style="width: 700px;margin-right: 0px; margin-left: 0px;" >
+<table style="width: 1000px">
+	<tr>
+		<td  colspan="2" style="width: 700px" valign="top">
+				<@form.autocomplete  id="epo" name="epo" 
+	            	idKey='id'
+	            	style='width:500px'
+	            	required="${i18n.get('请选择')}"
+	            	placeholder=""
+					multiple="false"
+	            	formatResult="function(data) {return ' <div > <li> <i class=icon-bullhorn></i> '+data.orgName +' | '+ data.positionName +' | '+ data.employeeName +' | '+ data.employeeNo +'</li></div>';}"
+	            	formatSelection="function(data) { return '<div >' + data.positionName + '</div>';}"
+					url="function(){ return '${ctx}/common/selectPositionList.html?orgId=${orgId!}&layerId=${layerId!}'; }"
+					onSelect="function(data){
+		            	var ids = $('#selected_table').jqGrid('getDataIDs');
+	            		var flag = false;
+            			$.each(ids,function(i,item){
+            				if(item == data.id){
+            					flag = true;
+            				}
+            			})
+            			if(!flag){
+            				$('#selected_table').jqGrid('addRowData',data.id,data);
+            			}
+					}"
+            	/>
+            	<button id="OK">${i18n.get('确定')}</button>
+		</td>
+	</tr>        
+	<tr>
+		<td  style="width: 350px" valign="top">	            	
+				<@form.table id="selected_table"
+					shrinkToFit = 'true'
+					title="${i18n.get('已选岗位')}"
+					rowNum = "20"
+					search='false'
+					data = "selectedItems ? selectedItems : []"
+					datatype = "local"
+					colModel = "[
+					  { name : 'id',    label : 'id', hidden : true ,sortable:false,align:'center' }, 
+					  { name : 'orgName', label : '${i18n.get('组织')}' ,sortable:false}, 
+					  { name : 'positionName', label : '${i18n.get('岗位')}', width : 150 ,sortable:false },
+					  { name : 'employeeName', label : '${i18n.get('负责人')}', width : 100 ,sortable:false },
+					  { name : 'employeeId', label : '',hidden : true ,sortable:false }
+					  ]"
+					  onSelectRow = "function(selectedData){
+					  	$('#positionId').val(selectedData.id);
+					  	reload_selected_table2();
+					  }"
+					  buttons="[{
+							id:'config',
+							label : '${i18n.get('删除')}',
+							icon : 'icon-save',
+							own : true,
+							handler : function(e,rowData){
+								if(!selected_selected_table){
+									alert('${i18n.get('没有选中任何数据!')}');
+									return;
+								}
+								$('#selected_table').jqGrid('delRowData',rowData.id);
+							}
+						}]"
+					/>
+				<td  style="width: 350px" valign="top">	
+						<@form.table id="selected_table2"
+						shrinkToFit = 'true'
+						title="${i18n.get('岗位成员')}"
+						rowNum = "20"
+						search='false'
+						url = "${ctx}/common/queryEmployee.html"
+						colModel = "[
+						  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:false,align:'center' }, 
+						  { name : 'name', label : '${i18n.get('姓名')}', width : 250 ,sortable:false },
+						  { name : 'no', label : '${i18n.get('工号')}',  width : 250 ,sortable:false }
+						  ]"
+						>
+							<input type="hidden" name="positionId" id="positionId" />
+						</@form.table>	
+				</td>
+			</td>							
+		</tr>
+</@pui.body>

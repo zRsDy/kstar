@@ -1,0 +1,56 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="t1" success="function(){ parent.currentParent.reload_bank(); }" class="form-horizontal" >
+		<input id="customId" name="customId" type="hidden"  value="${(customFinancePinfo.customId)!}">
+		
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > <strong style="color: red;">*</strong>${i18n.get('开户银行')} : </label>
+			<@form.input
+			id="corpInvoiceBank"  
+			name="corpInvoiceBank" 
+			placeholder="" 
+			required="${i18n.get('不能为空！')}"
+			tip="" 
+			value="${(customFinancePinfo.corpInvoiceBank)!}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > <strong style="color: red;">*</strong>${i18n.get('银行账号')}  : </label>
+			<@form.input
+			id="corpInvoiceAccount"  
+			name="corpInvoiceAccount" 
+			placeholder="" 
+			required="${i18n.get('不能为空！')}"
+			tip="" 
+			value="${(customFinancePinfo.corpInvoiceAccount)!}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > <strong style="color: red;">*</strong> ${i18n.get('账号状态是否有效')} : </label>
+			<@form.select  style="width: 147px;"
+				id="corpInvoiceBankSta" name="corpInvoiceBankSta" 
+				code="COMMONYN" 
+				required="${i18n.get('不能为空！')}"
+				value ="${(customFinancePinfo.corpInvoiceBankSta)!}"
+			/>
+		</div>
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+		<div class="clearfix form-actions">
+			<div class="col-md-offset-5 col-md-7">
+				<button class="btn btn-info submit" type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				&nbsp; &nbsp; &nbsp;
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+	</@form.form>
+	</@form.panel>
+</@pui.body>
+</#escape>

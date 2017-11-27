@@ -1,0 +1,84 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+	<@form.form id="t1" success="function(){ parent.currentParent.reload_tableTerritoryinfo(); }" class="form-horizontal" >
+		
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>
+				<label class="no-padding-right" > ${i18n.get('办事处 :')} </label>
+			</label>
+			
+			<input id="orgId" name="orgId" type="hidden" value="${(territoryConfig.orgId)!}" >
+			<@form.autocomplete  id="orgIdName" name="orgIdName" 
+				idKey='id'
+				style="width: 300px;"
+				required="${i18n.get('不能为空')} "
+				formatResult="function(data) {return '<div >' +data.namePath + '</div>';}"
+				url="function(){ return '${ctx}/lovcustom/autocompleteOrg.html'; }"
+				value="{namePath:'${(territoryConfig.orgIdName)!}'
+				, id: '${(territoryConfig.orgId)!}'
+				}"
+				
+				onSelect="function(data){
+					if( data.id != null && data.id !='' && data.id != 'undefined'){
+						$('#orgId').val(data.id);
+					}
+				}" 
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>
+				<label class="no-padding-right" > ${i18n.get('销售区域 :')} </label>
+			</label>
+			<@form.select 
+			code="TERRITORY"
+			level="1"
+			id="territory"  name="territory" 
+			style="width: 300px"
+			placeholder="" 
+			tip="" 
+			value="${(territoryConfig.territory)!}"
+			required="${i18n.get('不能为空')}"
+			/>
+		</div>
+		
+		
+		<div class="form-group" >
+			
+			<label class="col-sm-3 control-label no-padding-right" > ${i18n.get('备注 :')} </label>
+			<@form.input
+			id="comment"  
+			name="comment" 
+			style="width:350px"
+			placeholder="" 
+			tip="" 
+			value="${(territoryConfig.comment)!}" 
+			/>
+		</div>
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+		<div class="clearfix form-actions">
+			<div class="col-md-offset-5 col-md-7">
+				<button class="btn btn-info submit" type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				&nbsp; &nbsp; &nbsp;
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+	</@form.form>
+	</@form.panel>
+	<script type="text/javascript">
+	
+	
+	
+</script>
+</@pui.body>
+
+</#escape>

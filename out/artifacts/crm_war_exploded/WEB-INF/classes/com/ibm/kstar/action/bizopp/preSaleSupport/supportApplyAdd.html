@@ -1,0 +1,747 @@
+<#escape x as x?html>
+<@cui.body2>
+<style type="text/css">
+
+	table {
+	border-collapse: collapse;
+	border-color: #ff0000;
+	}
+
+	table td {
+		padding:2px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		height: 24px;
+		border-width: 0px 0px 0px 0px;
+	}
+</style>
+	
+<@form.panel title="${i18n.get('新增/编辑')}">
+	<@form.form id="supportApply" autoClose="false"
+		success="function(data){
+			try{
+				parent.currentParent2.reload_t_support_apply();
+			}catch(err){
+
+			}
+		window.location.href='${ctx}/supportApply/edit.html?id='+data;
+		}"
+		class="form-horizontal">
+		
+		<div class="form-group">	
+			<div class="col-md-offset-7 col-md-4">
+				<#if permission["P03PresSupportSave"]??>
+				<button <#if entity.status?default('') != 'Rejected' && entity.status?default('') != 'Pending' > disabled="disabled" </#if> id="saveButton" class="btn btn-info submit" type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				</#if>
+				<#if permission["P03PresSupportSubmit"]??>
+				<button <#if entity.status?default('') != 'Rejected' && entity.status?default('') != 'Pending' > disabled="disabled" </#if> id="startButton" class="btn btn-info" type="button" onclick="startPerSaleProcess();">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('提交')}
+				</button>
+				</#if>
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+		<div class="form-group">
+			<table border="0" cellpadding="0" cellspacing="0" >
+				<tr align="left">
+					<td align="right" width="5%">
+						${i18n.get('申请人:')}
+					</td>
+					<td align="left" width="20%" >
+						<@form.input name="applicant" type="text"
+						id="applicant" value="${(entity.applicant)!}"
+							readonly ="readonly"/>
+						<input type="hidden" id="applicantId" name="applicantId" value="${(entity.applicantId)!}" />
+					</td>
+					<td align="right"  width="5%">
+		  				<strong style="color: red;">*</strong>${i18n.get('客户名称:')}
+					</td>
+					<td align="left"  width="20%">
+						<@form.autocomplete id="clientId" name="clientId"
+						idKey='id'
+						style="width: 162px;"
+						required="${i18n.get('请选择客户')}"
+						formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+						url="function(){ return '${ctx}/lovcustom/autocomplete_customAuth.html'; }"
+						value="{id: '${(entity.clientId)!}',customFullName:'${(entity.clientName)!}'}"
+
+						onSelect="function(data){
+								$('#clientName').val(data.customFullName);
+								reload_bizOppId();
+						}"
+					/>
+					 <input id="clientName"  name="clientName" type ="hidden" value="${(entity.clientName)!}" />
+					</td>
+					<td align="right"  width="5%">
+						${i18n.get('编号:')}
+					</td>
+					<td align="left"  width="20%">
+						<@form.input name="number" type="text"
+						id="number" value="${(entity.number)!}"
+							readonly ="readonly"
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						${i18n.get('申请单位:')}
+					</td>
+					<td align="left">
+						<@form.input name="applyEnterprise" type="text"
+							id="applyEnterprise" value="${(entity.applyEnterprise)!}"
+							readonly ="readonly" />
+					</td>
+					<td align="right">
+						${i18n.get('商机名称:')}
+					</td>
+					<td align="left">
+						<@form.autocomplete id="bizOppId" name="bizOppId"
+							idKey='id'
+							style="width: 162px;"
+							formatResult="function(data) {return '<div>' +data.opportunityName + '</div>';}"
+							url="function(){ 
+							var clientId = $('#clientId').val();
+								return '${ctx}/bizopp/autocomplete_bizOppAuth.html?clientId='+clientId;
+							}"
+							value="{id: '${(entity.bizOppId)!}',opportunityName:'${(entity.bizOppName)!}',saleStageName:'${(saleStageName)!}'}"
+							onSelect="function(data){
+										$('#bizOppName').val(data.opportunityName);
+										$('#bizOppIdProduct').val(data.id);
+										if(data.saleStage){
+											$('#bizOppProgress').val(data.saleStage);
+											$('#bizOppProgressName').val(data.saleStageName);
+										}
+							}"
+						 />
+						<input id="bizOppName"  name="bizOppName" type ="hidden" value="${(entity.bizOppName)!}" />
+					</td>
+					<td align="right">
+		  				<strong style="color: red;">*</strong>${i18n.get('创建日期:')}</td>
+					<td align="left">
+						<@form.date
+							id="createdAt"  name="createdAt"
+						placeholder=""
+						tip=""
+						readonly="readonly"
+							value="${(entity.createdAt?datetime)!}"
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						${i18n.get('竞争对手:')}
+					</td>
+					<td align="left">
+						<@form.input name="competitor" type="text"
+						id="competitor" value="${(entity.competitor)!}"
+						/>
+					</td>
+					<td align="right">
+						${i18n.get('销售阶段:')}
+					</td>
+					<td align="left">
+						<@form.input name="bizOppProgressName" type="text"
+						id="bizOppProgressName" value="${(entity.bizOppProgressName)!}"
+						readonly="readonly"
+						/>
+
+						<input type="hidden" id="bizOppProgress" name="bizOppProgress" value="${(entity.bizOppProgress)!}">
+					</td>
+					<td align="right">
+						${i18n.get('状态:')}
+					</td>
+					<td align="left">
+						
+						<input id="status" name="status" type="hidden" value="${(entity.status)!}" >
+						<@form.input
+							id="statusName"  
+							name="statusName" 
+							placeholder="" 
+							readonly="readonly"
+							tip="" 
+							value="${(entity.statusName)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						${i18n.get('报备金额:')}
+					</td>
+					<td align="left">
+						<@form.input name="reportPrice" type="text"
+						id="reportPrice" value="${(entity.reportPrice)!}"
+						/>
+					</td>
+					<td align="right">
+						${i18n.get('要求开始时间:')}</td>
+					<td align="left">
+						<@form.date
+							id="requestStart"  name="requestStart"
+							placeholder=""
+							tip=""
+							readonly="readonly"
+							value="${(entity.requestStart?date)!}"
+							/>
+					</td>
+					<td align="right">
+						${i18n.get('机房面积:')}</td>
+					<td align="left">
+						<@form.input name="roomArea" type="text"
+						id="roomArea" value="${(entity.roomArea)!}"
+						/>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div class = "biz_integrator_info" id = "top06">
+			<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">${i18n.get('支持内容')}</p>
+			<table>
+					<tr>
+						<td colspan="6">${i18n.get('方案类')}</td>
+					</tr>
+					<tr>
+						<td width="100px" align="right" >
+							<input name="is_1" type="checkbox" id="is_1" value="${(entity.is_1)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>
+						</td>
+						<td width="200px">${i18n.get('完善工程界面内容')}</td>
+						<td align="right">
+							<input name="is_2" type="checkbox" id="is_2" value="${(entity.is_2)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>
+						</td>
+						<td width="200px">${i18n.get('配电图绘制')}</td>
+						<td align="right">
+							<input name="is_3" type="checkbox" id="is_3" value="${(entity.is_3)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>
+						</td>
+						<td width="200px">${i18n.get('方案陈述文件制作')}</td>
+					</tr>
+					<tr>
+						<td align="right">
+							<input name="is_4" type="checkbox" id="is_4" value="${(entity.is_4)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>
+						</td>
+						<td >${i18n.get('配置清单制作')}</td>
+						<td align="right">
+							<input name="is_5" type="checkbox" id="is_5" value="${(entity.is_5)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>
+						</td>
+						<td >${i18n.get('现场布置图绘制')}</td>
+						<td ></td>
+						<td ></td>
+					</tr>
+					<tr>
+						<td colspan="6">${i18n.get('交流类')}</td>
+					</tr>
+					<tr>
+						<td align="right">
+							<input id="is_6" name="is_6" type="checkbox" id="is_6" value="${(entity.is_6)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>
+						</td>
+						<td >${i18n.get('现场交流（已有方案）')}</td>
+						<td align="right">
+							<input id="is_7" name="is_7" type="checkbox" id="is_7" value="${(entity.is_7)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>
+						</td>
+						<td >${i18n.get('现场交流（方案未定）')}</td>
+						<td ></td>
+						<td ></td>
+					</tr>
+					<tr>
+						<td colspan="6">${i18n.get('标书类')}</td>
+					</tr>
+					<tr>
+						<td align="right">
+							<input name="is_8" type="checkbox" id="is_8" value="${(entity.is_8)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>
+						</td>
+						<td >${i18n.get('设标文件制作')}</td>
+						<#if permission["P03PresSupportTechTender"]??>
+						<td align="right">
+							<input name="is_9" type="checkbox" id="is_9" value="${(entity.is_9)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>
+						</td>
+						<td >${i18n.get('技术标制作')}</td>
+						</#if>
+						<#if permission["P03PresSupportTender"]??>
+						<td align="right">
+							<input id="is_10" name="is_10" type="checkbox" id="is_10" value="${(entity.is_10)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>
+						</td>
+						<td >${i18n.get('完整标书制作')}</td>
+						</#if>
+					</tr>
+					<tr>
+						<td colspan="6">${i18n.get('其他类')}</td>
+					</tr>
+					<tr>
+						<td align="right">
+							<input name="is_11" type="checkbox" id="is_11" value="${(entity.is_11)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>
+						</td>
+						<td >${i18n.get('现场3D图制作')}</td>
+						<td align="right">
+							<input name="is_12" type="checkbox" id="is_12" value="${(entity.is_12)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>
+						</td>
+						<td >${i18n.get('CFD仿真制作')}</td>
+						<td ></td>
+						<td ></td>
+					</tr>
+					<tr>
+						<td align="right">
+							<input name="is_13" type="checkbox" id="is_13" value="${(entity.is_13)!}" style="width: 20px;" onclick="changeCheckValue(this)"/>
+						</td>
+						<td >${i18n.get('其他制作项')}</td>
+						<td ></td>
+						<td ></td>
+						<td ></td>
+						<td ></td>
+					</tr>
+					
+					<tr>
+						<td align="left" colspan="6">
+							${i18n.get('备注:')} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<@form.input name="remark" type="text"
+							style="width: 600px;"
+							id="remark" value="${(entity.remark)!}"
+							/>
+						</td>
+					</tr>
+				</table>
+		</div>
+		<div class="div1" style="display: none;">
+		<#if P_GNGFORG_B1_0001>
+		<div class="biz_basic_info sub_flag_1" id="top12">
+					<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">
+						${i18n.get('立项审批')}<strong style="color: red;">${i18n.get('（立项必填）')}</strong></p>
+					<table border="0" cellpadding="0" cellspacing="0">
+						<tr>
+							<td align="right" width="150px">
+								<strong style="color: red;">*</strong>${i18n.get('当地海拔:')}
+							</td>
+							<td align="left">
+								<@form.input name="altitude" type="text"
+								style="width: 180px;"
+								class="buApply"
+								id="altitude"
+								required="${i18n.get('不能为空')}"
+								value="${(entity.altitude)!}"
+								/>
+							</td>
+							<td align="right" width="150px">
+								<strong style="color: red;">*</strong>${i18n.get('电站性质:')}
+							</td>
+							<td align="left">
+								<@form.select
+								style="width: 180px;"
+								id="elcType" name="elcType"
+								code="POWERSTATIONPROPERTY"
+								class="buApply"
+								idKey="code"
+								required="${i18n.get('不能为空')}"
+								value ="${(entity.elcType)!}"
+								/>
+							</td>
+							<td align="right" width="150px">
+								<!--集成产品：-->
+							</td>
+							<td align="left">
+								<#--<@form.select
+								id="integrateProd" name="integrateProd"
+								code="INTEGRATIONPRODUCT"
+								class="buApply"
+								idKey="code"
+								required="${i18n.get('不能为空')}"
+								value ="${(entity.integrateProd)!}"
+								/>-->
+							</td>
+						</tr>
+						<tr>
+							<td align="right" width="150px">
+								<strong style="color: red;">*</strong>${i18n.get('投标保证金:')}
+							</td>
+							<td align="left">
+								<@form.select
+								style="width: 180px;"
+								id="bidAmt" name="bidAmt"
+								code="BIDSECURITYDEPOSIT"
+								class="buApply"
+								idKey="code"
+								required="${i18n.get('不能为空')}"
+								value ="${(entity.bidAmt)!}"
+								/>
+							</td>
+							<td align="right" width="150px">
+								<strong style="color: red;">*</strong>${i18n.get('质保期:')}
+							</td>
+							<td align="left">
+								<@form.input name="warranty" type="text"
+								style="width: 180px;"
+								class="buApply"
+								id="warranty"
+								required="${i18n.get('不能为空')}"
+								value="${(entity.warranty)!}"
+								/>
+							</td>
+							<td align="right" width="150px">
+								<strong style="color: red;">*</strong>${i18n.get('交货期:')}
+							</td>
+							<td align="left">
+								<@form.input name="delivery" type="text"
+								style="width: 180px;"
+								class="buApply"
+								id="delivery"
+								required="${i18n.get('不能为空')}"
+								value="${(entity.delivery)!}"
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td align="right" width="150px">
+								<strong style="color: red;">*</strong>${i18n.get('标书交付方式:')}
+							</td>
+							<td align="left">
+								<@form.select
+								style="width: 180px;"
+								id="bidMethod" name="bidMethod"
+								class="buApply"
+								code="TENDERDELEVERMODE"
+								idKey="code"
+								required="${i18n.get('不能为空')}"
+								value ="${(entity.bidMethod)!}"
+								onChange="typeChange(this)"
+								/>
+								<script type="text/javascript">
+								function typeChange(obj){
+					    			var selected = obj.value;
+					    			if(selected == 10){
+					    				$(".info").removeClass('hide');
+					    				$(".info").show();
+					    			}else{
+					    				$(".info").hide();
+					    			}
+								}
+								</script>
+							</td>
+							<td align="right" width="150px">
+								<strong style="color: red;">*</strong>${i18n.get('付款方式:')}
+							</td>
+							<td align="left">
+								<@form.input name="payType" type="text"
+								style="width: 180px;"
+								class="buApply"
+								id="payType"
+								required="${i18n.get('不能为空')}"
+								value="${(entity.payType)!}"
+								/>
+							</td>
+							<td align="right" width="150px">
+								<strong style="color: red;">*</strong>${i18n.get('客户欠款情况:')}
+							</td>
+							<td align="left">
+								<@form.input name="arrears" type="text"
+								style="width: 180px;"
+								class="buApply"
+								id="arrears"
+								required="${i18n.get('不能为空')}"
+								value="${(entity.arrears)!}"
+								/>
+							</td>
+						</tr>
+						
+						<tr
+						 class="info <#if entity?? && (entity.bidMethod)?? && entity.bidMethod == '10'> <#else> hide </#if>">
+							<td align="right" width="150px">
+								<strong style="color: red;">*</strong>${i18n.get('邮寄地址:')}
+							</td>
+							<td>
+								<@form.input name="postAddress" type="text"
+								style="width: 180px;"
+								class="buApply"
+								id="postAddress"
+								value="${(entity.postAddress)!}"
+								/>
+							</td>
+							<td align="right" width="150px">
+								<strong style="color: red;">*</strong>${i18n.get('联系人:')}
+							</td>
+							<td>
+								<@form.input name="person" type="text"
+								style="width: 180px;"
+								class="buApply"
+								id="person"
+								value="${(entity.person)!}"
+								/>
+							</td>
+							<td align="right" width="150px">
+								<strong style="color: red;">*</strong>${i18n.get('电话:')}
+							</td>
+							<td>
+								<@form.input name="tel" type="text"
+								style="width: 180px;"
+								class="buApply"
+								id="tel"
+								value="${(entity.tel)!}"
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td align="left" colspan="6">
+							<strong style="color: red;">${i18n.get('备注：请在附件中上传授权人信息，如果客户有投标保证金，需要在打印标书前三天提供转账凭证。')}</strong>
+							<td align="left">
+						</tr>
+					</table>
+				</div>
+				<#if entity.status?default('') == 'Processing' || entity.status?default('') == 'Rejected' >
+				<div class="biz_basic_info sub_flag_1" id="top12">
+					<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">
+						${i18n.get('投标反馈')}<strong style="color: red;">${i18n.get('（投标必填）')}</strong></p>
+					<table border="0" cellpadding="0" cellspacing="0">
+						<tr>
+							<td width="100px"  align="right">${i18n.get('投标结果:')}</td>
+							<td width="180px">
+							<@form.select  id="bidResults" name="bidResults" code="BDRST" idKey='code' style="width:170px;" 
+							
+								onLoadSuccess="function(){
+									if($('#bidResults').val()=='R01'){
+										$('#status').val('S02');
+									}
+									if($('#bidResults').val()=='R02'){
+										$('#status').val('S03');
+									}	
+								}"
+								
+								onChange="function(){
+									if($('#bidResults').val()=='R01'){
+										$('#status').val('S02');
+									}
+									if($('#bidResults').val()=='R02'){
+										$('#status').val('S03');
+									}	
+								}"
+							
+							value="${(entity.bidResults)!}" /> 
+							</td>
+				
+							<td width="100px" align="right">${i18n.get('赢标/丢标/关闭原因:')}</td>
+							<td width="180px">
+								<@form.input
+								id="bidResReason"  name="bidResReason" style="width:170px;"
+								placeholder=""
+								value="${(entity.bidResReason)!}" 
+								/>
+							</td>
+				
+							<td width="100px" align="right">${i18n.get('反馈投标结果附件:')}</td>
+							<td width="180px">
+				 				<@form.select  id="bidRstatt" name="bidRstatt" code="NY" idKey='code' style="width:170px;"  value="${(entity.bidRstatt)!}" /> 
+							</td>
+							<td>
+								<button  class="btn btn-info submit" type="button" style="margin-left: 60px;">
+									<i class="icon-ok bigger-110"></i>
+									${i18n.get('确认结果')}
+								</button>
+							</td>
+								
+						</tr>
+						<tr>
+							<td width="100px" align="right">${i18n.get('主要竞争对手:')}</td>
+							<td width="180px">
+				 				<@form.select  id="bidCmpr" name="bidCmpr" multiple="true" code="BIDCOMPETITOR" idKey='code' style="width:170px;"  value="${(entity.bidCmpr)!}" /> 
+							</td>
+				
+							<td width="100px" align="right">${i18n.get('中标品牌:')}</td>
+							<td width="180px">
+				 				<@form.select  id="bidBrd" name="bidBrd" multiple="true" code="BIDCOMPETITOR" idKey='code' style="width:170px;" value="${(entity.bidBrd)!}" /> 
+							</td>
+				
+							<td width="100px" align="right">${i18n.get('中标价格:')}</td>
+							<td width="180px"><@form.input id="bidAmount" style="width:170px;"
+								name="bidAmount" placeholder="" tip="" 
+								value="${(entity.bidAmount)!}" /></td>
+							
+						</tr>
+				</table>
+			</div>
+			</#if>
+	</#if>
+	</div>
+	
+	<#if P_GNGFORG_B1_0001>
+	<div class="div2" style="display: none;">
+	<div class="biz_basic_info sub_flag_1" id="top12">
+					<p style="width: 100%; padding-top: 0px; margin-top: 0px; background-color: #E9E9E9; height: 25px">
+						${i18n.get('客户信息:')}</p>
+					<table border="0" cellpadding="0" cellspacing="0">
+						<tr>
+							<td width="100px"  align="right"><strong style="color: red;">*</strong>${i18n.get('项目情况:')}</td>
+							<td width="180px">
+							<@form.textArea style="width:300px;height:80px;"
+								id="projectDetail" 
+								name="projectDetail" placeholder="" tip="" 
+								required="${i18n.get('不能为空')}"
+								value="${(entity.projectDetail)!}" />
+							</td>
+				
+							<td width="120px" align="right"><strong style="color: red;">*</strong>${i18n.get('客户参加人员/职位:')}</td>
+							<td width="180px">
+				 				<@form.input
+								id="customJoinPerson" name="customJoinPerson" 
+								placeholder=""
+								required="${i18n.get('不能为空')}"
+								value="${(entity.customJoinPerson)!}" 
+								/>
+							</td>
+							
+							<td width="100px" align="right"><strong style="color: red;">*</strong>${i18n.get('需要提前准备的材料:')}</td>
+							<td width="180px">
+				 				<@form.textArea
+								id="customData"  name="customData" style="width:300px;height:80px;"
+								placeholder=""
+								required="${i18n.get('不能为空')}"
+								value="${(entity.customData)!}" 
+								/> 
+							</td>
+						</tr>
+						<tr>
+				
+							<td width="100px" align="right"><strong style="color: red;">*</strong>${i18n.get('联系电话:')}</td>
+							<td width="180px">
+				 				<@form.input
+								id="customPhone" name="customPhone" style="width:170px;"
+								placeholder=""
+								required="${i18n.get('不能为空')}"
+								value="${(entity.customPhone)!}" 
+								/>
+							</td>
+				
+							<td width="100px" align="right"><strong style="color: red;">*</strong>${i18n.get('邮箱:')}</td>
+							<td width="180px">
+								<@form.input id="customEmail" name="customEmail" style="width:170px;"
+								placeholder="" tip=""
+								required="${i18n.get('不能为空')}" 
+								value="${(entity.customEmail)!}" />
+							</td>
+							<td>
+								
+							</td>
+							
+						</tr>
+				</table>
+			</div>
+		</div>
+		</#if>
+	</@form.form>
+<div id="info" style="padding-top: 20px;" class="row">
+<div class="col-xs-12">
+	<input type="hidden" id="selectedId"  />
+	<@plug.tabs tabMain=tabMainInfo>
+</@plug.tabs>
+</div>
+</@form.panel>
+
+<script type="text/javascript">
+				$(document).ready(function() {
+					for(var i =1;i<=13;i++){
+						iniCheck("is_" + i);
+					}
+					$('#bizOppId').unbind('change').bind('change', function() {
+						var _bizOppId = $('#bizOppId').val();
+						$('#bizOppIdProduct').val(_bizOppId);
+						reload_productDetailId();
+					});
+
+                });
+				
+				$("#is_6").click(function(){
+					var $box= document.getElementById('is_6');
+					if($box.checked == true){
+					     $(".div2").show();
+					}else{
+						 $(".div2").hide();
+					}
+				})
+				
+				$("#is_7").click(function(){
+					var $box= document.getElementById('is_7');
+					if($box.checked == true){
+					     $(".div2").show();
+					}else{
+						 $(".div2").hide();
+					}
+				})
+				
+				$("#is_10").click(function(){
+					var $box= document.getElementById('is_10');
+					if($box.checked == true){
+					     $(".div1").show();
+					}else{
+						 $(".div1").hide();
+					}
+				})
+				
+				$(document).ready(function(){ 
+					var $box = document.getElementById('is_10');
+					if($box != null){
+						if($box.checked == true){
+						     $(".div1").show();
+						}else{
+							 $(".div1").hide();
+						}
+					}
+				 });
+				
+				$(document).ready(function(){ 
+					var is_6 = document.getElementById('is_6');
+					var is_7 = document.getElementById('is_7');
+					if(is_6 != null || is_7 != null){
+						if(is_6.checked == true || is_7.checked == true){
+						     $(".div2").show();
+						}else{
+							 $(".div2").hide();
+						}
+					}
+				 });
+				
+                function startPerSaleProcess() {
+                	$('#productDetailId').trigger('blur');
+                	var ids = $('#productDetailId').jqGrid('getDataIDs');
+                	if('' == ids || null == ids){
+                		alert('${i18n.get('商机配置不允许为空，请配置好再提交流程申请。')}');
+                		return;
+                	}
+				    var entityId = "${entity.id?default('')}";
+                    if(''===entityId){
+                    	alert('${i18n.get('数据未保存，请先保存再提交流程申请。')}'); 
+                        return;
+                    }
+                    $.ajax({
+                    	
+                        type: "POST",
+                        url: "${ctx}/supportApply/startProcess.html",
+                        async: true,
+                        data: "id=" + entityId+"&bizOppName=${(entity.bizOppName)!}"+"&is_10=${(entity.is_10)!}",
+                        dataType: 'json',
+                        success: function (msg) {
+							$("#startButton").attr("disabled","disabled");
+                            $("#saveButton").attr("disabled","disabled")
+                            alert('${i18n.get('审核流程提交成功')}'); 
+                            try{
+                                parent.currentParent2.reload_t_support_apply();
+                            }catch(err){
+
+                            }
+                            api.close();
+                        },
+                        error: function (e) {
+                            var msg = eval("(" + e.responseText + ")");
+                            if (msg) {
+                                alert(msg.message);
+                            } else {
+                            	alert('${i18n.get('操作失败，请联系管理员')}'); 
+                            }
+                        }
+                    });
+
+                }
+			</script>
+<script src="${ctx}/anne/js/util.js"></script>
+</@cui.body2>
+</#escape>

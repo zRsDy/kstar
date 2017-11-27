@@ -1,0 +1,172 @@
+<div>
+
+	<@form.form id="sngbty" action="${ctx}/standard/prjpage/sngbty.html" success="function(){ alert('${i18n.get('保存成功')}！');opener.reload_idu(); }"
+	class="form-horizontal"> 
+	<@form.input id="id" name="id" placeholder=""
+	tip="" type="hidden" value="${(sngbtyInf.id)!}" />
+	
+	<h5 style="background-color: #E9E9E9;">${i18n.get('电池部分')}</h5>
+	<table>
+		<tr>
+			<td width="100px">${i18n.get('项目技术要求')}:</td>
+			<td width="180px">
+				<div>
+					<button class="btn btn-info"
+						onclick="javascript:parent.dialog('${i18n.get('项目技术要求')}','${ctx}/kstarDoc/add.html?systemId=${contrId}&systemCode=SNGBTYPRJATTM',window)"
+						type="button">${i18n.get('上传附件')}</button>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('现场布放图纸')}:</td>
+			<td width="180px">
+				<div>
+					<button class="btn btn-info"
+						onclick="javascript:parent.dialog('${i18n.get('现场布放图纸')}','${ctx}/kstarDoc/add.html?systemId=${contrId}&systemCode=SNGBTYDRFATTM',window)"
+						type="button">${i18n.get('上传附件')}</button>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('电池容量及数量')}:</td>
+			<td width="60px">${i18n.get('容量')} :<@form.input id="bttCp"
+				name="bttCp" placeholder="" tip=""
+				value="${(sngbtyInf.bttCp)!}" />ah</td>
+			<td width="120px">${i18n.get('总数量')} :<@form.input id="bttTnm"
+				name="bttTnm" placeholder="" tip=""
+				value="${(sngbtyInf.bttTnm)!}" />${i18n.get('节')}</td>
+			<td width="100px">${i18n.get('组数')} :<@form.input id="bttCnm"
+				name="bttCnm" placeholder="" tip=""
+				value="${(sngbtyInf.bttCnm)!}" />${i18n.get('组')}</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('是否需要电池单体监控')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="ifBttmnt" value="y"
+							selectValue="${(sngbtyInf.ifBttmnt)!'N'}" /> <span class="lbl">${i18n.get('是')}</span>
+						</label> 
+						<label><@form.radio name="ifBttmnt" value="n"
+							selectValue="${(sngbtyInf.ifBttmnt)!'N'}" /> <span class="lbl">${i18n.get('否')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('是否需要电池单体监控')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="bttmntTyp" value="ttl"
+							selectValue="${(sngbtyInf.bttmntTyp)!'N'}" /> <span class="lbl">${i18n.get('整组监控')}</span>
+						</label> 
+						<label><@form.radio name="bttmntTyp" value="sng"
+							selectValue="${(sngbtyInf.bttmntTyp)!'N'}" /> <span class="lbl">${i18n.get('单节监控')}</span>
+						</label>
+						<label><@form.radio name="bttmntTyp" value="ups"
+							selectValue="${(sngbtyInf.bttmntTyp)!'N'}" /> <span class="lbl">${i18n.get('用UPS自带监控')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('电池安装形式')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="bttTinsTyp" value="box"
+							selectValue="${(sngbtyInf.bttTinsTyp)!'N'}" /> <span class="lbl">${i18n.get('电池箱')}</span>
+						</label> 
+						<label><@form.radio name="bttTinsTyp" value="lvl"
+							selectValue="${(sngbtyInf.bttTinsTyp)!'N'}" /> <span class="lbl">${i18n.get('电池架')}</span>
+						</label>
+						<label><@form.radio name="bttTinsTyp" value="rck"
+							selectValue="${(sngbtyInf.bttTinsTyp)!'N'}" /> <span class="lbl">${i18n.get('电池柜')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('电池摆放方式')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="bttpsTyp" value="sf"
+							selectValue="${(sngbtyInf.bttpsTyp)!'N'}" /> <span class="lbl">${i18n.get('单列四层')}</span>
+						</label> 
+						<label><@form.radio name="bttpsTyp" value="df"
+							selectValue="${(sngbtyInf.bttpsTyp)!'N'}" /> <span class="lbl">${i18n.get('双列四层')}</span>
+						</label>
+						<label><@form.radio name="bttpsTyp" value="dd"
+							selectValue="${(sngbtyInf.bttpsTyp)!'N'}" /> <span class="lbl">${i18n.get('双列两层')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="120px">${i18n.get('电池柜/架进出线方式')}:</td>
+			<td width="400px">
+				<div class ="radio">
+						<label><@form.radio name="bttrckTyp" value="ud"
+							selectValue="${(sngbtyInf.bttrckTyp)!'N'}" /> <span class="lbl">${i18n.get('上进下出')}</span>
+						</label> 
+						<label><@form.radio name="bttrckTyp" value="uu"
+							selectValue="${(sngbtyInf.bttrckTyp)!'N'}" /> <span class="lbl">${i18n.get('上进上出')}</span>
+						</label>
+						<label><@form.radio name="bttrckTyp" value="dd"
+							selectValue="${(sngbtyInf.bttrckTyp)!'N'}" /> <span class="lbl">${i18n.get('下进下出')}</span>
+						</label>
+						<label><@form.radio name="bttrckTyp" value="du"
+							selectValue="${(sngbtyInf.bttrckTyp)!'N'}" /> <span class="lbl">${i18n.get('下进上出')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('电池安装空间、梁下净高')}:</td>
+			<td width="180px"><@form.input id="bttinsHgh"
+				name="bttinsHgh" placeholder="" tip=""
+				value="${(sngbtyInf.bttinsHgh)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('电池开关安装')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="bttswtIns" value="box"
+							selectValue="${(sngbtyInf.bttswtIns)!'N'}" /> <span class="lbl">${i18n.get('电池开关箱')}</span>
+						</label> 
+						<label><@form.radio name="bttswtIns" value="rck"
+							selectValue="${(sngbtyInf.bttswtIns)!'N'}" /> <span class="lbl">${i18n.get('电池开关柜')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('其他特殊要求')}:</td>
+			<td width="180px"><@form.input id="othRq"
+				name="othRq" placeholder="" tip=""
+				value="${(sngbtyInf.othRq)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('电池开关是否要远程控制')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="bttswtRmt" value="y"
+							selectValue="${(sngbtyInf.bttswtRmt)!'N'}" /> <span class="lbl">${i18n.get('是')}</span>
+						</label> 
+						<label><@form.radio name="bttswtRmt" value="n"
+							selectValue="${(sngbtyInf.bttswtRmt)!'N'}" /> <span class="lbl">${i18n.get('否')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+	</table>
+
+	<div class="clearfix form-actions">
+		<div class="col-md-offset-5 col-md-7">
+			<button class="btn btn-info submit" type="button" align="left">
+				<i class="icon-ok bigger-110"></i> ${i18n.get('修订')}
+			</button>
+			&nbsp; &nbsp; &nbsp;
+		</div>
+	</div>
+	</@form.form>
+
+</div>

@@ -1,0 +1,44 @@
+<@pui.body> 
+	<div class="col-xs-12">
+		<@form.table id="appAuth"
+			class="col-xs-12"
+			shrinkToFit = 'true'
+			title="${i18n.get('应用管理')}"
+			url = "${ctx}/appAuth/page.html"
+			rowNum = "20"
+			colModel = "[
+			  	{ name : 'id', label : 'id', hidden : true , width : 60,sortable:true,align:'center' }, 
+			  	{ name : 'code', label : '${i18n.get('应用编码')}', width : 90 ,sortable:true},
+				{ name : 'name', label : '${i18n.get('应用名称')}', width : 90 ,sortable:true},
+				{ name : 'optTxt1', label : '${i18n.get('权限类型')}', width : 150 ,sortable:true ,formatter:function(cellvalue, options){ return  getValuesByCell(cellvalue,'BUSINESS_AUTH_TYPE')}}
+			]"
+			buttons = "[
+		  		{
+		  			id:'config_appFlow',
+		  			label : '${i18n.get('配置')}',
+		  			icon : 'icon-trash',
+		  			own : true,
+		  			handler : function(e,rowData){
+						if(!selected_appAuth){
+							alert('${i18n.get('没有选中任何数据!')}'); 
+							return;
+						}else{
+							parent.dialog('${i18n.get('配置')}','${ctx}/appAuth/config.html?id='+selected_appAuth.id,window);
+						}
+		  			}
+		  		}
+		  	]">
+			<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">	
+				<div class="form-group col-xs-2">
+					<input type="text" id="searchKey" name="searchKey" placeholder='查询关键字' />
+				</div>	
+				<div class="form-group col-xs-1">
+					<button type="submit" class="btn btn-info" >
+						<i class="icon-search bigger-110"></i>
+						${i18n.get('查询')}
+					</button>
+				</div>
+			</div>
+		</@form.table>
+	</div>
+</@pui.body>

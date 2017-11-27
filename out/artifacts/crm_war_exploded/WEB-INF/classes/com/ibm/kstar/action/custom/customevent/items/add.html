@@ -1,0 +1,48 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="t1" success="function(){ parent.currentParent.reload_item(); }" class="form-horizontal" >
+		<input id="eventPid" name="eventPid" type="hidden"  value="${(customEventItems.eventPid)!}">
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>${i18n.get('协助事项 ')}: 
+			</label>
+			
+			<@form.select style="width: 147px;"
+				id="item" name="item" 
+				code="ASSISTANTAFFAIRE" 
+				required="${i18n.get('不能为空！')}"
+				value ="${(customEventItems.item)!}"
+			/>
+		</div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>${i18n.get('具体协助事项 ')}: 
+			</label>
+			<@form.input
+			id="comment"  
+			name="comment" 
+			required="${i18n.get('不能为空！')}"
+			tip="" 
+			value="${(customEventItems.comment)!}" 
+			/>
+		</div>
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+		<div class="clearfix form-actions">
+			<div class="col-md-offset-5 col-md-7">
+				<button class="btn btn-info submit" type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				&nbsp; &nbsp; &nbsp;
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+	</@form.form>
+	</@form.panel>
+</@pui.body>
+</#escape>

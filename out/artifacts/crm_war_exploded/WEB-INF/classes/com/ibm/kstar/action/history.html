@@ -1,0 +1,169 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<link type="text/css" href="${ctx}/flow/lib/jquery-ui-1.8.4.custom/css/smoothness/jquery-ui-1.8.4.custom.css" rel="stylesheet" />
+<link type="text/css" href="${ctx}/assets/css/ace.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="${ctx}/assets/css/jquery-ui-1.10.3.full.min.css" />
+<link href="${ctx}/assets/css/bootstrap.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="${ctx}/assets/css/font-awesome.min.css" />
+
+		<!--[if IE 7]>
+		  <link rel="stylesheet" href="${ctx}/assets/css/font-awesome-ie7.min.css" />
+		<![endif]-->
+
+<script type="text/javascript" src="${ctx}/flow/lib/raphael-min.js"></script>
+<script type="text/javascript" src="${ctx}/flow/lib/jquery-ui-1.8.4.custom/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="${ctx}/flow/lib/jquery-ui-1.8.4.custom/js/jquery-ui-1.8.4.custom.min.js"></script>
+
+<script type="text/javascript" src="${ctx}/flow/lib/raphael-min.js"></script>
+<script type="text/javascript" src="${ctx}/flow/myflow.js"></script>
+<script type="text/javascript" src="${ctx}/flow/myflow.jpdl4.js"></script>
+<script type="text/javascript" src="${ctx}/flow/myflow.editors.js"></script>
+<script src="${ctx}/assets/js/dialog/lhgdialog.js"></script>
+
+<script type="text/javascript">
+	$(function() {
+		$('#myflow')
+		
+		.myflow($.extend(true,{
+			basePath : "",
+			restore : eval(${json!""}),
+			editable : false
+		}
+		[#if flow??]
+		,${flow!""}
+		[/#if]
+		));
+
+	});
+	
+</script>
+
+<style type="text/css">
+body {
+  margin : 0;
+  pading: 0;
+  text-align: left;
+  font-family: Arial, sans-serif, Helvetica, Tahoma;
+  font-size: 12px;
+  line-height: 1.5;
+  color: black;
+  background:#FFF;
+}
+
+.node {
+	width : 70px;
+	text-align : center;
+	vertical-align:middle;
+	border: 1px solid #fff;
+}
+
+.mover{
+	border: 1px solid #ddd;
+	background-color: #ddd;
+}
+.selected{
+	background-color: #ddd;
+}
+.state{}
+
+#myflow_props table{
+	
+}
+#myflow_props th {
+	letter-spacing: 2px;
+	text-align: left;
+	padding: 6px;
+	background: #ddd;
+} 
+#myflow_props td {
+	background: #fff;
+	padding: 6px;
+} 
+
+#pointer {
+	background-repeat:no-repeat;
+	background-position:center;
+	
+}
+#path {
+	background-repeat:no-repeat;
+	background-position:center;
+	
+}
+#task{
+	background-repeat:no-repeat;
+	background-position:center;
+	
+}
+#state{
+	background-repeat:no-repeat;
+	background-position:center;
+	
+}
+</style>
+</head>
+<body >
+
+<div class="row">
+	<div class="col-xs-12">
+		<div class="table-responsive">
+			<table id="sample-table-1" class="table table-striped table-bordered table-hover">
+				<thead>
+					<tr>
+						<th class="center">${i18n.get('环节')}</th>
+						<th>${i18n.get('办理人')}</th>
+						<th>${i18n.get('操作类型')}</th>
+						<th>${i18n.get('意见建议')}</th>
+						<th>${i18n.get('开始时间')}</th>
+						<th>${i18n.get('结束时间')}</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					[#list historyList as history]
+						[#if (history.activityType)?? && history.activityType != 'decision']
+							<tr class="">
+								<td class="center">${(history.activityName)!}</td>
+								<td>${(history.operatorName)!(history.assigneeName)!}  <span id='td_${history_index}'> </span>  </td>
+                                <td>${(history.operationTypeName)!''}</td>
+								<td>${(history.comment)!''}</td>
+								<td>${(history.startTime?datetime)!}</td>
+								<td>[#if (history.endTime)??] ${(history.endTime?datetime)!} [/#if]</td>
+							</tr>
+							
+							[#if !(history.endTime)?? && !(history.operatorName)?? && (history.assigneeType == 'POSITION')]
+								<script type="text/javascript">
+									$.ajax({
+										url : '${ctx}/org/employeePage.html?orgId=${history.assigneeId}',
+										type : 'GET',
+										success : function(data) {
+											var html = "";
+											$.each(data.message.list,function(i,item){
+												html = html + " ["+item.no + " "+item.name +"] ";
+											})
+											$('#td_${history_index}').html(html);
+										}
+									});
+								</script>
+							[/#if]
+						[/#if]
+					[/#list]
+				</tbody>
+			</table>
+		</div><!-- /.table-responsive -->
+	</div><!-- /span -->
+</div>
+
+<div id="myflow">
+
+</div>
+
+
+</body>
+</html>
+

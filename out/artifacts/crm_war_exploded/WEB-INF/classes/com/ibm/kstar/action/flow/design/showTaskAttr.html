@@ -1,0 +1,218 @@
+<@pui.body>
+<form>
+	<script type="text/javascript">
+		var lovOrg = ${lovOrg!'[]'};
+	</script>
+	<div class="col-xs-12" style="padding: 0px;">
+		<@form.panel title="${i18n.get('任务类型属性设置')}">
+	<div>
+		${i18n.get('节点名称：')}${type}<input type="text" id="text" />
+	</div>
+	<#if type=="task" || type=="notice" >
+		<br />
+		<div>
+		    &nbsp;&nbsp;${i18n.get('参与者：')}
+			<select id='participantType'>
+				<option value="1">${i18n.get('指定参与者')}</option>
+				<option value="2">${i18n.get('发起人')}</option>
+				<option value="3">${i18n.get('发起人直属领导')}</option>
+				<option value="4">${i18n.get('办理人选择')}</option>
+				
+				<option value="11">${i18n.get('一级领导')}</option>
+				<option value="12">${i18n.get('二级领导')}</option>
+				<option value="13">${i18n.get('三级领导')}</option>
+				<option value="14">${i18n.get('四级领导')}</option>
+				<option value="15">${i18n.get('五级领导')}</option>
+				
+				<option value="21">${i18n.get('表单关联的岗位')}</option>
+				<option value="23">${i18n.get('表单关联的岗位')}2</option>
+				<option value="22">${i18n.get('表单关联的员工')}</option>
+				<option value="24">${i18n.get('表单关联的员工')}2</option>
+				<option value="99">SQL${i18n.get('查找')}</option>
+			</select>
+		</div>
+	<#else>
+		<br/>
+		<div>
+		    ${i18n.get('请指定参与者：')}
+			<input type="hidden" id='participantType' value="1" />
+		</div>
+	</#if>
+	<div id='pdiv'>
+	<@plug.treeDesign checkbox="true" id="tree1"
+		async="false"
+		datas="lovOrg"
+		chkboxType="{ 'Y' : '', 'N' : '' }" 
+		
+		dataFilter="function(data){ 
+			if(data.leafFlag == 'Y' && data.optTxt1 == 'E'){
+				data.icon = '${ctx}/assets/css/zTreeStyle/img/diy/4.png' 
+				data.isParent = false;
+			} else if(data.leafFlag == 'Y'){
+				data.icon = '${ctx}/assets/css/zTreeStyle/img/diy/3.png'
+				data.isParent = true;
+			}else{
+				data.checked = false;
+				data.nocheck = true;
+			}
+			$.each(parent.taskSetting.ids.split(','),function(i,id){ 
+				if(id == data.id){ 
+					data.checked = true; 
+				} 
+			}) 
+			return data; 
+		}"
+		onComplete ="function(data){
+			abc();
+		}"
+		/>
+	</div>
+	
+	
+	
+	<div id='sqlDiv'>
+		
+		<div class="row">
+			SQL${i18n.get('中所有的单引号前请加反斜杠')} “\”
+		</div>
+		
+		<div class="row">
+			<textarea rows="10" style="width: 95%;margin-left:10px;margin-right:10px" id="sql">
+				
+			</textarea>
+		</div>
+	</div>
+
+	<#if type=="task">
+	<div>
+		<div class="checkbox">
+			<label> <input type="checkbox" id="message" value="Y" class="ace" /> <span class="lbl"> ${i18n.get('消息提醒')} </span> </label>
+		</div>
+		<div class="checkbox">
+			<label> <input type="checkbox" id="reject" value="Y" class="ace" /> <span class="lbl"> ${i18n.get('驳回')} </span> </label>
+		</div>
+		<div class="checkbox">
+			<label> <input type="checkbox" id="close" value="Y" class="ace" /> <span class="lbl"> ${i18n.get('可销毁 ')}</span> </label>
+		</div>
+		<div class="checkbox">
+			<label> <input type="checkbox" id="nonauto" value="Y" class="ace"/> <span class="lbl"> ${i18n.get('不自动处理 ')}</span> </label>
+		</div>
+	</div>
+	</#if>
+	
+	<input type="hidden" id="types"/>
+	<input type="hidden" id="names"/>
+	<input type="hidden" id="ids"/>
+	
+<script type="text/javascript">
+	/* setTimeout(function(){  
+		
+	},1000); */
+	function abc(){
+		debugger;
+		console.log("a");
+	}
+	$(function($) {
+		$('#participantType').change(function(){
+			if($(this).val() != '1'){
+				$('#pdiv').hide();
+			}else{
+				$('#pdiv').show();
+			}
+			
+			if($(this).val() != '99'){
+				$('#sqlDiv').hide();
+			}else{
+				$('#sqlDiv').show();
+			}
+			
+		})
+		
+		<#if type=="task" || type=="notice">
+			if(parent.taskSetting.participantType){
+				$('#participantType').val(parent.taskSetting.participantType);
+			}else{
+				$('#participantType').val("1");
+			}
+		
+			if(parent.taskSetting.participantType != '1'){
+				$('#pdiv').hide();
+			}else{
+				$('#pdiv').show();
+			}
+			
+			if(parent.taskSetting.participantType != '99'){
+				$('#sqlDiv').hide();
+			}else{
+				$('#sqlDiv').show();
+			}
+			
+		</#if>
+		$('#message').prop("checked",parent.taskSetting.message == "Y");
+		$('#reject').prop("checked",parent.taskSetting.reject == "Y");
+		$('#close').prop("checked",parent.taskSetting.close == "Y");
+		$('#nonauto').prop("checked",parent.taskSetting.nonauto == "Y");
+		$('#text').val(parent.taskSetting.text);
+		$('#names').val(parent.taskSetting.names);
+		$('#types').val(parent.taskSetting.types);
+		$('#ids').val(parent.taskSetting.ids);
+		$('#sql').val(parent.taskSetting.sql);
+	})
+</script>
+	<div class="clearfix form-actions">
+		<div class="col-md-offset-5 col-md-7">
+			<button class="btn btn-info" id="selectOK2" type="button">
+				<i class="icon-ok bigger-110"></i> ${i18n.get('选择')}
+			</button>
+
+			<button class="btn" type="button" onclick="javascript:api.close()">
+				<i class="icon-undo bigger-110"></i> ${i18n.get('关闭')}
+			</button>
+		</div>
+	</div>
+</form>
+</@form.panel>
+</div>
+<script type="text/javascript">
+	
+
+	$('#selectOK2').click(function(){
+		var setting = {};
+		setting.message = $('#message').prop('checked') ? 'Y' : 'N';
+		setting.reject = $('#reject').prop('checked') ? 'Y' : 'N';
+		setting.close = $('#close').prop('checked') ? 'Y' : 'N';
+		setting.nonauto = $('#nonauto').prop('checked') ? 'Y' : 'N';
+		setting.text =  $('#text').val();
+		setting.types = $('#types').val();
+		setting.ids = $('#ids').val();
+		setting.names = $('#names').val();
+
+		var sql = $('#sql').val().replace(/\\'/g, "@@");
+		sql = sql.replace(/'/g, "\\'");
+		sql = sql.replace(/@@/g, "\\'");
+		setting.sql = sql;
+		
+		var participantType = $('#participantType').val();
+		setting.participantType = participantType;
+		if(participantType == '1'){
+			var treeObj = $.fn.zTree.getZTreeObj('tree1');
+			var nodes = treeObj.getCheckedNodes(true);
+			var types = '';
+			var ids= '';
+			var names = '';
+			$.each(nodes,function(i,node){
+				types = types + (node.leafFlag == 'N' ? 'ORG' : node.optTxt1 == 'E' ? 'EMPLOYEE':'POSITION' )+ ',';
+				ids = ids + node.id + ",";
+				names = names + node.name + ",";
+			});
+			setting.types = types;
+			setting.ids = ids;
+			setting.names = names;
+		}
+		parent.taskCallback(setting);
+		parent.test();
+		api.close();
+	})
+</script>
+
+</@pui.body>

@@ -1,0 +1,143 @@
+<@cui.body2>
+	<@form.panel title="${i18n.get('基本信息')}">
+		<@form.form id="t1" success="function(){
+				try{
+					parent.currentParent.reload_apply_2('${(applyInfo.id)!}');
+				}catch(e){
+					
+				}
+			}" class="form-horizontal">	 
+			<div align="center">
+				<table>
+					<tr>
+						<td align="right" width="100px">
+							<label class="no-padding-right" for="applyCode"> ${i18n.get('申请单号 : ')}</label>
+						</td>
+						<td width="280px">
+							<@form.input id="applyCode" name="applyCode" style="width:163px;" tip="${i18n.get('申请单据编号')}" readonly="true" value="${(applyInfo.applyCode)!}" />
+						</td>
+						<td align="right" width="100px">
+							<label class="no-padding-right" for="applyUnit"> ${i18n.get('申请单位 :')} </label>
+						</td>
+						<td width="280px">
+							<input type="hidden" id="applyUnit" name="applyUnit" value="${(applyInfo.applyUnit)!}" />
+							<@form.input id="applyUnitName" name="applyUnitName" style="width:163px;" tip="${i18n.get('建立申请单的单位名称')}" readonly="true" value="${(applyInfo.applyUnitName)!}" />
+						</td>
+						<td align="right" width="100px"> ${i18n.get('是否经销商 :')}</td><!-- 创建申请单的用户是否经销商用户 -->
+						<td width="280px">
+							<@form.select style="width:163px;" id="uiDealer" name="uiDealer" tip="${i18n.get('是否经销商')}" code="NY" idKey='id' value="${(applyInfo.dealer)!}" />
+							<input type="hidden" id="dealer" name="dealer" value="${(applyInfo.dealer)!}" />
+						    <script type="text/javascript">
+		    	                $("#uiDealer").attr("disabled","disabled")
+		                    </script>
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('活动类型 :')}</td>
+						<td width="280px">
+							<@form.select style="width:163px;" id="activityType" name="activityType" tip="${i18n.get('市场活动类型')}" required="${i18n.get('不能为空')}" code="MKACTYPY" idKey='id' value="${(applyInfo.activityType)!}" />
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>行业类型 :</td>
+						<td width="280px">
+							<@form.select style="width:163px;" id="industryType" name="industryType" tip="${i18n.get('申请单位所属行业类型')}" required="${i18n.get('不能为空')}" code="BUSTYPE" idKey='id' value="${(applyInfo.industryType)!}" />
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>活动目的 :</td>
+						<td width="280px">
+							<@form.input id="activityPurpose" style="width:163px;" name="activityPurpose" tip="${i18n.get('市场活动的目的描述说明')}" required="${i18n.get('不能为空')}" value="${(applyInfo.activityPurpose)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">
+							<label class="no-padding-right" for="status1"> ${i18n.get('状态  :')} </label>
+						</td>
+						<td width="280px">	
+							<input type="hidden" id="status" name="status" value="${(applyInfo.status)!}" />
+							<@form.select id="uiStatus" name="uiStatus" tip="${i18n.get('单据状态')}" style="width:163px;" code="ACTIVITY_APPLY_PROC" idKey='id' value="${(applyInfo.status)!}"/>
+							<script type="text/javascript">$("#uiStatus").attr("disabled","disabled");</script>
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('货币 :')}</td>
+						<td width="280px">
+							<@form.select style="width:163px;" id="uicurrency" name="uicurrency" tip="${i18n.get('申请的结算货币')}" required="${i18n.get('不能为空')}" code="CURRENCY" idKey='id' value="${(applyInfo.currency)!}" />
+							<input type="hidden" id="currency" name="currency" value="${(applyInfo.currency)!}" />
+						    <script type="text/javascript">
+		    	                $("#uicurrency").attr("disabled","disabled")
+		                    </script>
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('预估费用 :')}</td>
+						<td width="280px">
+							<@form.number id="estimatedExpense"  name="estimatedExpense" style="width:163px;" required="${i18n.get('不能为空')}" tip="${i18n.get('市场活动预计总共需要花费多少费用')}" value="${(applyInfo.estimatedExpense)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">${i18n.get('应收费用 :')}</td>
+						<td width="280px">
+							<@form.number id="receivableExpense" name="receivableExpense" style="width:163px;" tip="${i18n.get('应收申请单位的费用')}" readonly="true" value="${(applyInfo.receivableExpense)!}" />
+						</td>
+						<td align="right" width="100px">
+							<label class="no-padding-right" for="applyDate"> ${i18n.get('申请日期 :')} </label>
+						</td>
+						<td width="280px">
+							<@form.input id="applyDate" name="applyDate" style="width:163px;" tip="${i18n.get('申请单创建日期')}" readonly="true" value="${(applyInfo.applyDate?date)!}" />
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('预计开始日期 :')}</td>
+						<td width="280px">
+							<@form.date id="estimatedStartDate" name="estimatedStartDate" format="yyyy-mm-dd" style="width:163px;" tip="${i18n.get('预计市场活动开始日期')}" required="${i18n.get('不能为空')}" value="${(applyInfo.estimatedStartDate?date)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px"></td>
+						<td width="280px">
+						</td>
+						<td align="right" width="100px">
+							<label class="no-padding-right" for="applier">${i18n.get('申请人 :')}  </label>
+						</td>
+						<td width="280px">
+							<input type="hidden" id="applier" name="applier" value="${(applyInfo.applier)!}" />
+							<@form.input id="applierName" name="applierName" style="width:163px;" tip="${i18n.get('申请人姓名')}" readonly="true" value="${(applyInfo.applierName)!}" />
+						</td>
+						<td align="right" width="100px">
+							<label class="no-padding-right" for="applierPhone">${i18n.get('申请人电话 : ')} </label>	
+						</td>
+						<td width="280px">
+							<@form.input id="applierPhone" name="applierPhone" style="width:163px;" tip="${i18n.get('申请人电话号码')}" value="${(applyInfo.applierPhone)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">
+							<label class="no-padding-right" for="explain">${i18n.get('说明 :')}</label>
+						</td>
+						<td colspan="5">
+							<@form.textArea id="explain" style="width:923px;" name="explain" tip="${i18n.get('申请单据的说明')}" value="${(applyInfo.explain)!}" />
+						</td>
+					</tr>
+					
+				</table>
+			</div>
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<#if !applyInfo?? || !applyInfo.id?? || statusEdit || ableEdit>
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					</#if>
+					<#if !ableEdit>
+					<button class="btn" type="button" onclick="javascript:frameElement.api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+					</#if>
+				</div>
+			</div>
+		</@form.form>
+	</@form.panel>
+	<div id="info" style="padding-top: 20px;" class="row">
+		<div class="col-xs-12">
+			<input type="hidden" id="selectedId"  />
+			<@plug.tabs tabMain=tabMainInfo>
+			</@plug.tabs>
+		</div>
+	</div>
+</@cui.body2>

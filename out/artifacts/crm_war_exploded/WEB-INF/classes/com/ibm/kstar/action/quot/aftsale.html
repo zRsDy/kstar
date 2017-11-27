@@ -1,0 +1,298 @@
+<div>
+
+
+ <script type="text/javascript">
+
+ $(document).ready(function(){	
+	 
+	 if('${ifProReviewStatus}'=="Y"){
+		debugger;
+	 	$("#save_aftsale").attr("disabled","true");
+ 	}
+  
+	 if('${processpage}'=="Y"){
+			debugger;
+		 	$("#save_aftsale").attr("disabled","true");
+	 } 
+	 
+	 if('${processpage}'=="P1"){
+		 	$("#save_aftsale").attr("disabled","true");
+	 }
+	 
+	 if('${processpage}'=="P3"){
+		 	$("#save_aftsale").attr("disabled","true");
+	 }
+	 
+	 if('${processpage}'=="P5"){
+		 	$("#save_aftsale").attr("disabled","true");
+	 }
+	 
+	 if('${processpage}'=="P6"){
+		 	$("#save_aftsale").attr("disabled","true");
+	 }
+	 
+	 if('${processpage}'=="P7"){
+		 	$("#save_aftsale").attr("disabled","true");
+	 }
+	 
+	 if('${processpage}'=="P8"){
+		 	$("#save_aftsale").attr("disabled","true");
+	 }
+	 
+	 if('${processpage}'=="P9"){
+		 	$("#save_aftsale").attr("disabled","true");
+	 }
+	 
+	 if('${processpage}'=="P10"){
+		 	$("#save_aftsale").attr("disabled","true");
+	 }
+	 
+  
+});
+
+ </script>
+ 
+
+
+	<@form.form id="aftsale" action="${ctx}/quot/aftsale.html?typ=${typ}" autoClose="false" success="function(){ alert('${i18n.get('保存成功')}！');  debugger; reload_prj('${i18n.get('售后部分')}'); }"
+	upload ="true"
+	class="form-horizontal"> 
+	<@form.input id="id" name="id" placeholder=""
+	tip="" type="hidden" value="${(aftsaleInf.id)!}" />
+
+	<div style="height: 15px;">
+		<div style="padding-right: 20px; float: right;padding-top: 3px;" >
+		
+			<#if (permission["P04T2ProjFormT4AftersaleSave"])??>
+			<button id="save_aftsale" class="btn btn-info submit" type="button" align="right">
+				<i class="icon-ok bigger-110"></i> ${i18n.get('保存')}
+			</button>
+			</#if>
+			
+			&nbsp; &nbsp; &nbsp;
+		</div>
+	</div>
+
+	<table>
+		<tr>
+			<td width="100px">${i18n.get('设备布局图')}:</td>
+			<td width="180px">
+				<div>
+					<input type="file" id="aftsalDoc1" name="aftsalDoc1"  size="50" value="${(aftsaleInf.dvcDrt)!}" >
+					<a target="_blank" href='${(aftsaleInf.dvcDrt)!}'> 
+						<button id="doc_aftsale1" type="button" align="right" >
+							<i></i> ${i18n.get('下载文档')}:${(aftsaleInf.dvcDrtnm)!}
+						</button>					
+					</a>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('等效联机管长')}:</td>
+			<td width="180px"><@form.input id="dxppLnt"
+				name="dxppLnt" placeholder="" tip=""
+				value="${(aftsaleInf.dxppLnt)!}" /></td>
+		</tr>
+		<tr>
+			<td width="200px">${i18n.get('是否需配延长组件')}:</td>
+			<td width="180px"><@form.input id="ifextPrt"
+				name="ifextPrt" placeholder="" tip=""
+				value="${(aftsaleInf.ifextPrt)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('室外机与室内机高度落差')}(+/-M):</td>
+			<td width="180px"><@form.input id="hghtDff"
+				name="hghtDff" placeholder="" tip=""
+				value="${(aftsaleInf.hghtDff)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('低温型室外机需求')}:</td>
+			<td width="180px"><@form.input id="ifLwmch"
+				name="ifLwmch" placeholder="" tip=""
+				value="${(aftsaleInf.ifLwmch)!}" /></td>
+		</tr>
+				<tr>
+			<td width="100px">${i18n.get('水冷机组水管接口管长度')}:</td>
+			<td width="180px"><@form.input id="xlppLnt"
+				name="xlppLnt" placeholder="" tip=""
+				value="${(aftsaleInf.xlppLnt)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('送风型式')}:</td>
+			<td width="180px"><@form.input id="wndTyp"
+				name="wndTyp" placeholder="" tip=""
+				value="${(aftsaleInf.wndTyp)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('风管尺寸(宽×高×长)')}:</td>
+			<td width="180px"><@form.input id="wnppLnt"
+				name="wnppLnt" placeholder="" tip=""
+				value="${(aftsaleInf.wnppLnt)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('静电地板高度')}:</td>
+			<td width="180px"><@form.input id="esdFlt"
+				name="esdFlt" placeholder="" tip=""
+				value="${(aftsaleInf.esdFlt)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('地板通风率')}（%）:</td>
+			<td width="180px"><@form.input id="wndRte"
+				name="wndRte" placeholder="" tip=""
+				value="${(aftsaleInf.wndRte)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('加湿排水管长')}:</td>
+			<td width="180px"><@form.input id="jpppLng"
+				name="jpppLng" placeholder="" tip=""
+				value="${(aftsaleInf.jpppLng)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('加湿进水管长')}:</td>
+			<td width="180px"><@form.input id="jjppLng"
+				name="jjppLng" placeholder="" tip=""
+				value="${(aftsaleInf.jjppLng)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('冷凝排水管长')}:</td>
+			<td width="180px"><@form.input id="lpppLng"
+				name="lpppLng" placeholder="" tip=""
+				value="${(aftsaleInf.lpppLng)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('室内机线缆长')}:</td>
+			<td width="180px"><@form.input id="mchLnln"
+				name="mchLnln" placeholder="" tip=""
+				value="${(aftsaleInf.mchLnln)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('安装送风组件条件')}:</td>
+			<td width="180px"><@form.input id="insWndrq"
+				name="insWndrq" placeholder="" tip=""
+				value="${(aftsaleInf.insWndrq)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('是否需要对空调解体搬运')}:</td>
+			<td width="180px"><@form.input id="ifDip"
+				name="ifDip" placeholder="" tip=""
+				value="${(aftsaleInf.ifDip)!}" /></td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('如需外请吊装，情况另外说明')}:</td>
+			<td width="180px"><@form.input id="hngNts"
+				name="hngNts" placeholder="" tip=""
+				value="${(aftsaleInf.hngNts)!}" /></td>
+		</tr>
+	</table>
+	<h5 style="background-color: #E9E9E9;">UPS，${i18n.get('机柜')}，${i18n.get('配电')}，${i18n.get('电池')}</h5>
+	<table>
+		<tr>
+			<td width="100px">${i18n.get('设备布局图')}:</td>
+			<td width="180px">
+				<div>
+					<input type="file" id="aftsalDoc2" name="aftsalDoc2"  size="50" value="${(aftsaleInf.umbDrf)!}" >
+					<a target="_blank" href='${(aftsaleInf.umbDrf)!}'> 
+						<button id="doc_aftsale2" type="button" align="right" >
+							<i></i> ${i18n.get('下载文档')}:${(aftsaleInf.umbDrfnm)!}
+						</button>					
+					</a>
+				</div>
+			</td>
+		</tr>
+				<tr>
+			<td width="200px">${i18n.get('现场温湿度')}/${i18n.get('通风情况')}:</td>
+			<td width="180px"><@form.input id="tmpwndNts"
+				name="tmpwndNts" placeholder="" tip=""
+				value="${(aftsaleInf.tmpwndNts)!}" /></td>
+		</tr>
+		<tr>
+			<td width="200px">${i18n.get('现场金属粉尘评估')}:</td>
+			<td width="180px"><@form.input id="dustEvl"
+				name="dustEvl" placeholder="" tip=""
+				value="${(aftsaleInf.dustEvl)!}" /></td>
+		</tr>
+		<tr>
+			<td width="200px">${i18n.get('前端是否使用油机（功率大小）')}:</td>
+			<td width="180px"><@form.input id="ifFrtmch"
+				name="ifFrtmch" placeholder="" tip=""
+				value="${(aftsaleInf.ifFrtmch)!}" /></td>
+		</tr>
+		<tr>
+			<td width="200px">${i18n.get('配电系统')}:</td>
+			<td width="180px"><@form.input id="extElec"
+				name="extElec" placeholder="" tip=""
+				value="${(aftsaleInf.extElec)!}" /></td>
+		</tr>
+		<tr>
+			<td width="200px">${i18n.get('前端配电大小')}:</td>
+			<td width="180px"><@form.input id="frtElec"
+				name="frtElec" placeholder="" tip=""
+				value="${(aftsaleInf.frtElec)!}" /></td>
+		</tr>
+		<tr>
+			<td width="200px">${i18n.get('安装空间与梁下净高')}:</td>
+			<td width="180px"><@form.input id="insHgt"
+				name="insHgt" placeholder="" tip=""
+				value="${(aftsaleInf.insHgt)!}" /></td>
+		</tr>
+		<tr>
+			<td width="200px">${i18n.get('维修环境')}:</td>
+			<td width="180px"><@form.input id="fixEnv"
+				name="fixEnv" placeholder="" tip=""
+				value="${(aftsaleInf.fixEnv)!}" /></td>
+		</tr>
+		<tr>
+			<td width="200px">${i18n.get('入场方式')}/${i18n.get('电梯门大小')}:</td>
+			<td width="180px"><@form.input id="entDrsze"
+				name="entDrsze" placeholder="" tip=""
+				value="${(aftsaleInf.entDrsze)!}" /></td>
+		</tr>
+		<tr>
+			<td width="200px">${i18n.get('安装工具')}:</td>
+			<td width="180px"><@form.input id="insTl"
+				name="insTl" placeholder="" tip=""
+				value="${(aftsaleInf.insTl)!}" /></td>
+		</tr>
+		<tr>
+			<td width="200px">${i18n.get('入场时间')}:</td>
+			<td width="180px"><@form.input id="entrDt"
+				name="entrDt" placeholder="" tip=""
+				value="${(aftsaleInf.entrDt)!}" /></td>
+		</tr>
+		<tr>
+			<td width="200px">${i18n.get('进出线方式')}:</td>
+			<td width="180px"><@form.input id="inotTyp"
+				name="inotTyp" placeholder="" tip=""
+				value="${(aftsaleInf.inotTyp)!}" /></td>
+		</tr>
+		<tr>
+			<td width="200px">${i18n.get('线缆安装方式')}:</td>
+			<td width="180px"><@form.input id="lnInstyp"
+				name="lnInstyp" placeholder="" tip=""
+				value="${(aftsaleInf.lnInstyp)!}" /></td>
+		</tr>
+		<tr>
+			<td width="200px">UPS${i18n.get('负载类型、容量')}:</td>
+			<td width="180px"><@form.input id="upsLdtyp"
+				name="upsLdtyp" placeholder="" tip=""
+				value="${(aftsaleInf.upsLdtyp)!}" /></td>
+		</tr>
+		<tr>
+			<td width="200px">${i18n.get('防护情况')}:</td>
+			<td width="180px"><@form.input id="dftSt"
+				name="dftSt" placeholder="" tip=""
+				value="${(aftsaleInf.dftSt)!}" /></td>
+		</tr>
+		<tr>
+			<td width="200px">${i18n.get('防护情况')}:</td>
+			<td width="180px"><@form.input id="ifDvcdst"
+				name="ifDvcdst" placeholder="" tip=""
+				value="${(aftsaleInf.ifDvcdst)!}" /></td>
+		</tr>
+	</table>
+	
+
+
+	</@form.form>
+
+</div>

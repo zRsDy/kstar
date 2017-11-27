@@ -1,0 +1,40 @@
+<#escape x as x?html>
+<#if (permission["P02CusT4DealerInfoScopeAdd"]?? && ("${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_30")
+										&& ("${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign addScopeURL = "'${ctx}/custom/baseinfo/scope/add.html?id=${(customInfo.id)!}'"     />
+</#if>
+
+<#if (permission["P02CusT4DealerInfoScopeEdit"]?? && ("${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_30")
+										&& ("${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign editScopeURL= "'${ctx}/custom/baseinfo/scope/edit.html'"       />	
+</#if>
+
+<#if (permission["P02CusT4DealerInfoScopeDelete"]?? && ("${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_30")
+										&& ("${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign deleteScopeURL = "'${ctx}/custom/baseinfo/scope/delete.html'"     />	
+</#if>
+
+<@form.table id="scope" 
+class="col-xs-12"
+height="131px"
+title="${i18n.get('经销范围')}" 
+url = "${ctx}/custom/baseinfo/scope/page.html?id=${(customInfo.id)!}"
+rowNum = "5" 
+addURL = "${addScopeURL!}"
+editURL = "${editScopeURL!}"
+deleteURL= "${deleteScopeURL!}" 
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+	{name:'customId',label:'${i18n.get('客户编码')}',hidden:true,width:100,sortable:false,align:'center' },
+	{name:'distrScopeGrid.name',label:'${i18n.get('产品类型')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'distrAllowGrid.name',label:'${i18n.get('允许经销')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'distrComment',label:'${i18n.get('备注')}',hidden:false,width:100,sortable:false,align:'center' }
+	
+	]" 
+	>
+</@form.table> 
+
+
+
+<div id="attmDivScope"> </div>
+</#escape>

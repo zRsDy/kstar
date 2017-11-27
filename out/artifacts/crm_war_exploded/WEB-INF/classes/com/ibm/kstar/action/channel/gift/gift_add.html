@@ -1,0 +1,92 @@
+<@cui.body2>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1" success="function(){ parent.currentParent.reload_manage_2('${(giftInfo.id)!}'); }"
+		class="form-horizontal">	
+			<div align="center">
+				<table>
+					<tr>
+						<td align="right" width="100px">${i18n.get('编号 :')}</td>
+						<td width="280px">
+							<@form.input id="giftCode" name="giftCode" tip="${i18n.get('资料、礼品编号')}" readonly="true" value="${(giftInfo.giftCode)!}" />
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('类型 :')}</td>
+						<td width="280px">
+							<@form.select id="giftType" style="width:163px;" name="giftType" tip="${i18n.get('资料、礼品的分类')}" required="${i18n.get('不能为空')}" code="GIFTTYPE" idKey='id' value="${(giftInfo.giftType)!}" /> 
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('单位 :')}</td>
+						<td width="280px">
+							<@form.select id="giftUnit" style="width:163px;" name="giftUnit" tip="${i18n.get('资料、礼品数量单位')}" required="${i18n.get('不能为空')}" code="GIFTUNIT" idKey='id' value="${(giftInfo.giftUnit)!}" /> 
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('库存总数 :')}</td>
+						<td width="280px">
+							<@form.input id="inboundQuantity" name="inboundQuantity" tip="${i18n.get('资料、礼品的库存总数')}" required="${i18n.get('不能为空')}" value="${(giftInfo.inboundQuantity)!}" />
+						</td>
+						<td align="right" width="100px">${i18n.get('已用库存数 :')}</td>
+						<td width="280px">
+							<@form.input id="usedQuantity" name="inventoryQuantity" tip="${i18n.get('资料、礼品的当前已用库存数')}" readonly="true" value="${(giftInfo.usedQuantity)!}" />
+						</td>
+						<td align="right" width="100px">${i18n.get('可用库存数 :')}</td>
+						<td width="280px">
+							<@form.input id="inventoryQuantity" name="inventoryQuantity" tip="${i18n.get('资料、礼品的当前可用库存数')}" readonly="true" value="${(giftInfo.inventoryQuantity)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('货币 :')}</td>
+						<td width="280px">
+							<@form.select id="uicurrency" style="width:163px;" name="uicurrency" tip="${i18n.get('资料、礼品单价的币种')}" required="${i18n.get('不能为空')}" code="CURRENCY" idKey='id' value="${(giftInfo.currency)!}" /> 
+							<input type="hidden" id="currency" name="currency" value="${(giftInfo.currency)!}" />
+						    <script type="text/javascript">
+		    	                $("#uicurrency").attr("disabled","disabled")
+		                    </script>
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('单价 :')}</td>
+						<td width="280px">
+							<@form.number id="giftPrice" name="giftPrice" tip="${i18n.get('资料、礼品的单价')}" required="${i18n.get('不能为空')}" value="${(giftInfo.giftPrice)!}" />
+						</td>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('生效日期 :')}</td>
+						<td width="280px">
+							<@form.date id="startDate" name="startDate" format="yyyy-mm-dd" required="${i18n.get('不能为空')}" tip="${i18n.get('资料、礼品的生效日期')}" value="${(giftInfo.startDate?date)!}" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px">${i18n.get('失效日期 :')}</td>
+						<td width="280px">
+							<@form.date id="endDate" name="endDate" format="yyyy-mm-dd" tip="${i18n.get('资料、礼品的失效日期')}" value="${(giftInfo.endDate?date)!}" />
+						</td>
+						<td align="right" width="100px">${i18n.get('管理人员 :')}</td>
+						<td width="280px">
+							<@form.input id="manager" name="manager" tip="${i18n.get('资料、礼品的负责管理人员')}" value="${(giftInfo.manager)!}" />
+						</td>
+						</td>
+						<td align="right" width="100px">
+						</td>
+						<td width="280px">
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="100px"><strong style="color: red;">*</strong>${i18n.get('描述 :')}</td>
+						<td colspan="5">
+							<@form.textArea id="giftDesc" style="width:923px;" name="giftDesc" tip="${i18n.get('对资料、礼品的描述说明')}" required="${i18n.get('不能为空')}" value="${(giftInfo.giftDesc)!}" />
+						</td>
+					</tr>
+				</table>
+			</div>	
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:frameElement.api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+	</@form.panel>
+</@cui.body2>

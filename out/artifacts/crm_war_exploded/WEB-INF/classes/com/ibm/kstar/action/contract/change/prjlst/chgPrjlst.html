@@ -1,0 +1,796 @@
+<#escape x as x?html>
+
+	<#if (permission['P05ChangeT1ProjList3'])??>
+    <#assign catalogMovePer='true'>
+</#if>
+	
+	<#if (permission['P05ChangeT1ProjListEdit'])??>
+    <#assign editRowPer='true'>
+</#if>
+	<#if (permission['P05ChangeT1ProjListDeleteProd'])??>
+    <#assign deleteRowPer='true'>
+</#if>
+	<#if (permission['P05ChangeT1ProjListAddProdPackage'])??>
+    <#assign addPackPer='true'>
+</#if>
+	<#if (permission['P05ChangeT1ProjListAddProd'])??>
+    <#assign addProdPer='true'>
+</#if>
+	<#if (permission['P05ChangeT1ProjListSubmitPrice'])??>
+    <#assign subPricPer='true'>
+</#if>
+
+
+<table style="width:800px;">
+    <tr>
+        <td valign="top">
+            <@form.table id="prjlst"
+            class="col-xs-12"
+            shrinkToFit = 'false'
+            title="${i18n.get('工程清单列表')}"
+            url = "${ctx}/change/prjlst/prjLstPage.html?contrId=${contrId}&typ=${typ}"
+            rowNum = "20"
+            rownumbers = 'true'
+            colModel = "[
+			  { name : 'id', label : 'lovId', hidden : true , sortable:false,align:'center' }, 
+			  { name : 'veriedNum', label : 'veriedNum', hidden : true , sortable:false , align:'center' },
+			  { name : 'lvmenber.parentId', label : 'lovParentID',hidden : true, sortable:false},
+			  { name : 'id', label : 'prjlstID',hidden : true, width : 30 ,sortable:false},
+			  { name : 'lineNum', label : '${i18n.get('行号')}',width : 30 ,sortable:false,hidden : true, },
+			  { name : 'proId', label : 'prdId', hidden : true , sortable:false}, 
+			  { name : 'prdNm', label : '${i18n.get('产品名称')}',  sortable:false,hidden : true},
+			  { name : 'act', label : '${i18n.get('产品名称')}',  sortable:false,hidden : false, width : 100 , formatter:function(cellvalue, options,rowdata){ return aFormatName(rowdata) }  },
+			  { name : 'prdCtgid', label : 'prdCtgId', hidden : true , sortable:false}, 
+			  { name : 'prdCtg', label : '${i18n.get('产品分类')}', width : 80 , sortable:false ,editable : false,align:'center' },
+			  { name : 'prdTyp', label : '${i18n.get('产品型号')}', width:110,sortable:false ,editable : false ,align:'center'},
+			  { name : 'materCode', label : '${i18n.get('物料号')}', hidden : false, width : 100  , sortable:false ,editable : false,align:'center' },
+			  { name : 'prdUnt', label : '${i18n.get('单位')}', width : 40 ,sortable:false ,editable : false },
+			  { name : 'prdSprc', label : '${i18n.get('定价')}', width : 80 ,align:'right',sortable:false  ,editable : false },
+			  { name : 'prdPrc', label : '${i18n.get('合同单价')}', width : 80 ,align:'right',sortable:false ,editable : false },
+			  { name : 'veriedNum', label : '${i18n.get('核销数量')}', width : 80 ,align:'right',sortable:false ,editable : false },
+			  { name : 'amt', label : '${i18n.get('数量')}', width : 80 ,align:'right',sortable:false,editable : false },
+			  { name : 'ttlUnt', label : '${i18n.get('单品总金额')}', width : 100 ,align:'right',sortable:false ,editable : false,formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''} },
+			  { name : 'newPrdPrc', label : '${i18n.get('新合同单价')}', width : 80 ,align:'right',sortable:false ,editable : true },
+			  { name : 'newAmt', label : '${i18n.get('新数量')}', width : 80 ,align:'right',sortable:false,editable : true },
+			  { name : 'newTtlUnt', label : '${i18n.get('新单品总金额')}', width : 100 ,align:'right',sortable:false ,editable : false,formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''}},
+			  { name : 'updtFlag', label : '${i18n.get('是否变更')}', width : 50 ,sortable:false ,editable : false,align:'center', formatter:function(cellvalue, options, rowdata){ return chekFlag(rowdata)} },
+			  { name : 'updatType', label : '${i18n.get('变更类型')}', width : 60 ,sortable:false ,editable : false,align:'center',formatter:function(cellvalue, options, rowdata){return formatUpdTypeFlag(rowdata)}},
+			  { name : 'cusProDesc', label : '${i18n.get('客户产品描述')}', width : 150,hidden : true ,sortable:false ,editable : false},
+			  { name : 'notes', label : '${i18n.get('备注')}',sortable:false,editable : true },
+			  { name : 'proDesc', label : '${i18n.get('产品描述')}', width : 350 ,sortable:false,editable : false }
+			  ]"
+
+            search="false"
+
+            ondblClickRow= "function(id){
+				var rowData = $('#prjlst').jqGrid('getRowData',id);
+
+				if(rowData['prdCtg'] && rowData['prdCtg'] !=''){
+
+				var old_prc = $('#prjlst input[id=\\''+id + '_newPrdPrc\\']').val();
+				var old_amt = $('#prjlst input[id=\\''+id+'_newAmt\\']').val();
+				var cur_prc = old_prc;
+				var cur_amt = old_amt;
+				$('#prjlst input[id=\\''+id+'_newPrdPrc\\']').bind('input',function(event){
+					var prc = $(this).val();
+					cur_prc=prc;
+					if(prc){
+						var re = /^[0-9].*$/ ;
+						var ttlU = 0;
+						if(!isNaN(prc) && re.test(prc)){
+							if(cur_amt != null && cur_amt !='' && re.test(cur_amt)){
+								ttlU = ( parseFloat(prc) * parseFloat(cur_amt) ).toFixed(3);
+							}
+							$('#prjlst').jqGrid('setRowData', id, { 'newTtlUnt' : ttlU});
+						}else{
+							alert('${i18n.get('报价必须为数字')}！');
+							$(this).val(old_prc);
+						}
+					}else{
+						$('#prjlst').jqGrid('setRowData', id, { 'newTtlUnt' : 0 });
+					}
+		 		});
+			
+				$('#prjlst input[id=\\''+id+'_newAmt\\']').bind('input',function(event){
+					var qty = $(this).val();
+					cur_amt = qty;
+
+					if(qty){
+						var re = /^[0-9]+$/ ;
+						var re1 = /^[0-9].*$/ ;
+						var ttlU = 0;
+						if(!isNaN(qty) && re1.test(qty)){
+							if(cur_prc != null && cur_prc !='' && re1.test(cur_prc)){
+								ttlU = ( parseFloat(qty) * parseFloat(cur_prc) ).toFixed(3);
+							}
+							$('#prjlst').jqGrid('setRowData', id, { 'newTtlUnt' : ttlU});
+						}else{
+							alert('${i18n.get('数量为数字')}！');
+							$(this).val(old_amt);
+						}
+					}else{
+						$('#prjlst').jqGrid('setRowData', id, { 'newTtlUnt' : 0 });
+					}
+		 		});
+
+		 		$('#prjlst input[id=\\''+id+'_newAmt\\']').bind('change',function(e){
+                    var $qty = $('#prjlst input[id=\\''+id+'_newAmt\\']');
+                    var qty = $qty.val()
+
+
+
+                    var numberPattent = /^[0-9].*$/ ;
+                    if(!isNaN(qty) && numberPattent.test(qty)){
+                        var fixedQty = parseFloat(qty).toFixed(3);
+                        if(qty != fixedQty) {
+                            qty = fixedQty;
+                            var $prc = $('#prjlst input[id=\\''+id+'_newPrdPrc\\']');
+                            var prc = $prc.val();
+                            if(!isNaN(prc) && numberPattent.test(prc)){
+                                var ttlU = (qty * parseFloat(prc)).toFixed(3);
+                                $qty.val(qty);
+                                $('#prjlst').jqGrid('setRowData', id, { 'newTtlUnt' : ttlU});
+                            }
+                        }
+                    }
+		 		});
+
+			}else{
+				$('#prjlst').trigger('blur');
+
+			}
+
+			}"
+            onLineEditAfter = "function(id){
+				var rowData = $('#prjlst').jqGrid('getRowData',id);
+
+				var isChange = isChangeFun(rowData);
+			
+				if(isChange === '1'){
+					$('#prjlst').jqGrid('setRowData', id, {'updtFlag':'<input type=checkbox disabled=disabled checked=checked />','updatType' : '${i18n.get('新增')}'});
+				}else if(isChange === '2'){
+					$('#prjlst').jqGrid('setRowData', id, {'updtFlag':'<input type=checkbox disabled=disabled checked=checked />', 'updatType' : '${i18n.get('更新')}'});
+				}else if(isChange === '3'){
+					$('#prjlst').jqGrid('setRowData', id, {'updtFlag':'<input type=checkbox disabled=disabled checked=checked />', 'updatType' : '${i18n.get('删除')}'});
+				}else if(isChange === '4'){
+					$('#prjlst').jqGrid('setRowData', id, {'updtFlag':' ', 'updatType' : ''});
+				}else if(isChange === '5'){
+					if(rowData['updatType'] != undefined && rowData['updatType'] != ''){
+						$('#prjlst').jqGrid('setRowData', id, {'updtFlag':'<input type=checkbox disabled=disabled checked=checked />', 'updatType' : rowData['updatType']});
+					}
+				}
+				
+			}"
+
+
+            buttons = "[
+			  		
+			 	{
+				id:'editRowBtn',
+				label : '${i18n.get('修改')}',
+				icon : 'icon-save',
+				own : ${editRowPer!'false'},
+				handler : function(e,rowData){
+						editLine();
+					}
+				},
+			 	{
+				id:'deleteRowBtn',
+				label : '${i18n.get('删除')}',
+				icon : 'icon-save',
+				own : ${deleteRowPer!'false'},
+				handler : function(e,rowData){
+						deleteLine();
+					}
+				},  
+				{
+		  			id:'addstprdButton',
+		  			label : '${i18n.get('新增产品')}',
+					own : ${addProdPer!'false'},
+					handler : function(e,rowData){
+						$('#selectProductMulti').click();
+					}
+				},
+				 {
+		  			id:'addframeprdButton',
+		  			label : '${i18n.get('引入框架合同产品')}',
+					own : 'true',
+		  			handler : function(e,rowData){
+						$('#frameContrSelectLst').click();
+					}
+				},
+				 {
+		  			id:'addinstauxprdButton',
+		  			label : '${i18n.get('新增安装辅材产品')}',
+					own : 'true',
+		  			handler : function(e,rowData){
+						$('#installAuxPrdSelectLst').click();
+					}
+				},
+				{
+		  			id:'submitLines',
+		  			label : '${i18n.get('保存')}',
+		  			own : 'true',
+		  			handler : function(e,rowData){
+		  				submitLines(e);
+					}
+				},  
+				{
+		  			id:'exportChgPrjlstListBtn',
+		  			label : '${i18n.get('导出')}',
+					own : 'true',
+		  			handler : function(e,rowData){
+		  				chgPrjlstExport(e,rowData);
+					}
+				}  
+			]" > 
+			</@form.table>
+        </td>
+    </tr>
+</table>
+
+
+<script type="text/javascript">
+
+$(document).ready(function () {
+    var editFlag = "${editFlag}";
+    if (editFlag == "N") {
+        //var btns = document.getElementsByTagName("button");
+        var btns = $(".btn_prjlst").attr("disabled", "disabled");
+        //$.each(btns,function(){
+        //	($(this)).attr("disabled","disabled");
+        //});
+    }
+    //showPriceFlg 报价列显示
+    var showPriceFlg = "${showPriceFlg}";
+    if (showPriceFlg == "N") {
+        $('#prjlst').jqGrid('hideCol', ['prdPrc', 'ttlUnt', 'newPrdPrc', 'newTtlUnt']);
+    }
+    //showMaterCodeFlg 物料号列显示
+    var showMaterCodeFlg = "${showMaterCodeFlg}";
+    if (showMaterCodeFlg == "N") {
+        $('#prjlst').jqGrid('hideCol', ['materCode']);
+    }
+
+    //框架下合同不能修改合同价格
+    if(getContrFrmContrNo()!='' &&  getMarketDeptName()=='${i18n.get('国内数据中心')}'){
+        // $("#prjlst").setColProp('prdPrc', {editable:false});
+        $("#editRowBtn").hide();
+        $("#addstprdButton").hide();
+    }else{
+        $("#addframeprdButton").hide();
+        $("#addinstauxprdButton").hide();
+    }
+
+    $("#exportChgPrjlstListBtn").removeAttr("disabled");
+});
+
+function checkForm(cellvalue) {
+
+    var html = "<input type=\"checkbox\"  onclick=\"return false;\" />";
+    if (cellvalue == 'N') {
+        return "<input type=\"checkbox\" checked=\"checked\"  onclick=\"return false;\"/>";
+
+    } else if (cellvalue == 'Y') {
+        return html;
+    }
+}
+
+function chekFlag(rowData) {
+
+    var html = "<input type='checkbox' disabled='disabled' checked='checked' />";
+
+    var isChange = isChangeFun(rowData);
+
+    if (isChange === '4') {
+        return '';
+    } else if (isChange === '5') {
+        if (rowData['updatType'] != undefined && rowData['updatType'] != '') {
+            return html;
+        }
+    } else {
+        return html;
+    }
+
+}
+
+//校验变更逻辑是否正确
+function checkVeried(row) {
+    debugger;
+    var veriedNum = (row.veriedNum && parseFloat(row.veriedNum)) || 0;
+    var newAmt = (row.newAmt && parseFloat(row.newAmt)) || 0;
+    if (veriedNum > newAmt) {
+        return false;
+    }
+
+    if (veriedNum > 0) {
+        var prdPrc = (row.prdPrc && parseFloat(row.prdPrc)) || 0;
+        var newPrdPrc = (row.newPrdPrc && parseFloat(row.newPrdPrc)) || 0;
+        if (newPrdPrc != prdPrc) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+function formatUpdTypeFlag(rowData) {
+
+    var isChange = isChangeFun(rowData);
+
+    if (isChange === '1') {
+        return '${i18n.get('新增')}';
+    } else if (isChange === '2') {
+        return '${i18n.get('更新')}';
+    } else if (isChange === '3') {
+        return '${i18n.get('删除')}';
+    } else if (isChange === '4') {
+        return '';
+    } else if (isChange === '5') {
+        if (rowData['updatType'] != undefined && rowData['updatType'] != '') {
+            return rowData['updatType'];
+        }
+    }
+
+
+    /* if(amt != newAmt){
+        if(newAmt == '0'){
+            return '删除';
+        }else{
+            if(newAmt == undefined){
+                return rowData.updatType;
+            }else if(newAmt != undefined && newAmt == '0'){
+                return '删除';
+            }else if(newAmt != undefined && (amt == undefined || amt == '')){
+                return '新增';
+            }else{
+                return '更新';
+            }
+        }
+    }else if(amt === ''){
+        return '新增';
+    }
+    if(parseFloat(prdPrc).toFixed(2) != parseFloat(newPrdPrc).toFixed(2)){return '更新';}
+    if(newPrdPrc == undefined){return rowData.updatType==undefined?'新增':rowData.updatType;}
+    if(amt == newAmt && parseFloat(prdPrc).toFixed(2) == parseFloat(newPrdPrc).toFixed(2)){return '';}
+    if(newAmt == '0' || newAmt == ''){return '删除';}
+
+
+    if(newAmt == undefined){
+        return rowData.updatType;
+    }else if(newAmt != undefined && newAmt == '0'){
+        return '删除';
+    }else if(newAmt != undefined && amt == undefined){
+        return '新增';
+    }
+
+    var updatType = rowData['prjlst'] != null ? rowData['prjlst'].ttlUnt : rowData['updatType'];
+
+    if(updatType == undefined || updatType == ''){
+        rowData['updtFlag'] = "<input type='checkbox' disabled='disabled' checked='checked' />";
+        return '新增';
+    }else{
+        return updatType;
+    } */
+
+}
+
+var oldPrdPrc = '';
+var oldAmt = '';
+var oldNewTtlUnt = '';
+/**
+ * 1 = 新增
+ * 2 = 更新
+ * 3 = 删除
+ * 4 = 不变
+ * 5 = 垃圾数据
+ */
+function isChangeFun(rowData) {
+    var isC = '1';
+    var prdPrc = rowData['prjlst'] != null ? rowData['prjlst'].prdCtg : rowData['prdPrc'];
+    var amt = rowData['prjlst'] != null ? rowData['prjlst'].ttlUnt : rowData['amt'];
+    var newPrdPrc = rowData['prjlst'] != null ? rowData['prjlst'].prdCtg : rowData['newPrdPrc'];
+    var newAmt = rowData['prjlst'] != null ? rowData['prjlst'].ttlUnt : rowData['newAmt'];
+
+    if (newPrdPrc == undefined && newAmt == undefined) {
+        if (rowData.updatType == '') {
+            return rowData.updatType == '' ? '4' : '5';
+        } else {
+            if (rowData.hasOwnProperty('amt')) {
+                isC = '';
+            }
+        }
+    }
+
+    if (isNaN(newPrdPrc) || isNaN(newAmt)) {
+        if (amt === '' || amt == undefined) {
+            isC = '1';
+        } else {
+            isC = '5';
+            return isC;
+        }
+    }
+
+    if (amt != newAmt) {
+        if (newAmt == '0' && amt != '' && amt != undefined) {
+            return '3';
+        } else {
+            if (newAmt == undefined) {
+                return '5';
+            } else if (newAmt != undefined && newAmt == '0' && (amt != '' && amt != undefined)) {
+                return '3';
+            } else if (newAmt != undefined && (amt == undefined || amt === '')) {
+                return '1';
+            } else {
+                return '2';
+            }
+        }
+    } else if (amt === '') {
+        return '1';
+    }
+
+    if (parseFloat(prdPrc).toFixed(3) != parseFloat(newPrdPrc).toFixed(3)) {
+        return '2';
+    }
+
+    if (newPrdPrc == undefined) {
+        return rowData.updatType == undefined ? '4' : '5';
+    }
+
+    if (parseFloat(prdPrc).toFixed(3) === parseFloat(newPrdPrc).toFixed(3) && amt === newAmt) {
+        isC = '4';
+        return isC;
+    }
+
+    if (newAmt == '0' || newAmt == '') {
+        return '3';
+    }
+
+    if (newPrdPrc == undefined && newAmt == undefined) {
+        if (rowData['updatType'] == '' || rowData['updatType'] == undefined) {
+            isC = '5';
+            return isC;
+        } else {
+            isC = '4';
+            return isC;
+        }
+    }
+
+    if (isNaN(newPrdPrc) || isNaN(newAmt)) {
+        isC = '5';
+        return isC;
+    }
+
+    if (amt === '' || amt == undefined) {
+        isC = '1';
+    }
+
+
+    return isC;
+
+}
+
+var selectId = "";
+function proSelect(rowid) {
+    selectId = rowid;
+    $('#selectProduct').click();
+}
+
+var newrowid = 0;
+function addOneRow() {
+    //alert("${(contr.contrName)!} ");
+    //var contrAmt = getContrAmt();
+    //alert(contrAmt);
+    //获得新添加行的行号（数据编号）  
+    newrowid = newrowid + 1;
+    var dataRow = {
+        id: "",
+        totalAmt: contrAmt
+    };
+    //将新添加的行插入到第一列  
+    $("#prjlst").jqGrid("addRowData", newrowid, dataRow, "last");
+    //设置grid单元格不可编辑  
+    $("#prjlst").setGridParam({cellEdit: false});
+    //设置grid单元格可编辑  
+    //$("#prjlst").jqGrid('editRow', newrowid, false);
+    //初始化产品行
+    initLine(newrowid, null);
+}
+//批量增加行
+function addRowBatch(datas) {
+    $.each(datas, function (i, data) {
+
+        delete data.id;
+        //if($('#parentId').val()=='undefined' || $('#parentId').val()==''){}
+        data['lvmenber.parentId'] = $('#parentId').val();
+        data['prdNm'] = data.productName;
+        data['prdUnt'] = data.unit;
+        data['prdSprc'] = data.catalogPrice;
+        data['prdTyp'] = data.proModel;
+        data['materCode'] = data.materielCode;
+        data['prdCtg'] = data.crmCategoryLable;
+        data['prdCtgid'] = data.crmCategory;
+        data['proId'] = data.proId;
+
+
+        newrowid = newrowid + 1;
+        //将新添加的行插入到第一列
+        $("#prjlst").jqGrid("addRowData", newrowid, data, "last");
+        //设置grid单元格不可编辑
+        $("#prjlst").setGridParam({cellEdit: false});
+        //设置grid单元格可编辑
+        //$("#prjlst").jqGrid('editRow', newrowid, false);
+        //初始化订单行
+        //initLine(newrowid,data);
+    });
+}
+
+//初始化产品行
+function initLine(newrowid, data) {
+    if (!data['prdSprc']) {
+        $('#prjlst').jqGrid('setRowData', newrowid, {'prdSprc': 0});
+    }
+
+    //给添加的列加选择按钮
+    var lable = '${i18n.get('选择产品')}';
+    if (data && data['prdNm']) {
+        lable = data['prdNm'];
+    }
+    var ps = '<a href="#" onclick="proSelect(\'' + newrowid + '\');" >' + lable + '</a>';
+    $('#prjlst').jqGrid('setRowData', newrowid, {'prdNm': ps});
+
+}
+
+//
+function aFormatName(rowData) {
+    //给添加的列加选择按钮
+    var lable = '${i18n.get('选择产品')}';
+    if (rowData && rowData['prjlst']) {
+        lable = rowData['prjlst'].prdNm;
+    } else if (rowData && rowData['prdNm']) {
+        lable = rowData['prdNm'];
+    }
+    var ps = '';
+    if ((rowData && rowData['prdCtg'] && typeof(rowData['amt']) == 'undefined' )) {
+        ps = '<a href="#" onclick="proSelect(\'' + rowData['id'] + '\');" >' + lable + '</a>';
+    } else {
+        ps = lable;
+    }
+    return ps;
+}
+
+function chgPrjlstExport(e, rowData) {
+    bootbox.confirm('${i18n.get('您确定要导出选中的数据吗')}？', function (result) {
+        if (result) {
+            window.location.href = '${ctx}/change/prjlst/chgPrjlstExport.html?contrId=${contrId}&typ=${typ}';
+        }
+    });
+}
+
+function submitLines(e) {
+    $('#prjlst').trigger('blur');
+    var ids = $('#prjlst').jqGrid('getDataIDs');
+    if (ids.length < 1) {
+        alert('${i18n.get('请先添加数据')}');
+        return;
+    }
+
+    var d = {};
+    var datas = [];
+    var flg = true;
+    var curid = '';
+
+    var errorVeried = [];
+    $.each(ids, function (i, id) {
+        var line = $('#prjlst').jqGrid('getRowData', id);
+
+        //判断核销数量是否大于产品数量。
+        if(!checkVeried(line)){
+            errorVeried.push(i + 1);
+            return ;
+        }
+
+        var updtFlag = isChangeFun(line);
+        var updatType =  formatUpdTypeFlag(line);
+        if (line && line['prdCtg']) {
+            if (line['newAmt'] == '' || line['newPrdPrc'] == '') {
+                curid = id;
+                flg = false;
+                return false;
+            } else {
+                line['updtFlag'] = updtFlag;
+                line['updatType'] = updatType;
+                datas.push(line);
+            }
+        }
+    })
+
+    if (errorVeried.length > 0) {
+        exalert(e,"${i18n.get('第')}" + errorVeried.join("${i18n.get(',')}") + "${i18n.get('行')}" + '${i18n.get('错误，有核销关系的行，价格不允许变更，新数量必须大于等于核销数量')}。');
+        return false;
+    }
+
+    if (flg == false) {
+        alert('${i18n.get('新单价 和 新数量  不能为空')}');
+        $('#prjlst').editRow(id, true);
+        return false;
+    }
+    d.listStr = JSON.stringify(datas);
+    d.contrId = '${contrId}';
+    d.typ = '${typ}';
+    bootbox.confirm('${i18n.get('你确定要提交保存数据吗')}?', function (result) {
+        if (result) {
+            var dialog = bootbox.dialog({
+                message: '${i18n.get('数据保存中')}......',
+                closeButton: false
+            });
+            ajax({
+                type: 'post',
+                url: '${ctx}/change/prjlst/submitLines.html',
+                dataType: 'json',
+                data: d,
+                success: function (result) {
+                    reload_prjlst();
+                    dialog.modal('hide');
+                    alert('${i18n.get('操作成功')}！');
+                    window.location.reload();
+                },
+                error: function (result) {
+                    alert(result);
+                    //reload_prjlst();
+                    dialog.modal('hide');
+                }
+            });
+        }
+    });
+}
+
+function editLine() {
+    $('#prjlst').trigger('blur');
+    if (!selected_prjlst) {
+        alert('${i18n.get('请选择要编辑的行数据')}');
+        return;
+    } else {
+        var rowId = $('#prjlst').jqGrid('getGridParam', 'selrow');
+        if (!selected_prjlst['prdCtg'] || selected_prjlst['prdCtg'] == "") {
+            parent.dialog('${i18n.get('修改')}', '${ctx}/change/prjlst/catalogedit.html?contrId=${contrId}&pricetableid=${pricetableid}&id=' + rowId, window);
+        } else {
+            if (!selected_prjlst['amt'] || selected_prjlst['amt'] == 0) {
+                proSelect(rowId);
+            }
+        }
+    }
+}
+
+function deleteLine() {
+    $('#prjlst').trigger('blur');
+    if (!selected_prjlst) {
+        alert('${i18n.get('请选择要删除的行')}');
+        return;
+    } else {
+        if (!selected_prjlst['id'] || selected_prjlst['id'] == "") {
+            var rowId = $('#prjlst').jqGrid('getGridParam', 'selrow');
+            $('#prjlst').jqGrid('delRowData', rowId);
+        } else {
+            d = {};
+            d.prjlstId = selected_prjlst['id'];
+            d.contrId = '${contrId}';
+            d.typ = '${typ}';
+            bootbox.confirm('${i18n.get('你确定要从数据库删除该数据吗')}?', function (result) {
+                if (result) {
+                    var dialog = bootbox.dialog({
+                        message: '${i18n.get('数据删除中')}......',
+                        closeButton: false
+                    });
+                    ajax({
+                        type: 'post',
+                        url: '${ctx}/change/prjlst/deletePrjlst.html',
+                        dataType: 'json',
+                        data: d,
+                        success: function (result) {
+                            reload_prjlst();
+                            dialog.modal('hide');
+                            alert('${i18n.get('操作成功')}！');
+                            window.location.reload();
+                        },
+                        error: function (result) {
+                            alert(result);
+                            reload_prjlst();
+                            dialog.modal('hide');
+                        }
+                    });
+                }
+            });
+
+        }
+    }
+}
+
+//批量增加 框架协议 行
+function addFrmContrPrdRowBatch(datas){
+//    addRowBatch(datas);
+    $.each(datas,function(i,data){
+
+        data['prdNm'] = data.prdNm;
+        delete data['id'];
+        delete data['lineNum'];
+
+
+
+        data['newPrdPrc'] = data.prdPrc;
+        data['newAmt'] = data.amt;
+        data['newTtlUnt'] = data.ttlUnt;
+
+        delete data['prdPrc'];
+        delete data['amt'];
+        delete data['ttlUnt'];
+
+        newrowid = newrowid+1;
+        //将新添加的行插入到第一列
+        $("#prjlst").jqGrid("addRowData", newrowid, data, "last");
+        //设置grid单元格不可编辑
+        $("#prjlst").setGridParam({cellEdit:false});
+        //设置grid单元格可编辑
+    });
+}
+
+
+</script>
+
+<div style="display: none;">
+    <@biz.picker_product id="selectProduct"
+    urlFunction="function(){
+					return '${ctx}/common/product/selectList.html?priceTableId=${pricetableid}' }"
+    button="${i18n.get('选择产品')}"
+    callback="function(data){
+					if(data){
+               			delete data.id ;
+						data['prdNm'] = data.productName;
+						data['prdUnt'] = data.unitLable;
+						data['prdSprc'] = data.catalogPrice;
+						data['prdTyp'] = data.proModel;
+						data['materCode'] = data.materielCode;
+						data['prdCtg'] = data.crmCategoryLable;
+						data['prdCtgid'] = data.crmCategory;
+						data['proId'] = data.proId;
+						data['act'] = data.productName;
+					    $('#prjlst').jqGrid('setRowData',selectId,data);
+					 }
+				}"
+		/>
+</div>
+
+<div style="display: none;">
+    <@biz.picker_product id="selectProductMulti" urlFunction="function(){return '${ctx}/common/product/multiSelectList.html?priceTableId=${pricetableid}';}"
+    button="${i18n.get('批量选择产品')}"
+    callback="function(datas){
+					if(datas){
+                 		addRowBatch(datas);
+					 }
+				}"
+		/>
+</div>
+<div style="display: none;" >
+    <@biz.picker_product id="frameContrSelectLst" urlFunction="function(){return '${ctx}/standard/prjlst/frameContrSelectLst.html?contrId=${contract.id}';}"
+    button="${i18n.get('批量选择产品')}"
+    callback="function(datas){
+                if(datas){
+                    addFrmContrPrdRowBatch(datas);
+                 }
+            }"
+    />
+</div>
+
+<div style="display: none;" >
+    <@biz.picker_product id="installAuxPrdSelectLst" urlFunction="function(){return '${ctx}/common/product/installAuxPrdSelectLst.html?priceTableId=${pricetableid}';}"
+    button="${i18n.get('批量选择产品')}"
+    callback="function(datas){
+                if(datas){
+                    addRowBatch(datas);
+                 }
+            }"
+    />
+</div>
+
+</#escape>

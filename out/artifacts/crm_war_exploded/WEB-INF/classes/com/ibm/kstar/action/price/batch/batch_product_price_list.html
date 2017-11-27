@@ -1,0 +1,130 @@
+<@pui.body>
+<#if (permission["P01-2BatchPriceAdd"])??>
+	<#assign addURL="'${ctx}/batchProductPrice/addOrEdit.html'" />
+</#if>
+<#if (permission["P01-2BatchPriceEdit"])??>
+	<#assign editURL="true" />
+</#if>
+<#if (permission["P01-2BatchPriceDelete"])??>
+	<#assign deleteURL="true" />
+</#if>
+<#if (permission["P01-2BatchPriceSubmit"])??>
+	<#assign submitURL="true" />
+</#if>
+
+	<div class="col-xs-12">
+	<table style="width: 100%" >
+	<tr>
+	<td valign="top">
+		<@form.table id="batch" 
+			class="col-xs-12"
+			title="${i18n.get('批量调价')}"
+			url = "${ctx}/batchProductPrice/page.html"
+			rowNum = "20"
+			addURL = "${addURL!}"
+			colModel = "[
+				{name:'id',label:'',hidden:true,width:150,sortable:false,align:'center' }, 
+				{name:'priceTableName',label:'${i18n.get('价格表名称')}',hidden:false,width:250,sortable:false,align:'left' }, 
+				{name:'organization',label:'${i18n.get('组织')}',hidden:true,width:200,sortable:false,align:'left' }, 
+				{name:'organizationName',label:'${i18n.get('组织')}',hidden:false,width:250,sortable:false,align:'left' }, 
+				{name:'productType',label:'CRM${i18n.get('产品类型')}',hidden:true,width:150,sortable:false,align:'center' }, 
+				{name:'productTypeName',label:'CRM${i18n.get('产品类型')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'productSort',label:'${i18n.get('产品分类')}',hidden:false,width:100,sortable:false,align:'center' }, 
+				{name:'adjustType',label:'${i18n.get('调整类型')}',hidden:true,width:150,sortable:false,align:'center' }, 
+				{name:'adjustTypeName',label:'${i18n.get('调整类型')}',hidden:false,width:60,sortable:false,align:'center' }, 
+				{name:'adjustValue',label:'${i18n.get('调整值')}',hidden:false,width:50,sortable:false,align:'center' }, 
+				{name:'adjustStatus',label:'${i18n.get('调整状态')}',hidden:false,width:60,sortable:false,align:'center'}, 
+				{name:'adjustDate',label:'${i18n.get('调整日期')}',hidden:false,width:80,sortable:false,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+				{name:'createOrgName',label:'${i18n.get('创建组织')}',hidden:false,width:200,sortable:false,align:'center' },
+				{name:'createrName',label:'${i18n.get('创建人')}',hidden:false,width:80,sortable:false,align:'center' },
+				{name:'createDate',label:'${i18n.get('创建日期')}',hidden:false,width:80,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }
+			]" buttons = "[
+				{
+		  			id:'edit_batch',
+		  			label : '${i18n.get('修改')}',
+		  			icon : 'icon-pencil',
+		  			own : ${editURL!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_batch){
+							exalert(e,'${i18n.get('请选择数据！')}');
+							return;
+						}else{
+							var statusEdit = true;
+							if(selected_batch.adjustStatus == '已提交'){
+								statusEdit = false;
+							}
+							var requestPath = '${ctx}/batchProductPrice/addOrEdit.html?id='+selected_batch.id+'&statusEdit='+statusEdit;
+							parent.dialog('${i18n.get('批量调价')}', requestPath, window);
+						}
+		  			}
+		  		},{
+		  			id:'delete_batch',
+		  			label : '${i18n.get('删除')}',
+		  			icon : 'icon-trash',
+		  			own : ${deleteURL!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_batch){
+							exalert(e,'${i18n.get('请选择数据！')}');
+							return;
+						}else if(selected_batch.adjustStatus == '已提交'){
+							exalert(e,'${i18n.get('已提交的数据不能被删除！')}');
+							return;
+						}else{
+							ajax({
+								url: '${ctx}/batchProductPrice/delete.html',
+								type: 'POST',
+								data: {id:selected_batch.id},
+								success : function(result) {
+									reload_batch();
+									exalert(e,'${i18n.get('删除成功！')}');
+								}
+							});
+						}
+		  			}
+		  		},{
+		  			id:'submit_batch',
+		  			label : '${i18n.get('提交')}',
+		  			icon : 'icon-save',
+		  			own : ${submitURL!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_batch){
+							exalert(e,'${i18n.get('请选择调价数据！')}');
+							return;
+						}else if(selected_batch.adjustStatus == '已提交'){
+							exalert(e,'${i18n.get('已提交的数据不能再被提交！')}');
+							return;
+						}else{
+							bootbox.confirm('${i18n.get('您确定要提交吗？')}' , function(result) {		
+								if(result) {
+									ajax({
+										url: '${ctx}/batchProductPrice/submit.html',
+										type: 'POST',
+										data: {id:selected_batch.id},
+										success : function(result) {
+											reload_batch();
+											exalert(e,'${i18n.get('提交成功！')}');
+										}
+									});
+								}
+							});	
+						}
+		  			}
+		  		}
+			]" > 
+			
+			<div class="col-xs-12">	
+				<div class="form-group col-xs-2" align="right">${i18n.get('价格表名称 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="priceTableName" size="30" />
+				</div>	
+				<div class="form-group col-xs-2" align="right">${i18n.get('组织 ：')}</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="organization" size="30" />
+				</div>	
+			</div> 
+		</@form.table>
+	</td>
+	</tr>
+	</table>	
+	</div>
+</@pui.body>

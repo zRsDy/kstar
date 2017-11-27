@@ -1,0 +1,112 @@
+<#if (permission["P02HandoverT6OrderHandover"]?? && ("${(customHandoverList.handoverStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customHandoverList.handoverStatus)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign orderHandoverURL="${(checkDisplay)!}" />
+</#if>
+
+<@form.table id="hoOrderList" 
+	class="col-xs-12"
+height="149px"
+	title="${i18n.get('订单列表')}"
+	url = "${ctx}/custom/handover/orderPage.html?id=${(customHandoverList.id)!}" 
+	checkbox="true"
+	rowNum = "5" 
+	search="false"
+	colModel = "[
+		{name : 'id', label:'id', width : 20, editable : false, hidden : true}, 
+		{name:'checkStatusName',label:'${i18n.get('交接选择')}',hidden:false,width:80,sortable:true,align:'center' },
+		{name:'businessStatus',label:'${i18n.get('交接状态')}',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'businessStatusName',label:'${i18n.get('交接状态')}',hidden:false,width:80,sortable:true,align:'center' },
+		{name : 'orderCode', label:'${i18n.get('订单编号')}', width : 150, editable : false}, 
+		{name : 'customerCode', label:'${i18n.get('客户编号')}', width : 180, editable:false, align:'center'}, 
+		{name : 'customerName', label:'${i18n.get('客户名称')}', width : 300, editable:false ,align:'center'}, 
+		{name : 'custAttnName', label:'${i18n.get('客户联系人名称')}', width : 150, sortable:true, editable:false, align:'center'}, 
+		{name : 'customerPo', label:'${i18n.get('客户PO')}', width : 150, sortable:true, editable:false, align:'center'}, 
+		{name : 'deliveryAddress', label:'${i18n.get('收货地点')}', width : 250, sortable:true, editable:false, align:'center'},
+		{name : 'billAddress', label:'${i18n.get('收单地点')}', width : 250, sortable:true, editable:false, align:'center'}, 
+		{name : 'businessEntityLable.name', label:'${i18n.get('业务实体')}', width : 250, sortable:true, editable:false, align:'center'}, 
+		{name : 'shipOrgLable', label:'${i18n.get('出货组织')}', width : 250, sortable:true, editable:false,align:'center'}, 
+		{name : 'sourceTypeLable.name', label:'${i18n.get('来源类型')}', width : 100, sortable:true, editable:false, align:'center'}, 
+		{name : 'sourceCode', label:'${i18n.get('来源编号')}', width : 200, sortable:true, editable:false, align:'center'}, 
+		{name : 'orderTypeLable.name', label:'${i18n.get('订单类型 ')}', width : 150, sortable:true, editable:false, align:'center'},
+		{name : 'executeStatusLable', label:'${i18n.get('订单状态')}', width : 150, sortable:true, editable:false, align:'center'}
+	]" 
+	buttons = "[
+		{
+			id:'publish_checkhoOrderList',
+			label : '${i18n.get('准备交接')}',
+			icon : 'icon-exchange',
+			own : ${orderHandoverURL!'false'},
+			handler : function(e,rowData){
+				var selectedIds = [];
+				if(selectedList_hoOrderList.length == 0){
+					exalert(e,'${i18n.get('没有选中任何数据!')}');
+					return;
+				}
+				$.each(selectedList_hoOrderList,function(i,item){
+						selectedIds.push(item.id);
+					});
+				bootbox.confirm('${i18n.get('确认交接选中的数据吗？')}' , function(result) {
+					if(result) {
+						$.ajax({
+							url: '${ctx}/custom/handover/orderHandoverCheck.html',
+							type: 'POST',
+							data: {ids:selectedIds},
+							success : function(msg) {
+								alert(msg.message);
+								reload_hoOrderList();
+							},
+							error: function(e) {
+								alert(e.responseJSON.message);
+								reload_hoOrderList();
+							}
+						});
+					}
+				});
+			}
+		},
+		{
+			id:'publish_uncheckhoOrderList',
+			label : '${i18n.get('交接取消')}',
+			icon : 'icon-exchange',
+			own : ${orderHandoverURL!'false'},
+			handler : function(e,rowData){
+				var selectedIds = [];
+				if(selectedList_hoOrderList.length == 0){
+					exalert(e,'${i18n.get('没有选中任何数据!')}');
+					return;
+				}
+				$.each(selectedList_hoOrderList,function(i,item){
+						selectedIds.push(item.id);
+					});
+				bootbox.confirm('${i18n.get('确认交接选中的数据吗？')}' , function(result) {
+					if(result) {
+						$.ajax({
+							url: '${ctx}/custom/handover/orderHandoverUnCheck.html',
+							type: 'POST',
+							data: {ids:selectedIds},
+							success : function(msg) {
+								alert(msg.message);
+								reload_hoOrderList();
+							},
+							error: function(e) {
+								alert(e.responseJSON.message);
+								reload_hoOrderList();
+							}
+						});
+					}
+				});
+			}
+		}
+	]" > 
+		
+		<div class="col-xs-12" style="padding-top: 20px;">
+			<div class="form-group col-xs-3">
+			<input type="text" id="searchKey" name="searchKey" placeholder='${i18n.get('查询关键字')}' size="30" />
+			</div>	
+			<div class="form-group col-xs-2">
+				<button type="submit" class="btn btn-info" > 
+					<i class="icon-search bigger-110"></i>
+					${i18n.get('查询')}
+				</button>
+			</div>
+		</div>
+</@form.table>

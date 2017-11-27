@@ -1,0 +1,151 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="satInvestForm" success="function(){ parent.currentParent.reload_satInvestList(); }" class="form-horizontal" >
+		
+		<div class="form-group">	
+			<div class="col-md-offset-7 col-md-4">
+				<button class="btn btn-info submit" id="save" type="button">
+					<i class="bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				<!-- <button class="btn btn-info" id="apply" type="button" onclick="applyCustom('submit','20')">
+					<i class="bigger-110"></i>
+					${i18n.get('发起流程')}
+				</button> -->
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+				
+			</div>
+		</div>
+		
+		<div class="form-group" >
+			<table>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('季度')} : </label>
+					</td>
+					<td >
+						<@form.input id="investQuarter" name="investQuarter" placeholder="" required="${i18n.get('不能为空！')}" readonly="readonly"
+								tip="" value="${(customSatInvest.investQuarter)!}" />
+					</td>
+					
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('申请人')}: </label>
+					</td>
+					<td >
+						<input id="createEmployee" name="createEmployee" type="hidden" value="${(customSatInvest.createEmployee)!}" >
+						<@form.input id="createEmployeeName" name="createEmployeeName" placeholder="" required="${i18n.get('不能为空！')}" readonly="readonly"
+								tip="" value="${(customSatInvest.createEmployeeName)!}" />
+					</td>
+					
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get(' 申请时间 ')} : </label>
+					</td>
+					<td >
+						<@form.input id="createDate" name="createDate" placeholder="" required="${i18n.get('不能为空！')}" readonly="readonly"
+								tip="" value="${(customSatInvest.createDate)!}" />
+					</td>
+					
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('申请编码')} : </label>
+					</td>
+					<td >
+						<@form.input id="investCode" name="investCode" placeholder="" required="${i18n.get('不能为空！')}" readonly="readonly"
+								tip="" value="${(customSatInvest.investCode)!}" />
+					</td>
+					
+					<td align="right" width="200px">
+						<label class="no-padding-right" >${i18n.get('负责人')} : </label>
+					</td>
+					<td >
+						<input id="principal" name="principal" type="hidden" value="${(customSatInvest.principal)!}" >
+						<@form.autocomplete  id="principalName" name="principalName" 
+							idKey='employeeId'
+							style='width:200px'
+							required="${i18n.get('请选择')}"
+							multiple="false"
+							formatResult="function(data) {return '<div >' +data.employeeName +' | '+ data.employeeNo + '</div>';}"
+							url="function(){ return '${ctx}/common/selectPositionList.html'; }"
+							value="{
+								employeeName:'${(customSatInvest.principalName)!}'
+								,employeeNo:'${(customSatInvest.principalNo)!}'
+								,employeeId:'${(customSatInvest.principal)!}'
+							}"
+							
+							onSelect="function(data){
+								if( data.id != null && data.id !='' && data.id != 'undefined'){
+									$('#principal').val(data.employeeId);
+								}
+							}" 
+						/>
+					</td>
+					
+					<td align="right" width="200px">
+						<label class="no-padding-right" > : </label>
+					</td>
+					<td >
+						<@form.input id="areaOrIndustry" name="areaOrIndustry" placeholder="" required="${i18n.get('不能为空！')}" 
+								readonly="readonly" tip="" value="${(customSatInvest.areaOrIndustry)!}" />
+					</td>
+				</tr>
+				<tr>
+					<td align="right" width="200px">
+						<label class="no-padding-right" > ${i18n.get('流程 ')}: </label>
+					</td>
+					<td >
+						<input id="procStatusCd" name="procStatusCd" type="hidden" value="${(customSatInvest.procStatusCd)!}" >
+						<@form.input id="procStatusCdName" name="procStatusCdName" placeholder="" required="${i18n.get('不能为空！')}" 
+								readonly="readonly" tip="" value="${(customSatInvest.procStatusCdName)!}" />
+					</td>
+					<!-- <td align="right" width="200px" >
+						<label class="no-padding-right" >${i18n.get('备注 ')}  : </label>
+					</td>
+					<td colspan="5" ></td> -->
+				</tr>
+			</table>
+			
+		</div>
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+	</@form.form>
+	</@form.panel>
+</@pui.body>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	
+	/* if ('${(customHandoverList.handoverStatus)!}' === 'CUSTOM_NORMAL_STATUS_20'
+		|| '${(customHandoverList.handoverStatus)!}' === 'CUSTOM_NORMAL_STATUS_40'){
+		$("#save").attr("disabled","true");
+		$("#apply").attr("disabled","true");
+	} */
+});
+
+
+function applyCustom(operate,status){
+	var formDatas = $('#form_satInvestForm').serialize();
+	formDatas = "id=${(customSatInvest.id)!}&"+formDatas;
+	
+	 $.ajax({
+		type : "POST",
+		url : "${ctx}/custom/satInvestApply.html",
+		async: true,
+		data : formDatas, 
+		dataType : 'json',
+		success : function(msg) {
+			alert(msg.message);
+			parent.currentParent2.reload_satInvestList(); 
+			javascript:api.close();
+		},
+		error: function(e) {
+			 alert("${i18n.get('操作失败请联系管理员')}");
+		} 
+	});
+}
+</script>
+</#escape>

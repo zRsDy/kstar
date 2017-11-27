@@ -1,0 +1,388 @@
+<#escape x as x?html>
+<@cui.body2>
+<style type="text/css">
+	table {
+		border-collapse: collapse;
+		border-color: #ff0000;
+	}
+	
+	table td {
+		padding:1px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	input[type="search"] {
+		width: 180px;
+	}
+	select {
+		width: 180px;
+	}
+</style>
+	
+<script type="text/javascript">
+    
+</script>
+	<div class="col-xs-12" >
+		<@form.form id="logForm" autoClose="false" 
+			class="form-horizontal" 
+			>
+		<div style="height: 15px;" >
+			<div style="padding-right: 20px; float: right;padding-top: 3px;" >
+				<button class="btn" type="button" onclick="javascript:api.close()" >
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+	 	<p style="padding-left:20px; ">${i18n.get('日志详情')}</p>
+		<div class="main" id="main" style="padding-left: 1px; border-top: 2px solid #e9e9e9 ;padding-top: 10px;" >
+			<table border="0" cellpadding="0" cellspacing="0" >
+		    	<tr align="left">
+		  			<td align="right" width="120px">
+		  				${i18n.get('单号：')}
+		            </td>
+		            <td align="left" width="200px" >
+		            	<@form.input 
+							id="orderNumber"  name="orderNumber" 
+							placeholder="" 
+							tip="" 
+							value="${(methodLogger.orderNumber)!}" 
+							readonly ="readonly"
+						/>
+		            </td>
+		            <td align="right"  width="120px">
+		  				${i18n.get('处理状态：')}
+		            </td>
+		            <td align="left"  width="200px">
+			  			<@form.input 
+							id="processingStatus"  name="processingStatus" 
+							placeholder="" 
+							tip="" 
+							value="${(methodLogger.processingStatus)!}" 
+							readonly ="readonly"
+						/>
+		            </td>
+		            <td align="right"  width="120px">
+		  				${i18n.get('接口调用时间：')}
+		            </td>
+		            <td align="left"  width="200px">
+			  			<@form.date 
+							id="interfaceStartDate"  name="interfaceStartDate" 
+							placeholder="" 
+							tip="" 
+							value="${(methodLogger.interfaceStartDate)!}" 
+							readonly ="readonly"
+						/>
+		            </td>
+		             <td align="right"  width="120px">
+		  				${i18n.get('接口返回时间：')}
+		            </td>
+		            <td align="left"  width="200px">
+			  			<@form.date 
+							id="interfaceReportDate"  name="interfaceReportDate" 
+							placeholder="" 
+							tip="" 
+							value="${(methodLogger.interfaceReportDate)!}" 
+							readonly ="readonly"
+						/>
+		            </td>
+		  		</tr>
+		  		<tr align="left">
+		  			<td align="right" width="120px">
+		  				${i18n.get('工号：')}
+		            </td>
+		            <td align="left" width="200px" >
+		            	<@form.input 
+							id="userNum"  name="userNum" 
+							placeholder="" 
+							tip="" 
+							value="${(methodLogger.userNum)!}" 
+							readonly ="readonly"
+						/>
+		            </td>
+		            <td align="right"  width="120px">
+		  				${i18n.get('操作人：')}
+		            </td>
+		            <td align="left"  width="200px">
+			  			<@form.input 
+							id="userName"  name="userName" 
+							placeholder="" 
+							tip="" 
+							value="${(methodLogger.userName)!}" 
+							readonly ="readonly"
+						/>
+		            </td>
+		            <td align="right"  width="120px">
+		  				${i18n.get('所属岗位：')}
+		            </td>
+		            <td align="left"  width="200px">
+			  			<@form.date 
+							id="interfaceStartDate"  name="userPosition" 
+							placeholder="" 
+							tip="" 
+							value="${(methodLogger.userPosition)!}" 
+							readonly ="readonly"
+						/>
+		            </td>
+		            <td align="right"  width="120px">
+		  				${i18n.get('所属组织：')}
+		            </td>
+		            <td align="left"  width="200px">
+			  			<@form.input 
+							id="userOrgName"  name="userOrgName" 
+							placeholder="" 
+							tip="" 
+							value="${(methodLogger.userOrgName)!}" 
+							readonly ="readonly"
+						/>
+		            </td>
+		  		</tr>
+		  		<tr>
+		  			<td align="right">
+		  				${i18n.get('方法来源：')}
+		            </td>
+		            <td align="left" colspan="7"> 
+		  				<@form.input 
+						id="fromFunction"  name="fromFunction" 
+						placeholder="" 
+						style="width: 1140px;"
+						tip="" 
+						maxlength = "600"
+						readonly ="readonly"
+						value="${(methodLogger.fromFunction)!}" 
+						/>
+		            </td>
+		  		</tr>
+		  		<tr>
+		  			<td align="right">
+		  				${i18n.get('处理结果：')}
+		            </td>
+			        <td colspan="7">
+				        <@form.textArea 
+				        	id="processingReport" name="processingReport" 
+				        	width="154" height="10" 
+				        	placeholder="" tip="" 
+				        	readonly ="readonly"
+				        	value="${(methodLogger.processingReport)!}" />
+		        	</td>
+		  		</tr>
+		  	</table>
+		  </div>
+		  <p style="padding-left:20px; ">${i18n.get('接口参数')}</p>
+		  <div class="main2" id="main2" style="padding-left: 1px; border-top: 2px solid #e9e9e9 ;padding-top: 10px;" >
+		  <table border="0" cellpadding="0" cellspacing="0" >
+		  		<tr>
+		  			<td align="right">
+		  				${i18n.get('接口方法1：')}
+		            </td>
+		            <td align="left" colspan="7"> 
+		  				<@form.input 
+						id="interfaceName1"  name="interfaceName1" 
+						placeholder="" 
+						style="width: 580px;"
+						tip="" 
+						maxlength = "600"
+						readonly ="readonly"
+						value="${(methodLogger.interfaceName1)!}" 
+						/>
+		            </td>
+		  		</tr>
+		  		<tr>
+		  			<td align="right">
+		  				${i18n.get('接口1参数：')}
+		            </td>
+			        <td colspan="7">
+				        <@form.textArea 
+				        	id="interfaceParameter1" name="interfaceParameter1" 
+				        	width="77" height="10" 
+				        	placeholder="" tip="" 
+				        	readonly ="readonly"
+				        	value="${(methodLogger.interfaceParameter1)!}" />
+		        	</td>
+		        	<td align="right">
+		  				${i18n.get('接口1返回值：')}
+		            </td>
+			        <td colspan="7">
+				        <@form.textArea 
+				        	id="interfaceReturnData1" name="interfaceReturnData1" 
+				        	width="77" height="10" 
+				        	placeholder="" tip="" 
+				        	readonly ="readonly"
+				        	value="${(methodLogger.interfaceReturnData1)!}" />
+		        	</td>
+		  		</tr>
+		  		
+		  		<tr>
+		  			<td align="right">
+		  				${i18n.get('接口方法2：')}
+		            </td>
+		            <td align="left" colspan="7"> 
+		  				<@form.input 
+						id="interfaceName2"  name="interfaceName2" 
+						placeholder="" 
+						style="width: 580px;"
+						tip="" 
+						maxlength = "600"
+						readonly ="readonly"
+						value="${(methodLogger.interfaceName2)!}" 
+						/>
+		            </td>
+		  		</tr>
+		  		<tr>
+		  			<td align="right">
+		  				${i18n.get('接口2参数：')}
+		            </td>
+			        <td colspan="7">
+				        <@form.textArea 
+				        	id="interfaceParameter2" name="interfaceParameter2" 
+				        	width="77" height="10" 
+				        	placeholder="" tip="" 
+				        	readonly ="readonly"
+				        	value="${(methodLogger.interfaceParameter2)!}" />
+		        	</td>
+		        	<td align="right">
+		  				${i18n.get('接口2返回值：')}
+		            </td>
+			        <td colspan="7">
+				        <@form.textArea 
+				        	id="interfaceReturnData2" name="interfaceReturnData2" 
+				        	width="77" height="10" 
+				        	placeholder="" tip="" 
+				        	readonly ="readonly"
+				        	value="${(methodLogger.interfaceReturnData2)!}" />
+		        	</td>
+		  		</tr>
+		  		
+		  		<tr>
+		  			<td align="right">
+		  				${i18n.get('接口方法3：')}
+		            </td>
+		            <td align="left" colspan="7"> 
+		  				<@form.input 
+						id="interfaceName3"  name="interfaceName3" 
+						placeholder="" 
+						style="width: 580px;"
+						tip="" 
+						maxlength = "600"
+						readonly ="readonly"
+						value="${(methodLogger.interfaceName3)!}" 
+						/>
+		            </td>
+		  		</tr>
+		  		<tr>
+		  			<td align="right">
+		  				${i18n.get('接口3参数：')}
+		            </td>
+			        <td colspan="7">
+				        <@form.textArea 
+				        	id="interfaceParameter3" name="interfaceParameter3" 
+				        	width="77" height="10" 
+				        	placeholder="" tip="" 
+				        	readonly ="readonly"
+				        	value="${(methodLogger.interfaceParameter3)!}" />
+		        	</td>
+		        	<td align="right">
+		  				${i18n.get('接口3返回值：')}
+		            </td>
+			        <td colspan="7">
+				        <@form.textArea 
+				        	id="interfaceReturnData3" name="interfaceReturnData3" 
+				        	width="77" height="10" 
+				        	placeholder="" tip="" 
+				        	readonly ="readonly"
+				        	value="${(methodLogger.interfaceReturnData3)!}" />
+		        	</td>
+		  		</tr>
+		  		
+		  		<tr>
+		  			<td align="right">
+		  				${i18n.get('接口方法4：')}
+		            </td>
+		            <td align="left" colspan="7"> 
+		  				<@form.input 
+						id="interfaceName4"  name="interfaceName4" 
+						placeholder="" 
+						style="width: 580px;"
+						tip="" 
+						maxlength = "600"
+						readonly ="readonly"
+						value="${(methodLogger.interfaceName4)!}" 
+						/>
+		            </td>
+		  		</tr>
+		  		<tr>
+		  			<td align="right">
+		  				${i18n.get('接口4参数：')}
+		            </td>
+			        <td colspan="7">
+				        <@form.textArea 
+				        	id="interfaceParameter4" name="interfaceParameter4" 
+				        	width="77" height="10" 
+				        	placeholder="" tip="" 
+				        	readonly ="readonly"
+				        	value="${(methodLogger.interfaceParameter4)!}" />
+		        	</td>
+		        	<td align="right">
+		  				${i18n.get('接口4返回值：')}
+		            </td>
+			        <td colspan="7">
+				        <@form.textArea 
+				        	id="interfaceReturnData4" name="interfaceReturnData4" 
+				        	width="77" height="10" 
+				        	placeholder="" tip="" 
+				        	readonly ="readonly"
+				        	value="${(methodLogger.interfaceReturnData4)!}" />
+		        	</td>
+		  		</tr>
+		  		
+		  		<tr>
+		  			<td align="right">
+		  				${i18n.get('接口方法5：')}
+		            </td>
+		            <td align="left" colspan="7"> 
+		  				<@form.input 
+						id="interfaceName5"  name="interfaceName5" 
+						placeholder="" 
+						style="width: 580px;"
+						tip="" 
+						maxlength = "600"
+						readonly ="readonly"
+						value="${(methodLogger.interfaceName5)!}" 
+						/>
+		            </td>
+		  		</tr>
+		  		<tr>
+		  			<td align="right">
+		  				${i18n.get('接口5参数：')}
+		            </td>
+			        <td colspan="7">
+				        <@form.textArea 
+				        	id="interfaceParameter5" name="interfaceParameter5" 
+				        	width="77" height="10" 
+				        	placeholder="" tip="" 
+				        	readonly ="readonly"
+				        	value="${(methodLogger.interfaceParameter5)!}" />
+		        	</td>
+		        	<td align="right">
+		  				${i18n.get('接口5返回值：')}
+		            </td>
+			        <td colspan="7">
+				        <@form.textArea 
+				        	id="interfaceReturnData5" name="interfaceReturnData5" 
+				        	width="77" height="10" 
+				        	placeholder="" tip="" 
+				        	readonly ="readonly"
+				        	value="${(methodLogger.interfaceReturnData5)!}" />
+		        	</td>
+		  		</tr>
+		  		
+		  	</table>
+		  </div>
+		</@form.form>
+	</div>
+</@cui.body2>
+</#escape>

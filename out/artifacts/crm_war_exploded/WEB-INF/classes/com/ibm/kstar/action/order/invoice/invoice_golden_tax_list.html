@@ -1,0 +1,203 @@
+
+<#if (permission["P06InvoiceT2IssuedAddOne"])??>
+	<#assign invoiceLines_delivery_addRow="true" />
+</#if>
+<#if (permission["P06InvoiceT2IssuedAddBatch"])??>
+	<#assign invoiceLines_delivery_addRowBatch="true" />
+</#if>
+<#if (permission["P06InvoiceT2IssuedDelete"])??>
+	<#assign invoiceLines_delivery_delRow="true" />
+</#if>
+<#if (permission["P06InvoiceT6InvoiceExport"])??>
+	<#assign expUrl="'${ctx}/invoice/exportTaxlists.html'" />
+</#if>
+
+
+<@form.table id="goldenTaxListForm" 
+	class="col-xs-12" 
+	title="${i18n.get('金税/形式发票明细')}" 
+	url = "${ctx}/invoice/queryInvoiceGoldenTaxList.html?invoiceCode=${(invoiceCode)!}"
+	checkbox = "true"
+	search = "false"
+	rowNum = "500"  
+	rowNumList = "[500]"
+	exportURL = "${expUrl!}"
+	colModel = "[
+		{name:'id',label:'id',hidden:true,width:100,sortable:false,align:'center'},
+		{name:'invoiceNo',label:'${i18n.get('发票单号')}',hidden:false,width:100,sortable:false,align:'center', editable : true},
+		{name:'custName',label:'${i18n.get('客户名称')}',hidden:false,width:250,sortable:false,align:'center', editable : true}, 
+		{name:'materielDesc',label:'${i18n.get('品名')}',hidden:false,width:250,sortable:false,align:'center', editable : true}, 
+		{name:'proModel',label:'${i18n.get('规格型号')}',hidden:false,width:100,sortable:false,align:'center', editable : true}, 
+		{name:'unit',label:'${i18n.get('单位')}',hidden:false,width:100,sortable:false,align:'center', editable : true}, 
+		{name:'invoiceQty',label:'${i18n.get('数量')}',hidden:false,width:100,sortable:false,align:'center', editable : true}, 
+		{name:'invoicePrice',label:'${i18n.get('单价')}',hidden:false,width:100,sortable:false,align:'center', editable : true}, 
+		{name:'invoiceAmount',label:'${i18n.get('金额')}',hidden:false,width:100,sortable:false,align:'center'},
+		{name:'remarks',label:'${i18n.get('备注')}',hidden:false,width:300,sortable:false,align:'center', editable : true}
+		
+	]" 
+	ondblClickRow = "function(id){
+		$('#goldenTaxListForm input[id='+id+'_invoiceQty]').bind('input',function(event){
+			var rowData = $('#goldenTaxListForm').jqGrid('getRowData',id);
+			var invoicePrice =  $('#goldenTaxListForm input[id='+id+'_invoicePrice]').val();
+			var invoiceQty  = $(this).val();
+			$('#goldenTaxListForm').jqGrid('setRowData', id, { invoiceAmount : 0 });
+			if(!invoiceQty){
+				$('#goldenTaxListForm').jqGrid('setRowData', id, { invoiceAmount : 0 });
+			}else{
+				if(isNaN(invoiceQty)){
+					$(this).val(0);
+					$('#goldenTaxListForm').jqGrid('setRowData', id, { invoiceAmount : 0 });
+				}else{
+					if(invoicePrice && !isNaN(invoicePrice) ){
+						var amount = parseFloat($(this).val()) * parseFloat(invoicePrice);
+						$('#goldenTaxListForm').jqGrid('setRowData', id, { invoiceAmount : amount });
+					}else{
+						$('#goldenTaxListForm').jqGrid('setRowData', id, { invoiceAmount : 0 });
+					}
+				}
+			}
+	 	});
+	 	
+	 	$('#goldenTaxListForm input[id='+id+'_invoicePrice]').bind('input',function(event){
+			var rowData = $('#goldenTaxListForm').jqGrid('getRowData',id);
+			var invoiceQty =  $('#goldenTaxListForm input[id='+id+'_invoiceQty]').val();
+			var invoicePrice = $(this).val();
+			if(!invoicePrice){
+				$('#goldenTaxListForm').jqGrid('setRowData', id, { invoiceAmount : 0 });
+			}else{
+				if(isNaN(invoicePrice)){
+					$(this).val(0);
+					$('#goldenTaxListForm').jqGrid('setRowData', id, { invoiceAmount : 0 });
+				}else{
+					if(invoiceQty && !isNaN(invoiceQty)){
+						var amount = parseFloat($(this).val()) * parseFloat(invoiceQty);
+						$('#goldenTaxListForm').jqGrid('setRowData', id, { invoiceAmount : amount });
+					}else{
+						$('#goldenTaxListForm').jqGrid('setRowData', id, { invoiceAmount : 0 });
+					}
+				}
+			}
+	 	});
+	}"
+	
+	buttons = "[
+		{id:'goldenTax_delRow', label : '${i18n.get('删除')}', icon : 'icon-remove',own : true,
+			handler : function(e,rowData){
+				delRow('goldenTaxListForm');
+			}
+		},
+		{id:'goldenTax_addRow',label : '${i18n.get('增加一行')}', icon : 'icon-save',own : true,
+			handler : function(e,rowData){
+				addRow('goldenTaxListForm');
+			}
+		},
+		{id:'goldenTax_addRowBatch', label : '${i18n.get('提取开票明细')}', icon : 'icon-save',own : true,
+			handler : function(e,rowData){
+				initGoldenTaxList();
+			}
+		},
+		{id:'goldenTaxList_print', label : '${i18n.get('发票打印')}', icon : 'icon-print',own : true,
+			handler : function(e,rowData){
+				goldenTaxListPrint();
+			}
+		},
+		{id:'packingList_print', label : '${i18n.get('装箱单打印')}', icon : 'icon-print',own : true,
+			handler : function(e,rowData){
+				packingListPrint();
+			}
+		},
+		{id:'salesContract_print', label : '${i18n.get('销售合同打印')}', icon : 'icon-print',own : true,
+			handler : function(e,rowData){
+				salesContractPrint();
+			}
+		}
+			
+	]"
+	onComplete = "function() { 
+		$('#goldenTaxListForm').setGridWidth($(window).width()-100);
+	}"
+	footerrow = "true"
+	gridComplete = "function() {
+		colSumGoldenTax();
+	}"
+	onLineEditAfter = "function(id,rowData){
+		colSumGoldenTax();
+	}"
+> 
+</@form.table>
+
+<script type="text/javascript">
+	var newrowid = 0; 
+	function initGoldenTaxList(){
+		var datas = [];
+		var ids_delivery = $('#invoiceLinesForm_Delivery').jqGrid('getDataIDs');
+ 		$.each(ids_delivery,function(i,id){
+ 			var data = $('#invoiceLinesForm_Delivery').jqGrid('getRowData',id);
+ 			delete data.act ;
+ 			//出货后开票 
+ 			datas.push(data);
+ 		})
+ 		var ids_order = $('#invoiceLinesForm_Order').jqGrid('getDataIDs');
+ 		$.each(ids_order,function(i,id){
+ 			var data = $('#invoiceLinesForm_Order').jqGrid('getRowData',id);
+ 			//提前开票 
+ 			delete data.act ;
+ 			datas.push(data);
+ 		})
+ 		
+ 		$.each(datas, function (n, data) {
+			newrowid = newrowid+1;
+			if(!data.invoiceQty){
+				data['invoiceQty'] = 0;
+				data['invoiceAmount'] = 0;
+			}
+			if(!data.invoicePrice){
+				data['invoicePrice'] = 0;
+				data['invoiceAmount'] = 0;
+			}
+			data['unit'] = data.unitLable;
+			data['invoiceNo'] = 1;
+			
+		    $('#goldenTaxListForm').jqGrid('addRowData', newrowid, data, 'first'); 
+		    $('#goldenTaxListForm').setGridParam({cellEdit:false});  
+         });
+	}
+	
+	function initGoldenTaxList_back(){
+		$.ajax({
+			type:"post",
+			async:false,
+			url:"${ctx}/invoice/getInvoiceDetailList.html?invoiceCode=${(invoiceCode)!}",
+			success:function(data){
+				if (data != null) {
+					var jsonobj = eval(data.message);
+					if(jsonobj){
+						$.each(jsonobj, function (n, data) {
+							newrowid = newrowid+1;
+							if(!data.invoiceQty){
+								data['invoiceQty'] = 0;
+								data['invoiceAmount'] = 0;
+							}
+							if(!data.invoicePrice){
+								data['invoicePrice'] = 0;
+								data['invoiceAmount'] = 0;
+							}
+						    $('#goldenTaxListForm').jqGrid('addRowData', newrowid, data, 'first'); 
+						    $('#goldenTaxListForm').setGridParam({cellEdit:false});  
+				         });
+					}
+		     	}
+			}
+		});
+	}
+	
+	function goldenTaxListPrint(){
+		window.open("${ctx}/invoice/printInvoiceExcel.html?invoiceCode=${(invoiceCode)!}");
+	}
+	function packingListPrint(){
+		window.open("${ctx}/invoice/printPackingListExcel.html?invoiceCode=${(invoiceCode)!}");
+	}
+	function salesContractPrint(){
+		window.open("${ctx}/invoice/printSalesContractExcel.html?invoiceCode=${(invoiceCode)!}");
+	}
+</script>

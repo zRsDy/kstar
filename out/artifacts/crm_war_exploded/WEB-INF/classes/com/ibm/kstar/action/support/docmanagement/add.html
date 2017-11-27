@@ -1,0 +1,65 @@
+<#escape x as x?html>
+<@pui.body>
+	<@form.panel title="${i18n.get('新增/编辑')}">
+	<@form.form id="supportTemplate" success="function(){ parent.currentParent.reload_SupportTemplateTable(); }" class="form-horizontal" >
+		<div class="form-group">	
+			<div class="col-md-offset-7 col-md-4">
+				
+				<#if permission["P08DocAdminParSave"]?? >
+					<button class="btn btn-info submit" id="btnSave" type="button">
+						<i class="bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+				</#if>
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+				
+			</div>
+		</div>
+			
+		<div class="form-group" >
+			<table>
+				<tr>
+					<td align="right" width="200">
+						<label class="no-padding-right" for="docType"> 
+							<strong style="color: red;">*</strong> ${i18n.get('目录名称 :')} 
+						</label>
+					</td>
+					<td>
+						<@form.input
+						id="docType"  
+						name="docType" 
+						placeholder="" 
+						required="${i18n.get('不能为空')}"
+						tip="" 
+						value="${(supportTemplate.docType)!}" 
+						/>
+					</td>
+					
+					<td align="right" width="200">
+						<label class="no-padding-right" for="comment"> 
+							${i18n.get('描述 : ')}
+						</label>
+					</td>
+					<td>
+						<@form.input
+						id="comment"  
+						name="comment" 
+						placeholder="" 
+						tip="" 
+						value="${(supportTemplate.comment)!}" 
+						/>
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+	</@form.form>
+
+	<@plug.tabs  tabMain=tabMain>
+	</@plug.tabs>
+	</@form.panel>
+</@pui.body>
+</#escape>

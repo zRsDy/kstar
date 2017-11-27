@@ -1,0 +1,108 @@
+<#if (permission["P02HandoverT3BizOppoHandover"]??  && ("${(customHandoverList.handoverStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customHandoverList.handoverStatus)!}" == "CUSTOM_NORMAL_STATUS_30"))>
+	<#assign bizOppoHandoverURL="${(checkDisplay)!}" />
+</#if>
+
+<@form.table id="hoBizoppList" 
+class="col-xs-12"
+height="131px"
+title="${i18n.get('商机基本信息列表')}" 
+url = "${ctx}/custom/handover/bizoppPage.html?id=${(customHandoverList.id)!}"  
+rowNum = "5" 
+search="false"
+checkbox="true"
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'checkStatusName',label:'${i18n.get('交接选择')}',hidden:false,width:80,sortable:true,align:'center' },
+	{name:'businessStatus',label:'${i18n.get('交接状态')}',hidden:true,width:100,sortable:true,align:'center' },
+	{name:'businessStatusName',label:'${i18n.get('交接状态')}',hidden:false,width:80,sortable:true,align:'center' },
+	{name:'number',label:'${i18n.get('商机编号')}',hidden:false,width:200,sortable:true,align:'center' },
+	{name:'opportunityName',label:'${i18n.get('商机名称')}',hidden:false,width:200,sortable:true,align:'center' },
+	{name:'createdByIdName',label:'${i18n.get('报备人　 ')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'enterpriseName',label:'${i18n.get('报备单位')}',hidden:false,width:200,sortable:true,align:'center' },
+	{name:'clientName',label:'${i18n.get('客户名称')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'bizOppAddressName',label:'${i18n.get('商机所在地')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'saleStageLable.name',label:'${i18n.get('销售阶段')}',hidden:false,width:100,sortable:true,align:'center' },
+	{name:'statusName',label:'${i18n.get('商机状态')}',hidden:false,width:200,sortable:true,align:'center'},
+	{name:'conflictStatusName',label:'${i18n.get('商机状态')}',hidden:false,width:200,sortable:true,align:'center' }
+	]" 
+	buttons = "[
+		{
+			id:'publish_checkhoBizoppList',
+			label : '${i18n.get('准备交接')}',
+			icon : 'icon-exchange',
+			own : ${bizOppoHandoverURL!'false'},
+			handler : function(e,rowData){
+				var selectedIds = [];
+				if(selectedList_hoBizoppList.length == 0){
+					exalert(e,'${i18n.get('没有选中任何数据!')}');
+					return;
+				}
+				$.each(selectedList_hoBizoppList,function(i,item){
+						selectedIds.push(item.id);
+					});
+				bootbox.confirm('${i18n.get('确认交接选中的数据吗？')}' , function(result) {
+					if(result) {
+						$.ajax({
+							url: '${ctx}/custom/handover/bizoppHandoverCheck.html',
+							type: 'POST',
+							data: {ids:selectedIds},
+							success : function(msg) {
+								alert(msg.message);
+								reload_hoBizoppList();
+							},
+							error: function(e) {
+								alert(e.responseJSON.message);
+								reload_hoBizoppList();
+							}
+						});
+					}
+				});
+			}
+		},
+		{
+			id:'publish_uncheckhoBizoppList',
+			label : '${i18n.get('交接取消')}',
+			icon : 'icon-exchange',
+			own : ${bizOppoHandoverURL!'false'},
+			handler : function(e,rowData){
+				var selectedIds = [];
+				if(selectedList_hoBizoppList.length == 0){
+					exalert(e,'${i18n.get('没有选中任何数据!')}');
+					return;
+				}
+				$.each(selectedList_hoBizoppList,function(i,item){
+						selectedIds.push(item.id);
+					});
+				bootbox.confirm('${i18n.get('确认交接选中的数据吗？')}' , function(result) {
+					if(result) {
+						$.ajax({
+							url: '${ctx}/custom/handover/bizoppHandoverUnCheck.html',
+							type: 'POST',
+							data: {ids:selectedIds},
+							success : function(msg) {
+								alert(msg.message);
+								reload_hoBizoppList();
+							},
+							error: function(e) {
+								alert(e.responseJSON.message);
+								reload_hoBizoppList();
+							}
+						});
+					}
+				});
+			}
+		}
+	]" >
+	<div class="col-xs-12" style="padding-top: 20px;">
+		<div class="form-group col-xs-3">
+		<input type="text" id="searchKey" name="searchKey" placeholder='${i18n.get('查询关键字')}' size="30" />
+		</div>	
+		<div class="form-group col-xs-2">
+			<button type="submit" class="btn btn-info" > 
+				<i class="icon-search bigger-110"></i>
+				${i18n.get('查询')}
+			</button>
+		</div>
+	</div>
+	
+</@form.table> 

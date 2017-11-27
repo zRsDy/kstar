@@ -1,0 +1,114 @@
+<@pui.body>
+    <script>
+        // $(function () {
+        //     setupForStatue(false);
+        //     $("input[name='isConflict']").click(function () {
+        //         var isConflict = $(this).val();
+        //         setupForStatue(isConflict === '1');
+        //     });
+        // });
+        //
+        // function setupForStatue(isConflict) {
+        //     if (isConflict === true) {
+        //         $("#conflictStatus").prop("disabled", false);
+        //         $("#projectProgress").prop("disabled", false);
+        //         $(".btn.submit").prop("disabled",false)
+        //     } else {
+        //         $("#conflictStatus").prop("disabled", true);
+        //         $("#projectProgress").prop("disabled", true);
+        //         $(".btn.submit").prop("disabled", true);
+        //     }
+        // }
+    </script>
+    <style type="text/css">
+
+        table {
+            border-collapse: collapse;
+            border-color: #ff0000;
+            align-items: center;
+        }
+
+        table td {
+            padding: 2px;
+            vertical-align: middle;
+            word-break: keep-all;
+            border: solid #ededed;
+            height: 30px;
+            border-width: 0px 0px 0px 0px;
+        }
+
+        input {
+            width: 180px;
+        }
+
+        select {
+            width: 180px;
+        }
+    </style>
+    <@form.form id="t_bizopp" success="function(){
+            var entity = {};
+            entity.conflictAppeal = $('input[name=\"conflictAppeal\"]:checked').val()
+            entity.conflictStatus = $('#conflictStatus').val()
+            entity.conflictAppealRemark = $('#conflictAppealRemark').val()
+            api.opener.currentParent.conflicAppealCallback(entity);
+       }">
+        <input type="hidden" id="bizOppId" name="id" value="${(entity.id)!''}">
+        <div class="main" id="main" style="padding-left: 1px; border-top: 2px solid #e9e9e9 ;">
+            <div class="biz_basic_info" id="top02">
+                <table border="0" cellpadding="0" cellspacing="0">
+                    <tr align="left" style="height: 50px;">
+                        <td align="right" class="sub_flag_2">${i18n.get('冲突申诉:')}</td>
+                        <td class="sub_flag_2">
+                            <@form.radio name="conflictAppeal" value="Y" selectValue="${(entity.conflictAppeal)!'N'}"/>
+                            <span class="lbl">${i18n.get('是')}</span>
+
+                            <@form.radio name="conflictAppeal" value="N" selectValue="${(entity.conflictAppeal)!'N'}"/>
+                            <span class="lbl">${i18n.get('否')}</span>
+                        </td>
+                    </tr>
+                    <tr style="height: 50px;">
+                        <td align="right" width="100px">
+                            <strong style="color: red;" class="asterisk">*</strong>${i18n.get('商机状态:')}
+                        </td>
+                        <td align="left">
+                                <@form.select
+                                id="conflictStatus"
+                                name="conflictStatus"
+                                code="CONFLICT_STATUS"
+                                idKey="code"
+                                required="${i18n.get('商机状态不能为空!')}"
+                                value ="${(entity.conflictStatus)!}"
+                                />
+                        </td>
+                    </tr>
+                    <tr style="height: 50px;">
+                        <td align="right" width="100px">
+                            <strong style="color: red;" class="asterisk">*</strong>${i18n.get('备注:')}
+                        </td>
+                        <td align="left">
+                           <@form.textArea id="conflictAppealRemark"  name="conflictAppealRemark"
+                           style="width: 98%; height: 60px;"
+                           placeholder="${i18n.get('备注')}"
+                           required="${i18n.get('备注不能为空')}"
+                           value="${(entity.conflictAppealRemark)!}"
+                           />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="clearfix" style="padding: 20px 5px">
+            <div style="margin:0 auto;width: 200px">
+                <button class="btn btn-info submit" type="button">
+                    <i class="icon-ok bigger-110"></i>
+                    ${i18n.get('保存')}
+                </button>
+                &nbsp; &nbsp; &nbsp;
+                <button class="btn" type="button" onclick="javascript:api.close()">
+                    <i class="icon-undo bigger-110"></i>
+                    ${i18n.get('关闭')}
+                </button>
+            </div>
+        </div>
+    </@form.form>
+</@pui.body>

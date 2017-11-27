@@ -1,0 +1,90 @@
+<@pui.body> 
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t1asdf"
+			success="function(){ parent.currentParent.reload_t1(); }" class="form-horizontal"
+			>
+			
+			<#if (lovGroup.partition)?? >
+				<input type="hidden" name="partition" value="${(lovGroup.partition)!'OTHER'}" />
+			</#if>
+			<div class="form-group" >
+				<label class="col-sm-3 control-label no-padding-right" for="name"> <strong style="color: red;">*</strong>${i18n.get('维度名称:')} </label>
+				<@form.input id="name" name="name" placeholder="${i18n.get('请输入维度名称')}" required="${i18n.get('不能为空！')}" value="${(lovGroup.name)!}" />
+			</div>
+			
+			<div class="form-group">
+				<label class="col-sm-3 control-label no-padding-right" for="code"> <strong style="color: red;">*</strong>${i18n.get('维度编码:')} </label>
+				<@form.input id="code" name="code" placeholder="${i18n.get('请输入维度编码')}" required="${i18n.get('不能为空！')}" value="${(lovGroup.code)!}" />
+			</div>
+			
+			<div class="form-group">
+				<label class="col-sm-3 control-label no-padding-right" for="name"> </label>
+				<@plug.showMore area=".showMore"> </@plug.showMore>
+			</div>
+			
+			<div class="hide showMore">
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right" for="optTxt1"> ${i18n.get('扩展字段1:')} </label>
+					<@form.input id="optTxt1" name="optTxt1" placeholder="${i18n.get('请输入扩展字段1')}" value="${(lovGroup.optTxt1)!}" />
+				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right" for="optTxt1"> ${i18n.get('扩展字段2:')} </label>
+					<@form.input id="optTxt2" name="optTxt2" placeholder="${i18n.get('请输入扩展字段2')}" value="${(lovGroup.optTxt2)!}" />
+				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right" for="optTxt1"> ${i18n.get('扩展字段3:')} </label>
+					<@form.input id="optTxt3" name="optTxt3" placeholder="${i18n.get('请输入扩展字段3')}" value="${(lovGroup.optTxt3)!}" />
+				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right" for="optTxt1"> ${i18n.get('扩展字段4:')} </label>
+					<@form.input id="optTxt4" name="optTxt4" placeholder="${i18n.get('请输入扩展字段4')}" value="${(lovGroup.optTxt4)!}" />
+				</div>
+				
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right" for="optTxt1"> ${i18n.get('扩展字段5:')} </label>
+					<@form.input id="optTxt5" name="optTxt5" placeholder="${i18n.get('请输入扩展字段5')}" value="${(lovGroup.optTxt5)!}" />
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('备注:')}</label>
+				<@form.textArea id="memo" name="memo" placeholder="${i18n.get('请输入备注')}" value="${(lovGroup.memo)!}" />
+			</div>
+			
+			<#if !lovGroup??>
+				<div class="form-group" >
+					<label id="aaa" class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('树形结构:')} </label>
+					<div class="radio">
+						<label>
+							<@form.radio name="treeFlag" value="Y" selectValue=(lovGroup.treeFlag)!'N'/>
+							<span class="lbl"> ${i18n.get('是 ')}</span>
+						</label>
+						<label>
+							<@form.radio name="treeFlag" value="N" selectValue=(lovGroup.treeFlag)!'N'/> 
+							<span class="lbl"> ${i18n.get('否 ')}</span>
+						</label>
+						<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="right" 
+						data-content="${i18n.get('一旦新建，不能变更。')}" title="${i18n.get('提示')}">?</span>
+					</div>
+				</div>
+			</#if>
+			
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+</@pui.body>

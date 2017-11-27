@@ -1,0 +1,28 @@
+
+<#-- 商机界面-竞争分析-新增 --> <#if permission["P03BizOppoT4CompetitorAnalisisAdd"]?? > <#assign addURL = "'${ctx}/bizCompetitor/add.html?bizOppId=${(id)!}'" /></#if>
+
+<#-- 商机界面-竞争分析-修改 --> <#if permission["P03BizOppoT4CompetitorAnalisisEdit"]?? > <#assign editURL = "'${ctx}/flow/page.html'" /></#if>
+
+<#-- 商机界面-竞争分析-删除 --> <#if permission["P03BizOppoT4CompetitorAnalisisDelete"]?? > <#assign deleteURL = "'${ctx}/bizCompetitor/delete.html'" /></#if>
+
+<@form.table id="competitionAnalysis"
+	class="col-xs-12"
+	title="${i18n.get('竞争分析')}" 
+	url = "${ctx}/bizCompetitor/page.html?bizOppId=${(id)!}"
+	rowNum = "10" 
+	addURL = "${addURL!}"
+	editURL= "${editURL!}"
+	deleteURL = "${deleteURL!}"
+	colModel = "[
+		{name:'id',label:'${i18n.get('ID')}',hidden:true,width:100,sortable:true,align:'center' },
+		{name:'competitorBrand',label:'${i18n.get('竞争品牌')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'productModel',label:'${i18n.get('产品型号')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'isSelectedBefor',label:'${i18n.get('客户前期选用')}',hidden:false,width:200,sortable:true,align:'center' },
+		{name:'advantage',label:'${i18n.get('优势')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'disadvantage',label:'${i18n.get('劣势')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'proTechScheme',label:'${i18n.get('项目技术方案')}',hidden:false,width:100,sortable:true,align:'center' },
+		{name:'proBizPlan',label:'${i18n.get('项目商务方案')}',hidden:false,width:200,sortable:true,align:'center'}
+		]" 
+		buttons = "[]" > 
+</@form.table> 
+<br/>

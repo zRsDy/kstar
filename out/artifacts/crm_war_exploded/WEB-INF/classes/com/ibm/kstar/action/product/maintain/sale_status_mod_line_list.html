@@ -1,0 +1,193 @@
+<script type="text/javascript">
+
+var newrowid = 0;  
+function addSaleStatusRow()  
+{   
+    //获得新添加行的行号（数据编号）  
+    newrowid = newrowid+1; 
+    var dataRow = {    
+        id: newrowid
+    };      
+    //将新添加的行插入到第一列  
+    $("#saleStatusModLineList").jqGrid("addRowData", newrowid, dataRow, "first");  
+    //设置grid单元格不可编辑  
+    $("#saleStatusModLineList").setGridParam({cellEdit:false});  
+    //设置grid单元格可编辑  
+    //$("#orderLinesForm").jqGrid('editRow', newrowid, false);
+    //初始化订单行
+    //initSaleStatusLine(newrowid,dataRow);
+}
+
+function initSaleStatusLine(newrowid,data){
+	
+	$('#saleStatusModLineList').jqGrid('setRowData', newrowid, { prodName : data.prodName});
+	$('#saleStatusModLineList').jqGrid('setRowData', newrowid, { materDesc : data.proDesc});
+	$('#saleStatusModLineList').jqGrid('setRowData', newrowid, { materCode : data.materielCode});
+	
+}
+
+function formatProdName3(value,options){
+	var rowData = $('#saleStatusModLineList').jqGrid('getRowData',options.rowId);
+	var lable = '${i18n.get('选择产品')}';
+	if(value){
+		lable = value;
+	}
+	var ps = '<a href="#" onclick="proSelect3(\''+options.rowId+'\');" >'+lable+'</a>';
+	
+	return ps;
+}
+
+var selectId = "";
+
+function proSelect3(rowid){
+	selectId = rowid ;
+	var rowData = $('#saleStatusModLineList').jqGrid('getRowData',selectId);
+	
+	$('#selProdStatusBtn').click();
+}
+
+function getAttrList(){
+	var str="";
+	$.ajax({
+		type:"post",
+		async:false,
+		url:"${ctx}/lov/member/select.html?code=csaleStatus",
+		success:function(data){
+			if (data != null) {
+				var jsonobj = eval(data.message);
+				var length = jsonobj.length;
+				for(var i=0;i<length;i++){
+					if(i != length-1 ){
+						// 这里是option里面的 value:label
+						str += jsonobj[i].id + ":" + jsonobj[i].name + ";";
+					}else{
+						str += jsonobj[i].id + ":" + jsonobj[i].name;
+					}
+	         	}   
+	     	}
+		}
+	});
+	return str;
+}
+
+
+function getResonList(){
+	return "产品升级:产品升级;品质缺陷:品质缺陷;重大客诉:重大客诉;其它:其它";
+}
+
+function getCurrentSaleStatus(materCode,rowid){
+	$.ajax({
+		type:"post",
+		async:false,
+		url:"${ctx}/product/maintain/getProdSaleStatus.html?materCode="+materCode,
+		success:function(data){
+			if (data != null) {
+				$('#saleStatusModLineList').jqGrid('setRowData', rowid, { currentSaleStatus : data.message.currentSaleStatus});
+				$('#saleStatusModLineList').jqGrid('setRowData', rowid, { currentSaleStatusName : data.message.currentSaleStatusName});
+	     	}
+		}
+	});
+}
+
+</script>
+<@form.table id="saleStatusModLineList" 
+	class="col-xs-12"
+	title="${i18n.get('产品属性变更明细')}" 
+	url = "${ctx}/product/maintain/saleStatusModLinePage.html?maintainId=${maintainId}" 
+	rowNum = "20" 
+	checkbox="true" 
+	style = "width:100%"
+	addURL = "${addURL!}"
+	editURL= "${editURL!}"
+	deleteURL= "${delURL!}"
+	colModel = "[
+		{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'materCode',label:'${i18n.get('物料号')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'materDesc',label:'${i18n.get('物料说明')}',hidden:false,width:400,sortable:false,align:'center' },
+		{name:'prodName',label:'${i18n.get('产品名称')}',hidden:false,width:200,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatProdName3(cellvalue,options) } },
+		{name:'currentSaleStatus',label:'${i18n.get('当前销售状态')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'currentSaleStatusName',label:'${i18n.get('当前销售状态')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'saleStatus',label:'${i18n.get('变更后销售状态')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'saleStatusName',label:'${i18n.get('变更后销售状态')}',hidden:false,width:100,editable:true,sortable:false,align:'center',edittype:'select',editoptions:{value:getAttrList()}},
+		{name:'reason',label:'${i18n.get('变更原因')}',hidden:false,width:300,sortable:false,align:'center',editable:true,edittype:'select',editoptions:{value:getResonList()}},
+		{name:'remark',label:'${i18n.get('备注')}',hidden:false,width:300,sortable:false,align:'center',editable:true}
+		]" 
+	ondblClickRow = "function(id){
+		var rowData = $('#saleStatusModLineList').jqGrid('getRowData',id);
+		
+	  	var saleStatus =  $('#saleStatus').val();
+	  	if(saleStatus != '' && saleStatus !=null){
+			if(rowData.saleStatus == '' || rowData.saleStatus == null){
+				$('#saleStatusModLineList select[id='+id+'_saleStatusName]').val(saleStatus);
+				$('#saleStatusModLineList').jqGrid('setRowData', id, { saleStatus : saleStatus});
+			}
+		}else{
+			var _saleStatus = $('#saleStatusModLineList select[id='+id+'_saleStatusName]').children('option:selected').val();
+			$('#saleStatusModLineList').jqGrid('setRowData', id, { saleStatus : _saleStatus});
+		}
+		
+		$('#saleStatusModLineList select[id='+id+'_saleStatusName]').change(function(){
+			var _saleStatus = $(this).children('option:selected').val();
+			$('#saleStatusModLineList').jqGrid('setRowData', id, { saleStatus : _saleStatus});
+		});
+	}"
+	buttons = "[
+		{
+			id:'addSaleStatusRow',
+			label : '${i18n.get('增加一行')}',
+			icon : 'icon-save',
+			own : ${canModify!'false'},
+			handler : function(e,rowData){
+				addSaleStatusRow();
+			}
+		},{
+			id:'deleteSaleStatusRow',
+			label : '${i18n.get('删除')}',
+			icon : 'icon-remove',
+			own : ${canModify!'false'},
+			handler : function(e,rowData){
+				var ids = $('#saleStatusModLineList').jqGrid('getGridParam','selarrrow'); 
+				var _ids = [];
+				 $.each(ids,function(i,id){
+					 _ids.push(id);
+				 });
+			     if(!ids || ids.length <= 0 ){
+			      　　	alert('${i18n.get('请选择要删除的行')}');
+			      　　	return;
+			     }else{
+			     	if(confirm('${i18n.get('是否删除选择的行')}')){
+				    	 $.each(_ids,function(i,id){
+				    	 	 $('#saleStatusModLineList').jqGrid('delRowData', id);
+				    	 });
+			    	 }
+			     } 
+			}
+		}
+	]"
+		>
+</@form.table>
+
+
+ <div style="display: none;" >
+		<@biz.picker_product id="selProdStatusBtn" 
+				urlFunction="function(){
+					return '${ctx}/common/product/selectList.html?proModel=&allCsaleStatus=true';
+				}"
+				button="${i18n.get('选择产品')}"
+				callback="function(data){
+					if(data){
+               			delete data.id ;
+               			data['prodName'] = data.productName;
+               			data['materDesc'] = data.proDesc;
+               			data['materCode'] = data.materielCode;
+					    $('#saleStatusModLineList').jqGrid('setRowData',selectId,data);
+					    
+					    initSaleStatusLine(selectId,data);
+					    
+					    getCurrentSaleStatus(data.materielCode,selectId);
+						
+					 }
+				}"
+		/>
+		
+</div>

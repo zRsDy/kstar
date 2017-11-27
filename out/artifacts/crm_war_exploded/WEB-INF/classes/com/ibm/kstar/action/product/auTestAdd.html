@@ -1,0 +1,151 @@
+<@pui.body nav1="${i18n.get('产品需求编辑')}" nav2="${i18n.get('新增/编辑')}" type="popup">
+
+<div class="col-xs-12" >
+    <#assign canCert=(permission["PRODUCT_INFO_EDIT_AUTEST_AU"])!>
+    <#assign auTestStatus=(autest.statusCode)!>
+    <!-- 01${i18n.get('新建')}；02${i18n.get('审批中')}；03${i18n.get('已审批')}；04${i18n.get('已驳回')} -->
+    <#if '01'=auTestStatus || '04'=auTestStatus>  
+        <#assign auTestName_readonly='false'>
+        <#assign auTestDesc_readonly='false'>
+        <#assign auTestType_readonly='false'>
+        <#assign proModel_readonly='false'>
+        <#assign completeTime_readonly='false'>
+        <#assign anthUrl_readonly='readonly'>
+        <#assign authCode_readonly='readonly'>
+    <#elseif '03'=auTestStatus>
+        <#assign auTestName_readonly='readonly'>
+        <#assign auTestDesc_readonly='readonly'>
+        <#assign auTestType_readonly='readonly'>
+        <#assign proModel_readonly='readonly'>
+        <#assign completeTime_readonly='readonly'>
+        <#if canCert>
+	        <#assign anthUrl_readonly='false'>
+	        <#assign authCode_readonly='false'>
+	    <#else>
+	        <#assign anthUrl_readonly='readonly'>
+	        <#assign authCode_readonly='readonly'>
+        </#if>
+    <#elseif '02'=auTestStatus>
+        <#assign auTestName_readonly='readonly'>
+        <#assign auTestDesc_readonly='readonly'>
+        <#assign auTestType_readonly='readonly'>
+        <#assign proModel_readonly='readonly'>     
+        <#assign completeTime_readonly='readonly'>        
+        <#assign anthUrl_readonly='readonly'>
+        <#assign authCode_readonly='readonly'>       
+	</#if>
+<@form.form success="function(){
+	try{
+		parent.currentParent.reload_t10(); 
+	}catch(e){
+		parent.currentParent2.reload_t10(); 
+	}
+	}" class="form-horizontal" upload="true">
+	<div class="hr hr-18 dotted hr-double"></div>
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" for="auTestName"><strong style="color: red;">*</strong> ${i18n.get('认证测试名称  :')} </label> 
+			<@form.input id="auTestName" name="auTestName" placeholder="${i18n.get('认证测试名称')}" required="${i18n.get('请输入认证测试名称')}" tip="" value="${((autest.auTestName)!)?html}" />
+			<#if auTestName_readonly='readonly'>
+			    <script type="text/javascript">$("#auTestName").attr("readonly","readonly")</script>
+			</#if>
+		</div>
+
+ 		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" for="auTestDesc">${i18n.get('认证测试事项或需求说明 :')} </label> 
+			 <@form.input id="auTestDesc" name="auTestDesc" placeholder=""  tip="" value="${((autest.auTestDesc)!)?html}" />
+			<#if auTestDesc_readonly='readonly'>
+			    <script type="text/javascript">$("#auTestDesc").attr("readonly","readonly")
+			    </script>
+			</#if>
+		</div>
+
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" ><strong style="color: red;">*</strong>${i18n.get('认证类型 :')}</label>
+			<#if auTestType_readonly!='readonly'> 
+			    <@form.select id="auTestType"   name="auTestType"   style="width:210px;" required="${i18n.get('认证类型不能为空')}" code="auTestType" idKey='id' value="${(autest.auTestType)!}"/>
+			<#else>
+	            <@form.select id="auTestTypeUI" name="auTestTypeUI" style="width:210px;" required="${i18n.get('认证类型不能为空')}" code="auTestType" idKey='id' value="${(autest.auTestType)!}"/>		
+			    <script type="text/javascript">$("#auTestTypeUI").attr("disabled","disabled")</script>
+				<input type="hidden" id="auTestType" name="auTestType" value="${(autest.auTestType)!}">		
+			</#if>
+		</div>
+
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right"><strong style="color: red;">*</strong>${i18n.get('产品型号:')} </label>
+			<@form.input id="proModel" readonly="true" name="proModel" value="${(autest.proModel)!}" />
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-3 control-label no-padding-right" for="submitTime"> ${i18n.get('提交时间 :')} </label> 
+			<#if ((autest.submitTime)??) && ((autest.submitTime?length) gt 0) >
+	 		 <@form.input id="submitTime" readonly="true" name="submitTime" placeholder="" tip="" value="${(autest.submitTime)!}" />
+	 		 <#else>
+	  		 <@form.input id="submitTime" disabled="disabled" name="submitTime" placeholder="" tip="" value="${(autest.submitTime)!}" />
+			</#if>
+		</div>
+
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" for="completeTime"> ${i18n.get('需求完成时间 :')} </label>
+			<#if completeTime_readonly!='readonly'> 
+	 		<@form.date id="completeTime" name="completeTime" placeholder="" tip="" value="${((autest.completeTime)!)?date}" />
+	 		<#else>
+	 		<@form.input id="completeTime" readonly="readOnly" name="completeTime" placeholder="" tip="" value="${(autest.completeTime)!}" />
+			</#if>
+		</div>
+
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" >${i18n.get('状态 :')}</label> 
+			<#if (status_readonly)??>
+				<@form.select id="status" name="status" style="width:210px;" code="PRODUCT_AU_TEST_PROC" idKey='id' value="${(autest.status)!}"/>
+			<#else>
+				<input type="hidden" id="status" name="status" value="${(autest.status)!}">
+				<@form.select id="uiStatus" name="uiStatus" style="width:210px;" code="PRODUCT_AU_TEST_PROC" idKey='id' value="${(autest.status)!}"/>	
+			    <script type="text/javascript">$("#uiStatus").attr("disabled","disabled")</script>
+			</#if>		 
+		</div>
+
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" for="applyDepartment">${i18n.get('申请部门:')} </label> 
+ 		  	<@form.input id="applyDepartment" disabled="disabled" name="applyDepartment" placeholder="" tip="" value="${(autest.applyDepartmentGrid.name)!} " />
+		</div>
+
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" for="applyPersion">${i18n.get('申请人:')} </label> 
+ 		  	<@form.input id="applyPersion" disabled="disabled" name="applyPersion" placeholder="" tip="" value="${(autest.applyPersionBean.name)!} " />
+		</div>
+
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" for="contractNumber">${i18n.get('认证编号 :')} </label> 
+ 		  	<@form.input id="authCode" name="authCode" placeholder=""  tip="" value="${(autest.authCode)!}" />
+			<#if authCode_readonly='readonly'>
+ 		  		<script type="text/javascript">$("#authCode").attr("readonly","readonly")</script>
+			</#if>
+		</div>
+		
+		<div class="form-group" <#if !(permission["P01-1ProductAutestCeoApprove"])??>style="display:none;"</#if>>
+			<label class="col-sm-3 control-label no-padding-right" for="contractNumber">${i18n.get('是否总经理审批 :')} </label> 
+ 		  	<@form.select style="width:163px;" id="isCeoApprove" name="isCeoApprove" tip="${i18n.get('是否总经理审批')} " code="NY" idKey='code' value="${(autest.isCeoApprove)!}" />
+		</div>
+			
+		<div class="hr hr-18 dotted hr-double"></div>
+		<div class="clearfix form-actions">
+			<div class="col-md-offset-5 col-md-7">
+				<#if !autest?? || !autest.id?? || statusEdit || ableEdit>
+			    <button class="btn btn-info submit" type="button"><i class="icon-ok bigger-110"></i>${i18n.get('保存')}</button>
+				&nbsp; &nbsp; &nbsp;
+				</#if>
+				<#if !ableEdit>
+				<button class="btn" type="button" onclick="javascript:api.close()"><i class="icon-undo bigger-110"></i>${i18n.get('关闭')}</button>
+				</#if>
+			</div>
+		</div>
+		</@form.form>
+		<div id="info" style="padding-top: 20px;" class="row">
+			<div class="col-xs-12">
+				<input type="hidden" id="selectedId"  />
+				<@plug.tabs tabMain=tabMainInfo>
+				</@plug.tabs>
+			</div>
+		</div>
+	</div>
+</@pui.body>

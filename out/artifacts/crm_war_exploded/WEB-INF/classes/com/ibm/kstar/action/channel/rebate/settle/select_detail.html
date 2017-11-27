@@ -1,0 +1,70 @@
+<@cui.body2>
+<div class="row" style="padding:0px 10px;" >
+	<div class="col-xs-12" style="width:1580px;">
+	<@form.table id="select" 
+		class="col-xs-11"
+		title="${i18n.get('明细挑选')}"
+		url = "${ctx}/rebateDetail/page.html?statusName=已确认&not_settleId=${settleId}&customId=${customId}"
+		checkbox="true"
+		rowNum = "20" 
+		colModel = "[
+			{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+			{name:'policyCode',label:'${i18n.get('返利政策编号')}',hidden:false,width:90,sortable:true,align:'center' }, 
+			{name:'policyName',label:'${i18n.get('返利政策名称')}',hidden:false,width:180,sortable:true,align:'center' }, 
+			{name:'customName',label:'${i18n.get('客户名称')}',hidden:false,width:250,sortable:true,align:'center' }, 
+			{name:'checkMoney',label:'${i18n.get('确认金额')}',hidden:false,width:90,sortable:true,align:'center' }, 
+			{name:'nonSettleMoney',label:'${i18n.get('未结算金额')}',hidden:false,width:90,sortable:true,align:'center' }, 
+			{name:'status',label:'${i18n.get('状态')}',hidden:false,width:60,sortable:true,align:'center' }, 
+			{name:'createDate',label:'${i18n.get('创建日期')}',hidden:false,width:80,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) }}, 
+			{name:'creater',label:'${i18n.get('创建人')}',hidden:false,width:80,sortable:true,align:'center' }, 
+			{name:'salesOrder',label:'${i18n.get('销售订单')}',hidden:false,width:150,sortable:true,align:'center'}, 
+			{name:'productCode',label:'${i18n.get('产品编号')}',hidden:false,width:100,sortable:true,align:'center' }, 
+			{name:'sendQuantity',label:'${i18n.get('发货数量')}',hidden:false,width:90,sortable:true,align:'center' },
+			{name:'orderMoney',label:'${i18n.get('订单金额')}',hidden:false,width:90,sortable:true,align:'center'}, 
+			{name:'sendDate',label:'${i18n.get('发货日期')}',hidden:false,width:80,sortable:true,align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }
+		]" 
+		buttons = "[
+			{
+					id:'select_select',
+					label : '${i18n.get('选择')}',
+					icon : 'icon-save',
+					own : 'true',
+					handler : function(e,rowData){
+						var selectedIds = [];
+						if(selectedList_select.length == 0){
+							exalert(e,'${i18n.get('没有选中任何数据!')}');
+							return;
+						}else{
+							$.each(selectedList_select,function(i,item){
+								selectedIds.push(item.proId);
+					 		});
+					        ajax({
+						        url: '${ctx}/rebateSettle/selectDetails.html',
+						        type: 'POST',
+						        data: {ids:selectedIds,settleId:parent.currentParent.selected_settle.id},
+						        success : function(result) {
+						        	parent.currentParent.reload_settle();
+		        					frameElement.api.close();
+						        }
+					        });
+						}
+					}
+				},
+				{
+					id:'close_select',
+					label : '${i18n.get('关闭')}',
+					icon : 'icon-trash',
+					own : 'true',
+					handler : function(e,rowData){
+						frameElement.api.close();
+					}
+				}
+		]"
+		> 
+		<div style="padding-left:10px;">
+			<input type="text" id="searchKey" name="searchKey" placeholder='请输入政策编号或客户名称' size="30" />
+		</div>  
+	</@form.table> 
+	</div>
+</div>
+</@cui.body2>

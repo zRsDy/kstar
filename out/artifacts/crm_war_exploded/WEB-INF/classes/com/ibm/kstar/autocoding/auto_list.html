@@ -1,0 +1,20 @@
+&lt;@ui.body nav1="" nav2=""&gt; 
+		<div class="col-xs-12"> <div class="form-group">
+			&lt;@form.table id="t1"
+				class="col-xs-12"
+				title="${i18n.get('列表')}"
+				url = "page.html"
+				rowNum = "20"
+				addURL = "'add.html'"
+				editURL = "'edit.html'"
+				deleteURL = "'delete.html'"
+				colModel = "[ 
+				<#list fields as field>
+				  {name:'${field.name}',label:'${(viewNameMap[field.name])!}',hidden:<#if visableMap[field.name]?? >false<#else>true</#if>,width:60,sortable:false,align:'center' <#if field.type.name == "java.util.Date">,formatter:function(cellvalue, options){ return formatDate(cellvalue) } </#if>},
+			 	</#list>
+			  {}]"
+			 buttons = "[]" 
+			&gt; 
+			&lt;/@form.table&gt; 
+		</div></div>
+&lt;/@ui.body&gt; 

@@ -1,0 +1,249 @@
+<@pui.body>
+<script type="text/javascript">
+	var procatalogList = ${procatalogList!'[]'};
+</script>
+
+<div class="row col-xs-12" style="width: 1000px;margin-right: 0px; margin-left: 0px; ">
+<table style="width: 1000px;" >
+	<tr>
+	<td id="treeTd" style="width: 300px;" valign="top" >
+		<@form.panel title="${i18n.get('产品目录树')}" style='height:100'>
+			<@plug.tree 
+				checkbox="false" 
+				id="productTree"
+				async="false"
+				datas="procatalogList"
+				onClick=" function(event, treeId, treeNode){
+			  		$('#parentId').val(treeNode.id);
+			  		reload_all_table();		
+			  	}"
+			  	isParent="function(data){
+			  		return data.leafFlag == 'N';
+			  	}"
+			/>
+			
+		</@form.panel>
+	</td>
+	<td style="width: 700px;vertical-align: top;">
+		<@form.table id="all_table"
+			title="${i18n.get('全部产品')}"
+			rowNum = "10"
+			checkbox = 'false'
+			search="false"
+			url = "${ctx}/common/product/page.html?priceTableId=${(priceTableId)!}&allCsaleStatus=${(allCsaleStatus)!}"
+			colModel = "[
+			 	{name:'id',label:'id', hidden :true , width : 60,sortable:true,align:'center' }, 
+				{name:'proId',label:'proId', hidden :true , width : 60,sortable:true,align:'center' }, 
+				{name:'productName',label:'${i18n.get('产品名称')}',hidden:false,width:120,sortable:true,align:'left' },
+				{name:'displayCatalogName',label:'${i18n.get('销售产品分类')}',hidden:false,width:100,sortable:true,align:'left' },
+				{name:'cproPowcap',label:'${i18n.get('产品规格')}',width:80,sortable:true,align:'center' },
+				{name:'proModel',label:'${i18n.get('产品型号')}',hidden:false,width:80,sortable:true,align:'center' },
+				{name:'clientCategory',label:'${i18n.get('外部型号')}',hidden:false,width:80,sortable:true,align:'center' },
+				{name:'catalogPrice1',label:'${i18n.get('标准品公开价格')}',hidden:true,width:80,sortable:true,align:'right' },
+				{name:'catalogPriceShow1',label:'${i18n.get('公开价格')}',hidden:false,width:80,sortable:true,align:'right' },
+				{name:'catalogPrice',label:'${i18n.get('标准品金牌价格')}',hidden:true,width:80,sortable:true,align:'right' },
+				{name:'catalogPriceShow',label:'${i18n.get('金牌价格')}',hidden:false,width:80,sortable:true,align:'right'},
+				{name:'productCode',label:'${i18n.get('产品编码')}',hidden:false,width:80,sortable:true,align:'center' },
+				{name:'materielCode',label:'${i18n.get('物料号')}',hidden:false,width:80,sortable:true,align:'center' },
+				{name:'crmCategoryLable',label:'${i18n.get('CRM产品类别')}',width:70,sortable:true,align:'center' },
+				{name:'proDesc',label:'${i18n.get('产品描述')}',hidden:false,width:800,sortable:true,align:'left' },
+				
+				{name:'proEName',label:'${i18n.get('英文名')}',hidden:true,width:100,sortable:true,align:'center' },
+				{name:'crmCategory',label:'${i18n.get('CRM产品类别ID')}',hidden:true,width:120,sortable:true,align:'center' },
+				{name:'vmaterCode',label:'${i18n.get('预定义物料号')}',hidden:true,width:60,sortable:true,align:'center'},
+				{name:'cproCategory',label:'${i18n.get('产品分类')}',hidden:true,width:120,sortable:true,align:'center' },
+				{name:'cproType',label:'${i18n.get('产品类别')}',hidden:true,width:120,sortable:true,align:'center' },
+				{name:'proSeries',label:'${i18n.get('产品系列')}',hidden:true,width:120,sortable:true,align:'center' },
+				{name:'proLineId',label:'${i18n.get('产品线ID')}',hidden:true,width:120,sortable:true,align:'center' },
+				{name:'proLine',label:'${i18n.get('产品线')}',hidden:true,width:120,sortable:true,align:'center' },
+				{name:'proGroup',label:'${i18n.get('产品组')}',hidden:true,width:120,sortable:true,align:'center' },
+				{name:'unit',label:'${i18n.get('单位ID')}',hidden:true,width:100,sortable:true,align:'center' },
+				{name:'unitLable',label:'${i18n.get('单位')}',hidden:true,width:100,sortable:true,align:'center' },
+				{name:'proBrand',label:'${i18n.get('品牌')}',hidden:true,width:120,sortable:true,align:'center'},
+				{name:'saleStatus',label:'${i18n.get('转销状态ID')}',hidden:true,width:120,sortable:true,align:'center',},
+				{name:'saleStatusLable',label:'${i18n.get('转销状态')}',width:120,sortable:true,align:'center',hidden:true},
+				{name:'erpCategory',label:'${i18n.get('ERP产品类别ID')}',hidden:true,width:120,sortable:true,align:'center' },
+				{name:'erpCategoryLable',label:'${i18n.get('ERP产品类别')}',width:120,sortable:true,align:'center',hidden:true}
+			  ]"
+			  ondblClickRow = "function(){
+			  	parent.currentParent.${pickerId}_callback(selectedData);
+				api.close();
+			  }"
+			  onSelectRow = "function(data,status){
+			 	if(status){
+			 		selectedData = data ;
+			 	}
+			  }"
+			 
+			  buttons = "[
+			  	{
+					id:'hideColByProModel',
+					label : '${i18n.get('按型号显示')}',
+					icon : 'icon-reload',
+					own : true,
+					handler : function(e,rowData){
+						hideColByProModel();
+					}
+				},
+				{
+					id:'hideColByMaterielCode',
+					label : '${i18n.get('按物料号显示')}',
+					icon : 'icon-reload',
+					own : true,
+					handler : function(e,rowData){
+						hideColByMaterielCode();
+					}
+				}
+			 ]"
+			   
+		     onComplete = "function() { 
+		     
+     			var ids = $('#all_table').jqGrid('getDataIDs');
+				$.each(ids,function(i,id){
+			 	   	var rowData = $('#all_table').jqGrid('getRowData', id); 
+			 	   	if(!rowData.catalogPriceShow){
+			 	   		$('#all_table').jqGrid('setRowData', id, { catalogPriceShow : rowData.catalogPrice});
+			 	  	}
+			 	  	if(!rowData.catalogPriceShow1){
+			 	   		$('#all_table').jqGrid('setRowData', id, { catalogPriceShow1 : rowData.catalogPrice1});
+			 	  	}
+			 	});
+			 	
+				hideColByMaterielCode();
+			 }"
+		
+			  >
+			 <input type="hidden" id="parentId" name="parentId" />
+			 <input  id="isReport" name="isReport" type="hidden" value="${(isReport)!}"/>
+			 <div class="col-xs-12" style="padding-top: 10px;">
+				<div class="form-group col-xs-3">
+					<input type="text" id="searchKey" name="searchKey" placeholder='查询关键字' />
+				</div>	
+				<div class="form-group col-xs-2" style="padding-left: 30px;">
+					<button type="submit" class="btn btn-info" > 
+						<i class="icon-search bigger-110"></i>
+						${i18n.get('查询')}
+					</button>
+				</div>
+			</div>
+
+			<div class="col-xs-12" style="display: none;">
+				<div class="form-group col-xs-2" align="right">${i18n.get('产品编码 ：')}</div>
+				<div class="form-group col-xs-4">
+					<@form.input 
+						id="productCode"  name="productCode" 
+						placeholder="" 
+						tip="" 
+					/>
+				</div>	
+				<div class="form-group col-xs-2" align="right">${i18n.get('产品名称 ：')}</div>
+				<div class="form-group col-xs-4">
+					<@form.input 
+						id="productName"  name="productName" 
+						placeholder="" 
+						tip="" 
+					/>
+				</div>
+				<div class="form-group col-xs-2" align="right">${i18n.get('产品型号 ：')}</div>
+				<div class="form-group col-xs-4">
+					<#if '${(proModel)!}'?default('') != ''>
+						<@form.input 
+							id="proModel"  name="proModel" 
+							placeholder="" 
+							readonly = "readonly"
+							tip="" 
+							value="${(proModel)!}"
+						/>
+					<#else>
+						<@form.input 
+							id="proModel"  name="proModel" 
+							placeholder="" 
+							tip="" 
+							value="${(proModel)!}"
+						/>
+					</#if>
+				</div>
+				<div class="form-group col-xs-2" align="right">${i18n.get('CRM产品类别 ：')}</div>
+				<div class="form-group col-xs-4">
+					<@form.select  
+		             		id="crmCategory" name="crmCategory" 
+		             		placeholder="${i18n.get('请选择CRM产品类别')}"
+		             		idKey='code'
+		             		code="crmCategory"
+		             	/>
+	             </div>
+			</div> 
+		</@form.table>
+	</td>
+	</tr>
+</table>
+
+<div class="clearfix form-actions">
+	<div class="col-md-offset-5 col-md-7">
+		<button class="btn btn-info" id="selectOK" type="button">
+			<i class="icon-ok bigger-110"></i>
+			${i18n.get('选择')}
+		</button>
+		&nbsp; &nbsp; &nbsp;
+		<button class="btn" type="button" onclick="javascript:api.close()">
+			<i class="icon-undo bigger-110"></i>
+			${i18n.get('关闭')}
+		</button>
+		<input type="hidden" id="isInner" name="isInner" value="${(isInner)!}">
+	</div>
+</div>
+<script type="text/javascript">
+	var selectedData ;
+	$('#selectOK').click(function(){
+		parent.currentParent.${pickerId}_callback(selectedData);
+		api.close();
+	})
+	
+	function hideColByProModel(){
+ 		$("#all_table").jqGrid("hideCol",["productCode"]);
+// 		$("#all_table").jqGrid("hideCol",["productName"]);
+// 		$("#all_table").jqGrid("hideCol",["proEName"]);
+// 		$("#all_table").jqGrid("hideCol",["proDesc"]);
+		$("#all_table").jqGrid("hideCol",["materielCode"]);
+//		$("#all_table").jqGrid("hideCol",["vmaterCode"]);
+// 		$("#all_table").jqGrid("hideCol",["unitLable"]);
+// 		$("#all_table").jqGrid("hideCol",["proBrand"]);
+// 		$("#all_table").jqGrid("hideCol",["saleStatusName"]);
+// 		$("#all_table").jqGrid("hideCol",["proLine"]);
+// 		$("#all_table").jqGrid("hideCol",["cproPowcap"]);
+// 		$("#all_table").jqGrid("hideCol",["crmCategoryLable"]);
+// 		$("#all_table").jqGrid("hideCol",["erpCategoryLable"]);
+// 		$("#all_table").jqGrid("hideCol",["proGroup"]);
+	}
+	function hideColByMaterielCode(){
+ 		$("#all_table").jqGrid("showCol",["productCode"]);
+// 		$("#all_table").jqGrid("showCol",["productName"]);
+// 		$("#all_table").jqGrid("showCol",["proEName"]);
+// 		$("#all_table").jqGrid("showCol",["proDesc"]);
+		$("#all_table").jqGrid("showCol",["materielCode"]);
+//		$("#all_table").jqGrid("showCol",["vmaterCode"]);
+// 		$("#all_table").jqGrid("showCol",["unitLable"]);
+// 		$("#all_table").jqGrid("showCol",["proBrand"]);
+// 		$("#all_table").jqGrid("showCol",["saleStatusName"]);
+// 		$("#all_table").jqGrid("showCol",["proLine"]);
+// 		$("#all_table").jqGrid("showCol",["cproPowcap"]);
+// 		$("#all_table").jqGrid("showCol",["crmCategoryLable"]);
+// 		$("#all_table").jqGrid("showCol",["erpCategoryLable"]);
+// 		$("#all_table").jqGrid("showCol",["proGroup"]);
+	}
+	
+	function formatCatalogPriceShow(value,options){
+		debugger;
+		var rowData = $('#all_table').jqGrid('getRowData',options.rowId);
+		if(value){
+			return value ;
+		}else if(rowData.catalogPrice) {
+			return rowData.catalogPrice ;
+		}else{
+			return 0 ;
+		}
+		
+	}
+</script>
+</div>
+</@pui.body>

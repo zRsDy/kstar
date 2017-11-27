@@ -1,0 +1,260 @@
+<@cui.body>
+<#if (permission["P09ServiceApplyAdd"])??>
+	<#assign addURL="'${ctx}/serviceApply/addOrEdit.html'" />
+</#if>
+<#if (permission["P09ServiceApplyEdit"])??>
+	<#assign editURL="true" />
+</#if>
+<#if (permission["P09ServiceApplyDelete"])??>
+	<#assign deleteURL="true" />
+</#if>
+<#if (permission["P09ServiceApplySubmit"])??>
+	<#assign submitURL="true" />
+</#if>
+<#if (permission["P09ServiceFileAdd"])??>
+	<#assign fileAddURL="true" />
+</#if>
+<#if (permission["P09ServiceFileDelete"])??>
+	<#assign fileDeleteURL="true" />
+</#if>
+	<div class="col-xs-12">
+		<@form.table id="apply"
+			class="col-xs-12"
+			title="服务申请${i18n.get('')}"
+			url = "${ctx}/serviceApply/page.html"
+			rowNum = "10"
+			addURL = "${addURL!}"
+			colModel = "[
+				{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+				{name:'createdById',label:'${i18n.get('创建人id')}',hidden:true,width:150,sortable:true,align:'center' },
+				{name:'applyCode',label:'${i18n.get('申请单号')}',hidden:false,width:90,sortable:true,align:'center' }, 
+				{name:'applyUnitName',label:'${i18n.get('申请单位')}',hidden:false,width:170,sortable:true,align:'left' }, 
+				{name:'dealerName',label:'${i18n.get('是否经销商')}',hidden:false,width:70,sortable:true,align:'center' }, 
+				{name:'serviceTypeName',label:'${i18n.get('服务类型')}',hidden:false,width:60,sortable:true,align:'center' }, 
+				{name:'statusName',label:'${i18n.get('状态')}',hidden:false,width:60,sortable:true,align:'center' }, 
+				{name:'currencyName',label:'${i18n.get('货币')}',hidden:false,width:70,sortable:true,align:'center' }, 
+				{name:'serviceExpense',label:'${i18n.get('服务费用')}',hidden:false,width:80,sortable:true,align:'center'}, 
+				{name:'applyDate',label:'${i18n.get('申请日期')}',hidden:false,width:80,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+				{name:'demandFinishDate',label:'${i18n.get('需求完成日期')}',hidden:false,width:80,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+				{name:'applierName',label:'${i18n.get('申请人')}',hidden:false,width:80,sortable:true,align:'center'}, 
+				{name:'applierPhone',label:'${i18n.get('申请人电话')}',hidden:false,width:90,sortable:true,align:'center' }, 
+				{name:'explain',label:'${i18n.get('说明')}',hidden:false,width:450,sortable:true,align:'left' }
+			]" 
+			onSelectRow="function(){
+				$('#applyId').val(selected_apply.id);
+				reload_equip();
+				
+				var userId = '${LOGIN_USER_ID}';
+				if(selected_apply.statusName == '新建' && userId == selected_apply.createdById){
+					$('#buttons_add_attachment_service').show();
+				}else{
+					$('#buttons_add_attachment_service').hide();
+				}
+			}"
+			onComplete="function(){
+				$('#applyId').val('');
+			}"
+			buttons = "[
+				{
+		  			id:'edit_apply',
+		  			label : '${i18n.get('修改')}',
+		  			icon : 'icon-pencil',
+		  			own : ${editURL!'false'},
+		  			handler : function(e,rowData){
+				        if(!selected_apply){
+		  			        exalert(e,'${i18n.get('请选择要修改的申请！')}');
+							return;
+						}else{
+							var statusEdit = !canEdit(selected_apply.statusName);
+							parent.dialog('${i18n.get('修改')}','${ctx}/serviceApply/addOrEdit.html?id='+selected_apply.id+'&statusEdit='+statusEdit,window);
+						}
+		  			}
+		  		},
+				{
+		  			id:'delete_apply',
+		  			label : '${i18n.get('删除')}',
+		  			icon : 'icon-trash',
+		  			own : ${deleteURL!'false'},
+		  			handler : function(e,rowData){
+				        if(!selected_apply){
+		  			        exalert(e,'${i18n.get('请选择要删除的申请！')}');
+							return;
+						}else if(canEdit(selected_apply.statusName)){
+							myAlert(e,'${i18n.get('删除')}');
+							return;
+						}else{
+                            bootbox.confirm('${i18n.get('你确定要删除申请？')}' , function(result) {
+                                if( result ){						    
+									ajax({
+										url: '${ctx}/serviceApply/delete.html',
+										type: 'POST',
+										data: {id:selected_apply.id},
+										success : function(result) {
+											exalert(e,'${i18n.get('删除成功！')}');
+											reload_apply();
+										}
+									});
+								}
+							});
+						}
+		  			}
+		  		},
+				{
+		  			id:'submit_apply',
+		  			label : '${i18n.get('提交')}',
+		  			icon : 'icon-save',
+		  			own : ${submitURL!'false'},
+		  			handler : function(e,rowData){
+		  				var equipdata = $('#equip').jqGrid('getRowData');
+				        if(!selected_apply){
+		  			        exalert(e,'${i18n.get('请选择要提交的申请！')}');
+							return;
+						}else if(canEdit(selected_apply.statusName)){
+							myAlert(e,'${i18n.get('提交')}');
+							return;
+						}else if(equipdata.length == 0){
+							exalert(e,'${i18n.get('没有设备/配件信息，不能提交！')}');
+							return;
+						}else{
+                            bootbox.confirm('${i18n.get('你确定要提交申请？')}' , function(result) {
+                                if( result ){						    
+									ajax({
+										url: '${ctx}/serviceApply/submit.html',
+										type: 'POST',
+										data: {id:selected_apply.id},
+										success : function(result) {
+											exalert(e,'${i18n.get('提交成功！')}');
+											reload_apply();
+										}
+									});
+								}
+							});
+						}
+		  			}
+		  		}
+			]" > 
+			<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">	
+				<div class="form-group col-xs-3">
+					<input type="text" id="searchKey" name="searchKey" placeholder='请输入申请单号或单位名称' size="30" />
+				</div>	
+			</div> 
+		</@form.table>
+		
+		<#if (permission["P09ServiceEquipAdd"])??>
+			<#assign addURL_equip="true" />
+		</#if>
+		<#if (permission["P09ServiceEquipEdit"])??>
+			<#assign editURL_equip="true" />
+		</#if>
+		<#if (permission["P09ServiceEquipDelete"])??>
+			<#assign deleteURL_equip="'${ctx}/serviceApply/deleteEquip.html'" />
+		</#if>
+		<div id="equipDiv">
+		<@form.table id="equip" 
+			class="col-xs-12"
+			title="${i18n.get('设备/配件信息')}"
+			url = "${ctx}/serviceApply/pageEquip.html"
+			rowNum = "10"
+			deleteURL = "${deleteURL_equip!}"
+			colModel = "[
+				{name:'id',label:'',hidden:true,width:150,sortable:true,align:'center' }, 
+				{name:'equipModel',label:'${i18n.get('设备型号')}',hidden:false,width:120,sortable:true,align:'center' }, 
+				{name:'productLine',label:'${i18n.get('产品线')}',hidden:false,width:200,sortable:true,align:'center' }, 
+				{name:'brand',label:'${i18n.get('品牌')}',hidden:false,width:150,sortable:true,align:'center' }, 
+				{name:'equipSeries',label:'${i18n.get('设备序列号')}',hidden:false,width:200,sortable:true,align:'center' }, 
+				{name:'equipMateriel',label:'${i18n.get('备件物料号')}',hidden:false,width:120,sortable:true,align:'center'}, 
+				{name:'servicePrice',label:'${i18n.get('单价')}',hidden:false,width:100,sortable:true,align:'left' }, 
+				{name:'serviceQuantity',label:'${i18n.get('数量')}',hidden:false,width:100,sortable:true,align:'left' }, 
+				{name:'serviceMoney',label:'${i18n.get('金额')}',hidden:false,width:100,sortable:true,align:'left' }, 
+				{name:'remark',label:'${i18n.get('备注')}',hidden:false,width:400,sortable:true,align:'left' },
+			]" 
+			buttons = "[
+				{
+		  			id:'add_equip',
+		  			label : '${i18n.get('新增')}',
+		  			icon : 'icon-plus',
+		  			own : ${addURL_equip!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_apply){
+							exalert(e,'${i18n.get('请选择申请单数据！')}');
+							return;
+						}else if(canEdit(selected_apply.statusName)){
+							myAlert(e,'${i18n.get('新增')}');
+							return;
+						}
+						var requestPath = '${ctx}/serviceApply/addOrEditEquip.html?applyId='+selected_apply.id+'&serviceTypeName='+selected_apply.serviceTypeName;
+						parent.dialog('${i18n.get('申请行项目')}', requestPath, window);
+		  			}
+		  		},
+		  		{
+		  			id:'edit_equip',
+		  			label : '${i18n.get('修改')}',
+		  			icon : 'icon-pencil',
+		  			own : ${editURL_equip!'false'},
+		  			handler : function(e,rowData){
+						if(!selected_apply){
+							exalert(e,'${i18n.get('请选择申请单号')}');
+							return;
+						}else{
+							var statusEdit = !canEdit(selected_apply.statusName);
+							var requestPath = '${ctx}/serviceApply/addOrEditEquip.html?id='+selected_equip.id+'&serviceTypeName='+selected_apply.serviceTypeName+'&statusEdit='+statusEdit;
+							parent.dialog('${i18n.get('修改')}', requestPath, window);
+						}
+		  			}
+		  		}
+			]" > 
+			
+			<div class="col-xs-12" style="padding-top: 5px; margin-bottom: -12px;">	
+				<div class="form-group col-xs-3">
+					<input type="hidden" id="applyId" name="applyId" />
+					<input type="text" id="searchKey" name="searchKey" placeholder='请输入编号或描述' size="30" />
+				</div>	
+			</div> 
+		</@form.table>
+		<input type="hidden" id="equipId" />
+		<div id="attachmentId"></div>
+		</div>
+	</div>
+</@cui.body>
+<script type="text/javascript">
+function reload_apply_2(applyId){
+	$("#applyId").val(applyId);
+	$("#equipId").val('');
+	reload_apply();
+}
+function onComplete_apply(){
+	var applyId = $("#applyId").val();
+	$('#'+applyId).trigger('click');
+}
+
+function reload_equip_2(equipId){
+	$("#equipId").val(equipId);
+	reload_equip();
+}
+function onComplete_equip(){
+	var equipId = $("#equipId").val();
+	$('#'+equipId).trigger('click');
+}
+
+var activityloadimg="<img src ='${ctx}/assets/img/loading.gif' /> ";
+$(document).ready(function() {
+	showAttachmentPage("attachmentId","${ctx}/common/attachment/attachment.html?businessType=service&unableAdd=true&unableDelete=true");
+});
+function showAttachmentPage(tabId, url){
+	url = url + "&docGroupCode=ServiceApplyDocType&businessId=xx";
+	$('#applytab a[href="#'+tabId+'"]').tab('show');
+	$('#'+tabId).html(url +'<br>'+ activityloadimg +' 页面加载中，请稍后...');
+	$('#'+tabId).load(url,function(response,status,xhr){
+		if(status === 'error'){
+			$('#'+tabId).html(url+'<br> 页面加载失败');
+		}
+	});
+}
+
+function canEdit(status){
+	return status != '新建' && status != '已驳回';
+}
+function myAlert(e,type){
+	exalert(e,'只有新建或已驳回的数据可'+type+'!');
+}
+</script>

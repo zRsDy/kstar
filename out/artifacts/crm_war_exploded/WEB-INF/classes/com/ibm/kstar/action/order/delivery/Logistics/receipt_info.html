@@ -1,0 +1,429 @@
+<#escape x as x?html>
+<@cui.body2>
+<style type="text/css">
+	table {
+		border-collapse: collapse;
+		border-color: #ff0000;
+	}
+	
+	
+	table td {
+		padding:1px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	select {
+		width: 200px;
+	}
+</style>
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		
+		$("#receipt_button").hide();
+		$("#save_button").hide();
+		if("${(deliveryReceipt.status)!}"  == "10"){
+			$("#receipt_button").show();
+			$("#save_button").show();
+		}
+		if("${(employeeType)!}" != "E"){
+			$("#save_button").show();
+		}
+		
+		if("${(employeeType)!}" == "E"){
+			$("#logisticsCompany").attr("disabled","disabled");
+		}
+		$("#status").attr("disabled","disabled");
+		$("#createdAt").attr("disabled","disabled");
+		$("#invoicePrintTime").attr("disabled","disabled");
+		$("#invoicePrintTime").attr("disabled","disabled");
+		
+		calculateQty();
+		
+	});
+	
+	function save_before(){
+		calculateQty();
+		$("#status").removeAttr("disabled");
+		$("#logisticsCompany").removeAttr("disabled");
+	}
+	
+	function receipt_before(){
+		calculateQty();
+		$("#status").removeAttr("disabled");
+		
+		var actualArrivalTime = $("#actualArrivalTime").val();
+		var actualTime = $("#actualTime").val();
+		if(actualArrivalTime && actualTime){
+			var ids = $('#attachment_DELIVERY_RECEIPT').jqGrid('getDataIDs');
+			if(ids != null && ids !='' ){
+				$("#status").removeAttr("disabled");
+				$("#status").select2("val", "20");
+				$("#save_button").click();
+			}else{
+				alert('${i18n.get('签收失败，请上传签收单')}');
+			}
+		}else{
+			alert('${i18n.get('签收失败，实际到达时间/实际用时不能为空')}');
+		}
+	}
+	
+	//计算数量
+	function calculateQty(){
+		$('#logisticsReceiptsLinesForm').trigger('blur');
+		var deliveryQty = 0;
+		var receiptQty = 0;
+		var ids = $('#logisticsReceiptsLinesForm').jqGrid('getDataIDs');
+			$.each(ids,function(i,id){
+				var rowData = $("#logisticsReceiptsLinesForm").jqGrid("getRowData",id);
+				if(rowData.deliveryQty){
+					deliveryQty = deliveryQty +  parseFloat(rowData.deliveryQty);
+				}
+				if(rowData.receiptQty){
+					receiptQty = receiptQty +  parseFloat(rowData.receiptQty);
+				}
+			});
+		$("#deliveryQty_show").val(deliveryQty);
+		$("#receiptQty_show").val(receiptQty);
+	}
+	
+</script>
+<div class="col-xs-12" >
+	<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="logisticsReceiptsForm"
+			success="function(){ 
+				alert('${i18n.get('保存成功')}');
+				parent.currentParent2.reload_logisticsReceiptsListForm(); 
+			}" 
+			postData="function(){
+		 		var ids = $('#logisticsReceiptsLinesForm').jqGrid('getDataIDs');
+				var lines = [];
+		 		$.each(ids,function(i,id){
+		 			var data = $('#logisticsReceiptsLinesForm').jqGrid('getRowData',id);
+		 			lines.push(data);
+		 		})
+		 		var obj = {'lines':lines};
+		 		return obj;
+			}"
+			
+			class="form-horizontal">
+			<div style="height: 15px;">
+				<div style="padding-right: 20px; float: right;padding-top: 3px;" >
+					<#if permission["P06SignEditSave"]?? >
+						<button id = "save_button" class="btn btn-info submit" type="button"  onclick="save_before()">
+							<i class="icon-ok bigger-110"></i>
+							${i18n.get('保存')}
+						</button>
+					</#if>
+					<#if permission["P06SignEditSign"]?? >
+						<button id = "receipt_button" class="btn btn-info" type="button" onclick="receipt_before()" >
+							<i class="icon-ok bigger-110"></i>
+							${i18n.get('签收')}
+						</button>
+					</#if>
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+					</div>
+			</div>
+			<p style="padding-left:20px; ">${i18n.get('签收单题头')}</p>
+			<div align="center" class="form-group" style="padding-top: 10px;border-top: 2px solid #e9e9e9 ;" >
+			<table>
+				<tr>
+					<td align="right" width="200px">
+						<label class="o-padding-right" for="receiptCode"> ${i18n.get('签收单编号 :')} </label>
+					</td>
+					<td width="300px">
+						<@form.input
+							id="receiptCode"  name="receiptCode" 
+							placeholder="" 
+							readonly="readonly"
+							tip="" 
+							value="${(deliveryReceipt.receiptCode)!}" 
+						/>
+					</td>
+					<td  align="right" width="150px">
+						 ${i18n.get('客户 :')} 
+					</td>
+					<td  width="300px">
+						<@form.input
+							id="singleCustName"  name="singleCustName" 
+							placeholder="" 
+							readonly="readonly"
+							tip="" 
+							value="${(deliveryReceipt.singleCustName)!}" 
+							/>
+					</td>
+					<td  align="right" width="150px">
+						<label class="o-padding-right" ><strong style="color: red;">*</strong> ${i18n.get('物流公司 :')} </label>
+					</td>
+					<td width="300px">
+						<@form.select 
+			         		id="logisticsCompany"  name="logisticsCompany" 
+			         		required="${i18n.get('请选择物流公司')}" 
+							code="TRANSPORT_CO"
+							idKey="code"
+							value="${(deliveryReceipt.logisticsCompany)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						<label class="o-padding-right" for="deliveryCode"> ${i18n.get('出货申请编号 :')} </label>
+					</td>
+					<td>
+						<@form.input
+						id="deliveryCode"  name="deliveryCode" 
+						placeholder="" 
+						readonly="readonly"
+						tip="" 
+						value="${(deliveryReceipt.deliveryCode)!}" 
+						/>
+					</td>
+					<td  align="right">
+						<label class="o-padding-right" for="receAddress"> ${i18n.get('收货地址 :')} </label>
+					</td>
+					<td>
+						<@form.input
+							id="receAddress"  name="receAddress" 
+							placeholder="" 
+							readonly="readonly"
+							tip="" 
+							value="${(deliveryReceipt.receAddress)!}" 
+							/>
+					</td>
+					<td align="right">
+						<strong style="color: red;">*</strong> <label class="o-padding-right" for="logisticsNo"> ${i18n.get('物流运单号 :')} </label>
+					</td>
+					<td>
+						<@form.input   
+							id="logisticsNo"  name="logisticsNo" 
+							required="${i18n.get('物流运单号不能为空')}"
+							placeholder="" 
+							tip="" 
+							value="${(deliveryReceipt.logisticsNo)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td  align="right">
+						<label class="o-padding-right" for="externalNo"> ${i18n.get('出货单编号（外部） :')} </label>
+					</td>
+					<td>
+						<@form.input
+						id="externalNo"  name="externalNo" 
+						placeholder="" 
+						readonly="readonly"
+						tip="" 
+						value="${(deliveryReceipt.externalNo)!}" 
+						/>
+					</td>
+					<td  align="right">
+						<label class="o-padding-right" for="consignee"> ${i18n.get('收货人 :')} </label>
+					</td>
+					<td>
+						<@form.input
+							id="consignee"  name="consignee" 
+							placeholder=""
+							readonly="readonly" 
+							tip="" 
+							value="${(deliveryReceipt.consignee)!}" 
+							/>
+					</td>
+					<td  align="right">
+						<strong style="color: red;">*</strong> <label class="o-padding-right" for="estimateArrivalTime"> ${i18n.get('预计到达时间 :')} </label>
+					</td>
+					<td>
+						<@form.date   
+							id="estimateArrivalTime"  name="estimateArrivalTime" 
+							required="${i18n.get('请选择预计到达时间')}" 
+							placeholder="" 
+							tip="" 
+							value="${(deliveryReceipt.estimateArrivalTime?date)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td  align="right">
+						<label class="o-padding-right" for="invoicePrintTime"> ${i18n.get('签收单打印日期（外部） :')} </label>
+					</td>
+					<td>
+						<@form.date   
+						id="invoicePrintTime"  name="invoicePrintTime" 
+						placeholder="" 
+						tip="" 
+						value="${(deliveryReceipt.invoicePrintTime?date)!}" 
+						/>
+					</td>
+					<td  align="right">
+						<label class="o-padding-right" for="consigneeTel"> ${i18n.get('收货人电话 :')} </label>
+					</td>
+					<td>
+						<@form.input
+						id="consigneeTel"  name="consigneeTel" 
+						placeholder="" 
+						readonly="readonly"
+						tip="" 
+						value="${(deliveryReceipt.consigneeTel)!}" 
+						/>
+					</td>
+					<td  align="right">
+						<strong style="color: red;">*</strong> <label class="o-padding-right" for="estimateTime"> ${i18n.get('预计用时（天）:')} </label>
+					</td>
+					<td>
+						<@form.number   
+							id="estimateTime"  name="estimateTime" 
+							required="${i18n.get('预计用时不能为空')}" 
+							placeholder="" 
+							tip="" 
+							value="${(deliveryReceipt.estimateTime)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td  align="right">
+						<label class="o-padding-right" for="createdByName"> ${i18n.get('创建人 :')} </label>
+					</td>
+					<td>
+						<@form.input
+							id="createdByName"  name="createdByName" 
+							placeholder="" 
+							readonly="readonly"
+							tip="" 
+							value="${(deliveryReceipt.createdByName)!}" 
+							/>
+					</td>
+					<td  align="right">
+						<label class="o-padding-right" for="deliveryQty"> ${i18n.get('出货数量 :')} </label>
+					</td>
+					<td>
+						<@form.number 
+							id="deliveryQty_show"  name="deliveryQty_show" 
+							readonly="readonly" 
+							tip="" 
+							/>
+					</td>
+					<td  align="right">
+						<label class="o-padding-right" for="actualArrivalTime"> ${i18n.get('实际到达时间 :')} </label>
+					</td>
+					<td>
+						<@form.date 
+							id="actualArrivalTime"  name="actualArrivalTime" 
+							placeholder="" 
+							tip="" 
+							value="${(deliveryReceipt.actualArrivalTime?date)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td  align="right">
+						<label class="o-padding-right" for="createdAt"> ${i18n.get('创建日期 :')} </label>
+					</td>
+					<td>
+						<@form.date   
+							id="createdAt"  name="createdAt" 
+							placeholder="" 
+							tip="" 
+							value="${(deliveryReceipt.createdAt?date)!}" 
+							/>
+					</td>
+					<td  align="right">
+						<label class="o-padding-right" for="receiptQty"> ${i18n.get('签收数量 :')} </label>
+					</td>
+					<td>
+						<@form.number 
+							id="receiptQty_show"  name="receiptQty_show" 
+							placeholder="" 
+							tip="" 
+							readonly="readonly"
+							/>
+					</td>
+					<td  align="right">
+						<label class="o-padding-right" for="actualTime"> ${i18n.get('实际用时（天）:')}</label>
+					</td>
+					<td>
+						<@form.number   
+							id="actualTime"  name="actualTime" 
+							placeholder="" 
+							tip="" 
+							value="${(deliveryReceipt.actualTime)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td  align="right">
+						<strong style="color: red;">*</strong> ${i18n.get('当地物流联系人 :')}
+					</td>
+					<td>
+						<@form.input
+							id="logisticsContactsName"  name="logisticsContactsName" 
+							required="${i18n.get('当地物流联系人不能为空')}"
+							placeholder="" 
+							tip="" 
+							value="${(deliveryReceipt.logisticsContactsName)!}" 
+							/>
+					</td>
+					<td  align="right">
+						<strong style="color: red;">*</strong> ${i18n.get('物流联系人电话 :')}
+					</td>
+					<td>
+						<@form.input
+							id="logisticsContactsTel"  name="logisticsContactsTel" 
+							required="${i18n.get('物流联系人电话不能为空')}"
+							placeholder="" 
+							tip="" 
+							value="${(deliveryReceipt.logisticsContactsTel)!}" 
+							/>
+					</td>
+					<td  align="right">
+						<strong style="color: red;">*</strong> ${i18n.get('当地物流单号 :')}
+					</td>
+					<td>
+						<@form.input
+							id="localLogisticsNo"  name="localLogisticsNo" 
+							required="${i18n.get('当地物流单号不能为空')}" 
+							placeholder="" 
+							tip="" 
+							value="${(deliveryReceipt.localLogisticsNo)!}" 
+							/>
+					</td>
+				</tr>
+				<tr>
+					<td  align="right">
+						 ${i18n.get('状态 :')}
+					</td>
+					<td>
+						<@form.select 
+			         		id="status"  name="status" 
+							code="LOGISTICS_RECEIPT_STATUS"
+							idKey="code"
+							value="${(deliveryReceipt.status)!}" 
+							/>
+					</td>
+					<td  align="right">
+						<label class="o-padding-right" for="remarks"> ${i18n.get('备注 :')}</label>
+					</td>
+					<td colspan="3">
+						<@form.input
+							id="remarks"  name="remarks" 
+							placeholder="" 
+							tip="" 
+							value="${(deliveryReceipt.remarks)!}" 
+							/>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</@form.form>
+	<div id="info" style="padding-top: 20px;">
+		<@plug.tabs tabMain=tabMain></@plug.tabs>
+	</div>
+	</@form.panel>
+</div>
+</@cui.body2>
+</#escape>

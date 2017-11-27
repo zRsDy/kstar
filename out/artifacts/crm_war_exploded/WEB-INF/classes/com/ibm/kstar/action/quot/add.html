@@ -1,0 +1,108 @@
+<@pui.body>
+		<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+		<@form.form id="t1"
+			success="function(){
+				parent.currentParent.reload_quot1();
+			 }" 
+			class="form-horizontal">	
+
+
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="quotName"> ${i18n.get('报价单名称')} : </label>
+					  
+					<@form.input
+					id="quotName"  name="quotName" 
+					placeholder="" 
+					required="${i18n.get('不能为空')}！"
+					value="${(quotInfo.quotName)!}" 
+					/>
+				</div>
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right"> ${i18n.get('客户')} : </label>		
+						<input id="customerCode" name="customerCode" type="hidden" >			  
+							<@form.autocomplete  id="customerName" name="customerName" 
+							idKey='customFullName'
+							style="width: 145px;"
+							required="${i18n.get('请选择客户编号')}"
+							formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
+							url="function(){ return '${ctx}/lovcontract/autocompletecustomer.html'; }"
+							value="{customFullName:'${(quotInfo.customerName)!}'
+							,customCode: '${(quotInfo.customerCode)!}'
+
+							}"
+							
+							onSelect="function(data){
+								if( data.customCode != null && data.customCode !='' && data.customCode != 'undefined'){
+									$('#customerCode').val(data.customCode);
+								}
+							}" 
+						/>
+					
+				</div>
+
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right" for="boName"> ${i18n.get('商机名称 ')}: </label>					  
+						<input id="boCode" name="boCode" type="hidden" >			  
+							<@form.autocomplete  id="boName" name="boName" 
+							idKey='id'
+							style="width: 145px;"
+							formatResult="function(data) {return '<div >' +data.opportunityName + '</div>';}"
+							url="function(){ return '${ctx}/quot/autocompleteproject.html'; }"
+							value="{id:'${(quotInfo.boCode)!}',opportunityName:'${(quotInfo.boName)!}'}"
+							
+							
+							onSelect="function(data){
+								if( data.id != null && data.id !='' && data.id != 'undefined'){
+									$('#boCode').val(data.id);
+									$('#boName').val(data.opportunityName);
+								}
+							}" 
+						/>
+				</div>
+				<div class="form-group" >
+				<input id="priceListid" name="priceListid" type="hidden" >
+					<label class="col-sm-3 control-label no-padding-right" for="priceList"> ${i18n.get('价格表 ')} : </label>					  
+				<@form.autocomplete  id="priceList" name="priceList" 
+	            	idKey='id'
+	            	style="width: 160px;"
+	            	required="${i18n.get('请选择价格表 ')}"
+	            	formatResult="function(data) {return '<div >' +data.priceTableName + '</div>';}"
+					url="function(){ return '${ctx}/lovcontract/autocompletePriceTable.html'; }"
+	            	value="{id: '${(quotInfo.priceListid)!}',priceTableName:'${(quotInfo.priceList)!}'}"
+	            	
+	            	onSelect="function(data){
+						if( data.id != null && data.id !='' && data.id != 'undefined'){
+							$('#priceList').val(data.priceTableName);
+							$('#priceListid').val(data.id);
+						}
+					}" 
+	           	/>
+				</div>
+
+
+
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right"> ${i18n.get('是否工程评审 ')} : </label>
+					 <@form.select  id="isProReview" name="isProReview" code="NY" idKey='code' style="width:100px;" value="${(quotInfo.isProReview)!}" /> 
+				</div>		
+				<div class="form-group" >
+					<label class="col-sm-3 control-label no-padding-right"> ${i18n.get('是否投标项目')} : </label>
+					<@form.select  id="isBidPro" name="isBidPro" code="NY" idKey='code' style="width:100px;" value="${(quotInfo.isBidPro)!}" /> 
+				</div>	
+			<div class="hr hr-18 dotted hr-double"></div>
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+</@pui.body>

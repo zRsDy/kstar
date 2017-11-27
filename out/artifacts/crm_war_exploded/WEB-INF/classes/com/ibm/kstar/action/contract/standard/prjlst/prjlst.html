@@ -1,0 +1,929 @@
+
+<#escape x as x?html>
+<@pui.body>
+
+
+	<#if (permission['P05ConT1ProjList3'])?? >
+		<#assign catalogMovePer='true'>
+	</#if>
+	
+	<#if (permission['P05ConT1ProjListEdit'])??>
+		<#assign editRowPer='true'>
+	</#if> 
+	<#if (permission['P05ConT1ProjListDeleteProd'])??>
+		<#assign deleteRowPer='true'>
+	</#if> 
+	<#if (permission['P05ConT1ProjListAddProdPackage'])??>
+		<#assign addPackPer='true'>
+	</#if> 
+	<#if (permission['P05ConT1ProjListAddProd'])??>
+		<#assign addProdPer='true'>
+	</#if>
+
+	<#if (permission['P05ConT1ProjListAddNonStaProd1'])??>
+		<#assign addNonProdPer='true'>
+	</#if>
+
+	<#if (permission['P05ConT1ProjListAddOutSouceProd1'])??>
+		<#assign addOutProdPer='true'>
+	</#if>
+
+	<#if (permission['P05ConT1ProjListSubmitPrice'])??>
+		<#assign subPricPer='true'>
+	</#if>
+
+	<#if (permission['P05ConT1ProjListSpecialOffer'])??>
+		<#assign speOfferPer='true'>
+	</#if>
+
+	<#if (permission['P05ConT1ProjListLoanAdd'])??>
+		<#assign loadAddPer='true'>
+	</#if>
+
+	<#if (permission['P05ConT1ProjListLoanDelete'])??>
+		<#assign loadDelPer='true'>
+	</#if>
+
+	<#if (permission['P05ConT1ProjListSave'])??>
+		<#assign saveProdPer='true'>
+	</#if>
+	
+	<#if permission["P05ConT1ProjListDoubleClick"]??>
+		<#assign dblClickPer='true'>
+	</#if>
+
+	<table id="tabPrjlist" style="width: 90%;" >
+	<tr>
+		<td valign="top">
+			<@form.table id="prjlst"
+			class="col-xs-12"
+			shrinkToFit = "false"
+			title="${i18n.get('工程清单列表')}"
+			url = "${ctx}/standard/prjlst/prjLstPage.html?contrId=${contrId}&typ=${typ}"
+			rowNum = "20"
+			rownumbers = "true"
+			grouping = "true"
+			groupingView = "{ groupField : ['prdCtg'],groupText : [ '<b>{0} - {1} ${i18n.get('条记录')}</b>' ] }"
+			
+			editURL=  "${editURL!}" 
+			colModel = "[
+			  { name : 'id', label : 'prjlstID',hidden : true, width : 30 ,sortable:false},
+			  { name : 'lineNum', label : '${i18n.get('行号')}', hidden : false,width : 50 ,sortable:false,align:'center' },
+			  { name : 'proId', label : 'prdId', hidden : true , sortable:false}, 
+			  { name : 'prdNm', label : '${i18n.get('产品名称')}',  sortable:false,hidden : true},
+			  { name : 'act', label : '${i18n.get('产品名称')}', width:100, sortable:false,hidden : false, formatter:function(cellvalue, options,rowdata){ return aFormatName(rowdata) }  },
+			  { name : 'prdCtgid', label : 'prdCtgId', hidden : true , sortable:false}, 
+			  { name : 'salCtg', label : '${i18n.get('销售产品分类')}',width:110, sortable:false ,editable : false },
+			  { name : 'prdCtg', label : 'CRM${i18n.get('产品分类')}',width:100, sortable:false ,editable : false,align:'center' },
+			  { name : 'prdTyp', label : '${i18n.get('产品型号')}',width:120, sortable:false ,editable : false },
+			  { name : 'materCode', label : '${i18n.get('物料号')}',width:100, hidden : false , sortable:false ,editable : false,align:'center' },
+			  { name : 'prdUnt', label : '${i18n.get('单位')}', width : 50 ,sortable:false ,editable : false },
+			  { name : 'prdSprc', label : '${i18n.get('公开价格')}', width : 80 ,align:'right',sortable:false  ,editable : false },
+			  { name : 'goldPrc', label : '${i18n.get('金牌价格')}', width : 80 ,align:'right',sortable:false ,editable : false },
+			  { name : 'approveAmt', label : '${i18n.get('批复金额')}', hidden : true ,align:'right', width : 120 ,sortable:false ,editable : false, formatter:function(cellvalue, options,rowdata){ return sumApproveAmt(rowdata) }  },
+			  { name : 'prdPrc', label : '${i18n.get('合同价格')}', width : 80 ,align:'right',sortable:false ,editable : true },
+			  { name : 'amt', label : '${i18n.get('数量')}', width : 80 ,align:'right',sortable:false,editable : true},
+			  { name : 'ttlUnt', label : '${i18n.get('单品总金额')}', width : 100 ,align:'right',sortable:false ,editable : false, formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''}  },
+			  { name : 'veriedNum', label : '${i18n.get('核销数量')}', width : 80 ,align:'right',sortable:false,editable : false },
+			  { name : 'notVeriNum', label : '${i18n.get('可下单数量')}', width : 80 ,align:'right',sortable:false,editable : false},
+			  { name : 'ordNum', label : '${i18n.get('下单数量')}', hidden : true, width : 50 ,sortable:false,editable : false },
+			  { name : 'ordNo', label : '${i18n.get('订单编号')}', hidden : true, width : 80 ,sortable:false ,editable : false },
+			  { name : 'applyDiscount', label : '${i18n.get('申请折扣')}(%)', width : 80 ,sortable:false  ,editable : false },
+			  { name : 'applyPrc', label : '${i18n.get('申请价格')}', width : 120 ,align:'right',sortable:false ,editable : false },
+			  { name : 'applyAmt', label : '${i18n.get('申请金额')}', hidden : true ,align:'right', width : 120 ,sortable:false ,editable : false, formatter:function(cellvalue, options,rowdata){ return sumApplyAmt(rowdata) }  },
+			  { name : 'approveDiscount', label : '${i18n.get('批复折扣')}(%)', width : 80 ,align:'right',sortable:false  ,editable : false },
+			  { name : 'approvePrc', label : '${i18n.get('批复价格')}', width : 100 ,align:'right',sortable:false ,editable : false },
+			  { name : 'notes', label : '${i18n.get('备注')}', width : 150 ,sortable:false,editable : true }, 
+			  { name : 'proDesc', label : '${i18n.get('产品描述')}', width : 350 ,sortable:false }
+			  ]"
+			  
+		search="false"
+			onSelectRow = "function(data,status){
+				if(status){
+					$('#prjlstId').val(data['id']);
+					reload_contrVeriDetlLst();
+				}
+			}"
+			
+			ondblClickRow= "function(rowid){	 
+				var id = rowid;
+				var rowData = selected_prjlst;
+			if(rowData['prdCtg'] && rowData['prdCtg'] !=''){
+				var old_prc = $('#prjlst input[id=\\''+id + '_prdPrc\\']').val();
+				var old_amt = $('#prjlst input[id=\\''+id+'_amt\\']').val();
+				var old_sprc = rowData['prdSprc'] ; 
+				var old_dis = $('#prjlst input[id=\\''+id+'_applyDiscount\\']').val();
+				var old_applyPrc = $('#prjlst input[id=\\''+id+'_applyPrc\\']').val();
+				var old_approvePrc = $('#prjlst input[id=\\''+id+'_approvePrc\\']').val();
+				var sprc = (old_sprc==''||old_sprc=='undefined')?0:parseFloat(old_sprc);
+				var cur_prc = (old_prc==undefined)?rowData['prdPrc']:old_prc;
+				var cur_amt = old_amt;
+				var cur_dis = old_dis;
+				
+				$('#prjlst input[id=\\''+id+'_applyDiscount\\']').bind('input',function(event){
+					var dis = $(this).val();
+					cur_dis=dis;
+					if(dis){ 
+						var re = /^[0-9].*$/ ;
+						var ttlU = 0;
+						var prc= 0 ;
+						if(!isNaN(dis) && re.test(dis)){
+							if(sprc != null && sprc !='' && re.test(sprc)){
+								prc = ( parseFloat(sprc) * parseFloat(dis)/100 ).toFixed(3);
+								if(cur_amt != null && cur_amt !='' && re.test(cur_amt)){
+									ttlU = ( parseFloat(prc) * parseFloat(cur_amt) ).toFixed(3);
+								}
+								$('#prjlst').jqGrid('setRowData', id, {'prdPrc': prc ,  'ttlUnt' : ttlU});
+							}
+						}else{
+							alert('${i18n.get('折扣必须为数字')}！');
+							$(this).val(old_dis);
+						}
+					}else{
+						$(this).val(old_dis);
+					}
+		 		});
+		 		
+					$('#prjlst input[id=\\''+id+'_prdPrc\\']').bind('input',function(event){
+						var prc = $(this).val();
+						cur_prc=prc;
+						if(prc){ 
+							var re = /^[0-9].*$/ ;
+							var ttlU = 0;
+							var dis= 0 ;
+							if(!isNaN(prc) && re.test(prc)){
+								var tmpPrc = 0;
+								old_applyPrc;
+								old_approvePrc;
+								if(!isNaN(old_approvePrc) && re.test(old_approvePrc)){
+									tmpPrc = old_approvePrc;
+								}else{
+									if(!isNaN(old_applyPrc) && re.test(old_applyPrc)){
+										tmpPrc = old_applyPrc;								
+									}
+								}
+								if(prc < tmpPrc){
+									alert('${i18n.get('输入的合同价格要高于批复价格或申请价格')}');
+									return; 
+								}
+								if(cur_amt != null && cur_amt !='' && re.test(cur_amt)){
+									ttlU = ( parseFloat(prc) * parseFloat(cur_amt) ).toFixed(3);
+								} 
+								$('#prjlst').jqGrid('setRowData', id, { 'ttlUnt' : ttlU});
+							}else{
+								alert('${i18n.get('报价必须为数字')}！');
+								$(this).val(old_prc);
+							}
+						}else{
+								$(this).val(old_prc);
+						}
+			 		});
+		 		
+				$('#prjlst input[id=\\''+id+'_amt\\']').bind('input',function(event){
+					var qty = $(this).val();
+					cur_amt = qty;
+					if(qty){
+						var re = /^[0-9]+$/ ;
+						var re1 = /^[0-9].*$/ ;
+						var ttlU = 0;
+						if(!isNaN(qty) && re1.test(qty)){
+							if(cur_prc != null && cur_prc !='' && re1.test(cur_prc)){
+								ttlU = ( parseFloat(qty) * parseFloat(cur_prc) ).toFixed(3);
+							}
+							$('#prjlst').jqGrid('setRowData', id, { 'ttlUnt' : ttlU});
+						}else{
+							alert('${i18n.get('数量为正数字')}！');
+							$(this).val(old_amt);
+						}
+					}else{
+							$(this).val(old_amt);
+					}
+		 		});
+		 		$('#prjlst input[id=\\''+id+'_amt\\']').bind('change',function(event){
+                    var $qty = $('#prjlst input[id=\\''+id+'_amt\\']');
+                    var qty = $qty.val()
+                    var numberPattent = /^[0-9].*$/ ;
+                    if(!isNaN(qty) && numberPattent.test(qty)){
+                        var fixedQty = parseFloat(qty).toFixed(3);
+                        if(qty != fixedQty) {
+                            qty = fixedQty;
+                            var $prc = $('#prjlst input[id=\\''+id+'_prdPrc\\']');
+                            var prc = $prc.val();
+                            if(!isNaN(prc) && numberPattent.test(prc)){
+                                var ttlU = (qty * parseFloat(prc)).toFixed(3);
+                                $qty.val(qty);
+                                $('#prjlst').jqGrid('setRowData', id, { 'ttlUnt' : ttlU});
+                            }
+                        }
+                    }
+		 		});
+			
+			}else{
+				$('#prjlst').trigger('blur');
+			
+			}
+				
+			}"
+			onComplete = "function(){ 
+				$('#prjlst').setGridWidth($(window).width()-90);
+			}"
+			
+	footerrow = "true"
+	gridComplete = "function() {
+		$('#prjlst').footerData('set',{'prdCtg':'${i18n.get('合计')}'});
+		var rowNum = parseInt($('#prjlst').getGridParam('records'),10);
+		if(rowNum > 0){
+			$('.ui-jqgrid-sdiv').show();
+			var applyAmt  = $('#prjlst').getCol('applyAmt',false,'sum');
+			var approveAmt  = $('#prjlst').getCol('approveAmt',false,'sum');
+			var conAmt  = $('#prjlst').getCol('ttlUnt',false,'sum');
+			$('#prjlst').footerData('set',{'prdCtg':'${i18n.get('合计')}','applyPrc':applyAmt, 'approvePrc':approveAmt, 'ttlUnt':conAmt});
+		}
+	}"
+	
+	onLineEditAfter = "function(id,rowData){
+
+		$('#prjlst').footerData('set',{'prdCtg':'${i18n.get('合计')}'});
+		var rowNum = parseInt($('#prjlst').getGridParam('records'),10);
+		if(rowNum > 0){
+			$('.ui-jqgrid-sdiv').show();
+			var applyAmt  = $('#prjlst').getCol('applyAmt',false,'sum');
+			var approveAmt  = $('#prjlst').getCol('approveAmt',false,'sum');
+			var conAmt  = $('#prjlst').getCol('ttlUnt',false,'sum');
+			$('#prjlst').footerData('set',{'prdCtg':'${i18n.get('合计')}','applyPrc':applyAmt, 'approvePrc':approveAmt, 'ttlUnt':conAmt});
+		}
+	}"
+	
+			 buttons = "[
+			 	{
+				id:'editRow',
+				label : '${i18n.get('修改')}',
+				icon : 'icon-save',
+				own : ${editRowPer!'false'},
+				handler : function(e,rowData){
+						editLine();
+					}
+				},
+			 	{
+				id:'deleteRow',
+				label : '${i18n.get('删除')}',
+				icon : 'icon-save',
+				own : ${deleteRowPer!'false'},
+				handler : function(e,rowData){
+						deleteLine();
+					}
+				}, 
+				{
+		  			id:'addstprdButton',
+		  			label : '${i18n.get('新增产品')}',
+					own : ${addProdPer!'false'},
+					handler : function(e,rowData){
+						$('#selectProductMulti').click();
+					}
+				},
+		  		{
+	  			id:'addnprdButton',
+	  			label : '${i18n.get('新增非标产品')}',
+				own : ${addNonProdPer!'false'},
+	  			handler : function(e,rowData){  		
+						$('#noStdProductSelectLst').click();
+					}
+				},
+				 {
+		  			id:'addexprdButton',
+		  			label : '${i18n.get('新增外购产品')}',
+					own : ${addOutProdPer!'false'},
+		  			handler : function(e,rowData){ 
+						$('#noStdProductSelectLst').click();
+					}
+				},
+				 {
+		  			id:'addframeprdButton',
+		  			label : '${i18n.get('引入框架合同产品')}',
+					own : 'true',
+		  			handler : function(e,rowData){ 
+						$('#frameContrSelectLst').click();
+					}
+				},
+				 {
+		  			id:'addinstauxprdButton',
+		  			label : '${i18n.get('新增安装辅材产品')}',
+					own : 'true',
+		  			handler : function(e,rowData){ 
+						$('#installAuxPrdSelectLst').click();
+					}
+				},  
+				{
+		  			id:'submitLinesButton',
+		  			label : '${i18n.get('保存')}',
+					own : 'true',
+		  			handler : function(e,rowData){
+		  				submitLines();
+					}
+				},  
+				{
+		  			id:'exportPrjlstListBtn',
+		  			label : '${i18n.get('导出')}',
+					own : 'true',
+		  			handler : function(e,rowData){
+		  				prjlstExport(e,rowData);
+					}
+				} 
+				
+			]"
+		>
+			<div class="col-xs-12"> 
+				<input type="hidden" id="parentId" name="parentId" />
+			</div>
+			</@form.table>
+		</td>
+	</tr>
+</table>
+
+<div id= "tabVeriDtlLst">
+<@form.table id="contrVeriDetlLst" 
+	class="col-xs-12"
+	title="${i18n.get('借货核销记录列表')}" 
+	url = "${ctx}/standard/verification/page.html?contrId=${contrId}" 
+	rowNum = "10" 
+	shrinkToFit='true'
+	rownumbers = 'true'
+	style='width:1200px'
+	colModel = "[
+		{name:'id',label:'ID',hidden:true,sortable:false,align:'center' },		
+		{name:'veriNo',label:'${i18n.get('核销单编号')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'loanId',label:'${i18n.get('借货合同编号')}',hidden:true,width:100,sortable:false,align:'center' },		
+		{name:'loanCode',label:'${i18n.get('借货合同编号')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'prdTyp',label:'${i18n.get('产品型号')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'proName',label:'${i18n.get('产品名称')}',hidden:false,width:100,sortable:false,align:'center' },
+	    {name:'prdPrc', label : '${i18n.get('单价')}', width : 120 ,sortable:false  },
+		{name:'curVeriNum',label:'${i18n.get('本次核销数量')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'notVeriedNum',label:'${i18n.get('未核销数量')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'veriedNum',label:'${i18n.get('已核销数量')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'creationDate',label:'${i18n.get('核销时间')}',hidden:false,width:100,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatDate(cellvalue) } },
+		{name:'remark',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:false,align:'center' }
+		]"
+		ondblClickRow= "function(rowid){
+			parent.dialog('${i18n.get('借货信息')}','${ctx}/loan/tabs.html?id='+selected_contrVeriDetlLst.loanId+'&typ=CONTR_LOAN',window);	
+		}"
+		
+		onSelectRow= "function(selectedData){
+		}"
+		buttons = "[
+		{
+  			id:'addVeriDtlButton',
+  			label : '${i18n.get('新增')}',
+			own : ${loadAddPer!'false'},
+  			handler : function(e,rowData){
+				if(!selected_prjlst){
+					alert('${i18n.get('没有选中任何数据')}!');
+					return;
+				}
+
+                if(!canverification(selected_prjlst,e)) {
+                    return ;
+				 }
+
+				if(selected_prjlst['prdCtg']=='${i18n.get('服务商品')}' || selected_prjlst['prdCtg']=='${i18n.get('服务商品')}' || selected_prjlst['prdCtg']=='') {
+					alert('${i18n.get('请选择标准产品')}， ${i18n.get('外购产品')}，${i18n.get('非标产品')}！');
+					return;
+				}
+				bootbox.confirm('${i18n.get('你确定要添加核销数据到这里吗')}?', function(result) {
+					if(result) {	
+						 parent.dialog('${i18n.get('新增')}','${ctx}/standard/verification/add.html?contrId=${contrId}&prdTyp='+selected_prjlst['prdTyp']+'&prdPrc='+selected_prjlst['prdPrc']+'&oriPrjlstId='+selected_prjlst['id']+'&amt='+selected_prjlst['amt'],window); 		
+					}
+				});
+			}
+		 },
+		{
+  			id:'deleteVeriDtlButton',
+  			label : '${i18n.get('删除')}',
+			own : ${loadDelPer!'false'},
+  			handler : function(e,rowData){
+				if(!selected_contrVeriDetlLst){
+					alert('${i18n.get('没有选中任何数据')}!');
+					return;
+				}
+				var d={};
+				bootbox.confirm('${i18n.get('您确定要删除本条数据吗')}?', function(result) {
+					if(result) {
+						ajax({
+							type:'post',
+							url : '${ctx}/standard/verification/delete.html?contrVeriDetlId='+selected_contrVeriDetlLst['id'],  
+							data: d,
+							success : function(result) {
+								alert('${i18n.get('操作成功')}');
+								window.location.reload();  
+							}
+						});		
+					}
+				});
+			}
+		 }
+		]" 
+		search="false"
+		> 
+		 <input type="hidden" id="prjlstId" name="prjlstId" />
+	</@form.table> 
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	
+	var editFlag = "${editFlag}"; 
+	if(editFlag=="N"){
+		/* var btns = document.getElementsByTagName("button");
+		$.each(btns,function(){
+			($(this)).attr("disabled","disabled");
+		}); */
+		$(".btn_prjlst").attr("disabled","disabled");
+	}
+	var verEditFlag="${verEditFlag}";
+	<#if (permission['P05Con_Loan_Admin'])??>
+		verEditFlag = 'Y';
+	</#if>
+	
+	if(verEditFlag=="N"){
+        //$("#tabVeriDtlLst button").attr("disabled", "disabled");
+		$(".btn_contrVeriDetlLst").attr("disabled","disabled");
+	}
+	
+	// 特价审批 标志  按钮状态控制
+	 var sprvmrk = "${sprvmrkstatus}";
+	 if(sprvmrk=="N"){
+		 $("#priceprocessButton").attr("disabled","disabled");
+	 }else{
+		 $("#priceprocessButton").removeAttr("disabled");
+	 }
+	 //showPriceFlg 报价列显示
+	 var showPriceFlg ="${showPriceFlg}";
+	 if(showPriceFlg=="N"){
+		 $('#prjlst').jqGrid('hideCol', ['prdPrc', 'ttlUnt']);
+	 }
+	 //showMaterCodeFlg 物料号列显示
+	 var showMaterCodeFlg ="${showMaterCodeFlg}";
+	 if(showMaterCodeFlg=="N"){
+		 $('#prjlst').jqGrid('hideCol', ['materCode']);
+	 }
+
+	//框架下合同不能修改合同价格 
+	if(getContrFrmContrNo()!='' &&  getMarketDeptName()=='${i18n.get('国内数据中心')}'){
+	   // $("#prjlst").setColProp('prdPrc', {editable:false}); 
+	    $("#editRow").hide();	
+	    $("#addstprdButton").hide();
+	    $("#addnprdButton").hide();
+	    $("#addexprdButton").hide();
+	}else{
+	    $("#addframeprdButton").hide();	
+	    $("#addinstauxprdButton").hide();		
+	}
+	$("#exportPrjlstListBtn").removeAttr("disabled");
+});
+
+function canverification(selected_prjlst,e) {
+    var canverification=false;
+    var canverificationNum = 0;
+    $.ajax({
+        type: "post",
+        async:false,
+        url : '${ctx}/standard/prjlst/canVerificationNum.html',
+        data: { prjlstId : selected_prjlst['id'] },
+        success: function (data) {
+            if (data.status == 'success') {
+                canverificationNum = data.message || 0;
+                if (canverificationNum > 0) {
+                    canverification = true;
+                }
+            } else {
+                exalert(e,data.message);
+            }
+        },
+        error : function(result) {
+            exalert(e,result);
+        }
+    });
+
+    if (!canverification) {
+        exalert(e,'${i18n.get('可核销数量(产品数量-订单数量)为')}' + canverificationNum +'${i18n.get('，不允许核销')}');
+    }
+    return canverification;
+//    var canVerification = selected_prjlst.amt - (selected_prjlst.ordNum || 0);
+//    if (canVerification >0) {
+//        return true;
+//    } else {
+//        return false;
+//    }
+}
+
+var selectId = "";
+function proSelect(rowid){
+	selectId = rowid ;
+	$('#selectProduct').click();
+}
+
+var newrowid = 0;
+function addOneRow()  
+{   
+	//alert("${(contr.contrName)!}");
+	//var contrAmt = getContrAmt();
+	//alert(contrAmt);
+    //获得新添加行的行号（数据编号）  
+    newrowid = newrowid+1; 
+    var dataRow = {    
+        id: "",
+        totalAmt:contrAmt
+    };      
+    //将新添加的行插入到第一列  
+    $("#prjlst").jqGrid("addRowData", newrowid, dataRow, "last");  
+    //设置grid单元格不可编辑  
+    $("#prjlst").setGridParam({cellEdit:false});  
+    //设置grid单元格可编辑  
+    //$("#prjlst").jqGrid('editRow', newrowid, false);
+    //初始化产品行
+    initLine(newrowid,null);
+}
+//批量增加行
+function addRowBatch(datas){
+	$.each(datas,function(i,data){
+
+ 		delete data.id ;
+ 		//if($('#parentId').val()=='undefined' || $('#parentId').val()==''){}
+ 		//data['lvmenber.parentId'] = $('#parentId').val();
+		data['prdNm'] = data.productName;
+		data['prdUnt'] = data.unit;
+		data['prdSprc'] = data.catalogPriceShow1;
+		data['prdTyp'] = data.proModel;
+		data['materCode'] = data.materielCode;
+		data['prdCtg'] = data.crmCategoryLable;
+		data['prdCtgid'] = data.crmCategory;
+		data['proId'] = data.proId;
+		data['goldPrc'] = data.catalogPriceShow;
+		data['proDesc'] = data.proDesc;
+		data['salCtg'] = data.displayCatalogName;
+			
+		newrowid = newrowid+1;  
+	    //将新添加的行插入到第一列  
+	    $("#prjlst").jqGrid("addRowData", newrowid, data, "last");  
+	    //设置grid单元格不可编辑  
+	    $("#prjlst").setGridParam({cellEdit:false});  
+	    //设置grid单元格可编辑  
+	    //$("#prjlst").jqGrid('editRow', newrowid, false);  
+	    //初始化订单行
+	    //initLine(newrowid,data);
+	});
+}
+
+//批量增加行
+function addNoStdProdRowBatch(datas){
+ 	$.each(datas,function(i,data){
+
+		//if($('#parentId').val()=='undefined' || $('#parentId').val()==''){}
+ 		//data['lvmenber.parentId'] = $('#parentId').val();
+ 		data['prdNm'] = data.proName;
+ 		/* data['prdUnt'] = data.unitLable;
+ 		data['prdSprc'] = data.catalogPrice;*/
+ 		data['prdTyp'] = data.proModel;
+ 		data['materCode'] = data.materielCode; 
+ 		data['prdCtg'] = data.crmCategoryLable;
+ 		data['prdCtgid'] = data.crmCategory;
+ 		data['proId'] = data.id;
+		data['proDesc'] = data.proDesc;
+		delete data['id'];
+			
+ 		newrowid = newrowid+1;  
+		//将新添加的行插入到第一列  
+ 	    $("#prjlst").jqGrid("addRowData", newrowid, data, "last");  
+		//设置grid单元格不可编辑  
+ 	    $("#prjlst").setGridParam({cellEdit:false});  
+		//设置grid单元格可编辑  
+		//$("#prjlst").jqGrid('editRow', newrowid, false);  
+		//初始化订单行
+		//initLine(newrowid,data);
+ 	});
+}
+
+//批量增加 框架协议 行
+function addFrmContrPrdRowBatch(datas){
+ 	$.each(datas,function(i,data){
+
+		//if($('#parentId').val()=='undefined' || $('#parentId').val()==''){}
+ 		//data['lvmenber.parentId'] = $('#parentId').val();
+ 		data['prdNm'] = data.prdNm;
+ 		/* data['prdUnt'] = data.unitLable;
+ 		data['prdSprc'] = data.catalogPrice;
+ 		data['prdTyp'] = data.prdTyp;
+ 		data['materCode'] = data.materCode; 
+ 		data['prdCtg'] = data.prdCtg;
+ 		data['prdCtgid'] = data.prdCtgid;
+ 		data['proId'] = data.proId;
+		data['proDesc'] = data.proDesc;*/
+		delete data['id'];
+		delete data['lineNum'];
+			
+ 		newrowid = newrowid+1;  
+		//将新添加的行插入到第一列  
+ 	    $("#prjlst").jqGrid("addRowData", newrowid, data, "last");  
+		//设置grid单元格不可编辑  
+ 	    $("#prjlst").setGridParam({cellEdit:false});  
+		//设置grid单元格可编辑  
+		//$("#prjlst").jqGrid('editRow', newrowid, false);  
+		//初始化订单行
+		//initLine(newrowid,data);
+ 	});
+}
+
+
+//初始化产品行
+function initLine(newrowid,data){
+	if(!data['prdSprc']){
+		$('#prjlst').jqGrid('setRowData', newrowid, { 'prdSprc' : 0});
+	} 
+	
+	//给添加的列加选择按钮  
+	var lable = '${i18n.get('选择产品')}';
+	if(data && data['prdNm']){
+		lable =  data['prdNm'];
+	}
+	var ps = '<a href="#" onclick="proSelect(\''+newrowid+'\');" >'+lable+'</a>';
+	$('#prjlst').jqGrid('setRowData', newrowid, { 'prdNm' : ps});
+	 
+}
+
+//
+function aFormatName(rowData){
+	//给添加的列加选择按钮  
+	var lable = '${i18n.get('选择产品')}';
+
+	if(rowData && rowData['prjlst']){
+		lable =  rowData['prjlst'].prdNm;
+	}else if(rowData && rowData['prdNm']){
+		lable =  rowData['prdNm'];
+	}
+	var ps ='';
+	var frmNo = getContrFrmContrNo();
+	if(((rowData && rowData['prdCtg']) || (rowData && rowData.prdCtg)) && frmNo==''){
+		ps =  '<a href="#" onclick="proSelect(\''+rowData['id']+'\');" >'+lable+'</a>';
+	}else{
+		ps = lable;
+	}
+	return ps;
+}
+
+function submitLines(){
+	$('#prjlst').trigger('blur');
+	var ids = $('#prjlst').jqGrid('getDataIDs');
+	if(ids.length<1) {
+		alert('${i18n.get('请先添加数据')}');
+		return;
+	}
+	if(getContrQuotNo() !=''){
+		var conAmt  = $('#prjlst').getCol('ttlUnt',false,'sum');
+		var conHeadAmt = getContrAmt();
+		if(conAmt != conHeadAmt){
+			alert('${i18n.get('对于报价生成的合同')}，“${i18n.get('单品总金额')}”${i18n.get('合计需与')}“${i18n.get('合同总金额')}”${i18n.get('相同')}');
+			return;		
+		}
+	}
+	var d={};
+	var datas = [];
+	var flg = true; 
+	var curid = '';
+	$.each(ids,function(i,id){
+		var line = $('#prjlst').jqGrid('getRowData',id);
+		if(line && line['prdCtg']){
+			if( line['amt']=='' || line['prdPrc']==''){
+				curid = id; 
+				 flg = false;
+				 return false;
+			}else{
+				datas.push(line);
+			}
+		}
+	})
+	if(flg == false) {    
+		alert('${i18n.get('单价 和 数量  不能为空')}');  
+		$('#prjlst').editRow(id,true);      
+		return false;
+	}
+	d.listStr= JSON.stringify(datas);
+	d.contrId = '${contrId}';
+	d.typ = '${typ}';
+	bootbox.confirm('${i18n.get('你确定要提交保存数据吗')}?', function(result) {
+		if(result) {
+			var dialog = bootbox.dialog({
+			    message: '${i18n.get('数据保存中')}......',
+			    closeButton: false
+			});
+			ajax({
+				type:'post',
+				url : '${ctx}/standard/prjlst/submitLines.html',  
+				dataType : 'json',
+				data: d,
+				success : function(result) {
+					reload_prjlst();
+					dialog.modal('hide');
+					alert('${i18n.get('操作成功')}！'); 
+					window.location.reload(); 
+				}
+			});			
+		}
+	});
+}
+
+function prjlstExport(e,rowData){
+			bootbox.confirm('${i18n.get('您确定要导出选中的数据吗')}？' , function(result) {
+			if(result) {
+				window.location.href = '${ctx}/standard/prjlst/prjlstExport.html?contrId=${contrId}&typ=${typ}';
+			}
+		});
+}
+
+function editLine(){
+	$('#prjlst').trigger('blur');
+	if(!selected_prjlst){
+	  　　	alert('${i18n.get('请选择要编辑的行数据')}');
+	  　　	return;		
+	}else{
+		var rowId = $('#prjlst').jqGrid('getGridParam','selrow'); 
+		if(!selected_prjlst['prdCtg'] || selected_prjlst['prdCtg']==""){
+	        parent.dialog('${i18n.get('修改')}','${ctx}/standard/prjlst/catalogedit.html?contrId=${contrId}&typ=${typ}&pricetableid=${pricetableid}&id='+rowId,window);
+		}else{
+			proSelect(rowId);
+		}
+	}
+}
+
+function deleteLine(){
+	$('#prjlst').trigger('blur');
+	if(!selected_prjlst){
+	  　　	alert('${i18n.get('请选择要删除的行')}');
+	  　　	return;		
+	}else{
+		if(!selected_prjlst['id'] || selected_prjlst['id']==""){
+			var rowId = $('#prjlst').jqGrid('getGridParam','selrow'); 
+	        $('#prjlst').jqGrid('delRowData', rowId);   
+		}else{
+			d={}; 
+			d.prjlstId = selected_prjlst['id']; 
+			d.contrId = '${contrId}';
+			d.typ = '${typ}';
+			bootbox.confirm('${i18n.get('你确定要从数据库删除该数据吗')}?', function(result) {
+				if(result) {
+					var dialog = bootbox.dialog({
+					    message: '${i18n.get('数据删除中')}......',
+					    closeButton: false
+					});
+					ajax({
+						type:'post',
+						url : '${ctx}/standard/prjlst/deletePrjlst.html',  
+						dataType : 'json',
+						data: d,
+						success : function(result) {
+							reload_prjlst();
+							dialog.modal('hide');
+							alert('${i18n.get('操作成功')}！'); 
+							window.location.reload(); 
+						}
+					});
+				}
+			});
+			
+		}
+	}
+}
+
+
+function sumApplyAmt(rowData){
+	// 计算申请金额
+	var amt = 0;
+	var prc = 0 ; 
+	var num = 1; 
+	if(rowData && rowData['prjlst']){
+		prc =  rowData['prjlst'].applyPrc;
+		if(rowData['prjlst'].amt!=''){
+			num = rowData['prjlst'].amt;
+		}
+	}else if(rowData && rowData['applyPrc']){
+		prc =  rowData['applyPrc'];
+		if(rowData['amt']!=''){
+			num = rowData['amt'];
+		}
+	}
+	amt = prc*num; 
+	amt = isNaN(amt)?'':amt;
+	return amt;
+	
+}
+
+
+function sumApproveAmt(rowData){
+	// 计算批复金额
+	var amt = 0;
+	var prc = 0 ; 
+	var num = 1; 
+	if(rowData && rowData['prjlst']){
+		if(rowData['prjlst'].approvePrc ==''){
+			prc =  rowData['prjlst'].applyPrc;			
+		}else{
+			prc =  rowData['prjlst'].approvePrc;			
+		}
+		if(rowData['prjlst'].amt!=''){
+			num = rowData['prjlst'].amt;
+		}
+	}else if(rowData && rowData['approvePrc']){
+		if(rowData['approvePrc'] ==''){
+			prc =  rowData['applyPrc'];			
+		}else{
+			prc =  rowData['approvePrc'];			
+		}
+		if(rowData['amt']!=''){
+			num = rowData['amt'];
+		}
+	}
+	amt = prc*num;
+	amt = isNaN(amt)?'':amt; 
+	return amt;
+	
+}
+
+</script>
+
+
+
+
+    <div style="display: none;" >
+		<@biz.picker_product id="selectProduct" 
+				urlFunction="function(){
+					return '${ctx}/common/product/selectList.html?priceTableId=${pricetableid}' }"
+				button="${i18n.get('选择产品')}"
+				callback="function(data){
+					if(data){
+               			delete data.id ;
+						data['prdNm'] = data.productName;
+						data['prdUnt'] = data.unitLable;
+						data['prdSprc'] = data.catalogPrice1;
+						data['prdTyp'] = data.proModel;
+						data['materCode'] = data.materielCode;
+						data['prdCtg'] = data.crmCategoryLable;
+						data['prdCtgid'] = data.crmCategory;
+						data['proId'] = data.proId;
+						data['act'] = data.productName;
+						data['proDesc'] = data.proDesc;
+						data['goldPrc'] = data.catalogPrice;
+						data['salCtg'] = data.displayCatalogName;
+					    
+					    $('#prjlst').jqGrid('setRowData',selectId,data);
+					 }
+				}"
+		/>
+	</div>
+	
+	<div style="display: none;" >
+		<@biz.picker_product id="selectProductMulti" urlFunction="function(){return '${ctx}/common/product/multiSelectList.html?priceTableId=${pricetableid}';}"
+				button="${i18n.get('批量选择产品')}" 
+				callback="function(datas){
+					if(datas){
+                 		addRowBatch(datas);
+					 }
+				}"
+		/>
+	</div>
+	
+	
+	<div style="display: none;" >
+		<@biz.picker_product id="noStdProductSelectLst" urlFunction="function(){return '${ctx}/common/product/selectNoPrdList.html?priceTableId=${pricetableid}';}"
+				button="${i18n.get('批量选择产品')}" 
+				callback="function(datas){
+					if(datas){
+                 		addNoStdProdRowBatch(datas);
+					 }
+				}"
+		/>
+	</div>
+ 
+ 
+	
+	<div style="display: none;" >
+		<@biz.picker_product id="frameContrSelectLst" urlFunction="function(){return '${ctx}/standard/prjlst/frameContrSelectLst.html?contrId=${contrId}';}"
+				button="${i18n.get('批量选择产品')}" 
+				callback="function(datas){
+					if(datas){
+                 		addFrmContrPrdRowBatch(datas);
+					 }
+				}"
+		/>
+	</div>
+	
+	<div style="display: none;" >
+		<@biz.picker_product id="installAuxPrdSelectLst" urlFunction="function(){return '${ctx}/common/product/installAuxPrdSelectLst.html?priceTableId=${pricetableid}';}"
+				button="${i18n.get('批量选择产品')}" 
+				callback="function(datas){
+					if(datas){
+                 		addRowBatch(datas);
+					 }
+				}"
+		/>
+	</div>
+
+</@pui.body>
+</#escape>

@@ -1,0 +1,98 @@
+<#escape x as x?html>
+
+<#if (permission["P02CusT3RelationCorpAdd"]?? && ("${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_40")
+										&& ("${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_40"))>
+	<#assign addCorpURL = "'${ctx}/custom/baseinfo/company/add.html?id=${(customInfo.id)!}&customCode=${(customInfo.customCode)!}'"    />
+</#if>
+
+<#if (permission["P02CusT3RelationCorpEdit"]?? && ("${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_40")
+										&& ("${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_40"))>
+	<#assign editCorpURL= "'${ctx}/custom/baseinfo/company/edit.html?customCode=${(customInfo.customCode)!}'"      />	
+</#if>
+
+<#if (permission["P02CusT3RelationCorpDelete"]?? && ("${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_40")
+										&& ("${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_40"))>
+	<#assign deleteCorpURL= "'${ctx}/custom/baseinfo/company/delete.html'"     />	
+</#if>
+
+<@form.table id="company" 
+class="col-xs-12"
+height="131px"
+title="${i18n.get('公司关系')}" 
+url = "${ctx}/custom/baseinfo/company/page.html?id=${(customInfo.customCode)!}"
+rowNum = "5" 
+addURL = "${addCorpURL!}"
+editURL = "${editCorpURL!}"
+deleteURL= "${deleteCorpURL!}" 
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+	{name:'customCode',label:'${i18n.get('当前客户编码')}',hidden:true,width:100,sortable:false,align:'center' },
+	{name:'customCodeDisp',label:'${i18n.get('相关公司编码')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'customNameDisp',label:'${i18n.get('相关公司名称')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'customRelationLvlDisp',label:'${i18n.get('关系(当前客户的)')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'customRelateValidFrom',label:'${i18n.get('有效日期从')}',hidden:false,width:100,sortable:false,align:'center',formatter:dateFmatter },
+	{name:'customRelateValidTo',label:'${i18n.get('有效日期至')}',hidden:false,width:100,sortable:false,align:'center',formatter:dateFmatter  }
+	
+	]" 
+	>
+	<script src="${ctx}/anne/js/util.js"></script>
+ </@form.table> 
+
+<#if (permission["P02CusT3RelationContactAdd"]?? && ("${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_40")
+										&& ("${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_40"))>
+	<#assign addContactURL = "'${ctx}/custom/baseinfo/contact/add.html?id=${(customInfo.id)!}'"     />
+</#if>
+
+<#if (permission["P02CusT3RelationContactEdit"]?? && ("${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_40")
+										&& ("${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_40"))>
+	<#assign editContactURL= "'${ctx}/custom/baseinfo/contact/edit.html'"       />	
+</#if>
+
+<#if (permission["P02CusT3RelationContactDelete"]?? && ("${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customInfo.customReportedFlg)!}" == "CUSTOM_NORMAL_STATUS_40")
+										&& ("${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_10" || "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_30"|| "${(customInfo.erpStatus)!}" == "CUSTOM_NORMAL_STATUS_40"))>
+	<#assign deleteContactURL = "'${ctx}/custom/baseinfo/contact/delete.html'"     />	
+</#if>
+
+<@form.table id="contact" 
+class="col-xs-12"
+height="131px"
+title="${i18n.get('联系人')}" 
+url = "${ctx}/custom/baseinfo/contact/page.html?id=${(customInfo.id)!}"
+rowNum = "5" 
+addURL = "${addContactURL!}"
+editURL = "${editContactURL!}"
+deleteURL= "${deleteContactURL!}" 
+colModel = "[
+	{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+	{name:'customId',label:'${i18n.get('客户编码')}',hidden:true,width:100,sortable:false,align:'center' },
+	{name:'contactName',label:'${i18n.get('名称')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'contactSexGrid.name',label:'${i18n.get('性别')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'age',label:'${i18n.get('年龄')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'contactDept',label:'${i18n.get('部门')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'contactBusiness',label:'${i18n.get('职务')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'contactCompetent',label:'${i18n.get('主管领域')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'contactRoleGrid.name',label:'${i18n.get('角色')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'contactTel',label:'${i18n.get('电话')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'contactFax',label:'${i18n.get('传真')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'contactMail',label:'E-mail',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'weight',label:'${i18n.get('决策权重')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'appeal',label:'${i18n.get('利益诉求')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'interest',label:'${i18n.get('兴趣爱好')}',hidden:false,width:100,sortable:false,align:'center' },
+	{name:'contactValidGrid.name',label:'${i18n.get('有效')}',hidden:false,width:100,sortable:false,align:'center' }
+	
+	]" 
+
+onComplete = "function() { 
+	var ids = $('#contact').jqGrid('getDataIDs');
+	if(!!ids&& ids.length !=0){
+		$('#personCnt').val(ids.length);
+	} else {
+		$('#personCnt').val('0');
+	}
+
+
+}"
+	>
+</@form.table>
+
+</#escape>

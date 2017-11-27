@@ -1,0 +1,332 @@
+<@pui.body nav1="${i18n.get('层级对照表编辑')}" nav2="${i18n.get('新增/编辑')}" type="popup">
+<@form.form id="t821" success="function(){parent.currentParent2.reload_t821(); }" class="form-horizontal">
+	<div class="hr hr-18 dotted hr-double"></div>
+	<div style="visibility:hidden;">
+	   	productID : <@form.input id="productID" name="productID" readonly="true" tip="" value="${(ppl.productID)!}" />
+	</div>
+	<div align="center" class="form-group">
+		<table>
+			<tr>
+			 	<td align="right" width="110px"><strong style="color: red;">*</strong>${i18n.get('产品编码 :')}</td>
+			 	<td width="340px">
+			 		<@form.input id="productCode" name="productCode" readonly="true" tip="CRM${i18n.get('产品编号')}"  required="${i18n.get('不能为空')}" value="${(ppl.productCode)!}" />
+			 		<@biz.picker_product id="selectProduct" url="${ctx}/common/product/selectList.html" 
+						callback="function(data){
+							if(data){
+								$('#productID').val(data.proId);
+								$('#productCode').val(data.productCode);
+								$('#productName').val(data.productName);
+								$('#proModel').val(data.proModel);
+								$('#proLine').val(data.proLine);
+								$('#proDesc').val(data.proDesc);
+								$('#materCode').val(data.materielCode);
+								$('#unitName').val(data.unitName);
+								$('#proBrand').val(data.proBrand);
+								$('#cproPowcap').val(data.cproPowcap);
+								$('#saleStatusName').val(data.saleStatusName);
+							 }
+						}"
+					/>
+			 	</td>
+			 	<td align="right" width="110px">${i18n.get('产品名称 :')}</td>
+				<td width="340px"><@form.input id="productName" name="productName" readonly="true" tip="CRM${i18n.get('产品名称')}" value="${(ppl.productName)!}" /></td>
+			 	<td align="right" width="110px">${i18n.get('产品型号 :')}</td>
+				<td width="340px"><@form.input id="proModel" name="proModel" readonly="true" tip="CRM${i18n.get('产品型号')}" value="${(ppl.proModel)!}" /></td>
+			</tr>
+			<tr>
+			   	
+			 	<td align="right" width="110px">${i18n.get('产品线 :')}</td>
+			 	<td width="340px"><@form.input id="proLine" name="proLine" tip="ERP${i18n.get('产品线')}" readonly="true" value="${(ppl.proLine)!}" /></td>
+			 	<td align="right" width="110px">${i18n.get('产品描述 :')}</td>
+			 	<td width="340px"><@form.input id="proDesc" name="proDesc" readonly="true" tip="ERP${i18n.get('产品描述')}" value="${(ppl.proDesc)!}" /></td>
+			 	<td align="right" width="110px">${i18n.get('物料号 :')}</td>
+			 	<td width="340px"><@form.input id="materCode" name="materCode" readonly="true" tip="ERP${i18n.get('物料号')}" value="${(ppl.materCode)!}" /></td>
+			</tr>	
+			<tr>
+			 	<td align="right" width="110px">${i18n.get('单位 :')}</td>
+			 	<td width="340px"><@form.input id="unitName" name="unitName" tip="${i18n.get('物料单位')}" readonly="true" value="${(ppl.unitName)!}" /></td>
+			 	<td align="right" width="110px">${i18n.get('品牌 :')}</td>
+			 	<td width="340px"><@form.input id="proBrand" name="proBrand" readonly="true" tip="CRM${i18n.get('产品品牌')}" value="${(ppl.proBrand)!}" /></td>
+			 	<td align="right" width="110px">${i18n.get('功率容量 :')}</td>
+			 	<td width="340px"><@form.input id="cproPowcap" name="cproPowcap" readonly="true" tip="CRM${i18n.get('产品功率容量')}" value="${(ppl.cproPowcap)!}" /></td>
+			</tr>
+			<tr>
+			 	<td align="right" width="110px">${i18n.get('转销状态 :')}</td>
+			 	<td width="340px"><@form.input id="saleStatusName" name="saleStatusName" readonly="true" tip="CRM${i18n.get('产品转销状态')}" value="${(ppl.saleStatusName)!}" /></td>
+			 	<td align="right" width="110px">${i18n.get('产品成本 :')}</td>
+			 	<td width="340px"><@form.number id="cost" name="cost" tip="${i18n.get('产品的成本价格')}" value="${(ppl.cost)!}" /></td>
+			 	<td align="right" width="110px"><strong style="color: red;">*</strong>${i18n.get('目录价格 :')}</td>
+			 	<td width="340px"><@form.number id="catalogPrice" name="catalogPrice" required="${i18n.get('不能为空')}" tip="${i18n.get('产品的目录定价')}" value="${(ppl.catalogPrice)!}" onChange="catelogChange()"/></td>
+			</tr>
+			<tr>
+			 	<td align="right" width="110px">${i18n.get('毛利率 :')}</td>
+			 	<td width="340px"><@form.number id="crossMargin" name="crossMargin" tip="${i18n.get('目录价格毛利率')}" value="${(ppl.crossMargin)!}" /></td>
+			 	<td align="right" width="110px"><strong style="color: red;">*</strong>${i18n.get('有效期开始时间 :')}</td>
+			 	<td width="340px"><@form.date id="startDate" name="startDate" required="${i18n.get('不能为空')}" tip="${i18n.get('有效期开始时间')}" value="${(ppl.startDate?date)!}" /></td>
+			 	<td align="right" width="110px">${i18n.get('有效期结束时间 :')}</td>
+			 	<td width="340px"><@form.date id="endDate" name="endDate" tip="${i18n.get('有效期线束时间')}" value="${(ppl.endDate?date)!}" /></td>
+			</tr>
+			<tr>
+			   	<td align="right" width="110px">${i18n.get('层一价格 :')}</td>
+			 	<td width="340px"><@form.number id="layer1Price" name="layer1Price" readonly="true" tip="${i18n.get('产品的目录定价')}" value="${(ppl.layer1Price)!}" onChange="price1DisChange()"/></td>
+			   	<td align="right" width="110px">${i18n.get('层一价折扣率 :')}</td>
+			 	<td width="340px"><@form.number id="layer1Discount" name="layer1Discount" tip="${i18n.get('层一价折扣率')}" value="${(ppl.layer1Discount)!}" onChange="price1Change()" /></td>
+			   	<td align="right" width="110px">${i18n.get('层一数量级 :')}</td>
+			 	<td width="340px"><@form.number id="layer1Number" name="layer1Number" tip="${i18n.get('按数量折哲产品层一价格的最低数量')}" value="${(ppl.layer1Number)!}" /></td>
+			</tr>
+			 
+			<tr>
+			 	<td align="right" width="110px">${i18n.get('层二价格 :')}</td>
+			 	<td width="340px"><@form.number id="layer2Price" name="layer2Price" readonly="true" tip="${i18n.get('产品的目录定价')}" value="${(ppl.layer2Price)!}" onChange="price2DisChange()" /></td>
+			    <td align="right" width="110px">${i18n.get('层二价折扣率 :')}</td>
+			 	<td width="340px"><@form.number id="layer2Discount" name="layer2Discount" tip="${i18n.get('层二价折扣率')}" value="${(ppl.layer2Discount)!}" onChange="price2Change()" /></td>
+			    <td align="right" width="110px">${i18n.get('层二数量级 :')}</td>
+			 	<td width="340px"><@form.number id="layer2Number" name="layer2Number" tip="${i18n.get('按数量折哲产品层二价格的最低数量')}" value="${(ppl.layer2Number)!}" /></td>
+			</tr>
+			 
+			<tr>
+			  	<td align="right" width="110px">${i18n.get('层三价格 :')}</td>
+			 	<td width="340px"><@form.number id="layer3Price" name="layer3Price" readonly="true" tip="${i18n.get('产品的目录定价')}" value="${(ppl.layer3Price)!}" onChange="price3DisChange()" /></td>
+			  	<td align="right" width="110px">${i18n.get('层三价折扣率 :')}</td>
+			 	<td width="340px"><@form.number id="layer3Discount" name="layer3Discount" tip="${i18n.get('层三价折扣率')}" value="${(ppl.layer3Discount)!}" onChange="price3Change()" /></td>
+			  	<td align="right" width="110px">${i18n.get('层三数量级 :')}</td>
+			 	<td width="340px"><@form.number id="layer3Number" name="layer3Number" tip="${i18n.get('按数量折哲产品层三价格的最低数量')}" value="${(ppl.layer3Number)!}" /></td>
+			</tr>
+			 
+			<tr>
+			  	<td align="right" width="110px">${i18n.get('层四价格 :')}</td>
+			 	<td width="340px"><@form.number id="layer4Price" name="layer4Price" readonly="true" tip="${i18n.get('产品的目录定价')}" value="${(ppl.layer4Price)!}"  onChange="price4DisChange()"/></td>
+			  	<td align="right" width="110px">${i18n.get('层四价折扣率 :')}</td>
+			 	<td width="340px"><@form.number id="layer4Discount" name="layer4Discount" tip="${i18n.get('层四价折扣率')}" value="${(ppl.layer4Discount)!}" onChange="price4Change()" /></td>
+			  	<td align="right" width="110px">${i18n.get('层四数量级 :')}</td>
+			 	<td width="340px"><@form.number id="layer4Number" name="layer4Number" tip="${i18n.get('按数量折哲产品层四价格的最低数量')}" value="${(ppl.layer4Number)!}" /></td>
+			</tr>
+			 
+			<tr>
+			  	<td align="right" width="110px">${i18n.get('层五价格 :')}</td>
+			 	<td width="340px"><@form.number id="layer5Price" name="layer5Price" readonly="true" tip="${i18n.get('产品的目录定价')}" value="${(ppl.layer5Price)!}" onChange="price5DisChange()" /></td>
+			  	<td align="right" width="110px">${i18n.get('层五价折扣率 :')}</td>
+			 	<td width="340px"><@form.number id="layer5Discount" name="layer5Discount" tip="${i18n.get('层五价折扣率')}" value="${(ppl.layer5Discount)!}" onChange="price5Change()" /></td>
+			  	<td align="right" width="110px">${i18n.get('层五数量级 :')}</td>
+			 	<td width="340px"><@form.number id="layer5Number" name="layer5Number" tip="${i18n.get('按数量折哲产品层五价格的最低数量')}" value="${(ppl.layer5Number)!}" /></td>	 
+			</tr>
+			<tr>
+			 	<td align="right" width="110px">${i18n.get('层六价格 :')}</td>
+			 	<td width="340px"><@form.number id="layer6Price" name="layer6Price" readonly="true" tip="${i18n.get('产品的目录定价')}" value="${(ppl.layer6Price)!}" onChange="price6DisChange()" /></td>
+			   	<td align="right" width="110px">${i18n.get('层六价折扣率 :')}</td>
+			 	<td width="340px"><@form.number id="layer6Discount" name="layer6Discount" tip="${i18n.get('层六价折扣率')}" value="${(ppl.layer6Discount)!}" onChange="price6Change()" /></td>
+			   	<td align="right" width="110px">${i18n.get('层六数量级 :')}</td>
+			 	<td width="340px"><@form.number id="layer6Number" name="layer6Number" tip="${i18n.get('按数量折哲产品层六价格的最低数量')}" value="${(ppl.layer6Number)!}" /> </td>
+			</tr>
+		</table>
+	</div>	
+	<div class="hr hr-18 dotted hr-double"></div>
+	<div class="clearfix form-actions">
+		<div class="col-md-offset-5 col-md-7">
+			<button class="btn btn-info submit" type="button">
+				<i class="icon-ok bigger-110"></i>
+				${i18n.get('保存')}
+			</button>
+			&nbsp; &nbsp; &nbsp;
+			<button class="btn" type="button" onclick="javascript:api.close()">
+				<i class="icon-undo bigger-110"></i>
+				${i18n.get('关闭')}
+			</button>
+		</div>
+	</div>
+</@form.form>
+</@pui.body>
+<script type="text/javascript">
+function catelogChange(){
+	
+	var t=$("#catalogPrice").val();//这个就是我们要判断的值了
+	if(!isNaN(t)){
+		 $("#catalogPrice").css("background-color","#FFFFFF");
+	}else{
+	  $("#catalogPrice").css("background-color","#FFFFCC");
+	  
+	  $("input[name=catalogPrice]").focus();
+	  return;
+	}
+	t = parseInt(t);
+	$("#catalogPrice").val(t);
+	
+	var layer1Discount = $('#layer1Discount').val();
+	var layer2Discount = $('#layer2Discount').val();
+	var layer3Discount = $('#layer3Discount').val();
+
+	var layer4Discount = $('#layer4Discount').val();
+	var layer5Discount = $('#layer5Discount').val();
+	var layer6Discount = $('#layer6Discount').val();
+	
+	if(layer1Discount.length != 0){
+		$('#layer1Price').val((layer1Discount*t).toFixed(0));
+	}
+	
+	if(layer2Discount.length != 0){
+		$('#layer2Price').val((layer2Discount*t).toFixed(0));
+	}
+	
+	if(layer3Discount.length != 0){
+		$('#layer3Price').val((layer3Discount*t).toFixed(0));
+	}
+	if(layer4Discount.length != 0){
+		$('#layer4Price').val((layer4Discount*t).toFixed(0));
+	}
+	if(layer5Discount.length != 0){
+		$('#layer5Price').val((layer5Discount*t).toFixed(0));
+	}
+	if(layer6Discount.length != 0){
+		$('#layer6Price').val((layer6Discount*t).toFixed(0));
+	}
+}
+function price1DisChange(){
+	var t=$("#layer1Price").val();//这个就是我们要判断的值了
+	if(!isNaN(t)){
+		 $("#layer1Price").css("background-color","#FFFFFF");
+		 $('#layer1Discount').val((t/$("#catalogPrice").val()).toFixed(0));
+	}else{
+		  $("#layer1Price").css("background-color","#FFFFCC");
+		  $("input[name=layer1Price]").focus();
+		  return;
+	}
+}
+
+function price1Change(){
+	var t=$("#layer1Discount").val();//这个就是我们要判断的值了
+	if(!isNaN(t)){
+		 $("#layer1Discount").css("background-color","#FFFFFF");
+		 
+		 $('#layer1Price').val(($("#catalogPrice").val()*t).toFixed(0));
+	}else{
+		  $("#layer1Discount").css("background-color","#FFFFCC");
+		  $("input[name=layer1Discount]").focus();
+		  return;
+	}
+}
+
+function price2DisChange(){
+	var t=$("#layer2Price").val();//这个就是我们要判断的值了
+	if(!isNaN(t)){
+		 $("#layer2Price").css("background-color","#FFFFFF");
+		 $('#layer2Discount').val((t/$("#catalogPrice").val()).toFixed(0));
+	}else{
+		  $("#layer2Price").css("background-color","#FFFFCC");
+		  $("input[name=layer2Price]").focus();
+		  return;
+	}
+}
+
+function price2Change(){
+	var t=$("#layer2Discount").val();//这个就是我们要判断的值了
+	if(!isNaN(t)){
+		 $("#layer2Discount").css("background-color","#FFFFFF");
+		 
+		 $('#layer2Price').val(($("#catalogPrice").val()*t).toFixed(0));
+	}else{
+		  $("#layer2Discount").css("background-color","#FFFFCC");
+		  $("input[name=layer2Discount]").focus();
+		  return;
+	}
+}
+
+function price3DisChange(){
+	var t=$("#layer3Price").val();//这个就是我们要判断的值了
+	if(!isNaN(t)){
+		 $("#layer3Price").css("background-color","#FFFFFF");
+		 $('#layer3Discount').val((t/$("#catalogPrice").val()).toFixed(0));
+	}else{
+		  $("#layer3Price").css("background-color","#FFFFCC");
+		  $("input[name=layer3Price]").focus();
+		  return;
+	}
+}
+
+function price3Change(){
+	var t=$("#layer3Discount").val();//这个就是我们要判断的值了
+	if(!isNaN(t)){
+		 $("#layer3Discount").css("background-color","#FFFFFF");
+		 
+		 $('#layer3Price').val(($("#catalogPrice").val()*t).toFixed(0));
+	}else{
+		  $("#layer3Discount").css("background-color","#FFFFCC");
+		  $("input[name=layer3Discount]").focus();
+		  return;
+	}
+}
+
+function price4DisChange(){
+	var t=$("#layer4Price").val();//这个就是我们要判断的值了
+	if(!isNaN(t)){
+		 $("#layer4Price").css("background-color","#FFFFFF");
+		 $('#layer4Discount').val((t/$("#catalogPrice").val()).toFixed(0));
+	}else{
+		  $("#layer4Price").css("background-color","#FFFFCC");
+		  $("input[name=layer4Price]").focus();
+		  return;
+	}
+}
+
+function price4Change(){
+	var t=$("#layer4Discount").val();//这个就是我们要判断的值了
+	if(!isNaN(t)){
+		 $("#layer4Discount").css("background-color","#FFFFFF");
+		 
+		 $('#layer4Price').val(($("#catalogPrice").val()*t).toFixed(0));
+	}else{
+		  $("#layer4Discount").css("background-color","#FFFFCC");
+		  $("input[name=layer4Discount]").focus();
+		  return;
+	}
+}
+
+function price5DisChange(){
+	var t=$("#layer5Price").val();//这个就是我们要判断的值了
+	if(!isNaN(t)){
+		 $("#layer5Price").css("background-color","#FFFFFF");
+		 $('#layer5Discount').val((t/$("#catalogPrice").val()).toFixed(0));
+	}else{
+		  $("#layer5Price").css("background-color","#FFFFCC");
+		  $("input[name=layer5Price]").focus();
+		  return;
+	}
+}
+
+function price5Change(){
+	var t=$("#layer5Discount").val();//这个就是我们要判断的值了
+	if(!isNaN(t)){
+		 $("#layer5Discount").css("background-color","#FFFFFF");
+		 
+		 $('#layer5Price').val(($("#catalogPrice").val()*t).toFixed(0));
+	}else{
+		  $("#layer5Discount").css("background-color","#FFFFCC");
+		  $("input[name=layer5Discount]").focus();
+		  return;
+	}
+}
+
+function price6DisChange(){
+	var t=$("#layer6Price").val();//这个就是我们要判断的值了
+	if(!isNaN(t)){
+		 $("#layer6Price").css("background-color","#FFFFFF");
+		 $('#layer6Discount').val((t/$("#catalogPrice").val()).toFixed(0));
+	}else{
+		  $("#layer6Price").css("background-color","#FFFFCC");
+		  $("input[name=layer6Price]").focus();
+		  return;
+	}
+}
+
+function price6Change(){
+	var t=$("#layer6Discount").val();//这个就是我们要判断的值了
+	if(!isNaN(t)){
+		 $("#layer6Discount").css("background-color","#FFFFFF");
+		 
+		 $('#layer6Price').val(($("#catalogPrice").val()*t).toFixed(0));
+	}else{
+		  $("#layer6Discount").css("background-color","#FFFFCC");
+		  $("input[name=layer6Discount]").focus();
+		  return;
+	}
+}
+</script>

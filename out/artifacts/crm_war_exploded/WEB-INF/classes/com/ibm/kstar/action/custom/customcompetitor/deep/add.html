@@ -1,0 +1,95 @@
+<#escape x as x?html>
+<@pui.body >
+	<@form.panel title="${i18n.get('新增')}/${i18n.get('编辑')}">
+	<@form.form id="achiForm" success="function(){ parent.currentParent.reload_achiDeepCompare(); }" class="form-horizontal" >
+		<input id="achiPid" name="achiPid" type="hidden"  value="${(customCompAchiDeep.achiPid)!}">
+		<input id="reportPid" name="reportPid" type="hidden"  value="${(customCompAchiDeep.reportPid)!}">
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>${i18n.get('竞争对手主推产品名称')} : 
+			</label>
+			<@form.input
+			id="productCode"  
+			name="productCode" 
+			placeholder="" 
+			required="${i18n.get('不能为空！')}"
+			tip="" 
+			value="${(customCompAchiDeep.productCode)!}" 
+			/>
+		</div>
+		
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>${i18n.get('竞争对手主推产品系列')} : 
+			</label>
+			<@form.input
+			id="compPruductSet"  
+			name="compPruductSet" 
+			placeholder="" 
+			required="${i18n.get('不能为空！')}"
+			tip="" 
+			value="${(customCompAchiDeep.compPruductSet)!}" 
+			/>
+		</div>
+		
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>${i18n.get('竞争对手产品卖点')} : 
+			</label>
+			<@form.input
+			id="compPruductUsp"  
+			name="compPruductUsp" 
+			placeholder="" 
+			required="${i18n.get('不能为空！')}"
+			tip="" 
+			value="${(customCompAchiDeep.compPruductUsp)!}" 
+			/>
+		</div>
+		
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>${i18n.get('对应科士达产品系列')} : 
+			</label>
+			<@form.input
+			id="compPruductEqu"  
+			name="compPruductEqu" 
+			placeholder="" 
+			required="${i18n.get('不能为空！')}"
+			tip="" 
+			value="${(customCompAchiDeep.compPruductEqu)!}" 
+			/>
+		</div>
+		
+		<div class="form-group" >
+			<label class="col-sm-3 control-label no-padding-right" > 
+				<strong style="color: red;">*</strong>${i18n.get('科士达对应产品改善建议')} : 
+			</label>
+			<@form.input
+			id="compPruductSugg"  
+			name="compPruductSugg" 
+			placeholder="" 
+			required="${i18n.get('不能为空！')}"
+			tip="" 
+			value="${(customCompAchiDeep.compPruductSugg)!}" 
+			/>
+		</div>
+		
+		
+		<div class="hr hr-18 dotted hr-double"></div>
+		<div class="clearfix form-actions">
+			<div class="col-md-offset-5 col-md-7">
+				<button class="btn btn-info submit" type="button">
+					<i class="icon-ok bigger-110"></i>
+					${i18n.get('保存')}
+				</button>
+				&nbsp; &nbsp; &nbsp;
+				<button class="btn" type="button" onclick="javascript:api.close()">
+					<i class="icon-undo bigger-110"></i>
+					${i18n.get('关闭')}
+				</button>
+			</div>
+		</div>
+	</@form.form>
+	</@form.panel>
+</@pui.body>
+</#escape>

@@ -1,0 +1,210 @@
+<@pui.body>
+<table style="width: 100%" >
+	<tr>
+		<td id="treeTd" style="width: 300px" valign="top">
+			<@form.panel title="${i18n.get('产品目录树')}" style='height:100'>
+				<@plug.tree 
+				checkbox="true" 
+				id="tree1" 
+				moveEdit = 'true' 
+				
+				onMove = "function(dragNode,newParentNode,moveType){
+					var data = {
+						dragNodeId : dragNode[0].id,
+						newParentNodeId : newParentNode != null ? newParentNode.id : null
+					}
+					if(moveType == 'inner'){
+						var dialog = bootbox.dialog({
+						    message: '${i18n.get('岗位调整中......')}',
+						    closeButton: false
+						});
+						ajax({
+							type:'post',
+							url : '${ctx}/lov/member/move.html',
+							data: data,
+							success : function(result) {
+								dialog.modal('hide');
+								exalert(e,'${i18n.get('移动成功')}');
+							},
+							error : function(result) {
+								dialog.modal('hide');
+								exalert(e,'${i18n.get('移动失败')}');
+								reload_tree1();
+							}
+						});
+					}else{
+						reload_tree1();
+					}
+				}"
+				
+				dataFilter="function(data){ 
+					if(data.leafFlag == 'Y'){
+						data.nocheck = true;
+					}else{
+						data.checked = false;
+					}
+					
+					return data; 
+				}"
+				
+				asyncUrl='${ctx}/lov/member/tree.html?groupId=procatalog&leafFlag=N'
+				onClick=" function(event, treeId, treeNode){
+			  		$('#parentId').val(treeNode.id);
+			  		reload_t1();
+			  		if(treeNode.leafFlag == 'Y'){
+			  			$('#add_t1').hide();
+			  		}else{
+			  			$('#add_t1').show();
+			  		}
+			  		
+				  	if(treeNode.leafFlag == 'Y'){
+				  		$('#configPermission').hide();
+				  	}else{
+				  		$('#configPermission').show();
+				  	}
+				  	$('#productCatalogId').val(treeNode.id);
+				  	reload_t2();
+			  		
+			  	}"
+			  	
+			  	onRightClick="function(event, treeId, treeNode) {
+				   	var treeObj = $.fn.zTree.getZTreeObj(treeId);
+					var nodes = treeObj.getNodes();
+					if (nodes.length>0) {
+						treeObj.cancelSelectedNode();
+					}
+					$('#parentId').val('');
+					reload_t1();
+				}"
+			  	
+			  	isParent="function(data){
+			  		return data.leafFlag == 'N';
+			  	}"
+			  	
+			  	chkboxType="{ 'Y' : 'ps',  'N' : 's' }"
+			  	
+				/>
+			</@form.panel>
+		</td>
+	
+		<td valign="top">
+			<@form.table id="t1"
+			class="col-xs-12"
+			shrinkToFit = 'true'
+			title="${i18n.get('产品目录')}"
+			url = "${ctx}/product/catalog/mappage.html?groupId=procatalog"
+			rowNum = "20"
+			addURL = ""
+			editURL = ""
+			colModel = "[
+			  { name : 'id',    label : 'id', hidden : true , width : 60,sortable:false,align:'center' }, 
+			  { name : 'leafFlag',    label : '', hidden : true , width : 60,sortable:false,align:'center' }, 
+			  { name : 'code', label : '${i18n.get('编码')}',hidden : true, width : 90 ,sortable:false}, 
+			  { name : 'name', label : '${i18n.get('目录名称')}', width : 150 ,sortable:false },
+			  { name : 'startDate', label : '${i18n.get('有效期开始时间')}', width : 150 ,sortable:false,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+			  { name : 'endDate', label : '${i18n.get('有效期结束时间')}', width : 150 ,sortable:false,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+			  { name : 'parentId', label : '', hidden : true, width : 150 ,sortable:false },
+			  { name : 'deleteFlag', label : '${i18n.get('有效')}', width : 150 ,sortable:false,formatter:function(cellvalue, options, rowObject){ return checkForm(cellvalue)} },
+			  { name : 'memo', label : '${i18n.get('说明')}', width : 150 ,sortable:false }
+			  ]"
+			  
+			  onSelectRow = "function(){
+			  
+			  	if(selected_t1.leafFlag == 'Y'){
+			  		$('#configPermission').hide();
+			  	}else{
+			  		$('#configPermission').show();
+			  	}
+			  	
+			  	$('#productCatalogId').val(selected_t1.id);
+			  	reload_t2();
+			  }"
+			  
+
+			>
+			
+			<div class="col-xs-12">
+				<input type="hidden" id="parentId" name="parentId" />
+				<div class="form-group col-xs-2" align="right">${i18n.get('目录名称')} ：</div>
+				<div class="form-group col-xs-4">
+					<input type="text" name="name" size="30" />
+				</div>	
+			</div>
+			</@form.table>
+		</td>
+	</tr>
+	
+	<#if (permission["P01-1ProductPermissonSubmit"])??>
+		<#assign configURL="true" />
+	</#if>
+	<tr>
+		<td colspan="2">
+			<@form.table id="t2"
+			class="col-xs-12"
+			shrinkToFit = 'true'
+			title="${i18n.get('权限列表')}"
+			url = "${ctx}/product/permission/selectedPage.html"
+			rowNum = "20"
+			search="false"
+			colModel = "[
+			  { name : 'id', label : 'id', hidden : true , width : 60,sortable:false,align:'center' }, 
+			  { name : 'optTxt1',    label : '${i18n.get('类型')}', hidden : false , width : 60,sortable:false,align:'center',formatter:function(cellvalue, options){ return 'Y'== cellvalue ? '${i18n.get('岗位')}':'${i18n.get('组织')}' } }, 
+			  { name : 'name', label : '${i18n.get('目录名称')}', width : 150 ,sortable:false },
+			  { name : 'memo', label : '${i18n.get('说明')}', width : 150 ,sortable:false }
+			  ]"
+			 buttons = "[{
+			  			id:'configPermission',
+			  			label : '${i18n.get('设置权限')}',
+			  			icon : 'icon-save',
+			  			own : ${configURL!'false'},
+			  			handler : function(e,rowData){
+							var treeObj = $.fn.zTree.getZTreeObj('tree1');
+							var nodes = treeObj.getCheckedNodes(true);
+							var selectNodes = treeObj.getSelectedNodes();
+							var ids = '';
+							$.each(nodes,function(i,item){
+								ids = ids + item.id;
+								if(i < nodes.length - 1){
+									ids = ids + 'a____z';
+								}
+							})
+							if(ids =='' || nodes.length == 0){
+								exalert(e,'${i18n.get('没有选中任何数据!')}');
+								return;
+							}
+							var selectedId = nodes[0].id;
+							if(selectNodes.length > 0){
+								selectedId = selectNodes[0].id;
+							}
+							$.ajax({
+								url : '${ctx}/product/permission/permissionPostData.html',
+								type : 'POST',
+								data : ids,
+								success : function(data) {
+									parent.dialog('${i18n.get('设置权限')}','${ctx}/product/permission/config.html?productCatalogId='+selectedId+'&productCatalogIds='+data.message,window);
+								}
+							});
+							
+							
+			  			}
+			  		}]"
+			>
+			<input type="hidden" name="productCatalogId" id="productCatalogId" />
+			</@form.table>
+		</td>
+	</tr>	
+</table>	
+			
+<script type="text/javascript">
+function checkForm(cellvalue){
+	var html="<input type=\"checkbox\"  onclick=\"return false;\" />";
+	if(cellvalue == 'N'){
+		 return "<input type=\"checkbox\" checked=\"checked\"  onclick=\"return false;\"/>";
+		
+	}else if(cellvalue == 'Y'){
+		return html;
+	}
+}
+</script>
+</@pui.body>
+

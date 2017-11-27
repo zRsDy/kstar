@@ -1,0 +1,54 @@
+<@pui.body>
+<div class="row col-xs-12" style="width: 1000px;margin-right: 0px; margin-left: 0px;" >
+	<table style="width: 1000px">
+		<tr>
+			<td style="width: 1000px">
+				<@form.table id="select" 
+					class="col-xs-12"
+					title="${i18n.get('产品分类表')}" 
+					url = "${ctx}/batchProductPrice/proCategoryPage.html" 
+					rowNum = "20" 
+					colModel = "[
+						{name:'id',label:'ID',hidden:true,width:100,sortable:false,align:'center' },
+						{name:'cproCategory',label:'${i18n.get('产品分类')}',hidden:false,width:140,sortable:false,align:'center' },
+						{name:'cproType',label:'${i18n.get('产品类别')}',hidden:false,width:140,sortable:false,align:'center'},
+						{name:'proSeries',label:'${i18n.get('产品系列')}',hidden:false,width:140,sortable:false,align:'center'},
+						{name:'proGroup',label:'${i18n.get('产品组')}',hidden:false,width:140,sortable:false,align:'center' },
+						{name:'proLine',label:'${i18n.get('产品线')}',hidden:false,width:140,sortable:false,align:'center'},
+						{name:'cproPowcap',label:'${i18n.get('功率或容量')}',hidden:false,width:140,sortable:false,align:'center' }
+					]" 
+					ondblClickRow="function(){
+						parent.currentParent.${pickerId}_callback(selected_select);
+						api.close();
+					}"> 
+				</@form.table> 
+			</td>
+		</tr>
+	</table>
+
+	<div class="clearfix form-actions">
+		<div class="col-md-offset-5 col-md-7">
+			<button class="btn btn-info" id="selectOK" type="button" onclick="$('#price').trigger('blur')" >
+				<i class="icon-ok bigger-110"></i>
+				${i18n.get('选择')}
+			</button>
+			&nbsp; &nbsp; &nbsp;
+			<button class="btn" type="button" onclick="javascript:api.close()">
+				<i class="icon-undo bigger-110"></i>
+				${i18n.get('关闭')}
+			</button>
+		</div>
+	</div>
+</div>
+</@pui.body>
+<script type="text/javascript">
+	$('#selectOK').click(function(){
+		if(!selected_select || selected_select == ''){
+			exalert(e,'${i18n.get('请选择数据')}');
+			return;
+		}else{
+			parent.currentParent.${pickerId}_callback(selected_select);
+			api.close();
+		}
+	})
+</script>

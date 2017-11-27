@@ -1,0 +1,84 @@
+<@pui.body> 
+			
+				
+	<div class="col-xs-12" >
+		<@form.panel title="${i18n.get('新增/编辑')}">
+		<@form.form id="t10"
+			success="function(){ 
+			try{
+				parent.currentParent.reload_prjlst();
+			}catch(e){
+				parent.currentParent2.reload_prjlst();
+			}
+				try{ 
+					parent.currentParent.reload_prjlsttree1('${(parentLovMember.id)!}'); 
+				}catch(e){ 
+					parent.currentParent2.reload_prjlsttree1('${(parentLovMember.id)!}'); 
+				}
+			}" 
+			class="form-horizontal"
+			>
+			
+
+				<div id="inputArea">
+				
+					<@form.input  id="lovId" name="lovId" type="hidden" value="${(lovMember.id)!}" />
+
+					<@form.input  id="quotCode"  name="quotCode"  type="hidden" value="${contrId}" />
+			
+					<@form.input  id="prjLstid"  name="prjLstid" type="hidden" value="${(prjLst.id)!}"/>
+
+					<input  id="proId" name="proId" type="hidden"  tip="${i18n.get('产品')}ID" value="${(prjLst.proId)!}" />
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right" for="code"> ${i18n.get('产品包名称')}: </label>
+						 <@form.input  id="prdNm"  name="prdNm"  value="${(prjLst.prdNm)!}" />
+					</div>
+
+					<@form.input  id="updtFlag"  name="updtFlag" type="hidden" value="${(prjLst.updtFlag)!}" />
+					<@form.input  id="updatType"  name="updatType" type="hidden" value="${(prjLst.updatType)!}" />
+
+			
+				</div>
+			
+			<div class="clearfix form-actions">
+				<div class="col-md-offset-5 col-md-7">
+					<button class="btn btn-info submit" type="button">
+						<i class="icon-ok bigger-110"></i>
+						${i18n.get('保存')}
+					</button>
+					&nbsp; &nbsp; &nbsp;
+					<button class="btn" type="button" onclick="javascript:api.close()">
+						<i class="icon-undo bigger-110"></i>
+						${i18n.get('关闭')}
+					</button>
+				</div>
+			</div>
+		</@form.form>
+		</@form.panel>
+		
+		<div style="visibility: hidden;" >
+			<@biz.picker_product id="selectProduct" url="${ctx}/common/product/selectList.html" 
+					button="${i18n.get('选择产品')}"
+					callback="function(data){
+						if(data){
+							if(window.confirm('${i18n.get('你确定选择该产品')}？')){
+								$('#name').val(data.productName);
+								$('#prdNm').val(data.productName);
+								$('#prdUnt').val(data.unitName);
+								$('#prdSprc').val(data.catalogPrice);
+								$('#prdTyp').val(data.proModel);
+								$('#prdcd').val(data.productCode);
+								$('#materCode').val(data.materielCode);
+								$('#prdCtg').val(data.crmCategoryLable);
+								$('#prdCtgid').val(data.crmCategory);
+								$('#proId').val(data.proId);
+								$('#proDesc').val(data.proDesc);
+	              			}
+						 }
+					}"
+			/>
+		</div>
+		
+		<div class="col-xs-12" >
+	</div>
+</@pui.body>

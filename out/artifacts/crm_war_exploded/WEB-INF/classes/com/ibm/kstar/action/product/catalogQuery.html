@@ -1,0 +1,201 @@
+<@pui.body>
+<#if (permission["P01-1ProCatalogQueryExport"])??>
+	<#assign exportURL="'${ctx}/product/catalog/mappageRightExport.html'" />
+</#if>
+<#if (permission["P01-1ProCatalogQueryProductAdd"])??>
+	<#assign addURL="true" />
+</#if>
+<table style="width: 100%" >
+				<tr>
+						<td id="treeTd" style="width: 300px" valign="top">
+							<@form.panel title="${i18n.get('销售目录树')}" style='height:100'>
+								<@plug.tree 
+								checkbox="false" 
+								id="tree1" 
+								moveEdit = 'false'
+								onMove = "function(dragNode,newParentNode,moveType){
+									var data = {
+										dragNodeId : dragNode[0].id,
+										newParentNodeId : newParentNode != null ? newParentNode.id : null
+									}
+									if(moveType == 'inner'){
+										ajax({
+											type:'post',
+											url : '${ctx}/lov/member/move.html',
+											data: data,
+											success : function(result) {
+												exalert(e,'${i18n.get('移动成功')}');
+											},
+											error : function(result) {
+												exalert(e,'${i18n.get('移动失败')}');
+												reload_tree1();
+											}
+										});
+									}else{
+										reload_tree1();
+									}
+								}"
+								<!-- asyncUrl='${ctx}/common/product/productTree.html' ${i18n.get('有权限')}-->
+								asyncUrl='${ctx}/lov/member/treeRight.html?groupId=procatalog&leafFlag=N'
+								onClick=" function(event, treeId, treeNode){
+							  		$('#parentId').val(treeNode.id);
+							  		if(treeNode.id === treeNode.code && treeNode.leafFlag === 'Y' && treeNode.path === undefined && treeNode.codePath === undefined){
+							  		  $('#showFlag').hide();
+							  		  $('#fromMap').val('Y');
+							  		  $('#parentId').val(treeNode.code);
+							  		  $('#deleteButton').hide();
+							  		  $('#edit_t1').hide();
+							  		}else{
+							  			 $('#fromMap').val('N');
+							  			 $('#showFlag').show();
+							  			 $('#deleteButton').show();
+							  			 $('#edit_t1').show();
+							  		}
+							  		
+							  		reload_t1();
+							  		if(treeNode.leafFlag == 'Y'){
+							  			$('#add_t1').hide();
+							  		}else{
+							  			$('#add_t1').show();
+							  		}				  		
+							  	}"
+							  	
+							  	ondblClick=" function(event, treeId, treeNode){
+							  		if(treeNode.leafFlag == 'Y'){
+							  			parent.dialog('${i18n.get('产品详情')}','${ctx}/product/edit.html?id='+treeNode.code,window);
+							  		}			  		
+							  		
+							  	}"
+							  	isParent="function(data){
+							  		return data.leafFlag == 'N';
+							  	}"
+								/>
+							</@form.panel>
+						</td>
+				
+					<td valign="top">
+						<@form.table id="t1"
+						class="col-xs-12"
+						title="${i18n.get('销售目录')}"
+						url = "${ctx}/product/catalog/mappageRight.html"
+						exportURL = "${exportURL!}"
+						rowNum = "20"
+						colModel = "[
+						  { name : 'id',    label : 'id', hidden : true, width : 60,sortable:false,align:'center' }, 
+						  { name : 'code', label : '${i18n.get('编码')}',hidden : true, width : 90 ,sortable:false}, 
+						  { name : 'name', label : '${i18n.get('目录名称')}', width : 120 ,sortable:false },
+						  { name : 'namePath', label : '${i18n.get('目录层级')}', width : 120 ,sortable:false },
+						  { name : 'proCode', label : '${i18n.get('产品编码')}', width : 110 ,sortable:false },
+						  { name : 'proName', label : '${i18n.get('产品名称')}', width : 110 ,sortable:false },
+						  { name : 'proDesc', label : '${i18n.get('产品描述')}', width : 280 ,sortable:false },
+						  { name : 'proUnit', label : '${i18n.get('产品单位')}', width : 60 ,sortable:false },
+						  { name : 'proModel', label : '${i18n.get('产品型号')}', width : 70 ,sortable:false },
+						  { name : 'crmCategory', label : '${i18n.get('CRM产品类别')}', width : 90 ,sortable:false },
+						  { name : 'startDate', label : '${i18n.get('有效期开始时间')}', width : 100 ,sortable:false,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+						  { name : 'endDate', label : '${i18n.get('有效期结束时间')}', width : 100 ,sortable:false,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
+						  { name : 'parentId', label : '', hidden : true, width : 150 ,sortable:false },
+						   { name : 'optTxt5', label : '', hidden : true, width : 150 ,sortable:false },
+						  { name : 'deleteFlag', label : '${i18n.get('有效')}', width : 40 ,sortable:false,formatter:function(cellvalue, options, rowObject){ return checkForm(cellvalue)} },
+						
+						{ name : 'leafFlag', label : '${i18n.get('叶子节点')}', hidden : true, width : 250 ,sortable:false },
+						  { name : 'memo', label : '${i18n.get('说明')}', width : 280 ,sortable:false },
+						  
+						  {name:'modifyHardware',label:'${i18n.get('修改硬件')}',hidden:false,width:100,sortable:false,align:'center' },
+						  {name:'addFunction',label:'${i18n.get('增加功能')}',hidden:false,width:100,sortable:false,align:'center' },
+						  {name:'modifyParamter',label:'${i18n.get('更改参数')}',hidden:false,width:100,sortable:false,align:'center' },
+						  {name:'chassisSize',label:'${i18n.get('机箱尺寸/外观变更')}',hidden:false,width:100,sortable:false,align:'center' },
+						  {name:'commercialData',label:'${i18n.get('商品化资料')}',hidden:false,width:100,sortable:false,align:'center' },
+						  {name:'randomAttach',label:'${i18n.get('增加随机附件')}',hidden:false,width:100,sortable:false,align:'center' },
+						  {name:'other',label:'${i18n.get('其他')}',hidden:false,width:100,sortable:false,align:'center' }
+						  ]"
+						  
+						  ondblClickRow= "function(rowData){
+						  	if(selected_t1.leafFlag === 'Y'){
+						  		parent.dialog('${i18n.get('产品详细信息')}','${ctx}/product/edit.html?id='+selected_t1.optTxt5);
+						  	}
+							
+						  }"		 
+						 buttons = "[]"
+						>
+						
+						<div class="col-xs-12">
+							<input type="hidden" id="parentId" name="parentId" />
+							<input type="hidden" id="fromMap" name="fromMap" value="N"/>
+							<input type="hidden" id="groupId" name="groupId" value="procatalog"/>
+							
+							<div class="form-group col-xs-2" align="right">${i18n.get('目录名称 ：')}</div>
+							<div class="form-group col-xs-4">
+								<input type="text" name="name" size="30" />
+							</div>	
+							<div class="form-group col-xs-2" align="right">${i18n.get('产品编码 ：')}</div>
+							<div class="form-group col-xs-4">
+								<input type="text" name="productCode" size="30" />
+							</div>	
+							<div class="form-group col-xs-2" align="right">${i18n.get('产品名称 ')}：</div>
+							<div class="form-group col-xs-4">
+								<input type="text" name="productName" size="30" />
+							</div>
+							<div class="form-group col-xs-2" align="right">${i18n.get('产品型号 ：')}</div>
+							<div class="form-group col-xs-4">
+								<input type="text" name="proModel" size="30" />
+							</div>
+							<div class="form-group col-xs-2" align="right">${i18n.get('产品描述 ：')}</div>
+							<div class="form-group col-xs-4">
+								<input type="text" name="proDesc" size="30" />
+							</div>
+							<div class="form-group col-xs-2" align="right">${i18n.get('CRM产品类别 ：')}</div>
+							<div class="form-group col-xs-4">
+								<select name="crmCategory">
+									<option value="">${i18n.get('全部')}</option>
+									<#list crmCategoryLst as element>
+										<option value="${element.code}">${element.name}</option>
+									</#list>
+								</select>
+							</div>
+							<div class="form-group col-xs-2" align="right">${i18n.get('修改硬件 ：')}</div>
+							<div class="form-group col-xs-4">
+								<input type="text" name="modifyHardware" size="30" />
+							</div>
+							<div class="form-group col-xs-2" align="right">${i18n.get('增加功能 ：')}</div>
+							<div class="form-group col-xs-4">
+								<input type="text" name="addFunction" size="30" />
+							</div>
+							<div class="form-group col-xs-2" align="right">${i18n.get('更改参数 ：')}</div>
+							<div class="form-group col-xs-4">
+								<input type="text" name="modifyParamter" size="30" />
+							</div>
+							<div class="form-group col-xs-2" align="right">${i18n.get('机箱尺寸/外观变更 ：')}</div>
+							<div class="form-group col-xs-4">
+								<input type="text" name="chassisSize" size="30" />
+							</div>
+							<div class="form-group col-xs-2" align="right">${i18n.get('商品化资料 ：')}</div>
+							<div class="form-group col-xs-4">
+								<input type="text" name="commercialData" size="30" />
+							</div>
+							<div class="form-group col-xs-2" align="right">${i18n.get('增加随机附件 ：')}</div>
+							<div class="form-group col-xs-4">
+								<input type="text" name="randomAttach" size="30" />
+							</div>
+							<div class="form-group col-xs-2" align="right">${i18n.get('其他 ：')}</div>
+							<div class="form-group col-xs-4">
+								<input type="text" name="other" size="30" />
+							</div>
+						</div>
+						</@form.table>
+					</td>
+				</tr>
+			</table>	
+			
+<script type="text/javascript">
+function checkForm(cellvalue){
+	var html="<input type=\"checkbox\"  onclick=\"return false;\" />";
+	if(cellvalue == 'N'){
+		 return "<input type=\"checkbox\" checked=\"checked\"  onclick=\"return false;\"/>";
+		
+	}else if(cellvalue == 'Y'){
+		return html;
+	}
+}
+</script>
+</@pui.body>
+

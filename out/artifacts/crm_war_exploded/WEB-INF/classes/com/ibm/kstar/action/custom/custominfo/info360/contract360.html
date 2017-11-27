@@ -1,0 +1,27 @@
+<#escape x as x?html>
+<@form.table id="tableContract" 
+	class="col-xs-12"
+	height="131px"
+	title="${i18n.get('合同列表')}" 
+	url = "${ctx}/custom/baseinfo/info360/contrat360Show.html?customCode=${(customInfo.customCode)!}" 
+	rowNum = "5" 
+	
+	colModel = "[
+		{name:'id',label:'${i18n.get('合同ID')}',hidden:true,width:60,sortable:false,align:'center' },
+		{name:'contrNo',label:'${i18n.get('合同编号')}',sortable:false,align:'center' },
+		{name:'contrName',label:'${i18n.get('合同名称')}',hidden:false,width:200,sortable:false,align:'center' },
+		{name:'contrType',label:'${i18n.get('合同类型')}',hidden:true,width:100,sortable:false,align:'center' },
+		{name:'contrTypeName',label:'${i18n.get('合同类型名称')}',hidden:false,width:100,sortable:false,align:'center' },
+		{name:'projName',label:'${i18n.get('项目名称')}',hidden:false,width:150,sortable:false,align:'center' },
+		{name:'projNo',label:'${i18n.get('项目名称')}',hidden:true,width:150,sortable:false,align:'center' },
+		{name:'custName',label:'${i18n.get('客户名称')}',hidden:false,width:150,sortable:false,align:'center' },
+		{name:'quotNo',label:'${i18n.get('报价单')}',hidden:false,width:100,sortable:false,align:'center'},
+		{name:'pricTable',label:'${i18n.get('价格表')}',hidden:false,width:150,sortable:false,align:'center' },
+		{name:'totalAmt',label:'${i18n.get('合同总金额')}',hidden:false,width:100,sortable:false,align:'center', formatter:'number',formatoptions:{decimalPlaces : 2,defaultValue:''} },		
+		{name:'contrStat',label:'${i18n.get('合同状态')}',hidden:true,width:60,sortable:false,align:'center' },
+		{name:'contrStatName',label:'${i18n.get('合同状态')}',hidden:false,width:60,sortable:false,align:'center' },
+		{name:'contrVer',label:'${i18n.get('合同版本')}',hidden:false,width:60,sortable:false,align:'center' }
+		]" 
+		> 
+</@form.table>
+</#escape>

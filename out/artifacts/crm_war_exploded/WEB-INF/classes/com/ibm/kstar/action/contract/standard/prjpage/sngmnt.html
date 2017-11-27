@@ -1,0 +1,334 @@
+<div>
+	<@form.form id="sngmnt" action="${ctx}/standard/prjpage/sngmnt.html" success="function(){
+	alert('${i18n.get('保存成功')}！');opener.reload_sngmnt(); }" class="form-horizontal">
+	<@form.input id="id" name="id" placeholder="" tip="" type="hidden"
+	value="${(sngmntInf.id)!}" />
+
+	<h5 style="background-color: #E9E9E9;">${i18n.get('动环监控部分')}</h5>
+	<table>
+		<tr>
+			<td width="100px">${i18n.get('项目技术要求')}:</td>
+			<td width="180px">
+				<div>
+					<button class="btn btn-info"
+						onclick="javascript:parent.dialog('${i18n.get('项目技术要求')}','${ctx}/kstarDoc/add.html?systemId=${contrId}&systemCode=SNGMNTPRJATTM',window)"
+						type="button">${i18n.get('上传附件')}</button>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('告警需求')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="almRq" value="a"
+							selectValue="${(sngmntInf.almRq)!'N'}" /> <span class="lbl">${i18n.get('短信报警')}</span>
+						</label> 
+						<label><@form.radio name="almRq" value="b"
+							selectValue="${(sngmntInf.almRq)!'N'}" /> <span class="lbl">${i18n.get('本地声光')}</span>
+						</label>
+						<label><@form.radio name="almRq" value="c"
+							selectValue="${(sngmntInf.almRq)!'N'}" /> <span class="lbl">${i18n.get('电话语音')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('动力监控设备')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="pwrMnt" value="y"
+							selectValue="${(sngmntInf.pwrMnt)!'N'}" /> <span class="lbl">${i18n.get('有')}</span>
+						</label> 
+						<label><@form.radio name="pwrMnt" value="n"
+							selectValue="${(sngmntInf.pwrMnt)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">UPS:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="ups" value="a"
+							selectValue="${(sngmntInf.ups)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="upsNm" name="upsNm" placeholder="" tip="" style="width:40px;"
+							value="${(sngmntInf.upsNm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="ups" value="b"
+							selectValue="${(sngmntInf.ups)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('精密空调')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="clr" value="a"
+							selectValue="${(sngmntInf.clr)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="clrNm" name="clrNm" placeholder="" tip="" style="width:40px;"
+							value="${(sngmntInf.clrNm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="clr" value="b"
+							selectValue="${(sngmntInf.clr)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('新风机')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="wnd" value="a"
+							selectValue="${(sngmntInf.wnd)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="wndNm" name="wndNm" placeholder="" tip="" style="width:40px;"
+							value="${(sngmntInf.wndNm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="wnd" value="b"
+							selectValue="${(sngmntInf.wnd)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('精密配电')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="jmElec" value="a"
+							selectValue="${(sngmntInf.jmElec)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="jmElecnm" name="jmElecnm" placeholder="" tip="" style="width:40px;"
+							value="${(sngmntInf.jmElecnm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="jmElec" value="b"
+							selectValue="${(sngmntInf.jmElec)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('智能配电')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="intElec" value="a"
+							selectValue="${(sngmntInf.intElec)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="intElecnm" name="intElecnm" placeholder="" tip="" style="width:40px;"
+							value="${(sngmntInf.intElecnm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="intElec" value="b"
+							selectValue="${(sngmntInf.intElec)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('定位漏水')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="drp" value="a"
+							selectValue="${(sngmntInf.drp)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="drpNm" name="drpNm" placeholder="" tip="" style="width:40px;"
+							value="${(sngmntInf.drpNm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="drp" value="b"
+							selectValue="${(sngmntInf.drp)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('智能发电机')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="elecGnr" value="a"
+							selectValue="${(sngmntInf.elecGnr)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="elecGnrnm" name="elecGnrnm" placeholder="" tip="" style="width:40px;"
+							value="${(sngmntInf.elecGnrnm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="elecGnr" value="b"
+							selectValue="${(sngmntInf.elecGnr)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('其他')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="pwrOtr" value="a"
+							selectValue="${(sngmntInf.pwrOtr)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="pwrOtrnm" name="pwrOtrnm" placeholder="" tip="" style="width:40px;"
+							value="${(sngmntInf.pwrOtrnm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="pwrOtr" value="b"
+							selectValue="${(sngmntInf.pwrOtr)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('环境监控设备')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="envMnt" value="y"
+							selectValue="${(sngmntInf.envMnt)!'N'}" /> <span class="lbl">${i18n.get('有')}</span>
+						</label> 
+						<label><@form.radio name="envMnt" value="n"
+							selectValue="${(sngmntInf.envMnt)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('温湿度')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="tmp" value="a"
+							selectValue="${(sngmntInf.tmp)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="tmpNm" name="tmpNm" placeholder="" tip="" style="width:40px;"
+							value="${(sngmntInf.tmpNm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="tmp" value="b"
+							selectValue="${(sngmntInf.tmp)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('烟感')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="smk" value="a"
+							selectValue="${(sngmntInf.smk)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="smkNm" name="smkNm" placeholder="" tip="" style="width:40px;"
+							value="${(sngmntInf.smkNm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="smk" value="b"
+							selectValue="${(sngmntInf.smk)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('红外')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="ifr" value="a"
+							selectValue="${(sngmntInf.ifr)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="ifrNm" name="ifrNm" placeholder="" tip="" style="width:40px;"
+							value="${(sngmntInf.ifrNm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="ifr" value="b"
+							selectValue="${(sngmntInf.ifr)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('门磁')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="drLck" value="a"
+							selectValue="${(sngmntInf.drLck)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="drLcknm" name="drLcknm" placeholder="" tip="" style="width:40px;"
+							value="${(sngmntInf.drLcknm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="drLck" value="b"
+							selectValue="${(sngmntInf.drLck)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('新风机')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="nwwnd" value="a"
+							selectValue="${(sngmntInf.nwwnd)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="nwwndNm" name="nwwndNm" placeholder="" tip="" style="width:40px;"
+							value="${(sngmntInf.nwwndNm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="nwwnd" value="b"
+							selectValue="${(sngmntInf.nwwnd)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('不定位漏水')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="npDrp" value="a"
+							selectValue="${(sngmntInf.npDrp)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="npDrpnm" name="npDrpnm" placeholder="" tip="" style="width:40px;"
+							value="${(sngmntInf.npDrpnm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="npDrp" value="b"
+							selectValue="${(sngmntInf.npDrp)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('其他')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="mntOtr" value="a"
+							selectValue="${(sngmntInf.mntOtr)!'N'}" /> <span class="lbl">${i18n.get('有(规格数量')}：
+							<@form.input id="mntOtrnm" name="mntOtrnm" placeholder="" tip="" style="width:40px;"
+							value="${(sngmntInf.mntOtrnm)!}" />)</span>
+						</label> 
+						<label><@form.radio name="mntOtr" value="b"
+							selectValue="${(sngmntInf.mntOtr)!'N'}" /> <span class="lbl">${i18n.get('无')}</span>
+						</label> 
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('安防系统')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="secSys" value="y"
+							selectValue="${(sngmntInf.secSys)!'N'}" /> <span class="lbl">${i18n.get('有')}</span>
+						</label> 
+						<label><@form.radio name="secSys" value="n"
+							selectValue="${(sngmntInf.secSys)!'N'}" /> <span class="lbl">${i18n.get('无')}</span><span class="lbl">   ${i18n.get('描述')}：
+							<@form.input id="secSysnts" name="secSysnts" placeholder="" tip="" style="width:100px;"
+							value="${(sngmntInf.secSysnts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('门禁系统')}:</td>
+			<td width="330px">
+				<div class ="radio">
+						<label><@form.radio name="drCnr" value="y"
+							selectValue="${(sngmntInf.drCnr)!'N'}" /> <span class="lbl">${i18n.get('有')}</span>
+						</label> 
+						<label><@form.radio name="drCnr" value="n"
+							selectValue="${(sngmntInf.drCnr)!'N'}" /> <span class="lbl">${i18n.get('无')}</span><span class="lbl">   ${i18n.get('描述')}：
+							<@form.input id="drCnrnts" name="drCnrnts" placeholder="" tip="" style="width:100px;"
+							value="${(sngmntInf.drCnrnts)!}" /></span>
+						</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td width="100px">${i18n.get('其他特殊需求')}:</td>
+			<td width="180px"><@form.input id="othersRq"
+				name="othersRq" placeholder="" tip=""
+				value="${(sngmntInf.othersRq)!}" /></td>
+		</tr>
+	</table>
+
+	<div class="clearfix form-actions">
+		<div class="col-md-offset-5 col-md-7">
+			<button class="btn btn-info submit" type="button" align="left">
+				<i class="icon-ok bigger-110"></i> ${i18n.get('修订')}
+			</button>
+			&nbsp; &nbsp; &nbsp;
+		</div>
+	</div>
+	</@form.form>
+
+</div>
