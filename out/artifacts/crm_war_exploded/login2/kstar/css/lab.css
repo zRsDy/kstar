@@ -1,0 +1,147 @@
+html {
+    box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+body {
+    background: #F5F5F5;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    line-height: 1.428571429;
+    color: #333;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    letter-spacing: -1px;
+    text-transform: uppercase;
+}
+
+a {
+    text-decoration: none;
+    border-bottom: 1px solid #ccc;
+    color: #666;
+}
+
+a:hover {
+    background: #F3F3F3;
+    color: #000;
+    border-bottom: 1px solid #000;
+}
+
+a[id],
+a[id]:hover {
+    text-decoration: none;
+    border: 0;
+    color: #333;
+    background: transparent;
+}
+
+ul {
+    list-style-type: square;
+}
+
+pre {
+    font-size: 100%;
+    color: #000;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    overflow-x: auto;
+}
+
+code {
+    color: #666;
+    background: #eee;
+    padding: 1px 2px;
+    display: inline-block;
+    border-radius: 2px;
+    font-size: 12px;
+}
+
+.lab-wrapper {
+    background: #fff;
+    max-width: 818px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 40px 20px;
+    border-left: 25px solid #fafafa;
+    border-right: 25px solid #fafafa;
+}
+
+.lab-image img
+{
+    display: block;
+    margin: auto;
+    border: 2px solid #ccc;
+}
+
+.lab-featured {
+    background: #fc0;
+    padding: 10px 20px;
+    border-radius: 2px;
+}
+
+.lab-new {
+    background: url(../_img/new.gif) 100% 0 no-repeat;
+    padding-right: 25px;
+}
+
+.yetii-tabs {
+    width: 100%;
+    margin: 0 0 20px 0;
+}
+
+.yetii-tabs .navigation {
+    list-style-type: none;
+    width: 100%;
+    float: left;
+    background: url(../_img/pixel.gif) bottom left repeat-x;
+    margin: 0;
+    padding: 0;
+}
+
+.yetii-tabs .navigation li {
+    margin: 0 2px 0 0;
+    padding: 0;
+    float: left;
+}
+
+.yetii-tabs .navigation li a {
+    float: left;
+    display: block;
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-bottom: 0;
+    color: #666;
+    background: #eee;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.yetii-tabs .navigation li a:hover {
+    background: #fff;
+}
+
+.yetii-tabs .navigation li a.active {
+    background: #fff;
+    padding-bottom: 5px;
+    cursor: default;
+    color: #00f;
+}
+
+.yetii-tabs .tab,
+.yetii-tabs .tab-nested {
+    clear: left;
+    border: 1px solid #ccc;
+    border-top: 0;
+    padding: 20px 8px;
+}

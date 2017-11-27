@@ -1,0 +1,52 @@
+<@cui.body2>
+<style type="text/css">
+	table {
+	border-collapse: collapse;
+	border-color: #ff0000;
+	}
+	
+	table td {
+		padding:1px;
+		vertical-align: middle;
+		word-break: keep-all;
+		border: solid #ededed;
+		
+		border-width: 0px 0px 0px 0px;
+	}
+	input[type="text"] { width: 180px;}
+	input[type="search"] {width: 180px;}
+	select {
+		width: 180px;
+	}
+</style>
+<div class="col-xs-12">
+	<@form.table id="veriDetailForm" 
+		class="col-xs-12"
+		search="false"
+		title="${i18n.get('回款金额明细')}" 
+		url = "${ctx}/report/veriDetailList.html?orgIdOrEmployeeId=${orgIdOrEmployeeId}&reportType=${reportType}&month=${month}&year=${year}&currency=${currency}"
+		rowNum = "20" 
+		colModel = "[
+			 	{name : 'id', label:'id', width : 20, editable : false, hidden : true}, 
+			 	{name : 'businessName', label:'${i18n.get('业务实体')}', width : 250, sortable:false, editable:false, align:'center'}, 
+			 	{name : 'receiptsCode', label:'${i18n.get('收款单号')}', width : 110, sortable:false, editable:false, align:'center'},
+			  	{name : 'receiptsDate', label:'${i18n.get('收款日期')}', width : 200, sortable:false, editable:false, align:'center',formatter:function(cellvalue, options){ return formatDate_date(cellvalue)}},
+			  	{name : 'receiptAmount', label:'${i18n.get('收款金额')}', width : 150, hidden : true,editable : false,align:'center',sortable:false}, 
+			  	{name : 'paymentCustomerName', label:'${i18n.get('付款客户名称')}', width : 150, editable : false,align:'center',sortable:false}, 
+			  	{name : 'erpCust', label:'${i18n.get('是否ERP客户')}', width : 100, editable:false, align:'center'},
+			  	{name : 'correctCustName',label:'${i18n.get('更正客户名称')}',width:150,sortable:true,align:'center' }, 
+				{name : 'salesCenter', label:'${i18n.get('营销中心')}', width : 100, editable:false ,align:'center',sortable:false}, 
+				{name : 'contractCode', label:'${i18n.get('合同编号')}', width : 150, editable:false, align:'center',sortable:true}, 
+			  	{name : 'receiptsPlanLable', label:'${i18n.get('合同收款计划行')}', width : 150, editable:false, align:'center',sortable:true}, 
+			  	{name : 'receiptsStageLable', label:'${i18n.get('收款阶段')}', width : 120, editable:false, align:'center',sortable:false}, 
+			  	{name : 'deliveryCode', label:'${i18n.get('发货单编号')}', width : 120, editable:false, align:'center',sortable:false}, 
+			  	{name : 'planAmount', label:'${i18n.get('计划金额')}', width : 100, hidden : true,editable:false, align:'center',sortable:false},
+			  	{name : 'veriAmount', label:'${i18n.get('核销金额')}', width : 100, editable:false, align:'center',sortable:true}, 
+			  	{name : 'bizDeptLable', label:'${i18n.get('业务部门')}', width : 100, editable:false, align:'center',sortable:false}, 
+			  	{name : 'salesmanName', label:'${i18n.get('销售人员')}', width : 100, editable:false, align:'center',sortable:false}, 
+			  	{name : 'veriDate', label:'${i18n.get('核销日期')}', width : 150, sortable:false, editable:false, align:'center',sortable:true,formatter:function(cellvalue, options){ return formatDate_date(cellvalue)}}
+			]" 
+			> 
+		</@form.table>
+</div>
+</@cui.body2>

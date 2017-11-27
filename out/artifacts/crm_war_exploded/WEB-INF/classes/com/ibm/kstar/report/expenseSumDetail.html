@@ -1,0 +1,83 @@
+<@cui.body2>
+	<div class="row" style="margin-left: auto; margin-right: auto;">
+		<table class="table" border="1">
+			<thead>
+				<tr>
+					<th>${i18n.get('招待费（元）')}</th>
+					<th>${i18n.get('差旅费（元）')}</th>
+					<th>${i18n.get('通讯费（元）')}</th>
+					<th>${i18n.get('交通费（元）')}</th>
+					<th>${i18n.get('办公费（元）')}</th>
+					<th>${i18n.get('其他（元）')}</th>
+				</tr>
+			</thead>
+			<tbody id="expenseBody">
+				<tr>
+					<td>
+						<#list exp.hosExp as hos>
+							<ul>
+								<li><a href="#" onclick="parent.addTab('${i18n.get('费用查询')}','${ctx}/cost/list.html?orgIdOrEmployeeId=${orgIdOrEmployeeId}&reportType=${reportType}&name=${hos.name}&year=${year}&month=${month}')">${hos.name}:  ${hos.amount}</a></li>
+							</ul>
+						</#list>
+					</td>
+					<td>
+						<#list exp.traExp as tra>
+							<ul>
+								<li><a href="#" onclick="parent.addTab('${i18n.get('费用查询')}','${ctx}/cost/list.html?orgIdOrEmployeeId=${orgIdOrEmployeeId}&reportType=${reportType}&name=${tra.name}&year=${year}&month=${month}')">${tra.name}:  ${tra.amount}</a></li>
+							</ul>
+						</#list>
+					</td>
+					<td>
+						<#list exp.comExp as com>
+							<ul>
+								<li><a href="#" onclick="parent.addTab('${i18n.get('费用查询')}','${ctx}/cost/list.html?orgIdOrEmployeeId=${orgIdOrEmployeeId}&reportType=${reportType}&name=${com.name}&year=${year}&month=${month}')">${com.name}:  ${com.amount}</a></li>
+							</ul>
+						</#list>
+					</td>
+					<td>
+						<#list exp.carExp as car>
+							<ul>
+								<li><a href="#" onclick="parent.addTab('${i18n.get('费用查询')}','${ctx}/cost/list.html?orgIdOrEmployeeId=${orgIdOrEmployeeId}&reportType=${reportType}&name=${car.name}&year=${year}&month=${month}')">${car.name}:  ${car.amount}</a></li>
+							</ul>
+						</#list>
+					</td>
+					<td>
+						<#list exp.offExp as off>
+							<ul>
+								<li><a href="#" onclick="parent.addTab('${i18n.get('费用查询')}','${ctx}/cost/list.html?orgIdOrEmployeeId=${orgIdOrEmployeeId}&reportType=${reportType}&name=${off.name}&year=${year}&month=${month}')">${off.name}:  ${off.amount}</a></li>
+							</ul>
+						</#list>
+					</td>
+					<td>
+						<#list exp.otherExp as other>
+							<ul>
+								<li><a href="#" onclick="parent.addTab('${i18n.get('费用查询')}','${ctx}/cost/list.html?orgIdOrEmployeeId=${orgIdOrEmployeeId}&reportType=${reportType}&name=${other.name}&year=${year}&month=${month}')">${other.name}:  ${other.amount}</a></li>
+							</ul>
+						</#list>
+					</td>
+				</tr>
+				<tr>
+					<td>
+					合计：                            ${hosSum}
+					</td>
+					<td>
+					                ${traSum}
+					</td>
+					<td>
+		                            ${comSum}
+					</td>
+					<td>
+	                                ${carSum}
+					</td>
+					<td>
+		                            ${offSum}
+					</td>
+					<td>
+					                ${otherSum}
+					</td>
+					
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</@cui.body2>

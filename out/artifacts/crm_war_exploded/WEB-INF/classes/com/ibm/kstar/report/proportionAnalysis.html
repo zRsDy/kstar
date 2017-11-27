@@ -1,0 +1,97 @@
+<@cui.body2>
+		<div class="container-fluid">
+			<div class="row" style="margin-left: auto; margin-right: auto;">
+				<div style="float: left;margin-left: auto; margin-right: auto;">
+					<div class="span5" style="float: left; margin-left: 2px; margin-right: auto;">
+						<div class="row-fluid" style="margin-left: 3px;" >
+							<table>
+								<tr>
+									<td id="chart1" style="width: 800px;height:600px;" ></td>
+									<td id="chart2" style="width: 800px;height:600px;" ></td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		
+	<script type="text/javascript">
+		function search(flag){
+			$('#flag').val(flag);
+			$('.searchBtn').trigger('click');
+		}
+	
+	  	var myChart1 = echarts.init(document.getElementById('chart1'));
+		var option = {
+			title : {
+				text : '${i18n.get('全年占比分析')}',
+				x : 'center'
+			},
+			tooltip : {
+				trigger : 'item',
+				formatter : "{a} <br/>{b} : {c} ({d}%)"
+			},
+			legend : {
+				orient : 'vertical',
+				left : 'left',
+				data : ${orgTypeList}
+			},
+			series : [ {
+				name : '${i18n.get('类型')}',
+				type : 'pie',
+				radius : '55%',
+				center : [ '50%', '60%' ],
+				data :  ${orgValueList},
+				itemStyle : {
+					emphasis : {
+						shadowBlur : 10,
+						shadowOffsetX : 0,
+						shadowColor : 'rgba(0, 0, 0, 0.5)'
+					}
+				}
+			} ]
+		};
+		myChart1.setOption(option);
+	</script>		
+	
+	<script type="text/javascript">
+		
+		function search(flag){
+			$('#flag').val(flag);
+			$('.searchBtn').trigger('click');
+		}
+	
+	  	var myChart2 = echarts.init(document.getElementById('chart2'));
+		var option = {
+			title : {
+				text : '${i18n.get('全年占比分析')}',
+				x : 'center'
+			},
+			tooltip : {
+				trigger : 'item',
+				formatter : "{a} <br/>{b} : {c} ({d}%)"
+			},
+			legend : {
+				orient : 'vertical',
+				left : 'left',
+				data : ${employeeTypeList}
+			},
+			series : [ {
+				name : '${i18n.get('类型')}',
+				type : 'pie',
+				radius : '55%',
+				center : [ '50%', '60%' ],
+				data :  ${employeeValueList},
+				itemStyle : {
+					emphasis : {
+						shadowBlur : 10,
+						shadowOffsetX : 0,
+						shadowColor : 'rgba(0, 0, 0, 0.5)'
+					}
+				}
+			} ]
+		};
+		myChart2.setOption(option);
+	</script>			
+</@cui.body2>

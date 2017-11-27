@@ -1,0 +1,50 @@
+<@cui.body2>
+	<div class="row" style="margin-left: auto; margin-right: auto;">
+		<table class="table" border="1">
+			<thead>
+				<tr>
+					<th>${i18n.get('客户')}</th>
+					<!-- 
+					<th>${i18n.get('合同号')}</th>
+					<th>${i18n.get('出货单号')}</th>
+					 -->
+					<th>${i18n.get('销售员')}</th>
+					<th>${i18n.get('岗位')}</th>
+					<th>${i18n.get('业务部门')}</th>
+					<!-- 
+					<th>${i18n.get('收款到期日')}</th>
+					 -->
+					<th>${i18n.get('计划金额')}</th>
+					<th>${i18n.get('未核销金额')}</th>
+					<th>${i18n.get('币种')}</th>
+					<th>${i18n.get('计划金额')}</th>
+					<th>${i18n.get('未核销金额')}</th>
+					<th>${i18n.get('币种')}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<#list list as r >
+				<tr>
+					<td>${ (r['CUSTOMER']) !}</td>
+					<!-- 
+					<td>${ (r['C_CONTRACT_CODE']) !}</td>
+					<td>${ (r['C_DELIVERY_CODE']) !}</td>
+					 -->
+					<td>${ (r['C_SALESMAN_NAME']) !}</td>
+					<td>${ (r['C_SALESMAN_POST_NAME']) !}</td>
+					<td>${ (r['C_BIZ_DEPT_NAME']) !}</td>
+					<!-- 
+					<td>${ (r['DT_PAYMENT_DATE']) !}</td>
+					 -->
+					<td>${ (r['N_PLAN_AMOUNT']) !}</td>
+					<td>${ (r['BALANCE']) !}</td>
+					<td>${ (r['CURRENCY']) !}</td>
+					<td>${ (r['N_USD_PLAN_AMOUNT']) !}</td>
+					<td>${ (r['BALANCE_USD']) !}</td>
+					<td>USD</td>
+				</tr>
+				</#list>
+			</tbody>
+		</table>
+	</div>
+</@cui.body2>

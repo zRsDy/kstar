@@ -1,0 +1,179 @@
+v\: * {
+	behavior: url(#default#VML)
+}
+
+o\: * {
+	behavior: url(#default#VML)
+}
+
+.shape {
+	behavior: url(#default#VML)
+}
+
+.treeOutDiv {
+	overflow: auto;
+	/* border: 1px solid #F8E0B9; */
+	cursor: default;
+	font: normal 12px Arial, 宋体;
+}  
+
+.treeOutDiv .treeCon {
+	width: 600px;
+	height: 500px;
+	padding: 10px;
+	background: url();
+}
+
+.treeOutDiv .slideBarCon {
+	padding-left: 13px;
+}
+
+.treeOutDiv .moveCon {
+	width: 110px;
+	display: inline;
+	height: 50px;
+	background: #FFF;
+	border: 1px solid #99BBE8;
+	text-align: center;
+	margin-top: 2px;
+	margin-left: 2px;
+}
+
+.treeOutDiv .moveDes {
+	text-align: center;
+	height: 30px;
+	padding-top: 2px;
+	font: normal 12px "宋体", "Arial";
+}
+
+.treeOutDiv .textDiv {
+	width: 50px;
+	height: 12px;
+	font: normal 10px Verdana;
+	border: 1px solid #99BBE8;
+	color: #99BBE8;
+	background: #FFF;
+}
+
+.treeOutDiv .moveDiv_block {
+	background: url(../images/bgLine.gif) no-repeat center center;
+	width: 100px;
+	height: 12px;
+	display: inline;
+	text-align: left;
+}
+
+.treeOutDiv .moveDiv_blockNode {
+	background: transparent url(../images/block.gif) no-repeat 0px 1px;
+	width: 11px;
+	height: 11px;
+}
+
+/* 统一后节点样式 */
+.treeOutDiv .nodeCon {
+	display: inline;
+	width: 126px;
+	height: 43px;
+	position: absolute;
+	background: #FFF;
+	border: 1px solid #E89D40;
+}
+
+.treeOutDiv .nodeDes {
+	text-align: center;
+	height: 16px !important;
+	padding-top: 1px;
+	font: normal 12px 宋体, Verdana;
+	width: 125px;
+	overflow: hidden;
+	text-overflow: ellipsis white-space :   noWrap;
+	word-break: keep-all;
+	cursor: default;
+}
+
+.treeOutDiv .nodeDesInput {
+	height: 16px;
+	font: normal 12px 宋体, Verdana;
+	background: url(../images/input.gif) left top;
+	width: 120px;
+	padding: 1px 2px 0px 2px;
+	border: 0px;
+}
+
+.treeOutDiv .nodeValue {
+	font: normal 11px verdana;
+	text-align: center;
+	height: 10px;
+	cursor: default;
+}
+
+.treeOutDiv .nodePer {
+	height: 14px;
+	width: 84px;
+	background: url(../images/perBg.jpg) no-repeat;
+	margin-left: 20px;
+	padding: 2px 2px 0px 2px;
+}
+
+.treeOutDiv .nodePerValue {
+	height: 6px;
+	background: url(../images/perShow.jpg) no-repeat;
+	overflow: hidden;
+}
+
+.treeOutDiv .topSelectDiv {
+	display: inline;
+	float: right;
+	font: normal 12px 宋体;
+	background: transparent;
+	padding-right: 10px;
+}
+
+.treeOutDiv .topSelectDiv select {
+	font: normal 12px 宋体;
+}
+
+.treeOutDiv .topBtDiv {
+	display: inline;
+	float: left;
+}
+
+.treeOutDiv .expandDiv {
+	display: inline;
+	position: absolute;
+	width: 13px;
+	height: 13px;
+}
+
+.treeOutDiv .chTextDiv {
+	text-align: center;
+}
+
+.treeOutDiv .chText {
+	width: 84px;
+	height: 13px;
+	font: normal 10px Verdana;
+	padding: 0px;
+	line-height: 10px;
+	text-indent: 0;
+	text-align: center;
+}
+
+#detailTextLayer {
+	border: 1px solid #CFCFCF;
+	position: absolute; z-index = "1000";
+	background: #FFF;
+	color: #9D9D0C;
+	width: 145px;
+	padding: 3px;
+	font: normal 12px 宋体;
+	word-break: break-all;
+	filter: Alpha(opacity =   95);
+}
+
+.psline{
+	
+	position:absolute;
+	top:0px;
+	left:0px;
+}
