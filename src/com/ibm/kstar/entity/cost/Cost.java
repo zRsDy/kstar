@@ -118,10 +118,28 @@ public class Cost implements Serializable {
 	private String crmPositionName;
 	
 	/**
+	 * CRM岗位ID
+	 */
+	@Column(name = "CRM_POSITION_ID")
+	private String crmPositionId;
+	
+	/**
 	 * CRM部门名称
 	 */
 	@Column(name = "CRM_ORG_NAME")
 	private String crmOrgName;
+	
+	/**
+	 * CRM部门ID
+	 */
+	@Column(name = "CRM_ORG_ID")
+	private String crmOrgId;
+	
+	/**
+	 * CRM部门ID路径
+	 */
+	@Column(name = "CRM_ORG_PATH")
+	private String crmOrgPath;
 	
 	/**
 	 * 导入来源（ERP、OA、EXCEL）
@@ -271,6 +289,30 @@ public class Cost implements Serializable {
 
 	public void setCrmOrgName(String crmOrgName) {
 		this.crmOrgName = crmOrgName;
+	}
+
+	public String getCrmPositionId() {
+		return crmPositionId;
+	}
+
+	public void setCrmPositionId(String crmPositionId) {
+		this.crmPositionId = crmPositionId;
+	}
+
+	public String getCrmOrgId() {
+		return crmOrgId;
+	}
+
+	public void setCrmOrgId(String crmOrgId) {
+		this.crmOrgId = crmOrgId;
+	}
+
+	public String getCrmOrgPath() {
+		return crmOrgPath;
+	}
+
+	public void setCrmOrgPath(String crmOrgPath) {
+		this.crmOrgPath = crmOrgPath;
 	}
 
 	

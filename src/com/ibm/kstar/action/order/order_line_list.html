@@ -607,7 +607,8 @@
 		{name : 'erpPlanStatus', label:'${i18n.get('ERP计划状态')}', width : 80, align:'center', editable : false, hidden : false, sortable : false},
 		{name : 'isErpDelivery', label:'${i18n.get('ERP是否发货')}', width : 80, align:'center', editable : false, hidden : false, sortable : false},
 		{name : 'remark', label:'${i18n.get('备注')}',width : 200, sortable : false, editable : true, align:'center'}, 
-		{name : 'returnReason', label:'${i18n.get('退货原因')}',width : 200, sortable : false, editable : true, align:'center'}, 
+		{name : 'erpLineNo', label:'${i18n.get('ERP行号')}',hidden : false, editable : false },
+		{name : 'returnReason', label:'${i18n.get('退货原因')}',width : 200, sortable : false, editable : true, align:'center'},
 		{name : 'returnReference', label:'${i18n.get('退货参考')}',width : 200, sortable : false,editable : false,align:'center', hidden : true}, 
 		{name : 'returnReferenceLable', label:'${i18n.get('退货参考')}',width : 200, sortable : false,editable : false,align:'left', formatter:function(cellvalue, options){ return formatReturnReference(cellvalue,options) }},
 		{name : 'maxQty', label:'${i18n.get('合同工程清单/特价申请数量/开票数量')}', width : 100, sortable : false, editable : false, align:'center', hidden : true},
@@ -796,8 +797,8 @@
 		}
 
 		//导入到ERP的订单启动确认交货为Yes的不能改为No。
-		var erpOrderCode = $('#erpOrderCode').val()
-		if(erpOrderCode) {
+		var erpLineNo = rowData.erpLineNo
+		if(erpLineNo) {
 			var confirmDeliveryDate = $('#orderLinesForm input[id=' + id + '_confirmDeliveryDate]:checked').val();
 			if(confirmDeliveryDate == 'Yes'){
 				$('#orderLinesForm input[id='+id+'_confirmDeliveryDate]').prop('disabled',true);

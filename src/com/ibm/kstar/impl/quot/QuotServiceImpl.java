@@ -22,11 +22,14 @@ import com.ibm.kstar.api.system.lov.ILovGroupService;
 import com.ibm.kstar.api.system.lov.ILovMemberService;
 import com.ibm.kstar.api.system.lov.entity.LovMember;
 import com.ibm.kstar.api.system.permission.UserObject;
+import com.ibm.kstar.api.system.permission.entity.Employee;
 import com.ibm.kstar.api.team.ITeamService;
 import com.ibm.kstar.entity.bizopp.BusinessOpportunity;
 import com.ibm.kstar.entity.product.*;
 import com.ibm.kstar.entity.quot.*;
+import com.ibm.kstar.entity.quot.VO.KstarQuotVO;
 import com.ibm.kstar.entity.team.vo.TeamVo;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,7 +121,7 @@ public class QuotServiceImpl implements IQuotService,IConstants {
 	@Override
 	public IPage query(PageCondition condition) {
 		
-		FilterObject filterObject = condition.getFilterObject(KstarQuot.class);
+		FilterObject filterObject = condition.getFilterObject(KstarQuotVO.class);
 		filterObject.addOrderBy("quotCode", "desc");
 		//filterObject.addCondition("isValid", "=", "1");
 		HqlObject hqlObject = HqlUtil.getHqlObject(filterObject);
@@ -4920,8 +4923,53 @@ public class QuotServiceImpl implements IQuotService,IConstants {
 		}
 		return his;
 	}
-	
-	
+
+	@Override
+	public void loadGoldPrcInPriceTable(KstarQuot kstarQuot, List<KstarPrjLst> list) {
+		String priceTableId = kstarQuot.getPriceListid();
+		if (StringUtil.isEmpty(priceTableId)) {
+			return;
+		}
+
+		if (list.size() == 0) {
+			return;
+		}
+
+		StringBuilder inProIdsSQL= new StringBuilder();
+		List<String> inProIdsArgs = new LinkedList<>();
+		for (KstarPrjLst kstarPrjLst : list) {
+			String proId = kstarPrjLst.getProId();
+			inProIdsSQL.append("?").append(",");
+			inProIdsArgs.add(proId);
+		}
+		inProIdsSQL.deleteCharAt(inProIdsSQL.length() - 1);
+
+		List<String> args = inProIdsArgs;
+		// language=SQL
+		String sql = "select pl.C_PRO_ID as PRO_ID, max(pl.N_LAYER1_PRICE) as GOLD_PRICE from CRM_T_PRICE_LINE pl where pl.C_PRICE_HEAD_ID = ? and pl.C_PRO_ID in ("+ inProIdsSQL +") GROUP BY pl.C_PRO_ID";
+		args.add(0,priceTableId);
+		List<Object[]> results = baseDao.findBySql(sql, args.toArray());
+		if (results.size() == 0) {
+			return;
+		}
+
+        Map<String, BigDecimal> map = new HashMap<>();
+        for (Object[] result : results) {
+            String proId = (String) result[0];
+            BigDecimal goldPrice = (BigDecimal) result[1];
+            map.put(proId, goldPrice);
+        }
+
+        for (KstarPrjLst kstarPrjLst : list) {
+            BigDecimal goldPrice = map.get(kstarPrjLst.getProId());
+            if (null == goldPrice) {
+                continue;
+            }
+            kstarPrjLst.setGoldPrcInPriceTable(goldPrice.doubleValue());
+        }
+	}
+
+
 	@Override
 	public KstarPrjLst getKstarPrjLst(String qid, String lvId) throws AnneException {
 		
@@ -5049,6 +5097,50 @@ public class QuotServiceImpl implements IQuotService,IConstants {
 		KstarQuot quot = this.getKstarQuot(quotID);
 		quot.setAmount(totalAmount);
 		this.updateQuot(quot);
+	}
+
+
+
+	@Override
+	public List<BusinessOpportunity> getProjectInfoList(String search, String clientId) {
+		String sql = " select t.c_pid,t.c_opportunity_name from crm_t_business_opportunity t where ";
+			   sql += "not exists( ";
+			   sql += "   select 1 from CRM_T_QUOTATION_BASIC a where t.c_pid = a.c_bo_code ";
+			   sql += ")";
+	    List<Object> args = new ArrayList<Object>();
+		if(StringUtils.isNotEmpty(search)){
+			sql += " and (t.c_number like ? or t.c_opportunity_name like ?) ";
+			args.add("%"+search+"%");
+			args.add("%"+search+"%");
+		}
+		if(StringUtils.isNotEmpty(clientId)){
+			sql += " and t.c_client_id = ? ";
+			args.add(clientId);
+		}
+		
+		List<BusinessOpportunity> list = new ArrayList<BusinessOpportunity>();
+		List<Object[]> objects = baseDao.findBySql(sql,args.toArray());
+		if(objects != null && objects.size() > 0 ){
+			for(Object[] obj: objects){
+				BusinessOpportunity bo = new BusinessOpportunity();
+				bo.setId((String)obj[0]);
+				bo.setOpportunityName((String)obj[1]);
+				list.add(bo);
+			}
+		}
+		return list;
+	}
+
+
+	/**
+	 * 增加根据empId 获取Employee方法
+	 */
+	@Override
+	public Employee getEmployeeById(String createdById) {
+		// TODO Auto-generated method stub
+		String hql = " from Employee where id = ? ";
+		Employee employee = baseDao.findUniqueEntity(hql,new Object[]{createdById});
+		return employee;
 	}
 	
 	

@@ -17,8 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.xsnake.xflow.api.Participant;
 import org.xsnake.xflow.api.workflow.IXflowInterface;
 
+import com.ibm.kstar.api.bizopp.IBizoppService;
 import com.ibm.kstar.api.product.IProductProcesService;
 import com.ibm.kstar.api.quot.IQuotService;
+import com.ibm.kstar.api.system.lov.entity.LovMember;
+import com.ibm.kstar.api.system.permission.ICorePermissionService;
+import com.ibm.kstar.api.system.permission.UserObject;
+import com.ibm.kstar.api.system.permission.entity.Employee;
 import com.ibm.kstar.entity.product.KstarProductWorkFlow;
 import com.ibm.kstar.entity.quot.KstarBiddcevl;
 import com.ibm.kstar.entity.quot.KstarPrjEvl;
@@ -44,6 +49,12 @@ public class QuotbidadtFlowCallBack extends IXflowInterface {
 
 	@Autowired
 	IQuotService quotService;
+	
+	@Autowired
+	IBizoppService bizService;
+	
+	@Autowired
+	ICorePermissionService corePermissionService;
 	 
 	 
 	@Override
@@ -54,12 +65,25 @@ public class QuotbidadtFlowCallBack extends IXflowInterface {
 		
 		KstarBiddcevl bidevl = quotService.getBiddcevl(processInstanceId);
 		
+
 		if(bidevl!=null){
 			quot = quotService.getKstarQuot(bidevl.getQuotCode());
 			quot.setBidAuditStatus("B02");
 			//更新技术评审状态
 			quot.setTchAdtstatus("S02");
 			quotService.updateQuot(quot);
+			
+
+			UserObject user = new UserObject(quot.getCreatedOrgId(), quot.getCreatedPosId(), quot.getCreatedById());
+			Employee employee = quotService.getEmployeeById(quot.getCreatedById());
+			user.setEmployee(employee);
+
+			LovMember position = corePermissionService.getPositionById(quot.getCreatedPosId());
+			user.setPosition(position);
+
+			LovMember org = corePermissionService.getOrgByPositionId(quot.getCreatedPosId());
+			user.setOrg(org);
+			bizService.startFeedBackProcess(quot.getBoCode(),user);
 		}
 		
 	}

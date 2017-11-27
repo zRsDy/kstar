@@ -7,6 +7,7 @@ import com.ibm.kstar.api.common.doc.IKstarAttachmentService;
 import com.ibm.kstar.api.custom.ICustomInfoService;
 import com.ibm.kstar.api.price.IPriceHeadService;
 import com.ibm.kstar.api.system.lov.ILovMemberService;
+import com.ibm.kstar.api.system.lov.entity.LovMember;
 import com.ibm.kstar.api.system.permission.IEmployeeService;
 import com.ibm.kstar.api.system.permission.UserObject;
 import com.ibm.kstar.api.system.permission.entity.Employee;
@@ -76,6 +77,9 @@ public class BizOppAction extends BaseAction {
 	
 	@Autowired
 	IBizoppService bizoppService;
+	
+	@Autowired
+	ILovMemberService lovService;
 	
 	@Autowired
 	BaseDao baseDao;
@@ -495,7 +499,9 @@ public class BizOppAction extends BaseAction {
 	@RequestMapping("/autocomplete_bizOppAuth")
 	public String autocomplete_bizOppAuth(PageCondition condition,String clientId,String userId,HttpServletRequest request){
  		ActionUtil.requestToCondition(condition, request);
-		List<BusinessOpportunity> bu = bizService.getBizOppSelectAuth(condition,clientId,userId);
+ 		//根据当前登陆人的信息获取登陆人的所属销售中心进行过滤
+		LovMember lovMember = lovService.getSaleCenterLovmember(this.getUserObject().getOrg().getId());
+		List<BusinessOpportunity> bu = bizService.getBizOppSelectAuth(condition,clientId,userId,lovMember.getId());
 		return sendSuccessMessage(bu);
 	}
 

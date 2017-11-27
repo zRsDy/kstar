@@ -174,7 +174,7 @@ public class ProdMaintainAction extends BaseAction {
 		tabMain.addTab("产品属性变更明细", "/product/maintain/attrModeLineList.html?maintainId="+maintainId+"&canModify="+canModify);
 		tabMain.addTab("产品归属目录变更明细", "/product/maintain/catalogModLineList.html?maintainId="+maintainId+"&canModify="+canModify);
 		tabMain.addTab("产品销售状态变更明细", "/product/maintain/saleStatusModLineList.html?maintainId="+maintainId+"&canModify="+canModify);
-		String url = "/common/attachment/attachment.html?businessId="+prodInfoMaintain.getId()+"&businessType=ProdInfoMaintain&docGroupCode=PMTypeCode";
+		String url = "/common/attachment/attachment.html?businessId="+prodInfoMaintain.getId()+"&businessType=ProdInfoMaintain&docGroupCode=PMTypeCode&needDocType=true";
 		if(!canModify){
 			url = url +"&unableAdd=true&unableDelete=true";
 		}

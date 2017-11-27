@@ -1,0 +1,18 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="crm:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/crm_war_exploded</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="crm" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="module" name="zookeeper-3.4.6.jar" module-name="crm" />
+          <element id="library" level="module" name="amqp-client-3.6.6.jar" module-name="crm" />
+          <element id="library" level="module" name="xfire-all-1.2.6.jar" module-name="crm" />
+        </element>
+      </element>
+      <element id="javaee-facet-resources" facet="crm/web/Web" />
+    </root>
+  </artifact>
+</component>

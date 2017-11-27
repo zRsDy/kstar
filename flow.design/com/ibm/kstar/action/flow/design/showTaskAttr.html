@@ -1,5 +1,8 @@
 <@pui.body>
 <form>
+	<script type="text/javascript">
+		var lovOrg = ${lovOrg!'[]'};
+	</script>
 	<div class="col-xs-12" style="padding: 0px;">
 		<@form.panel title="${i18n.get('任务类型属性设置')}">
 	<div>
@@ -36,9 +39,11 @@
 		</div>
 	</#if>
 	<div id='pdiv'>
-	<@plug.tree checkbox="true" id="tree1"
-		asyncUrl='${ctx}/flow/orgTree.html?groupId=ORG' 
+	<@plug.treeDesign checkbox="true" id="tree1"
+		async="false"
+		datas="lovOrg"
 		chkboxType="{ 'Y' : '', 'N' : '' }" 
+		
 		dataFilter="function(data){ 
 			if(data.leafFlag == 'Y' && data.optTxt1 == 'E'){
 				data.icon = '${ctx}/assets/css/zTreeStyle/img/diy/4.png' 
@@ -57,7 +62,9 @@
 			}) 
 			return data; 
 		}"
-
+		onComplete ="function(data){
+			abc();
+		}"
 		/>
 	</div>
 	
@@ -98,6 +105,13 @@
 	<input type="hidden" id="ids"/>
 	
 <script type="text/javascript">
+	/* setTimeout(function(){  
+		
+	},1000); */
+	function abc(){
+		debugger;
+		console.log("a");
+	}
 	$(function($) {
 		$('#participantType').change(function(){
 			if($(this).val() != '1'){
@@ -160,6 +174,8 @@
 </@form.panel>
 </div>
 <script type="text/javascript">
+	
+
 	$('#selectOK2').click(function(){
 		var setting = {};
 		setting.message = $('#message').prop('checked') ? 'Y' : 'N';

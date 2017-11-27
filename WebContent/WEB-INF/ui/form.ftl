@@ -15,6 +15,50 @@
 </div>
 </#macro>
 
+<#macro checkboxs groupCode='' id='' name='' checkboxname=''  value=''>
+<div style='width:100%' id="checkboxsDiv_${id}">
+	<input id='${id}' name='${name}' type="hidden" value='${value}' />
+</div>
+<script type="text/javascript">
+	    $(document).ready(function() {
+	    	$.ajax({
+				type:"post",
+				async:false,
+				url:"${ctx}/lov/member/select.html?code=${groupCode}",
+				success:function(data){
+					if (data != null) {
+						var jsonobj = eval(data.message);
+						var length = jsonobj.length;
+						for(var i=0;i<length;i++){
+							var val = $("#${id}").val();
+							
+				            var cBox = "<label><input name='${checkboxname}' id='"+jsonobj[i].code+"' type='checkbox' />"+jsonobj[i].name+"</label><br>";
+				            $('#checkboxsDiv_${id}').append(cBox);
+				            
+				            if(val.indexOf(jsonobj[i].code) >= 0){
+				            	$("#"+jsonobj[i].code).attr("checked", true);
+				            }
+			         	}
+			         	
+			         	$("[name='${checkboxname}']").change(function () {
+				             var checkboxsValue_${id} = "";
+				             $("[name='${checkboxname}']").each(function(){
+				             	if($(this).is(':checked')){
+				             		checkboxsValue_${id} += $(this).attr("id")+",";
+				             	}
+				             });
+				             $("#${id}").val(checkboxsValue_${id}.substring(0,checkboxsValue_${id}.length-1));
+				        });
+           
+			     	}
+				}
+			});
+			
+			
+	    });
+</script>
+</#macro>
+
 <#macro radio name class='' tip='' style='' required='' value='' id='' selectValue=''>
 <input type="radio"
 	<#if id?? && id != ''>
@@ -1147,6 +1191,7 @@ datatype='json' footerrow='false' gridComplete='' rownumbers = 'false'>
             $('#export_${id}').click(function(){
                 var qs = "?";
                 var args = getQueryString();
+               	
                 var formDatas = $('#search_form_${id}').serializeArray();
                 $.each(args,function(index,item){
                     qs = qs + item.name +'='+ item.value + '&';
@@ -1154,6 +1199,12 @@ datatype='json' footerrow='false' gridComplete='' rownumbers = 'false'>
                 $.each(formDatas,function(index,item){
                     qs = qs + item.name +'='+ item.value+ '&';
                 })
+                
+                var postData = $(grid_selector).jqGrid('getGridParam','postData');
+	            
+	            $.each(postData,function(name,value) {
+					qs = qs + name +'='+ value+ '&';
+				});
                 window.location.href = ${exportURL} + qs;
             });
 		</#if>

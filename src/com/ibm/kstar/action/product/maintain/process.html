@@ -145,6 +145,12 @@
 		            </td>
 		  		</tr>
 		  		<tr align="left">
+		  			<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('申请类型：')}</td>
+		  			<td align="left" colspan="5">
+		  				<@form.checkboxs id="applyType" name="applyType" checkboxname="applyTypeCbox"  value="${(prodInfoMaintain.applyType)!}" groupCode="PM_APPLY_TYPE"/>
+		  			</td>
+		  		</tr>
+		  		<tr align="left">
 		  			<td align="right" width="120px"><strong style="color: red;">*</strong>${i18n.get('备注：')}</td>
 		  			<td align="left" colspan="5">
 		  				<@form.textArea id="remark" name="remark" width="100%" height="3" value="${(prodInfoMaintain.remark)!}" />

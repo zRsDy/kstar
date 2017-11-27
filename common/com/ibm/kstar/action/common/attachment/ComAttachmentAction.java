@@ -60,7 +60,7 @@ public class ComAttachmentAction extends BaseAction {
      */
     @NoRight
     @RequestMapping("/attachment")
-    public String atts(String businessId, String docGroupCode, String title, String businessType, boolean unableAdd, boolean unableDelete, String templateURL, String editURL, Model model) throws UnsupportedEncodingException {
+    public String atts(String businessId, String docGroupCode, String title, String businessType, boolean unableAdd, boolean unableDelete, String templateURL, String editURL, Model model,HttpServletRequest request) throws UnsupportedEncodingException {
         model.addAttribute("bizId", businessId);
         docGroupCode = (docGroupCode == null ? "ATTACHMENTTYPEGROUP" : docGroupCode);
         model.addAttribute("docGroupCode", docGroupCode);
@@ -74,6 +74,9 @@ public class ComAttachmentAction extends BaseAction {
         }
         model.addAttribute("title", title);
         model.addAttribute("unableAdd", unableAdd);
+        
+        String needDocType = request.getParameter("needDocType");
+        model.addAttribute("needDocType", needDocType);
 
         //修复Bug:需求清单-孙志华0804|593|驳回给销售销售可以删除附件存在风险，请设置为：销售只能新增附件，不能删除附件（除了在合同新建状态下可以删除）
         //国内合同角色在任何情况下都能删除附件
@@ -136,7 +139,7 @@ public class ComAttachmentAction extends BaseAction {
     }
 
     @RequestMapping("/add")
-    public String add(String bizId, String docGroupCode, String bizType, String bizId1, Model model) {
+    public String add(String bizId, String docGroupCode, String bizType, String bizId1, Model model,HttpServletRequest request) {
         KstarAttachment att = new KstarAttachment();
         att.setDocUpdr(getUserObject().getEmployee().getName());
         att.setDtUpdDt(new Date());
@@ -147,6 +150,13 @@ public class ComAttachmentAction extends BaseAction {
         model.addAttribute("docGroupCode", docGroupCode);
         model.addAttribute("bizType", bizType);
         model.addAttribute("attInfo", att);
+        
+        String needDocType = request.getParameter("needDocType");
+        if("true".equals(needDocType)){
+        	model.addAttribute("needDocType", true);
+        }else{
+        	model.addAttribute("needDocType", false);
+        }
 
         return forward("comAttachment");
     }

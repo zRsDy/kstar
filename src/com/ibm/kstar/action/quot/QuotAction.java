@@ -583,7 +583,6 @@ public class QuotAction extends BaseAction {
 	}
 	
 	
-	
 	@RequestMapping("/prjLst")
 	public String prjLsts(String qid,String typ,String processpage,String ifProReviewStatus,String pricetableid,String sprvmrkstatus,String quotsubmitstatus,String applyPrcStatus,Model model) {
 		model.addAttribute("qid",qid);
@@ -1534,7 +1533,7 @@ public class QuotAction extends BaseAction {
 		model.addAttribute("qnm",qnm);
 		model.addAttribute("qid",qid);
 		model.addAttribute("typ",typ);
-				
+
 		model.addAttribute("org",JSON.toJSONString(lovMemberService.get(getUserObject().getOrg().getId())));
 		
 		String checkver = Checkversion(qid, typ);
@@ -1825,48 +1824,50 @@ public class QuotAction extends BaseAction {
 		model.addAttribute("isprorview",isprorview);
 		
 		String applyPrcStatus="";
-		
+
+		KstarQuot kstarQuot = quotService.getKstarQuot(qid);
+
 		PageCondition condition = new PageCondition();
 		condition.setCondition("qid", qid);
 		condition.setCondition("typ", typ);
 		IPage p = quotService.queryPrjLst(condition);
+
 		List<KstarPrjLst> kstarPrjLsts = (List<KstarPrjLst>) p.getList();
-		KstarQuot kstarQuot = quotService.getKstarQuot(qid);
+		quotService.loadGoldPrcInPriceTable(kstarQuot, kstarPrjLsts);
+
+		boolean emptyPrjList = false;
 		boolean needRebateReview = false;
-		if(kstarPrjLsts.size()>0){
+		boolean needPrcReview = false;
+        if (kstarPrjLsts.size() == 0) {
+            emptyPrjList = true;
+        } else {
 			for (KstarPrjLst kstarPrjLst : kstarPrjLsts) {
-				if(kstarPrjLst.getApplyPrc()!=null&&kstarPrjLst.getGoldPrc()!=null){
-					if((kstarPrjLst.getApplyPrc()>kstarPrjLst.getGoldPrc())){
-						applyPrcStatus = "1";
-						model.addAttribute(applyPrcStatus,"1");
-					}else{
-						applyPrcStatus = "2";
-						model.addAttribute(applyPrcStatus,"2");
-					}
-				}else{
-					model.addAttribute("status","3");
-				}
-				if(kstarPrjLst.getApplyPrc()!=null && kstarPrjLst.getGoldPrc()!=null){
-					if("P02".equals(kstarQuot.getSpAuditStatus())){
-						model.addAttribute("status","3");
-					}else if(kstarPrjLst.getApplyPrc()<kstarPrjLst.getGoldPrc()){
-						model.addAttribute("status","1");
-						needRebateReview = true;
-					}else{
-						model.addAttribute("status","3");
-					}
-				}
+				Double applyPrc = kstarPrjLst.getApplyPrc();
+				Double goldPrc = kstarPrjLst.getGoldPrc();
+                Double goldPrcInPriceTable = kstarPrjLst.getGoldPrcInPriceTable();
+
+                //价目表中的金牌价为空则需要走价格评审
+                if (goldPrcInPriceTable == null || goldPrcInPriceTable == 0) {
+                    if (!"S02".equals(kstarQuot.getPrcAdtstatus())) {
+                        needPrcReview = true;
+                    }
+                }
+
+                //申请价格小于金牌价的需要走特价评审
+                if (applyPrc != null && goldPrc != null) {
+                    if (applyPrc < goldPrc) {
+                        if(!"P02".equals(kstarQuot.getSpAuditStatus())){
+                            needRebateReview = true;
+                        }
+                    }
+                }
 			}
-		}else{
-			model.addAttribute("status","2");
-			applyPrcStatus = "2";
-			model.addAttribute(applyPrcStatus,"2");
 		}
 
-		if (needRebateReview) {
-			model.addAttribute("status", "1");
-		}
-		
+		model.addAttribute("emptyPrjList", emptyPrjList);
+		model.addAttribute("needPrcReview", needPrcReview);
+		model.addAttribute("needRebateReview", needRebateReview);
+
 		TabMain tabMainbgn = new TabMain();
 		tabMainbgn.setInitAll(false);
 		
@@ -1911,7 +1912,6 @@ public class QuotAction extends BaseAction {
 		quot.setUpdatedAt(new Date());
 		quot.setUpdatedById(getUserObject().getEmployee().getId());
 
-		
 		quotService.updateQuot(quot);
 		
 			
@@ -2722,6 +2722,23 @@ public class QuotAction extends BaseAction {
 		ExcelUtil.exportExcel(response, dataList, "工程清单");
 	}
 	
-	
+	/**
+	 * 自定义商机选择框
+	 * @param condition
+	 * @param request
+	 * @return
+	 */
+	@NoRight
+	@ResponseBody
+	@RequestMapping("/autocompleteproject")
+	public String autoProject(PageCondition condition,HttpServletRequest request){
+		
+		ActionUtil.requestToCondition(condition, request);
+		String search = condition.getStringCondition("search");
+		String clientId = condition.getStringCondition("custCode");
+		List<BusinessOpportunity> projectInfos = quotService.getProjectInfoList(search,clientId);
+		
+		return sendSuccessMessage(projectInfos);
+	}
 	
 }

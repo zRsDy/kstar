@@ -33,6 +33,8 @@ public interface ICustomInfoService {
 	
 	CustomInfo getCustomInfoByCode(String code) throws AnneException;
 	
+	CustomInfo getCustomInfoByCustCode(String customCode) throws AnneException;
+	
 	CustomInfo getCustomInfoByCodeWithAuth(String code, UserObject user) throws AnneException;
 	
 	void saveCustomInfoChange(CustomInfoChange customInfoChange, UserObject userObject) throws AnneException;
@@ -180,7 +182,5 @@ public interface ICustomInfoService {
 	public List<CustomAddressInfo> getCustomAddressInfoBycustomId(String customId);
 	
 	List<CustomRelaContact> getCustomRelaContactListAuth(String userType);
-	
-
 
 }

@@ -1,15 +1,10 @@
 package org.xsnake.xflow.api.model;
 
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "XFLOW_HISTORY")
@@ -103,7 +98,13 @@ public class HistoryActivityInstance implements Serializable{
 	
 	@Column(name = "IS_NORMAL_TASK")
 	String isNormalTask;
-	
+
+	@Column(name = "operate_type")
+	String operationType;
+
+	@Transient
+	String operationTypeName;
+
 	public String getId() {
 		return id;
 	}
@@ -327,6 +328,21 @@ public class HistoryActivityInstance implements Serializable{
 	public void setToActivityName(String toActivityName) {
 		this.toActivityName = toActivityName;
 	}
-	
+
+    public String getOperationType() {
+        return operationType;
+    }
+
+    public void setOperationType(String operationType) {
+        this.operationType = operationType;
+    }
+
+	public String getOperationTypeName() {
+		return operationTypeName;
+	}
+
+	public void setOperationTypeName(String operationTypeName) {
+		this.operationTypeName = operationTypeName;
+	}
 }
 

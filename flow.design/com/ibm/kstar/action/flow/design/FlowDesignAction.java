@@ -16,8 +16,10 @@ import org.xsnake.web.utils.ActionUtil;
 import org.xsnake.web.utils.StringUtil;
 import org.xsnake.xflow.api.IDefinitionService;
 
+import com.alibaba.fastjson.JSON;
 import com.ibm.kstar.api.system.lov.ILovGroupService;
 import com.ibm.kstar.api.system.lov.ILovMemberService;
+import com.ibm.kstar.api.system.lov.entity.LovGroup;
 import com.ibm.kstar.api.system.lov.entity.LovMember;
 import com.ibm.kstar.api.system.permission.ICorePermissionService;
 import com.ibm.kstar.conf.Configuration;
@@ -76,6 +78,9 @@ public class FlowDesignAction extends BaseAction{
 	
 	@RequestMapping("/showTaskAttr")
 	public String showTaskAttr(String type,String code,Model model,HttpServletRequest request){
+		List<LovMember> lovOrg = lovMemberService.getOrgAllList();
+		List<LovMember> lovOrgAndEmployee = lovMemberService.getAllTreeByOrgList(lovOrg);
+		model.addAttribute("lovOrg",JSON.toJSONString(lovOrgAndEmployee));
 		model.addAttribute("type",type);
 		//获取到code，通过code拿到设置的应用，及变量、权限域信息
 		return forward("showTaskAttr");
@@ -123,5 +128,4 @@ public class FlowDesignAction extends BaseAction{
 		list = lovMemberService.getList(condition);
 		return sendSuccessMessage(list);
 	}
-	
 }

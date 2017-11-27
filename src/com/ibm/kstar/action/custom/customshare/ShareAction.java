@@ -146,7 +146,7 @@ public class ShareAction extends BaseAction {
 			throw new AnneException("没有找到需要修改的数据");
 		}
 		
-		CustomInfo customInfo = customservice.getCustomInfoByCode(customShareInfo.getCustomCode());
+		CustomInfo customInfo = customservice.getCustomInfoByCustCode(customShareInfo.getCustomCode());
 		TabMain tabMain = new TabMain();
 		tabMain.setInitAll(false);
 		if(hasPermission("P02CusShareT1TeamMemberPage")) {

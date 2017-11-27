@@ -6,6 +6,7 @@ import com.ibm.kstar.api.system.lov.ILovMemberService;
 import com.ibm.kstar.api.system.lov.entity.LovGroup;
 import com.ibm.kstar.api.system.lov.entity.LovMember;
 import com.ibm.kstar.api.system.permission.UserObject;
+import com.ibm.kstar.api.system.permission.entity.Employee;
 import com.ibm.kstar.impl.BaseServiceImpl;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -808,5 +809,55 @@ public class LovMemberServiceImpl extends BaseServiceImpl implements ILovMemberS
 		String hql = "select lov from LovMember lov where deleteFlag='N' and groupId='ORG' and leafFlag='N' ";
 		List<LovMember> lovCatalogList = baseDao.findEntity(hql);
 		return lovCatalogList;
+	}
+	
+	@Override
+	public List<LovMember> getOrgAllList() {
+		String hql = "select lov from LovMember lov where  groupId='ORG' ";
+		List<LovMember> lovCatalogList = baseDao.findEntity(hql);
+		return lovCatalogList;
+	}
+	
+	@Override
+	public List<LovMember> getAllTreeByOrgList(List<LovMember> orgList) {
+		List<LovMember> result = new ArrayList<>();
+		List<String> positionIds = new ArrayList<>();
+		StringBuffer positionIdsbf = new StringBuffer();
+		int count = 0;
+		for(LovMember orgLov:orgList) {
+			LovMember parent = this.get(orgLov.getId());
+			String positionId = orgLov.getId();
+			if(count<1000) {
+				if(parent != null && "Y".equals(parent.getLeafFlag())) {
+					positionIdsbf.append("'"+positionId+"',");
+					count++; 
+				}
+			}else {
+				if(positionIdsbf.toString().length()>1) {
+					positionIds.add(positionIdsbf.toString().substring(0,positionIdsbf.toString().length()-1));
+					count = 0;
+					positionIdsbf = positionIdsbf.delete(0, positionIdsbf.length());
+				}
+			}
+		}
+		if(positionIdsbf.toString().length()>1) {
+			positionIds.add(positionIdsbf.toString().substring(0,positionIdsbf.toString().length()-1));
+		}
+		for(String positionId:positionIds) {
+			List<Object[]> list = baseDao.findBySql(" select e.ROW_ID,e.NO,e.NAME,o.ROW_ID as pid from SYS_T_PERMISSION_EMPLOYEE e,SYS_T_LOV_MEMBER p,SYS_T_LOV_MEMBER o ,SYS_T_PERMISSION_USER_REL up where e.ROW_ID = up.USER_ID and p.OPT_TXT1 = o.ROW_ID and p.ROW_ID = up.MEMBER_ID and up.TYPE = 'P' and o.ROW_ID in ( "+positionId+" ) and p.GROUP_ID = 'POSITION' and o.GROUP_ID = 'ORG' ");
+			for (Object[] object : list) {
+				LovMember lov = new LovMember();
+				lov.setId((String)object[0]);
+				lov.setCode((String)object[1]);
+				lov.setName((String)object[2]);
+				lov.setParentId((String)object[3]);
+				lov.setLeafFlag("Y");
+				lov.setOptTxt1("E");
+				result.add(lov);
+			}
+		}
+		
+		orgList.addAll(result);
+		return orgList;
 	}
 }

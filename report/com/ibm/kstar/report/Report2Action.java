@@ -1,6 +1,7 @@
 package com.ibm.kstar.report;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.ibm.kstar.api.contract.IContractLoanService;
 import com.ibm.kstar.api.report.IReportService;
 import com.ibm.kstar.api.system.lov.ILovGroupService;
@@ -11,12 +12,14 @@ import com.ibm.kstar.api.system.permission.ICorePermissionService;
 import com.ibm.kstar.api.system.permission.IEmployeeService;
 import com.ibm.kstar.api.system.permission.UserObject;
 import com.ibm.kstar.api.system.permission.entity.Employee;
-import com.ibm.kstar.api.system.permission.entity.Position;
+import com.ibm.kstar.impl.report.ExpenseObj;
+import com.ibm.kstar.impl.report.ExpenseVO;
 import com.ibm.kstar.impl.report.HistoryAnalysisValue;
 import com.ibm.kstar.impl.report.ReportGroupMap;
 import com.ibm.kstar.impl.report.TypeValue;
 import com.ibm.kstar.impl.report.Value;
 import com.ibm.kstar.interceptor.system.permission.NoRight;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +31,7 @@ import org.xsnake.web.action.PageCondition;
 import org.xsnake.web.exception.AnneException;
 import org.xsnake.web.page.IPage;
 import org.xsnake.web.utils.ActionUtil;
+import org.xsnake.web.utils.MathUtils;
 import org.xsnake.web.utils.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -281,6 +285,7 @@ public class Report2Action extends BaseAction{
 		Double invoicingSum = null;//提前开票未出货总计金额
 		Double rebateSum = null;//特价逾期未出货总金额
 		Double expireSum = null;//特价逾期未出货总金额
+		Double overBiddingSum= null;//逾期投标保证金
 		int bizoppReportScale = 0;//商机报备授权比例
 		int bizoppOrderReportScale = 0;//报备落单率
 		int reportOrderScale = 0;//已授权落单比例
@@ -312,6 +317,7 @@ public class Report2Action extends BaseAction{
 			bidReportScale = reportService.getBidReportScale("ORG",orgId);
 			saleSupportReportScale = reportService.getSaleSupportReportScale("ORG",orgId);
 			overdueNoReturnPrototypeSum = reportService.getOverdueNoReturnPrototypeSum("ORG",orgId,year);
+			overBiddingSum = reportService.getOverBiddingSum("ORG",orgId);
 		}else{
 			contact = reportService.getEmpContact(year, employeeId,positionId,currency);//获取当年回款的计划金额
 			contactVeri = reportService.getEmpContactVeri(year, employeeId,positionId,currency);//获取当年回款计划被核销金额
@@ -337,6 +343,7 @@ public class Report2Action extends BaseAction{
 			bidReportScale = reportService.getBidReportScale("Employee",positionId);
 			saleSupportReportScale = reportService.getSaleSupportReportScale("Employee",positionId);
 			overdueNoReturnPrototypeSum = reportService.getOverdueNoReturnPrototypeSum("Employee",positionId,year);
+			overBiddingSum = reportService.getOverBiddingSum("Employee",positionId);	
 		}
 		rate = getRate(target,actual);
 		rateContact = getRateContact(contact, contactVeri);//合同回款率(%)
@@ -397,7 +404,14 @@ public class Report2Action extends BaseAction{
 		model.addAttribute("reportOrderScale", reportOrderScale);		
 		model.addAttribute("bidReportScale", bidReportScale);		
 		model.addAttribute("saleSupportReportScale", saleSupportReportScale);		
-		model.addAttribute("overdueNoReturnPrototypeSum", overdueNoReturnPrototypeSum);		
+		model.addAttribute("overdueNoReturnPrototypeSum", overdueNoReturnPrototypeSum);
+
+
+		//申诉次数
+		Integer bizOppAppealTimes = this.reportService.getBizOppAppeal(reportType,user);
+        model.addAttribute("bizOppAppealTimes", bizOppAppealTimes);
+
+		model.addAttribute("overBiddingSum", overBiddingSum);		
 		return forward("reportOrgReached");
 	}
 
@@ -1126,4 +1140,97 @@ public class Report2Action extends BaseAction{
 		IPage p = reportService.getVeriDetailList(condition,reportType,orgIdOrEmployeeId,month,currency,year);
 		return sendSuccessMessage(p);
 	}
+	
+	/**
+	 * 逾期投标保证金
+	 */
+	@NoRight
+	@RequestMapping("/overBiddingList")
+	public String overBiddingList(String reportType, String orgIdOrEmployeeId,String currency,String year,Model model){
+		model.addAttribute("reportType", reportType);
+		model.addAttribute("orgIdOrEmployeeId", orgIdOrEmployeeId);
+		model.addAttribute("currency", currency);
+		model.addAttribute("year", year);
+		return forward("overBidding");
+	}
+	
+	@NoRight
+	@ResponseBody
+	@RequestMapping("/overBidding")
+	public String overBidding(PageCondition condition,String reportType, String orgIdOrEmployeeId, HttpServletRequest request){
+		ActionUtil.requestToCondition(condition, request);
+		IPage p = reportService.getOverBidding(condition,reportType,orgIdOrEmployeeId);
+		return sendSuccessMessage(p);
+	}
+
+	/**
+	 * 费用金额详细报表
+	 */
+	@NoRight
+	@RequestMapping("/expenseSum")
+	public String expenseSum(String reportType, String orgIdOrEmployeeId,String month,String year,Model model){
+		ExpenseVO exp = reportService.getExpenseSum(reportType,orgIdOrEmployeeId,month,year);
+		this.modelAttr(exp,reportType,orgIdOrEmployeeId,year,month,model);
+		return forward("expenseSumDetail");
+	}
+
+	private void modelAttr(ExpenseVO exp, String reportType, String orgIdOrEmployeeId, String year, String month,
+			Model model) {
+		List<ExpenseObj> hosExp = exp.getHosExp();
+		List<ExpenseObj> traExp = exp.getTraExp();
+		List<ExpenseObj> comExp = exp.getComExp();
+		List<ExpenseObj> carExp = exp.getCarExp();
+		List<ExpenseObj> offExp = exp.getOffExp();
+		List<ExpenseObj> otherExp = exp.getOtherExp();
+		Double hosSum = 0d;
+		Double traSum = 0d;
+		Double comSum = 0d;
+		Double carSum = 0d;
+		Double offSum = 0d;
+		Double otherSum = 0d;
+		
+		if(null != hosExp){
+			for(ExpenseObj eo: hosExp){
+				hosSum = MathUtils.add(hosSum, eo.getAmount());
+			}
+		}
+		if(null != traExp){
+			for(ExpenseObj eo: traExp){
+				traSum = MathUtils.add(traSum, eo.getAmount());
+			}
+		}
+		if(null != comExp){
+			for(ExpenseObj eo: comExp){
+				comSum = MathUtils.add(comSum, eo.getAmount());
+			}
+		}
+		if(null != carExp){
+			for(ExpenseObj eo: carExp){
+				carSum = MathUtils.add(carSum, eo.getAmount());
+			}
+		}
+		if(null != offExp){
+			for(ExpenseObj eo: offExp){
+				offSum = MathUtils.add(offSum, eo.getAmount());
+			}
+		}
+		if(null != otherExp){
+			for(ExpenseObj eo: otherExp){
+				otherSum = MathUtils.add(otherSum, eo.getAmount());
+			}
+		}
+		
+		model.addAttribute("reportType", reportType);
+		model.addAttribute("orgIdOrEmployeeId", orgIdOrEmployeeId);
+		model.addAttribute("month", month);
+		model.addAttribute("year", year);
+		model.addAttribute("exp",exp);
+		model.addAttribute("hosSum",hosSum);
+		model.addAttribute("traSum",traSum);
+		model.addAttribute("comSum",comSum);
+		model.addAttribute("carSum",carSum);
+		model.addAttribute("offSum",offSum);
+		model.addAttribute("otherSum",otherSum);
+	}
+	
 }

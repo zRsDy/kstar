@@ -18,6 +18,20 @@ select {
 }
 </style>
 
+<script type="text/javascript">
+//是否代理商
+function checkIsAgentBox(){//IsAgentBox
+	var checked =  $("#isAgentBox").is(':checked');
+	if(checked == true){	
+		$("#pageSearch_isAgent").val('1'); 
+		$("#isAgentBox").attr("checked","true"); 
+	}else {
+		$("#pageSearch_isAgent").val('0'); 
+		$("#isAgentBox").removeAttr("checked"); 		
+	}
+	
+}
+</script>
 <#if permission["P06ReceiptPlanListAdd"]?? >
 	<#assign addURL = "'${ctx}/receipts/plan/add.html'"  />
 </#if>
@@ -50,7 +64,7 @@ select {
 		colModel = "[ 
 			{name:'id',label:'',hidden:true,width:60,sortable:false,align:'center' },  
 			{name:'businessEntityLable',label:'${i18n.get('业务实体')}',hidden:false,width:230,sortable:false,align:'center' ,hidden:false},
-			{name:'custCode',label:'${i18n.get('客户编号')}',hidden:false,width:150,sortable:false,align:'center' },
+			{name:'custCode',label:'${i18n.get('ERP客户编号')}',hidden:false,width:150,sortable:false,align:'center' },
 			{name:'custName',label:'${i18n.get('客户名称')}',hidden:false,width:250,sortable:false,align:'center' },
 			{name:'salesCenter',label:'${i18n.get('营销中心ID')}',hidden:true,width:150,sortable:false,align:'center' },
 			{name:'salesCenterName',label:'${i18n.get('营销中心')}',hidden:false,width:100,sortable:false,align:'center' },
@@ -67,9 +81,9 @@ select {
 			{name:'paymentDate',label:'${i18n.get('到期日')}',hidden:false, width:120,sortable:false,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
 			{name:'gatheringDate',label:'${i18n.get('收款日期')}',hidden:false, width:120,sortable:false,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
 			{name:'checkDate',label:'${i18n.get('核销日期')}',hidden:false, width:120,sortable:false,align:'center', formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } },
-			{name:'salesmanCode',label:'${i18n.get('销售人员编号')}',hidden:false,width:80,sortable:false,align:'center' },
-			{name:'salesmanName',label:'${i18n.get('销售人员名称')}',hidden:false,width:150,sortable:false,align:'center' },
-			{name:'salesmanPosName',label:'${i18n.get('销售人员岗位')}',hidden:false,width:150,sortable:false,align:'center' },
+			{name:'salesmanCode',label:'${i18n.get('业务人员编号')}',hidden:false,width:80,sortable:false,align:'center' },
+			{name:'salesmanName',label:'${i18n.get('业务人员名称')}',hidden:false,width:150,sortable:false,align:'center' },
+			{name:'salesmanPosName',label:'${i18n.get('业务人员岗位')}',hidden:false,width:150,sortable:false,align:'center' },
 			{name : 'createdPositionName', label:'${i18n.get('创建人岗位')}', width : 100, editable:false, align:'center',sortable:false}, 
 			{name:'remarks',label:'${i18n.get('备注')}',hidden:false,width:150,sortable:false,align:'center' }
 		]" 
@@ -230,6 +244,11 @@ select {
 							code="OPERATION_UNIT"
 							level = "1" />
                     </td>
+                    <td width="100px" align="right">${i18n.get('是否代理商')}:</td> 
+					<td width="180px">
+						<input name="isAgentBox" type="checkbox" id="isAgentBox" onclick="checkIsAgentBox()" />
+						<input name="pageSearch_isAgent" type="hidden" id="pageSearch_isAgent" value="" />
+					</td>
                   </tr>
 				<tr>
 					<td align="right">

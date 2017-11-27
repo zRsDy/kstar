@@ -28,6 +28,7 @@ import com.ibm.kstar.api.order.IReceiptsService;
 import com.ibm.kstar.api.system.lov.ILovMemberService;
 import com.ibm.kstar.api.system.lov.entity.LovMember;
 import com.ibm.kstar.entity.order.ContractReceiptDetail;
+import com.ibm.kstar.entity.order.vo.ContractReceiptDetailVO;
 import com.ibm.kstar.interceptor.system.permission.NoRight;
 
 @Controller
@@ -103,10 +104,15 @@ public class ReceiptsPlanAction extends BaseAction {
 		if(StringUtil.isNotEmpty(businessEntity)){
 			condition.getFilterObject().addCondition("businessEntity", "eq", businessEntity);
 		}
+		String isAgentBoxFlag = null;
+		String pageSearch_isAgent = condition.getStringCondition("pageSearch_isAgent");
+		if(StringUtil.isNotEmpty(pageSearch_isAgent)){
+			isAgentBoxFlag = pageSearch_isAgent;
+		}
 		
-		IPage p = contractReceiptDetailService.queryContractReceiptDetails(condition);
-		List<ContractReceiptDetail> contractReceiptDetailList = (List<ContractReceiptDetail>)p.getList();
-		contractReceiptDetailService.searchGatheringDateAndCheckDate(contractReceiptDetailList);
+		IPage p = contractReceiptDetailService.queryContractReceiptDetails(condition,isAgentBoxFlag);
+		List<ContractReceiptDetailVO> contractReceiptDetailList = (List<ContractReceiptDetailVO>)p.getList();
+		contractReceiptDetailService.searchGatheringDateAndCheckDateForVO(contractReceiptDetailList);	
 		int count = p.getCount();
 		int page = condition.getPage();
 		int rows = condition.getRows();

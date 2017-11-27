@@ -4,6 +4,10 @@
 
 <@pui.body>
 
+<#if needDocType>
+	<#assign docTypeReqInfo="${i18n.get('文档类型不能为空！')}" />
+</#if>
+
 
 <script type="text/javascript">
 
@@ -75,7 +79,7 @@ function isProductDemandSpecReqDocType(){
              			id="docTp" name="docTp" 
              			code="${(docGroupCode)!}"  
              			value ="${(attInfo.docTp)!}"
-             			required="${i18n.get('不能为空！')}"
+             			required="${(docTypeReqInfo)!}"
              	/>
 				</div>	
 				<#if '${(bizType)!}'?default('') == 'proSeriesAttach'>

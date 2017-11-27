@@ -9,16 +9,20 @@
       
  package com.ibm.kstar.impl.workflow;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.xsnake.xflow.api.Participant;
-import org.xsnake.xflow.api.workflow.IXflowInterface;
-
 import com.ibm.kstar.api.product.IProductProcesService;
 import com.ibm.kstar.api.quot.IQuotService;
 import com.ibm.kstar.entity.quot.KstarBiddcevl;
+import com.ibm.kstar.entity.quot.KstarPrjLst;
 import com.ibm.kstar.entity.quot.KstarQuot;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.xsnake.web.action.PageCondition;
+import org.xsnake.web.page.IPage;
+import org.xsnake.xflow.api.Participant;
+import org.xsnake.xflow.api.workflow.IXflowInterface;
+
+import java.util.List;
 
 /** 
  * ClassName:QuotspproctFlowCallBack <br/> 
@@ -46,16 +50,40 @@ public class QuotspproctFlowCallBack extends IXflowInterface {
 		// TODO Auto-generated method stub
 		
 		KstarQuot quot;
-		
 		KstarBiddcevl bidevl = quotService.getBiddcevl(processInstanceId);
-		
+
 		if(bidevl!=null){
 			quot = quotService.getKstarQuot(bidevl.getQuotCode());
 			quot.setSpAuditStatus("P02");
 			quotService.updateQuot(quot);
+
+            PageCondition condition = new PageCondition();
+            condition.setCondition("qid", quot.getId());
+            condition.setCondition("typ", "003");
+            IPage p = quotService.queryPrjLst(condition);
+
+            List<KstarPrjLst> kstarPrjLsts = (List<KstarPrjLst>) p.getList();
+			// 判断所有行是否都有批复折扣
+            boolean hasApprovalDiscount = true;
+            for (KstarPrjLst kstarPrjLst : kstarPrjLsts) {
+				if (kstarPrjLst.getApplyDiscount() == null || kstarPrjLst.getApprovePrc() == null) {
+                    hasApprovalDiscount = false;
+                    break;
+				}
+
+                if (!(kstarPrjLst.getApproveDiscount() > 0 && kstarPrjLst.getApproveDiscount() < 100)) {
+                    hasApprovalDiscount = false;
+                    break;
+                }
+			}
+
+            if (!hasApprovalDiscount) {
+                throw new RuntimeException("存在批复折扣和价格不正确的产品，批复价格和批复折扣不能为空，并且批复折扣大于0%小于100%");
+            }
 		}
-		
-		
+
+
+
 	}
 
 	@Override

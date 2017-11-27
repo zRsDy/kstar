@@ -47,7 +47,7 @@ public class CustomShareServiceImpl implements ICustomShareService{
 	@Override
 	public void saveShareInfo(CustomShareInfo customShareInfo, UserObject userObject) throws AnneException {
 		
-		CustomInfo ci = customservice.getCustomInfoByCode(customShareInfo.getCustomCode());
+		CustomInfo ci = customservice.getCustomInfoByCustCode(customShareInfo.getCustomCode());
 		customShareInfo.setShareSale(ci.getCreatedById());
 		customShareInfo.setShareDept(ci.getCreatedOrgId());
 		
@@ -79,7 +79,7 @@ public class CustomShareServiceImpl implements ICustomShareService{
 			return;
 		}
 		
-		CustomInfo customInfo = customservice.getCustomInfoByCode(customShareInfo.getCustomCode());
+		CustomInfo customInfo = customservice.getCustomInfoByCustCode(customShareInfo.getCustomCode());
 		
 		teamService.addPosition(
 				customShareInfo.getApplierPos(),

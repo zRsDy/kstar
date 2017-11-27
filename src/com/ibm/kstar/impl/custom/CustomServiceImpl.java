@@ -218,6 +218,19 @@ public class CustomServiceImpl implements ICustomInfoService{
 	}
 	
 	@Override
+	public CustomInfo getCustomInfoByCustCode(String custCode) throws AnneException {
+		List<Object> args = new ArrayList<Object>();
+		args.add(custCode);
+		List<CustomInfo> customInfos = baseDao.findEntity(" from CustomInfo where customCode = ? ", args.toArray());
+		if (customInfos == null || customInfos.size() == 0) {
+			return new CustomInfo();
+		} else if (customInfos.size() > 1) {
+			throw new AnneException(" 系统错误，客户编码重复，请联系管理员。");
+		}
+		return customInfos.get(0);
+	}
+	
+	@Override
 	public CustomInfo getCustomInfoByCodeWithAuth(String code, UserObject user) throws AnneException {
 		List<Object> args = new ArrayList<Object>();
 		args.add(code);

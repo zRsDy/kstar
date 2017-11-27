@@ -26,33 +26,23 @@
 	</#if>
 	
 	<#if (permission["P04T1ProjListAddProd"])??>
-		<#if ifbidresult == 'Y'>
-			<#assign ifaddstprdButton="true" />
-		</#if>
+		<#assign ifaddstprdButton="true" />
 	</#if>
 	
 	<#if (permission["P04T1ProjListAddNonStaProd1"])??>
-		<#if ifbidresult == 'Y'>
-			<#assign ifaddnprdButton="true" />
-		</#if>
+		<#assign ifaddnprdButton="true" />
 	</#if>
 	
 	<#if (permission["P04T1ProjListAddOutSouceProd1"])??>
-		<#if ifbidresult == 'Y'>
-			<#assign ifaddexprdButton="true" />
-		</#if>
+		<#assign ifaddexprdButton="true" />
 	</#if>
 			
 	<#if (permission["P04T1ProjListSubmitPrice"])??>
-		<#if ifbidresult == 'Y'>
-			<#assign ifquotsubmitButton="true" />
-		</#if>
+		<#assign ifquotsubmitButton="true" />
 	</#if>
 	
 	<#if (permission["P04T1ProjListSpecialOffer"])??>
-		<#if ifbidresult == 'Y'>
-			<#assign ifpriceprocessButton="true" />
-		</#if>
+		<#assign ifpriceprocessButton="true" />
 	</#if>		
 			
 	<#if ifbidresult == 'Y'>
@@ -383,6 +373,7 @@
 			var applyAmt  = $('#prjlst').getCol('applyAmt',false,'sum');
 			var approveAmt  = $('#prjlst').getCol('approveAmt',false,'sum');
 			var conAmt  = $('#prjlst').getCol('ttlUnt',false,'sum');
+			$('#amount').val(conAmt); 
 			$('#prjlst').footerData('set',{'prdCtg':'${i18n.get('合计')}','applyPrc':applyAmt, 'approvePrc':approveAmt, 'ttlUnt':conAmt});
 		}
 	}"
@@ -536,7 +527,17 @@ $(document).ready(function(){
 	 	$("#quotsubmitButton").attr("disabled","disabled");
 	 	$("#priceprocessButton").attr("disabled","disabled");
  	}
- 	
+
+ 	if('${ifbidresult}'=="N"){
+ 		$('#addstprdButton').attr("disabled","disabled");
+ 		$('#addnprdButton').attr("disabled","disabled");
+ 		$('#addexprdButton').attr("disabled","disabled");
+ 		$('#submitLines').attr("disabled","disabled");
+ 		$('#deleteLines').attr("disabled","disabled");
+ 		$('#quotsubmitButton').attr("disabled","disabled");
+ 		$('#edit_prjlst').attr("disabled","disabled");
+ 		$('#delete_prjlst').attr("disabled","disabled");
+ 	}
  	
  	/* if('${processpage}'=="P12"){
  		$("#submitspButton").removeAttr("disabled");
@@ -823,36 +824,36 @@ function submitLines(){
 	var optTxt2Flag = true;
 	var flag = true;
 	var flagDis = true;
-	
-	$.each(ids,function(i,id){
-		var line = $('#prjlst').jqGrid('getRowData',id);
-		if(line && line['prdCtg']){
-		if( line['amt']=='' || line['applyPrc']==''){
-			curid = id; 
-			 flg = false;
-			 return false;
-		}else{
-			flg = true;
-			datas.push(line);
-		}
-		
-		var f = $('#boName').val();
-		if(line.optTxt2=='1' && !(f)){
-			optTxt2Flag = false;
-			return false;
-		}
-		
-		var goldPrc = line['goldPrc'];
-		if(goldPrc == '' || goldPrc == null){
-			flag = false;
-		}
-		
-		var applyDiscount = line['applyDiscount'];
-		if(isNaN(applyDiscount)){
-			flagDis = false;
-		}
-	 }
-	})
+
+    $.each(ids, function (i, id) {
+        var line = $('#prjlst').jqGrid('getRowData', id);
+        if (line && line['prdCtg']) {
+            if (line['amt'] == '' || line['applyPrc'] == '') {
+                curid = id;
+                flg = false;
+                return false;
+            } else {
+                flg = true;
+                datas.push(line);
+            }
+
+            var f = $('#boName').val();
+            if (line.optTxt2 == '1' && !(f)) {
+                optTxt2Flag = false;
+                return false;
+            }
+
+            var goldPrc = line['goldPrc'];
+            if (goldPrc == '' || goldPrc == null) {
+                flag = false;
+            }
+
+            var applyDiscount = line['applyDiscount'];
+            if (isNaN(applyDiscount)) {
+                flagDis = false;
+            }
+        }
+    });
 	
 	if(optTxt2Flag == false){
 		alert("${i18n.get('当前报价单含有报备机型，请关联商机')}");

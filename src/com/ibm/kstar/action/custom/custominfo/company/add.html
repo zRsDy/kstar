@@ -11,7 +11,7 @@
 				required="${i18n.get('请选择客户编号')}"
 				formatResult="function(data) {return '<div >' +data.customFullName + '</div>';}"
 				url="function(){ return '${ctx}/lovcustom/autocompleteCustom.html'; }"
-				value="{cu stomFullName:'${(customRelation.customNameDisp)!}'
+				value="{customFullName:'${(customRelation.customNameDisp)!}'
 				,customCode: '${(customRelation.customCodeDisp)!}'
 				}"
 				
@@ -41,6 +41,7 @@
 			<@form.select  style="width: 147px;"
 				id="customRelationLvl" name="customRelationLvl" 
 				code="COMPANYRELATION" 
+				required="${i18n.get('不能为空！')}"
 				value ="${(customRelation.customRelationLvlDisp)!}"
 			/>
 		</div>

@@ -3,6 +3,11 @@ package com.ibm.kstar.impl.workflow;
 import com.ibm.kstar.action.common.process.ProcessConstants;
 import com.ibm.kstar.action.common.process.ProcessStatusService;
 import com.ibm.kstar.api.bizopp.IBizoppService;
+import com.ibm.kstar.api.quot.IQuotService;
+import com.ibm.kstar.api.system.lov.entity.LovMember;
+import com.ibm.kstar.api.system.permission.ICorePermissionService;
+import com.ibm.kstar.api.system.permission.UserObject;
+import com.ibm.kstar.api.system.permission.entity.Employee;
 import com.ibm.kstar.entity.bizopp.SupportApply;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +28,33 @@ public class BizOppFlowCallBack extends IXflowInterface {
     IProcessService processService;
 
     @Autowired
+	IQuotService quotService;
+    
+    @Autowired
     ProcessStatusService processStatusService;
     
     @Autowired
 	IBizoppService iBizoppService;
-
+    
+    @Autowired
+	ICorePermissionService corePermissionService;
+    
     @Override
     public void onComplete(String businessKey, String flowModule, String processInstanceId, String comment) {
         processStatusService.updateProcessStatus("SupportApply",businessKey,"status", ProcessConstants.PROCESS_STATUS_Completed);
+    
+        SupportApply sa	= iBizoppService.getSupportApplyEntity(businessKey);
+        
+        UserObject user = new UserObject(sa.getCreatedOrgId(), sa.getCreatedPosId(), sa.getCreatedById());
+		Employee employee = quotService.getEmployeeById(sa.getCreatedById());
+		user.setEmployee(employee);
+
+		LovMember position = corePermissionService.getPositionById(sa.getCreatedPosId());
+		user.setPosition(position);
+
+		LovMember org = corePermissionService.getOrgByPositionId(sa.getCreatedPosId());
+		user.setOrg(org);
+		iBizoppService.startFeedBackProcess(sa.getBizOppId(),user);
     }
 
     @Override

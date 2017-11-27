@@ -2,6 +2,7 @@ package com.ibm.kstar.api.order;
 
 import com.ibm.kstar.api.system.permission.UserObject;
 import com.ibm.kstar.entity.order.ContractReceiptDetail;
+import com.ibm.kstar.entity.order.vo.ContractReceiptDetailVO;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public interface IContractReceiptDetailService {
 	void updateContractReceiptDetail(ContractReceiptDetail contractReceiptDetail)
 			throws AnneException;
 
-	IPage queryContractReceiptDetails(PageCondition condition)
+	IPage queryContractReceiptDetails(PageCondition condition,String pageSearch_isAgent)
 			throws AnneException;
 
 	void deleteContractReceiptDetail(String contractReceiptDetailId)
@@ -32,4 +33,6 @@ public interface IContractReceiptDetailService {
 	void repairTeamOfReceipt();
 	
 	void searchGatheringDateAndCheckDate(List<ContractReceiptDetail> contractReceiptDetailList);
+
+	void searchGatheringDateAndCheckDateForVO(List<ContractReceiptDetailVO> contractReceiptDetailList);
 }

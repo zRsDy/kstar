@@ -801,7 +801,7 @@ var rebateLines_t5 = ${(rebateLines_t5)!'[]'};
 			     } 
 			}
 		},
-    ]"
+    ]" 
     onSelectRow = "function(date){
         var status = $('#status').val();
      	var SpecialCautiousEdit = ${SpecialCautiousEdit};
@@ -2350,7 +2350,7 @@ var rebateLines_t5 = ${(rebateLines_t5)!'[]'};
                 type: "post",
                 url: "${ctx}/rebate/chekcBiz.html",
                 async: false,
-                data: "rebateNo=" + $("#no").val() + "&data="+listStr+"&type="+type+"&dataT3="+listStr2,
+                data: {"rebateNo":$("#no").val(),"data":listStr,"type:":type,"dataT3":listStr2},
                 dataType: 'json',
                 success: function (e) {
                     if (e.status == 'error') {

@@ -21,6 +21,7 @@ import org.xsnake.web.log.LogOperate;
 import org.xsnake.web.page.IPage;
 import org.xsnake.web.utils.ActionUtil;
 import org.xsnake.web.utils.ExcelUtil;
+import org.xsnake.web.utils.StringUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,10 +35,19 @@ public class CostAction extends BaseFlowAction {
 	@Autowired
 	BaseDao baseDao;
 	
+	@NoRight
 	@RequestMapping("/list")
 	public String list(Model model,HttpServletRequest request) {
-		String contrId = request.getParameter("contrId");
-		model.addAttribute("contrId", contrId);
+		String orgIdOrEmployeeId = request.getParameter("orgIdOrEmployeeId");
+		String reportType = request.getParameter("reportType");
+		String name = request.getParameter("name");
+		String year = request.getParameter("year");
+		String month = request.getParameter("month");
+		model.addAttribute("orgIdOrEmployeeId",orgIdOrEmployeeId);
+		model.addAttribute("reportType",reportType);
+		model.addAttribute("name",name);
+		model.addAttribute("year",year);
+		model.addAttribute("month",month);
 		return forward("cost_list");
 	}
 	
@@ -56,7 +66,18 @@ public class CostAction extends BaseFlowAction {
 	@RequestMapping("/page")
 	public String page(PageCondition condition, HttpServletRequest request) {
 		ActionUtil.requestToCondition(condition, request);
-		IPage p = costService.queryCost(condition);
+		String orgIdOrEmployeeId = request.getParameter("orgIdOrEmployeeId");
+		String reportType = request.getParameter("reportType");
+		String name = request.getParameter("name");
+		String year = request.getParameter("year");
+		String month = request.getParameter("month");
+		IPage p = null;
+		
+		if(!StringUtil.isNullOrEmpty(orgIdOrEmployeeId)) {
+			 p = costService.queryCostByReportParameter(condition,orgIdOrEmployeeId,reportType,name,year,month);
+		}else {
+			 p = costService.queryCost(condition);
+		}
 		return sendSuccessMessage(p);
 	}
 

@@ -60,40 +60,9 @@ public class CatelogMatchServiceImpl extends BaseServiceImpl implements ICatelog
     public List<LovMember> queryByDirectID(String directID) {
 
         //language=SQL
-        StringBuilder sb = new StringBuilder(
-                "SELECT\n" +
-                        "  pb.c_pid,\n" +
-                        "  pb.c_pro_name,\n" +
-                        "  pb.C_PRO_DESC,\n" +
-                        "  pcm.c_pid AS matchId,\n" +
-                        "  pcm.DT_START_TIME AS startDt,\n" +
-                        "  pcm.DT_END_TIME AS endDt\n" +
-                        "FROM CRM_T_PRODUCT_CATALOG_MATCH pcm, CRM_T_PRODUCT_BASIC pb left JOIN CRM_T_PRODUCT_LINE pl on pl.c_pid = pb.c_pro_line_id \n" +
-                        "WHERE pcm.C_MATCH_TYPE='Productized' \n" +
-                        "      AND pcm.C_CRM_CATEGORY = pb.C_PRO_CRM_CATEGORY\n" +
-                        "      AND (pcm.c_pro_category IS NULL OR (pcm.c_pro_category = pl.C_PRO_CATEGORY)) " +
-                        "      AND (pcm.C_PRO_MODEL is NULL or (pcm.c_pro_model=pb.c_pro_model))\n" +
-                        "      AND pcm.c_effective = 'Y'\n" +
-                        "      AND pcm.c_direct_id = ? \n" +
-                        "      AND pcm.dt_start_time <= sysdate\n" +
-                        "      AND nvl(pcm.dt_end_time, sysdate + 1) >= sysdate\n" +
-                        "UNION \n" +
-                        "SELECT\n" +
-                        "  pb.c_pid,\n" +
-                        "  pb.c_pro_name,\n" +
-                        "  pb.C_PRO_DESC,\n" +
-                        "  pcm.c_pid AS matchId,\n" +
-                        "  pcm.DT_START_TIME AS startDt,\n" +
-                        "  pcm.DT_END_TIME AS endDt\n" +
-                        "FROM CRM_T_PRODUCT_CATALOG_MATCH pcm, CRM_T_PRODUCT_BASIC pb LEFT JOIN CRM_T_PRODUCT_LINE pl on pl.c_pid = pb.c_pro_line_id,CRM_T_PRODUCT_DEMAND pd,CRM_T_PRODUCT_DEMAND_REL pdr\n" +
-                        "WHERE pcm.C_MATCH_TYPE='Department' and pd.C_PID=pdr.C_DEMAND_ID and pdr.C_PRODUCT_ID=pb.C_PID\n" +
-                        "      AND pcm.C_CRM_CATEGORY = pb.C_PRO_CRM_CATEGORY AND nvl(pcm.C_DEPARTMENT, pd.C_CREATED_ORG_ID) = pd.C_CREATED_ORG_ID\n" +
-                        "      AND pcm.c_effective = 'Y'\n" +
-                        "      AND pcm.c_direct_id = ? \n" +
-                        "      AND pcm.dt_start_time <= sysdate\n" +
-                        "      AND nvl(pcm.dt_end_time, sysdate + 1) >= sysdate");
-
-        List<Object[]> reValue = baseDao.findBySql(sb.toString(), new Object[]{directID, directID});
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT PRODUCTID,PRODUCTNAME,PRODUCTDESC,MATCHID,STARTTIME,ENDTIME from V_PRODUCT_MATCH_CATEGORY where CATEGORYID = ?");
+        List<Object[]> reValue = baseDao.findBySql(sb.toString(), new Object[]{directID});
 
         List<LovMember> result = new ArrayList<>();
         for (Object[] obj : reValue) {
@@ -158,7 +127,7 @@ public class CatelogMatchServiceImpl extends BaseServiceImpl implements ICatelog
         }
         for (Map<String, Object> map : list) {
             String productId = (String) map.get("productId".toUpperCase());
-            String parentId = (String) map.get("parentId".toUpperCase());
+            String categoryId = (String) map.get("categoryId".toUpperCase());
             String matchId = (String) map.get("matchId".toUpperCase());
             String productName = (String) map.get("productName".toUpperCase());
             String productDesc = (String) map.get("productDesc".toUpperCase());
@@ -169,7 +138,7 @@ public class CatelogMatchServiceImpl extends BaseServiceImpl implements ICatelog
 
             lov.setCode(StringUtil.getUUID());
             lov.setLeafFlag("Y");
-            lov.setParentId(parentId);
+            lov.setParentId(categoryId);
             lov.setGroupId("procatalog");
             lov.setName(productName);
             lov.setMemo(productDesc);
@@ -200,46 +169,12 @@ public class CatelogMatchServiceImpl extends BaseServiceImpl implements ICatelog
         }
         inSql.delete(inSql.length() - 1, inSql.length());
 
-        //language=SQL
         List<Object> args = new ArrayList<>();
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT * from (SELECT\n" +
-                "  pb.c_pid as productId,\n" +
-                "  pcm.c_pid AS matchId,\n" +
-                "  pcm.DT_START_TIME AS startTime,\n" +
-                "  pcm.DT_END_TIME AS endTime,\n" +
-                "  pb.c_pro_name as productName,\n" +
-                "  pb.C_PRO_DESC as productDesc,\n" +
-                "  p.ROW_ID as parentId\n" +
-                "FROM CRM_T_PRODUCT_CATALOG_MATCH pcm, CRM_T_PRODUCT_BASIC pb left JOIN CRM_T_PRODUCT_LINE pl on pl.c_pid = pb.c_pro_line_id,SYS_T_LOV_MEMBER p\n" +
-                "WHERE p.ROW_ID=pcm.C_DIRECT_ID AND pcm.C_MATCH_TYPE = 'Productized'\n" +
-                "      and pb.C_PID in (").append(inSql).append(")\n" +
-                "      AND pcm.C_CRM_CATEGORY = pb.C_PRO_CRM_CATEGORY\n" +
-                "      AND (pcm.c_pro_category IS NULL OR (pcm.c_pro_category = pl.C_PRO_CATEGORY)) " +
-                "      AND (pcm.C_PRO_MODEL is NULL or (pcm.c_pro_model=pb.c_pro_model))\n" +
-                "      AND pcm.c_effective = 'Y'\n" +
-                "      AND pcm.dt_start_time <= sysdate\n" +
-                "      AND nvl(pcm.dt_end_time, sysdate + 1) >= sysdate\n" +
-                "UNION \n" +
-                "SELECT\n" +
-                "  pb.c_pid as productId,\n" +
-                "  pcm.c_pid AS matchId,\n" +
-                "  pcm.DT_START_TIME AS startTime,\n" +
-                "  pcm.DT_END_TIME AS endTime,\n" +
-                "  pb.c_pro_name as productName,\n" +
-                "  pb.C_PRO_DESC as productDesc,\n" +
-                "  p.ROW_ID as parentId\n" +
-                "FROM CRM_T_PRODUCT_CATALOG_MATCH pcm, CRM_T_PRODUCT_BASIC pb left JOIN CRM_T_PRODUCT_LINE pl on pl.c_pid = pb.c_pro_line_id, CRM_T_PRODUCT_DEMAND pd, CRM_T_PRODUCT_DEMAND_REL pdr,SYS_T_LOV_MEMBER p\n" +
-                "WHERE pl.c_pid = pb.c_pro_line_id AND pcm.C_MATCH_TYPE = 'Department' and p.ROW_ID=pcm.C_DIRECT_ID\n" +
-                "      and pb.C_PID in (").append(inSql).append(")\n" +
-                "      AND pd.C_PID = pdr.C_DEMAND_ID AND pdr.C_PRODUCT_ID = pb.C_PID\n" +
-                "      AND pcm.C_CRM_CATEGORY = pb.C_PRO_CRM_CATEGORY\n" +
-                "      and pd.C_CREATED_ORG_ID=pcm.C_DEPARTMENT\n" +
-                "      AND pcm.c_effective = 'Y'\n" +
-                "      AND pcm.dt_start_time <= sysdate\n" +
-                "      AND nvl(pcm.dt_end_time, sysdate + 1) >= sysdate) \n" +
-                "where NOT exists (select 1 from SYS_T_LOV_MEMBER where GROUP_CODE='procatalog' and DELETE_FLAG='N' and LEAF_FLAG='Y' AND PARENT_ID = parentId AND OPT_TXT5 = productId)");
-        args.addAll(inArgs);
+
+        //language=SQL
+        sql.append("select * from V_product_Match_category where NOT exists (select 1 from SYS_T_LOV_MEMBER where GROUP_CODE='procatalog' and DELETE_FLAG='N' and LEAF_FLAG='Y' AND PARENT_ID = CATEGORYID AND OPT_TXT5 = productId) and PRODUCTID in (")
+                .append(inSql).append(")");
         args.addAll(inArgs);
 
         List<Map<String, Object>> list = this.baseDao.findBySql4Map(sql.toString(), args.toArray());

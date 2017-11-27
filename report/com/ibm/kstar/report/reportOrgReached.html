@@ -361,18 +361,66 @@
 			<tbody style="background:#B3F7CE;">
 				<tr>
 					<td  style='font-size: 12px;'>${i18n.get('费用额')}</td>
-					<td style='font-size: 12px;'>${invoiceNo.m01/10000}</td>
-					<td style='font-size: 12px;'>${invoiceNo.m02/10000}</td>
-					<td style='font-size: 12px;'>${invoiceNo.m03/10000}</td>
-					<td style='font-size: 12px;'>${invoiceNo.m04/10000}</td>
-					<td style='font-size: 12px;'>${invoiceNo.m05/10000}</td>
-					<td style='font-size: 12px;'>${invoiceNo.m06/10000}</td>
-					<td style='font-size: 12px;'>${invoiceNo.m07/10000}</td>
-					<td style='font-size: 12px;'>${invoiceNo.m08/10000}</td>
-					<td style='font-size: 12px;'>${invoiceNo.m09/10000}</td>
-					<td style='font-size: 12px;'>${invoiceNo.m10/10000}</td>
-					<td style='font-size: 12px;'>${invoiceNo.m11/10000}</td>
-					<td style='font-size: 12px;'>${invoiceNo.m12/10000}</td>
+					<td style='font-size: 12px;'>
+					<a href="#" onclick="parent.addTab('${i18n.get('费用金额一级合计页面')}','${ctx}/report/expenseSum.html?orgIdOrEmployeeId=<#if reportType == "ORG">${(org.id)!}<#else>${(positionId)!}</#if>&reportType=${reportType}&year=${year}&month=01')">
+					${invoiceNo.m01/10000}
+					</a>
+					</td>
+					<td style='font-size: 12px;'>
+					<a href="#" onclick="parent.addTab('${i18n.get('费用金额一级合计页面')}','${ctx}/report/expenseSum.html?orgIdOrEmployeeId=<#if reportType == "ORG">${(org.id)!}<#else>${(positionId)!}</#if>&reportType=${reportType}&year=${year}&month=02')">
+					${invoiceNo.m02/10000}
+					</a>
+					</td>
+					<td style='font-size: 12px;'>
+					<a href="#" onclick="parent.addTab('${i18n.get('费用金额一级合计页面')}','${ctx}/report/expenseSum.html?orgIdOrEmployeeId=<#if reportType == "ORG">${(org.id)!}<#else>${(positionId)!}</#if>&reportType=${reportType}&year=${year}&month=03')">
+					${invoiceNo.m03/10000}
+					</a>
+					</td>
+					<td style='font-size: 12px;'>
+					<a href="#" onclick="parent.addTab('${i18n.get('费用金额一级合计页面')}','${ctx}/report/expenseSum.html?orgIdOrEmployeeId=<#if reportType == "ORG">${(org.id)!}<#else>${(positionId)!}</#if>&reportType=${reportType}&year=${year}&month=04')">
+					${invoiceNo.m04/10000}
+					</a>
+					</td>
+					<td style='font-size: 12px;'>
+					<a href="#" onclick="parent.addTab('${i18n.get('费用金额一级合计页面')}','${ctx}/report/expenseSum.html?orgIdOrEmployeeId=<#if reportType == "ORG">${(org.id)!}<#else>${(positionId)!}</#if>&reportType=${reportType}&year=${year}&month=05')">
+					${invoiceNo.m05/10000}
+					</a>
+					</td>
+					<td style='font-size: 12px;'>
+					<a href="#" onclick="parent.addTab('${i18n.get('费用金额一级合计页面')}','${ctx}/report/expenseSum.html?orgIdOrEmployeeId=<#if reportType == "ORG">${(org.id)!}<#else>${(positionId)!}</#if>&reportType=${reportType}&year=${year}&month=06')">
+					${invoiceNo.m06/10000}
+					</a>
+					</td>
+					<td style='font-size: 12px;'>
+					<a href="#" onclick="parent.addTab('${i18n.get('费用金额一级合计页面')}','${ctx}/report/expenseSum.html?orgIdOrEmployeeId=<#if reportType == "ORG">${(org.id)!}<#else>${(positionId)!}</#if>&reportType=${reportType}&year=${year}&month=07')">
+					${invoiceNo.m07/10000}
+					</a>
+					</td>
+					<td style='font-size: 12px;'>
+					<a href="#" onclick="parent.addTab('${i18n.get('费用金额一级合计页面')}','${ctx}/report/expenseSum.html?orgIdOrEmployeeId=<#if reportType == "ORG">${(org.id)!}<#else>${(positionId)!}</#if>&reportType=${reportType}&year=${year}&month=08')">
+					${invoiceNo.m08/10000}
+					</a>
+					</td>
+					<td style='font-size: 12px;'>
+					<a href="#" onclick="parent.addTab('${i18n.get('费用金额一级合计页面')}','${ctx}/report/expenseSum.html?orgIdOrEmployeeId=<#if reportType == "ORG">${(org.id)!}<#else>${(positionId)!}</#if>&reportType=${reportType}&year=${year}&month=09')">
+					${invoiceNo.m09/10000}
+					</a>
+					</td>
+					<td style='font-size: 12px;'>
+					<a href="#" onclick="parent.addTab('${i18n.get('费用金额一级合计页面')}','${ctx}/report/expenseSum.html?orgIdOrEmployeeId=<#if reportType == "ORG">${(org.id)!}<#else>${(positionId)!}</#if>&reportType=${reportType}&year=${year}&month=10')">
+					${invoiceNo.m10/10000}
+					</a>
+					</td>
+					<td style='font-size: 12px;'>
+					<a href="#" onclick="parent.addTab('${i18n.get('费用金额一级合计页面')}','${ctx}/report/expenseSum.html?orgIdOrEmployeeId=<#if reportType == "ORG">${(org.id)!}<#else>${(positionId)!}</#if>&reportType=${reportType}&year=${year}&month=11')">
+					${invoiceNo.m11/10000}
+					</a>
+					</td>
+					<td style='font-size: 12px;'>
+					<a href="#" onclick="parent.addTab('${i18n.get('费用金额一级合计页面')}','${ctx}/report/expenseSum.html?orgIdOrEmployeeId=<#if reportType == "ORG">${(org.id)!}<#else>${(positionId)!}</#if>&reportType=${reportType}&year=${year}&month=12')">
+					${invoiceNo.m12/10000}
+					</a>
+					</td>
 					<td style='font-size: 12px;'>${invoiceNo.totle/10000}</td>
 				</tr>
 			
@@ -421,29 +469,29 @@
     text-align: center;
     height: 350px;">
 	<div style="font-size: 20px;margin: 5px 10px 5px 10px;background: #ccc;">${i18n.get('业绩分析')}</div>
-	<a href="#" onclick="parent.addTab('${i18n.get('客户类别分组')}','${ctx}/report/reportOrgReachedByCustomType.html?reportType=${reportType}&year=${year}&currency=${currency}&employeeId=${employeeId!}&positionId=${positionId!}&orgId=${orgId!}&flag=0')">
+	<a href="#" onclick="parent.addTab('${i18n.get('客户类别分组')}','${ctx}/report/reportOrgReachedByCustomType.html?reportType=${reportType}&year=${year}&currency=${currency}&employeeId=${employeeId!}&positionId=${positionId!}&orgId=${treeOrgId!}&flag=0')">
 	<div style="font-size: 20px;margin: 5px 10px 5px 10px;background: #438eb9;color: white;">
 	${i18n.get('业绩分解(客户类别)')}
 	</div>
 	</a>
-	<a href="#" onclick="parent.addTab('${i18n.get('产品类型分组')}','${ctx}/report/reportOrgReachedByProductType.html?reportType=${reportType}&year=${year}&currency=${currency}&employeeId=${employeeId!}&positionId=${positionId!}&orgId=${orgId!}&flag=0')">
+	<a href="#" onclick="parent.addTab('${i18n.get('产品类型分组')}','${ctx}/report/reportOrgReachedByProductType.html?reportType=${reportType}&year=${year}&currency=${currency}&employeeId=${employeeId!}&positionId=${positionId!}&orgId=${treeOrgId!}&flag=0')">
 	<div style="font-size: 20px;margin: 5px 10px 5px 10px;background: #438eb9;color: white;">
 	${i18n.get('业绩分解(产品类别)')}
 	</div>
 	</a>
-	<a href="#" onclick="parent.addTab('${i18n.get('占比分析')}','${ctx}/report/proportionAnalysis.html?reportType=${reportType}&year=${year}&currency=${currency}&employeeId=${employeeId!}&positionId=${positionId!}&orgId=${orgId!}&flag=0')">
+	<a href="#" onclick="parent.addTab('${i18n.get('占比分析')}','${ctx}/report/proportionAnalysis.html?reportType=${reportType}&year=${year}&currency=${currency}&employeeId=${employeeId!}&positionId=${positionId!}&orgId=${treeOrgId!}&flag=0')">
 	<div style="font-size: 20px;margin: 5px 10px 5px 10px;background: #438eb9;color: white;">${i18n.get('占比分析')}</div>
 	<#if reportType== "ORG">
-	<a href="#" onclick="parent.addTab('${i18n.get('排名分析')}','${ctx}/report/rankOrg.html?year=${year}&currency=${currency}&rankHeaderId=${rankHeaderId!''}&orgId=${orgId!}')">
+	<a href="#" onclick="parent.addTab('${i18n.get('排名分析')}','${ctx}/report/rankOrg.html?year=${year}&currency=${currency}&rankHeaderId=${rankHeaderId!''}&orgId=${treeOrgId!}')">
 	<div style="font-size: 20px;margin: 5px 10px 5px 10px;background: #438eb9;color: white;">
 	${i18n.get('排名分析')}
 	</div>
 	</a>
 	</#if>
-	<a href="#" onclick="parent.addTab('${i18n.get('历史分析')}','${ctx}/report/reportHistoryAnalysis.html?reportType=${reportType}&year=${year}&currency=${currency}&employeeId=${employeeId!}&orgId=${orgId!}&flag=0')">
+	<a href="#" onclick="parent.addTab('${i18n.get('历史分析')}','${ctx}/report/reportHistoryAnalysis.html?reportType=${reportType}&year=${year}&currency=${currency}&employeeId=${employeeId!}&orgId=${treeOrgId!}&flag=0')">
 	<div style="font-size: 20px;margin: 5px 10px 5px 10px;background: #438eb9;color: white;">${i18n.get('历史分析')}</div>
 	</a>
-	<a href="#" onclick="parent.addTab('${i18n.get('接单量')}','${ctx}/report/orderQuantity.html?reportType=${reportType}&year=${year}&currency=${currency}&employeeId=${employeeId!}&positionId=${positionId!}&orgId=${orgId!}&flag=0')">
+	<a href="#" onclick="parent.addTab('${i18n.get('接单量')}','${ctx}/report/orderQuantity.html?reportType=${reportType}&year=${year}&currency=${currency}&employeeId=${employeeId!}&positionId=${positionId!}&orgId=${treeOrgId!}&flag=0')">
 	<div style="font-size: 20px;margin: 5px 10px 5px 10px;background: #438eb9;color: white;">${i18n.get('接单量')}</div>
 	</a>
 </div>
@@ -514,7 +562,7 @@
 			    	padding: 5px 0 5px 0;
 			    	color: white;">${i18n.get('申述次数')}</div>
 			</td>
-			<td style="border:0;padding: 2px 3px 2px 3px;">34</td>
+			<td style="border:0;padding: 2px 3px 2px 3px;">${bizOppAppealTimes!'0'}</td>
 		</tr>
 	</table>
 	
@@ -602,12 +650,13 @@
 		</tr>
 		<tr style="text-align:center">
 			<td style="border:0;padding: 2px 3px 2px 3px;">
+			<a href="#" onclick="parent.addTab('${i18n.get('逾期未收回样机')}','${ctx}/report/overBiddingList.html?orgIdOrEmployeeId=<#if reportType == "ORG">${treeOrgId!}<#else>${positionId!}</#if>&reportType=${reportType}')">
 				<div  style="background: #438eb9;
 			    	border-radius: 5px;
 			    	padding: 5px 0 5px 0;
-			    	color: white;">${i18n.get('逾期投诉保证金')}</div>
+			    	color: white;">${i18n.get('逾期投标保证金')}</div>
 			</td>
-			<td style="border:0;padding: 2px 3px 2px 3px;"></td>
+			<td style="border:0;padding: 2px 3px 2px 3px;">${overBiddingSum}</td>
 		</tr>
 	</table>
 </div>

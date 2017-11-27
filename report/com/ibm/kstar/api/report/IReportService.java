@@ -1,17 +1,17 @@
 package com.ibm.kstar.api.report;
 
-import java.util.List;
-import java.util.Map;
-
-import org.xsnake.web.action.PageCondition;
-import org.xsnake.web.page.IPage;
-
 import com.ibm.kstar.api.system.lov.entity.LovMember;
 import com.ibm.kstar.api.system.permission.UserObject;
+import com.ibm.kstar.impl.report.ExpenseVO;
 import com.ibm.kstar.impl.report.HistoryAnalysisValue;
 import com.ibm.kstar.impl.report.TotalValue;
 import com.ibm.kstar.impl.report.TypeValue;
 import com.ibm.kstar.impl.report.Value;
+import org.xsnake.web.action.PageCondition;
+import org.xsnake.web.page.IPage;
+
+import java.util.List;
+import java.util.Map;
 
 public interface IReportService {
 	
@@ -116,8 +116,10 @@ public interface IReportService {
 	
 	IPage getBidReportScale(PageCondition condition, String reportType, String orgIdOrEmployeeId);
 	
-	void updatePositionId();
+	void updatePositionIdForOA();
 
+	void updatePosAndOrgForOverBidding();
+	
 	Value getOrgContactVeri(String year, String orgId, String currency);
 
 	Value getEmpContactVeri(String year, String employeeId, String positionId, String currency);
@@ -159,5 +161,13 @@ public interface IReportService {
 	IPage getOverdueNoReturnPrototype(PageCondition condition, String reportType, String orgIdOrEmployeeId, String currency,
 			String year);
 
-	IPage getVeriDetailList(PageCondition condition, String reportType, String orgIdOrEmployeeId, String month, String year, String currency); 
+	IPage getVeriDetailList(PageCondition condition, String reportType, String orgIdOrEmployeeId, String month, String year, String currency);
+
+	Integer getBizOppAppeal(String reportType, UserObject user);
+     
+	ExpenseVO getExpenseSum(String reportType, String orgIdOrEmployeeId, String month, String year); 
+
+	Double getOverBiddingSum(String type,String orgIdOrEmployeeId);
+	
+	IPage getOverBidding(PageCondition condition, String reportType, String orgIdOrEmployeeId);
 }

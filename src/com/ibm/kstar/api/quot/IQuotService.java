@@ -8,10 +8,13 @@
  */  
       
  package com.ibm.kstar.api.quot;
- 
- import java.util.ArrayList;
-import java.util.List;
 
+import com.ibm.kstar.api.system.lov.entity.LovMember;
+import com.ibm.kstar.api.system.permission.UserObject;
+import com.ibm.kstar.api.system.permission.entity.Employee;
+import com.ibm.kstar.entity.bizopp.BusinessOpportunity;
+import com.ibm.kstar.entity.product.KstarProductWorkFlow;
+import com.ibm.kstar.entity.quot.*;
 import org.xsnake.web.action.Condition;
 import org.xsnake.web.action.PageCondition;
 import org.xsnake.web.exception.AnneException;
@@ -19,28 +22,8 @@ import org.xsnake.web.page.IPage;
 import org.xsnake.xflow.api.model.HistoryActivityInstance;
 import org.xsnake.xflow.api.model.HistoryProcessInstance;
 
-import com.ibm.kstar.api.system.lov.entity.LovMember;
-import com.ibm.kstar.api.system.permission.UserObject;
-import com.ibm.kstar.entity.bizopp.BusinessOpportunity;
-import com.ibm.kstar.entity.product.KstarProductWorkFlow;
-import com.ibm.kstar.entity.quot.KstarAftSale;
-import com.ibm.kstar.entity.quot.KstarAtt;
-import com.ibm.kstar.entity.quot.KstarBaseInf;
-import com.ibm.kstar.entity.quot.KstarBiddcevl;
-import com.ibm.kstar.entity.quot.KstarCntr;
-import com.ibm.kstar.entity.quot.KstarIdm;
-import com.ibm.kstar.entity.quot.KstarIdu;
-import com.ibm.kstar.entity.quot.KstarMemInfo;
-import com.ibm.kstar.entity.quot.KstarPgInf;
-import com.ibm.kstar.entity.quot.KstarPrjEvl;
-import com.ibm.kstar.entity.quot.KstarPrjLst;
-import com.ibm.kstar.entity.quot.KstarQuot;
-import com.ibm.kstar.entity.quot.KstarSngBty;
-import com.ibm.kstar.entity.quot.KstarSngClr;
-import com.ibm.kstar.entity.quot.KstarSngElec;
-import com.ibm.kstar.entity.quot.KstarSngMnt;
-import com.ibm.kstar.entity.quot.KstarSngRck;
-import com.ibm.kstar.entity.quot.KstarSngUps;
+import java.util.ArrayList;
+import java.util.List;
  
 /** 
  * ClassName:IQuotService <br/> 
@@ -353,6 +336,23 @@ public interface IQuotService {
 	void saveLinesb(List<KstarPrjLst> lines,String quotID,String typ,UserObject userObject) throws AnneException;
 
 	List<HistoryProcessInstance> getHistoryProInstance(String processid);
-	
+
+	/**
+	 * 商机选择框
+	 * @param search
+	 * @param clientId
+	 * @return
+	 */
+	List<BusinessOpportunity> getProjectInfoList(String search, String clientId);
+
+    /**
+     * 加载报价单中价目表中的金牌价
+     * @param kstarQuot
+     * @param list
+     */
+    void loadGoldPrcInPriceTable(KstarQuot kstarQuot, List<KstarPrjLst> list);
+
+	Employee getEmployeeById(String createdById);
+
 }
   

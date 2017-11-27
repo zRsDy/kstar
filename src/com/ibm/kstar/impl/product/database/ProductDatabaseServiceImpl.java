@@ -18,7 +18,6 @@ import com.ibm.kstar.api.product.database.IProductDatabaseService;
 import com.ibm.kstar.api.system.lov.entity.LovMember;
 import com.ibm.kstar.entity.product.database.CatalogPermissionRel;
 import com.ibm.kstar.entity.product.database.ProductDocument;
-import com.sun.crypto.provider.RSACipher;
 
 @Service
 @Transactional(readOnly=false,rollbackFor=Exception.class)

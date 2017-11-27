@@ -15,6 +15,12 @@
 		 }
 	}
 	
+	function guid() {
+		  return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+		    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+		    return v.toString(16);
+		  });
+		}
 	var newrowid = 0; 
 	function addRow()  {   
 	  	var lineNums = jQuery("#deliveryLinesForm").jqGrid('getCol','lineNum');  
@@ -22,8 +28,9 @@
 		if(lineNums != null &&  lineNums != "" ){
 			maxLineNum = Math.max.apply(Math,lineNums);
 		}
-		
-	    newrowid = newrowid+1;
+		/* var randomId = Math.ceil(Math.random()*1000000); */
+		var randomId = guid();
+	    newrowid = randomId;
 	    var dataRow = {    
 	        id: newrowid
 	    };      
@@ -37,7 +44,7 @@
 	    //确定按钮可用    
 	    //给添加的列加选择按钮  
 		var ps = '<input  type=\"button\" value=\"${i18n.get('选择订单')}\" onclick=\"orderSelect(\''+newrowid+'\');\" />'; 
-		jQuery('#deliveryLinesForm').jqGrid('setRowData', newrowid, { act : ps, lineNum:maxLineNum+1}); 
+		jQuery('#deliveryLinesForm').jqGrid('setRowData', newrowid, { act : ps, lineNum:newrowid}); 
 	}
 	
 	//批量增加行
@@ -241,7 +248,7 @@
 		    	 $.each(_ids,function(i,id){
 		    		 var deliveryData = $('#deliveryLinesForm').jqGrid('getRowData', id);
 		    		 if(deliveryData.invoiceQty && deliveryData.invoiceQty > 0 ){
-		    			 alert('${i18n.get('出货明细行【')}'+deliveryData.lineNum+'${i18n.get('】已经发货,不允许删除！')}');
+		    			 alert('${i18n.get('出货明细行【')}'+deliveryData.materielCode+'${i18n.get('】已经发货,不允许删除！')}');
 		    			 return;
 		    		 }
 		    		 /* if(deliveryData.erpStatus == 'STOCK'){
@@ -266,7 +273,7 @@
 						    	 	  	}
 						    	 	});
 									if(!b){
-						    	 		b = confirm('${i18n.get('出货明细行号【')}'+deliveryData.lineNum+'${i18n.get('】已经生成派送签收单，删除后会一并删除签收单！')}');
+						    	 		b = confirm('${i18n.get('出货明细行【')}'+deliveryData.materielCode+'${i18n.get('】已经生成派送签收单，删除后会一并删除【')}'+deliveryData.externalNo+'${i18n.get('】签收单！')}');
 						    	 	}
 								   if(b){
 						    			 var _rids = [];
@@ -282,7 +289,7 @@
 									    $('#deliveryLinesForm').jqGrid('delRowData', id);
 							     }
 							}else if(msg && msg.message == 'STOCK'){
-								alert('${i18n.get('出货明细行【')}'+deliveryData.lineNum+'${i18n.get('】在ERP已备货,不允许删除！')}');
+								alert('${i18n.get('出货明细行【')}'+deliveryData.materielCode+'${i18n.get('】在ERP已备货,不允许删除！')}');
 							}else if(msg && msg.message == 'HasLogisticsNo'){
 						   		alert('${i18n.get('签收单已有物流单号，不允许删除')}');
 						   	}else if(msg && msg.message == 'HasInvoiceQty'){
@@ -371,7 +378,6 @@
 			url:"${ctx}/lov/member/select.html?code=TRANSPORT_CO",
 			success:function(data){
 				if (data != null) {
-					debugger;
 					var jsonobj = eval(data.message);
 					var length = jsonobj.length;
 					for(var i=0;i<length;i++){
@@ -395,7 +401,7 @@
 		var residualQty = $('#deliveryLinesForm').jqGrid('getCell', selectId, 'residualQty');
 		residualQty = residualQty- quantity
 		var amount = parseFloat(price) * parseFloat(deliveryQty) ;
-		$('#deliveryLinesForm').jqGrid('setRowData', selectId, { deliveryQty : deliveryQty, deliveryAmount: amount.toFixed(6),addrDeliveryQty:residualQty, residualQty: residualQty});
+		$('#deliveryLinesForm').jqGrid('setRowData', selectId, { deliveryQty : deliveryQty, deliveryAmount: amount.toFixed(2),addrDeliveryQty:residualQty, residualQty: residualQty});
 		save_before();
 	}
 	
@@ -413,6 +419,20 @@
 		var deliveryQty  = $('#receiptsListForm').getCol('deliveryQty',false,'sum');
 		var deliveryAmount  = $('#receiptsListForm').getCol('deliveryAmount',false,'sum');
 		$('#receiptsListForm').footerData('set',{'receiptCode':'${i18n.get('合计')}','deliveryQty':deliveryQty, 'deliveryAmount':deliveryAmount});
+	}
+	
+	function showBtn(){
+		//新增、拒绝时显示提交按钮
+		if("${(deliveryHeader.status)!}" == "10" || "${(deliveryHeader.status)!}" == "40"){
+			if("${(deliveryHeader.id)!}" != "" && "${(deliveryHeader.id)!}" != null){
+				$("#delivery_submit").show();
+			}
+		}
+		
+		if("${(deliveryHeader.status)!}" == "30"){
+			$("#delivery_create_receipts").show();
+		}
+		$("#delivery_save_show").show();
 	}
 	
 </script>
@@ -604,6 +624,7 @@
 				$('#deliveryLinesForm').jqGrid('setRowData', cl, { act : ps});
 	 		});
 	 		delete_act_buttun();
+	 		showBtn();
 		}"
 		footerrow = "true"
 		gridComplete = "function() {

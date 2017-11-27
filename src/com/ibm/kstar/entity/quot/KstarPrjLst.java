@@ -1,19 +1,12 @@
       
 package com.ibm.kstar.entity.quot;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
+import com.ibm.kstar.cache.CacheUtils;
 import org.hibernate.annotations.GenericGenerator;
 
-import com.ibm.kstar.cache.CacheUtils;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 
  
@@ -247,7 +240,11 @@ public class KstarPrjLst implements Serializable {
 	@Column(name = "OPT_TXT2")
 	private String optTxt2;
 	
-	
+
+	//价目表中的金牌价格
+	@Transient
+	private Double goldPrcInPriceTable;
+
 	@Transient
 	private String itemId;
 	
@@ -470,8 +467,11 @@ public class KstarPrjLst implements Serializable {
 	
 	public String getMaterCode() {
 		//return materCode;
-		return CacheUtils.getProduct(this.getProId()).getMaterCode()==null?"":
-			CacheUtils.getProduct(this.getProId()).getMaterCode();
+		if(CacheUtils.getProduct(this.getProId()) != null){
+			return CacheUtils.getProduct(this.getProId()).getMaterCode()==null?"":
+				CacheUtils.getProduct(this.getProId()).getMaterCode();
+		}
+		return "";
 	}
 
 	public String getProId() {
@@ -694,7 +694,13 @@ public class KstarPrjLst implements Serializable {
 	public void setContractEliminateId(String contractEliminateId) {
 		this.contractEliminateId = contractEliminateId;
 	}
-	
-	
+
+	public Double getGoldPrcInPriceTable() {
+		return goldPrcInPriceTable;
+	}
+
+	public void setGoldPrcInPriceTable(Double goldPrcInPriceTable) {
+		this.goldPrcInPriceTable = goldPrcInPriceTable;
+	}
 }
   

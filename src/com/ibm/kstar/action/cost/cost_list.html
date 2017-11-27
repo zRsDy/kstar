@@ -29,19 +29,19 @@
 	<@form.table id="costListForm" 
 		class="col-xs-12"
 		title="${i18n.get('费用查询')}" 
-		url = "${ctx}/cost/page.html" 
+		url = "${ctx}/cost/page.html?orgIdOrEmployeeId=${orgIdOrEmployeeId!}&reportType=${reportType!}&name=${name!}&year=${year!}&month=${month!}" 
 		checkbox = "true"
 		rowNum = "20" 
 		importURL = "${importURL!}" 
 		importTempletURL="importTemplet.html"
 		colModel = "[
 			 	{name : 'id', label:'id', width : 20, editable : false, hidden : true}, 
-			 	{name : 'batchNo', label:'${i18n.get('批号')}', width : 200, sortable:false, editable:false, align:'center'}, 
-			  	{name : 'invoiceNo', label:'${i18n.get('发票编号')}', width : 150, sortable:false, editable:false, align:'center'},
-			  	{name : 'employeeNo', label:'${i18n.get('工号')}', width : 150, editable : false}, 
-			  	{name : 'claimPersonName', label:'${i18n.get('员工姓名')}', width : 150, editable : false}, 
-			  	{name : 'description', label:'${i18n.get('描述')}', width : 100, editable:false, align:'center'}, 
-			  	{name : 'invoiceDate',label:'${i18n.get('发票日期')}',hidden:false,width:150,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
+			 	{name : 'batchNo', label:'${i18n.get('批号')}', width : 120, sortable:false, editable:false, align:'center'}, 
+			  	{name : 'invoiceNo', label:'${i18n.get('发票编号')}', width : 250, sortable:false, editable:false, align:'center'},
+			  	{name : 'employeeNo', label:'${i18n.get('工号')}', width : 100, editable : false}, 
+			  	{name : 'claimPersonName', label:'${i18n.get('员工姓名')}', width : 100, editable : false}, 
+			  	{name : 'description', label:'${i18n.get('描述')}', width : 200, editable:false, align:'center'}, 
+			  	{name : 'invoiceDate',label:'${i18n.get('发票日期')}',hidden:false,width:100,sortable:true,align:'center' ,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) } }, 
 			  	{name : 'invoiceAmount', label:'${i18n.get('发票总金额')}', width : 100, editable:false, align:'center'},
 				{name : 'invoiceLineAmount', label:'${i18n.get('费用金额')}', width : 100, editable:false ,align:'center',sortable:true}, 
 				{name : 'businessEntity', label:'${i18n.get('业务实体')}', width : 250, editable:false, align:'center',sortable:true}, 

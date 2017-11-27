@@ -1,13 +1,13 @@
 package com.ibm.kstar.impl.report;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import com.ibm.kstar.api.report.IReportService;
+import com.ibm.kstar.api.system.lov.entity.LovMember;
+import com.ibm.kstar.api.system.permission.IUserService;
+import com.ibm.kstar.api.system.permission.UserObject;
+import com.ibm.kstar.entity.bizopp.PrototypeApplyReturn;
+import com.ibm.kstar.entity.report.*;
+import com.ibm.kstar.log.IMethodLogService;
+import com.ibm.kstar.log.MethodLogger;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,19 +22,9 @@ import org.xsnake.web.page.IPage;
 import org.xsnake.web.page.PageImpl;
 import org.xsnake.web.utils.StringUtil;
 
-import com.ibm.kstar.api.report.IReportService;
-import com.ibm.kstar.api.system.lov.entity.LovMember;
-import com.ibm.kstar.api.system.permission.IUserService;
-import com.ibm.kstar.api.system.permission.UserObject;
-import com.ibm.kstar.entity.bizopp.PrototypeApplyReturn;
-import com.ibm.kstar.entity.order.OrderHeader;
-import com.ibm.kstar.entity.report.BizoopReportScaleVO;
-import com.ibm.kstar.entity.report.KstarAnltgt;
-import com.ibm.kstar.entity.report.PrototypeApplyReturnReport;
-import com.ibm.kstar.entity.report.ReportOverdueVO;
-import com.ibm.kstar.entity.report.ReportRebaeOverOrder;
-import com.ibm.kstar.entity.report.VeriDetailVO;
-import com.sun.tools.classfile.StackMapTable_attribute.append_frame;
+import java.math.BigDecimal;
+import java.util.*;
+import com.sun.tools.corba.se.idl.constExpr.And;
 
 
 @Service
@@ -47,6 +37,10 @@ public class ReportServiceImpl implements IReportService{
 
 	@Autowired
 	IUserService userService;
+	
+	@Autowired
+    IMethodLogService methodLogService;
+
 	
 	@Override
 	public Double getOrgTarget(String year, String orgId,String currency) {
@@ -512,6 +506,42 @@ public class ReportServiceImpl implements IReportService{
 		}
 	}
 
+	private void fixDate(Value actual,int newMonth) {
+		if(newMonth>2){
+			actual.setM02(actual.getM02()+actual.getM01());
+		}
+		if(newMonth>3){
+			actual.setM03(actual.getM03()+actual.getM02());
+		}
+		if(newMonth>4){
+			actual.setM04(actual.getM04()+actual.getM03());
+		}
+		if(newMonth>5){
+			actual.setM05(actual.getM05()+actual.getM04());
+		}
+		if(newMonth>6){
+			actual.setM06(actual.getM06()+actual.getM05());
+		}
+		if(newMonth>7){
+			actual.setM07(actual.getM07()+actual.getM06());
+		}
+		if(newMonth>8){
+			actual.setM08(actual.getM08()+actual.getM07());
+		}
+		if(newMonth>9){
+			actual.setM09(actual.getM09()+actual.getM08());
+		}
+		if(newMonth>10){
+			actual.setM10(actual.getM10()+actual.getM09());
+		}
+		if(newMonth>11){
+			actual.setM11(actual.getM11()+actual.getM10());
+		}
+		if(newMonth==12){
+			actual.setM12(actual.getM12()+actual.getM11());
+		}
+	}
+	
 	@Override
 	public List<TypeValue> getOrgActualByProductType(String year, String orgId, String currency,String flag) {
 		StringBuffer sql = null;
@@ -690,7 +720,7 @@ public class ReportServiceImpl implements IReportService{
 	 * @return
 	 */
 	public List<Map<String,Object>> getPlanReceivableDetail(String reportType, String prType , String orgIdOrEmployeeId,String index /* ,String currency */){
-		Integer start = 0;
+		/*Integer start = 0;
 		Integer end = null;
 		if("0".equals(index)){
 			start = 0;
@@ -717,18 +747,132 @@ public class ReportServiceImpl implements IReportService{
 		if(end !=null){
 			sql = sql + " and (sysdate - v."+dateTime+") <= ? ";
 			args.add(end);
-		}if("ORG".equalsIgnoreCase(reportType)){
-			sql = sql + " and v.C_SALESMAN_ORG_ID like ? ";
+		}
+		if("2".equals(prType)) {
+			sql = sql + " and (sysdate - v.dt_print_time) <= ? ";
+			args.add(end);
+		}
+		if("ORG".equalsIgnoreCase(reportType)){
+			sql = sql + " and v.C_BIZ_DEPT_PATH like ? ";
 			args.add("%"+orgIdOrEmployeeId+"%");
 		}else{
-			sql = sql + " and v.c_salesman_id = ? ";
+			sql = sql + " and v.C_SALESMAN_POSITION = ? ";
 			args.add(orgIdOrEmployeeId);
 		}
-		sql = sql + " order by v."+dateTime; 
-		List<Map<String,Object>> list = baseDao.findBySql4Map(sql.toString(),args.toArray());
+		sql = sql + " order by v."+dateTime; */
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		if("1".equals(prType)) {
+			list = getPlanReceivableDetailByPrType1(reportType, orgIdOrEmployeeId, index);
+		}else {
+			list = getPlanReceivableDetailByPrType2(reportType, orgIdOrEmployeeId, index);
+		}
 		return list;
 	}
 
+	private List<Map<String,Object>> getPlanReceivableDetailByPrType1(String reportType, String orgIdOrEmployeeId,String index){
+		Integer start = 0;
+		Integer end = null;
+		if("0".equals(index)){
+			start = 0;
+			end = 90;
+		}else if("1".equals(index)){
+			start = 90;
+			end = 180;
+		}else if("2".equals(index)){
+			start = 180;
+			end = 365;
+		}else if("3".equals(index)){
+			start = 365;
+			end = 730;
+		}else{
+			start = 730;
+		}
+		String dateTime = "dt_print_time";
+		List<Object> args = new ArrayList<Object>();
+		String sql = " select v.customer,";
+			   sql +=  " v.C_SALESMAN_POSITION,";
+			   sql +=  " v.c_salesman_name,";
+			   sql +=  " v.c_biz_dept_name, ";
+			   sql +=  " sum(v.n_plan_amount) as N_PLAN_AMOUNT, ";
+			   sql +=  " sum(v.BALANCE) as BALANCE, ";
+			   sql +=  " sum(v.n_usd_plan_amount) as N_USD_PLAN_AMOUNT, ";
+			   sql +=  " sum(v.BALANCE_USD) as BALANCE_USD,";
+			   sql +=  " v.currency";
+			   sql +=  " from KSTAR_RECEIPTES_V_1 v ";
+			sql += " where (sysdate - v."+dateTime+") > ? ";
+		args.add(start);
+		if(end !=null){
+			sql = sql + " and (sysdate - v."+dateTime+") <= ? ";
+			args.add(end);
+		}
+		if("ORG".equalsIgnoreCase(reportType)){
+			sql = sql + " and v.C_BIZ_DEPT_PATH like ? ";
+			args.add("%"+orgIdOrEmployeeId+"%");
+		}else{
+			sql = sql + " and v.C_SALESMAN_POSITION = ? ";
+			args.add(orgIdOrEmployeeId);
+		}
+		sql += "group by v.customer,";
+		sql += " v.C_SALESMAN_POSITION,";
+		sql += " v.c_salesman_name,";
+		sql += " v.c_biz_dept_name,";
+		sql += " v.currency";
+		List<Map<String,Object>> list = baseDao.findBySql4Map(sql.toString(),args.toArray());
+		return list;
+	}
+	
+	private List<Map<String,Object>> getPlanReceivableDetailByPrType2(String reportType, String orgIdOrEmployeeId,String index){
+		int indexs = Integer.valueOf(index);
+		List<Object> args = new ArrayList<Object>();
+		StringBuffer sql = new StringBuffer();
+		sql.append(" select  v.customer,")
+			.append(" v.C_SALESMAN_POSITION,")
+			.append(" v.c_salesman_name,")
+			.append(" v.c_biz_dept_name,")
+			.append(" sum(v.n_plan_amount) as N_PLAN_AMOUNT,")
+			.append(" sum(v.BALANCE) as BALANCE,")
+			.append(" sum(v.n_usd_plan_amount) as N_USD_PLAN_AMOUNT,")
+			.append(" sum(v.BALANCE_USD) as BALANCE_USD,")
+			.append(" v.currency")
+			.append(" from KSTAR_RECEIPTES_V_1 v");
+		switch(indexs){
+			case 0:
+				sql.append(" where (sysdate - v.dt_payment_date) > 365 ");
+			    break;
+			case 1:
+				sql.append(" where (sysdate - v.dt_payment_date) > -90 and (sysdate - v.dt_payment_date) < 0 and (sysdate - v.dt_print_time) <= 90 ");
+			    break;
+			case 2:
+				sql.append(" where (sysdate - v.dt_payment_date) > 0 and (sysdate - v.dt_print_time) <= 90 ");
+			    break;
+			case 3:
+				sql.append(" where (sysdate - v.dt_payment_date) > 90 and (sysdate - v.dt_print_time) <= 180 ");
+			    break;    
+			case 4:
+				sql.append(" where (sysdate - v.dt_payment_date) > 180 and (sysdate - v.dt_print_time) <= 365 ");
+			    break;    
+			case 5:
+				sql.append(" where (sysdate - v.dt_payment_date) > 365 and (sysdate - v.dt_print_time) <= 730 ");
+			    break;    
+			case 6:
+				sql.append(" where (sysdate - v.dt_payment_date) > 730 ");
+			    break;        
+		}
+		if("ORG".equalsIgnoreCase(reportType)){
+			sql.append(" and v.C_BIZ_DEPT_PATH like ? ");
+			args.add("%"+orgIdOrEmployeeId+"%");
+		}else{
+			sql.append(" and v.C_SALESMAN_POSITION = ? ");
+			args.add(orgIdOrEmployeeId);
+		}
+		sql.append(" group by  v.customer,")
+			.append(" v.C_SALESMAN_POSITION,")
+			.append(" v.c_salesman_name,")
+			.append(" v.c_biz_dept_name,")
+			.append(" v.currency");
+		List<Map<String,Object>> list = baseDao.findBySql4Map(sql.toString(),args.toArray());
+		return list;
+	}
 	
 	//以出货计算的应收歀
 	@Override
@@ -963,8 +1107,8 @@ public class ReportServiceImpl implements IReportService{
 	@Override
 	public Value getEmployeeInvoiceNo(String year, String employeeId, String currency) {
 		StringBuffer sql = new StringBuffer();
-		sql.append(" select nvl(sum(cux.INVOICE_AMOUNT), 0) as amount,to_char(cux.INVOICE_DATE, 'yyyy') as year,to_char(cux.INVOICE_DATE, 'mm') ")
-			.append(" from CUX_OA_EXPENSES_CLAIM_DATA cux,SYS_T_PERMISSION_EMPLOYEE employee where to_char(cux.INVOICE_DATE, 'yyyy') = ?  ")
+		sql.append(" select nvl(sum(cux.INVOICE_LINE_AMOUNT), 0) as amount,to_char(cux.INVOICE_DATE, 'yyyy') as year,to_char(cux.INVOICE_DATE, 'mm') ")
+			.append(" from crm_oa_view_expenses cux,SYS_T_PERMISSION_EMPLOYEE employee where to_char(cux.INVOICE_DATE, 'yyyy') = ?  ")
 			.append(" and cux.crm_position_id = ? ")
 			.append(" group by to_char(cux.INVOICE_DATE, 'yyyy'), ")
 			.append(" to_char(cux.INVOICE_DATE, 'mm') ")
@@ -976,6 +1120,7 @@ public class ReportServiceImpl implements IReportService{
 		int newMonth=cal.get(Calendar.MONTH)+1;//得到月，因为从0开始的，所以要加1
 		int count = 1;
 		Double counts = 0d;
+		Double amountAll = 0d; 
 		for(Object[] obj : list){
 			BigDecimal rmbAmount = (BigDecimal)obj[0];
 			//BigDecimal usdAmount = (BigDecimal)obj[1];
@@ -983,19 +1128,22 @@ public class ReportServiceImpl implements IReportService{
 			Double amount = 0d;
 			amount = rmbAmount.doubleValue();
 			counts = amount;
+			amountAll= amountAll+amount;
 			if(String.valueOf(newYear).equals(year)) {
 				if(count<=newMonth) {
 					createValue(actual, month, counts);
-					actual.setTotle(amount+=amount);
 				}else {
 					createValue(actual, month, 0d);
 				}
 			}else {
 				createValue(actual, month, counts);
-				actual.setTotle(amount+=amount);
 			}
 			count++;
 		}
+		if(String.valueOf(newYear).equals(year)&&!String.valueOf(newMonth).equals("12")) {
+			fixDate(actual,newMonth);
+		}
+		actual.setTotle(amountAll);
 		return actual;
 	}
 
@@ -1003,20 +1151,21 @@ public class ReportServiceImpl implements IReportService{
 		@Override
 		public Value getOrgInvoiceNo(String year, String orgId, String currency,UserObject  user) {
 			StringBuffer sql = new StringBuffer();
-			sql.append(" select nvl(sum(cux.INVOICE_AMOUNT), 0) as amount,to_char(cux.INVOICE_DATE, 'yyyy') as year,to_char(cux.INVOICE_DATE, 'mm') ")
-				.append("  from CUX_OA_EXPENSES_CLAIM_DATA cux ")
+			sql.append(" select nvl(sum(cux.INVOICE_LINE_AMOUNT), 0) as amount,to_char(cux.INVOICE_DATE, 'yyyy') as year,to_char(cux.INVOICE_DATE, 'mm') ")
+				.append("  from crm_oa_view_expenses cux ")
 				.append("  where to_char(cux.INVOICE_DATE, 'yyyy') = ? ")
-				.append("  and cux.crm_position_id = ? and cux.crm_org_id = ? ")
+				.append("  and cux.crm_org_path like ?")
 				.append(" group by to_char(cux.INVOICE_DATE, 'yyyy'), ")
 				.append(" to_char(cux.INVOICE_DATE, 'mm') ")
 				.append(" order by to_number( to_char(cux.INVOICE_DATE, 'mm')) ");
-			List<Object[]> list = baseDao.findBySql(sql.toString(),new Object[]{year,user.getPosition().getId(),orgId});
+			List<Object[]> list = baseDao.findBySql(sql.toString(),new Object[]{year,"%"+orgId+"%"});
 			Value actual = new Value();
 			Calendar cal=Calendar.getInstance();//使用日历类
 			int newYear=cal.get(Calendar.YEAR);//得到年
 			int newMonth=cal.get(Calendar.MONTH)+1;//得到月，因为从0开始的，所以要加1
 			int count = 1;
 			Double counts = 0d;
+			Double amountAll = 0d; 
 			for(Object[] obj : list){
 				BigDecimal rmbAmount = (BigDecimal)obj[0];
 				//BigDecimal usdAmount = (BigDecimal)obj[1];
@@ -1024,19 +1173,22 @@ public class ReportServiceImpl implements IReportService{
 				Double amount = 0d;
 				amount = rmbAmount.doubleValue();
 				counts = amount;
+				amountAll= amountAll+amount;
 				if(String.valueOf(newYear).equals(year)) {
 					if(count<=newMonth) {
 						createValue(actual, month, counts);
-						actual.setTotle(amount+=amount);
 					}else {
 						createValue(actual, month, 0d);
 					}
 				}else {
 					createValue(actual, month, counts);
-					actual.setTotle(amount+=amount);
 				}
 				count++;
 			}
+			if(String.valueOf(newYear).equals(year)&&!String.valueOf(newMonth).equals("12")) {
+				fixDate(actual,newMonth);
+			}
+			actual.setTotle(amountAll);
 			return actual;
 		}
 	
@@ -1813,67 +1965,156 @@ public class ReportServiceImpl implements IReportService{
 		return rList;
 	}
 
-	public void updatePositionId() {
-		Exception a = new Exception();
+	
+	/**
+	 * 将CRM的组织与岗位数据刷至费用表
+	 */
+	@Scheduled(cron = "0 0 1 * * ?") 
+	public void updatePositionIdForOA() {
+		MethodLogger methodLogger = methodLogService.getMethodLogger("com.ibm.kstar.impl.report.ReportServiceImpl.updatePositionIdForOA()",null,"Report");
+		Exception exception = new Exception();
 		BigDecimal count = new BigDecimal(0);
 		try {
+			StringBuffer orgSql = new StringBuffer();
+			orgSql.append(" update CUX_OA_EXPENSES_CLAIM_DATA oa  ")
+				  .append(" set (CRM_ORG_ID, CRM_ORG_NAME, CRM_ORG_PATH) = ")
+				  .append("    (select lov.row_id, lov.lov_name, lov.lov_path ")
+				  .append("           from sys_t_lov_member lov ")
+				  .append(" 	  	 where oa.ACCOUNT_DEPT like '%' || lov.opt_txt6 || '%' ")
+				  .append(" 	       and lov.group_code = 'ORG' ")
+				  .append(" 	       and lov.opt_txt6 is not null )")
+				  .append(" 	       where oa.crm_org_id is null or oa.crm_org_name is null or	")
+				  .append(" 	             oa.crm_org_path is null  ");
+				baseDao.executeSQL(orgSql.toString());
 			
+				
 			StringBuffer countSql = new StringBuffer();
-			countSql.append(" select count(0)   ")
-				.append(" 	  from SYS_T_PERMISSION_EMPLOYEE em, ")
-				.append(" 	       CUX_OA_EXPENSES_CLAIM_DATA oa, ")
-				.append(" 	       SYS_T_LOV_MEMBER lov, ")
-				.append(" 	       SYS_T_PERMISSION_USER_REL up, ")
-				.append(" 	       SYS_T_LOV_MEMBER t2, ")
-				.append(" 	       SYS_T_LOV_MEMBER t3 ")
-				.append(" 	  where oa.employee_no=em.no  ")
-				.append(" 	    and lov.group_code='POSITION' ")
-				.append(" 	    and lov.row_id = up.MEMBER_ID ")
-				.append(" 	    and em.row_id = up.USER_ID  ")
-				.append(" 	    and up.type = 'P'  ")
-				.append(" 	    and lov.opt_txt1 = t2.row_id  ")
-				.append(" 	    and t3.opt_txt6 like  '%'||oa.ACCOUNT_DEPT||'%'  ")
-				.append(" 	    and t3.row_id = t2.parent_id  ")
-				.append(" 	    and oa.crm_position_id is null ")
-				.append(" 	    and oa.CRM_POSITION_NAME is null ")
-				.append(" 	    and oa.CRM_ORG_ID is null ")
-				.append(" 	    and oa.CRM_ORG_NAME is null  ");
-			count =	baseDao.findUniqueBySql(countSql.toString());
+		    countSql.append("    select count(0) ")
+				    .append("           from sys_t_lov_member          org,  ")
+				    .append(" 	  	         sys_t_lov_member          lov,  ")
+				    .append(" 	             sys_t_lov_member          pos,  ")
+				    .append(" 	             sys_t_permission_user_rel up,   ")
+				    .append(" 	             cux_oa_expenses_claim_data oa,  ")
+				    .append(" 	             sys_t_permission_employee em	 ")
+				    .append(" 	     where org.lov_code = oa.crm_org_id    ")
+				    .append(" 	       and org.group_code = 'ORG'          ")
+				    .append(" 	       and lov.parent_id = org.row_id      ")
+				    .append(" 	       and pos.opt_txt1 = lov.row_id       ")
+				    .append(" 	       and up.type = 'P'			       ")
+				    .append(" 	       and pos.group_id = 'POSITION'       ")
+				    .append(" 	       and pos.row_id = up.member_id       ")
+				    .append(" 	       and up.user_id = em.row_id          ")
+				    .append(" 	       and em.no = oa.employee_no          ")
+				    .append(" 	       and (oa.crm_position_id is null or oa.crm_position_name is null)       ");
+			count =	baseDao.findUniqueBySql(countSql.toString());		
 			
-			StringBuffer sql = new StringBuffer();
-			sql.append(" update CUX_OA_EXPENSES_CLAIM_DATA  ")
-				.append(" set (CRM_POSITION_ID,CRM_POSITION_NAME,CRM_ORG_ID,CRM_ORG_NAME) = ( ")
-				.append("    select lov.row_id,lov.lov_name, ")
-				.append("           t3.row_id,t3.lov_name ")
-				.append(" 	  from SYS_T_PERMISSION_EMPLOYEE em, ")
-				.append(" 	       CUX_OA_EXPENSES_CLAIM_DATA oa, ")
-				.append(" 	       SYS_T_LOV_MEMBER lov, ")
-				.append(" 	       SYS_T_PERMISSION_USER_REL up, ")
-				.append(" 	       SYS_T_LOV_MEMBER t2, ")
-				.append(" 	       SYS_T_LOV_MEMBER t3 ")
-				.append(" 	  where oa.employee_no=em.no  ")
-				.append(" 	    and lov.group_code='POSITION' ")
-				.append(" 	    and lov.row_id = up.MEMBER_ID ")
-				.append(" 	    and em.row_id = up.USER_ID  ")
-				.append(" 	    and up.type = 'P'  ")
-				.append(" 	    and lov.opt_txt1 = t2.row_id  ")
-				.append(" 	    and t3.opt_txt6 like  '%'||oa.ACCOUNT_DEPT||'%'  ")
-				.append(" 	    and t3.row_id = t2.parent_id  ")
-				.append(" 	    and oa.crm_position_id is null ")
-				.append(" 	    and oa.CRM_POSITION_NAME is null ")
-				.append(" 	    and oa.CRM_ORG_ID is null ")
-				.append(" 	    and oa.CRM_ORG_NAME is null ) ");
-				baseDao.executeSQL(sql.toString());
+			StringBuffer positionSql = new StringBuffer();
+			positionSql.append(" update CUX_OA_EXPENSES_CLAIM_DATA oa  ")
+					   .append(" set (CRM_POSITION_ID, CRM_POSITION_NAME) = ")
+					   .append("    (select pos.row_id, pos.lov_name ")
+					   .append("           from sys_t_lov_member          org,  ")
+					   .append(" 	  	       sys_t_lov_member          lov,  ")
+					   .append(" 	           sys_t_lov_member          pos,  ")
+					   .append(" 	           sys_t_permission_user_rel up,   ")
+					   .append(" 	           sys_t_permission_employee em	   ")
+					   .append(" 	     where org.lov_code = oa.crm_org_id    ")
+					   .append(" 	       and org.group_code = 'ORG'          ")
+					   .append(" 	       and lov.parent_id = org.row_id      ")
+					   .append(" 	       and pos.opt_txt1 = lov.row_id       ")
+					   .append(" 	       and up.type = 'P'			       ")
+					   .append(" 	       and pos.group_id = 'POSITION'       ")
+					   .append(" 	       and pos.row_id = up.member_id       ")
+					   .append(" 	       and up.user_id = em.row_id          ")
+					   .append(" 	       and em.no = oa.employee_no        ) ")
+					   .append(" 	       where oa.crm_position_id is null or oa.crm_position_name is null       ");
+				baseDao.executeSQL(positionSql.toString());
 		}catch(Exception e) {
 			e.printStackTrace();
-			a=e;
+			exception=e;
 		}finally {
-			if(StringUtil.isNullOrEmpty(a.getMessage())) {
+			methodLogService.setReturnDataNotes(true,methodLogger,exception,1,count.intValue());
+			if(StringUtil.isNullOrEmpty(exception.getMessage())) {
 				userService.sendMail("13430185107@163.com", "OA", String.valueOf(count.intValue()));
-			}else {				userService.sendMail("13430185107@163.com", "OA", "总数："+count.intValue()+"|"+a.getMessage());
+			}else {
+				userService.sendMail("13430185107@163.com", "OA", "总数："+count.intValue()+"|"+exception.getMessage());
 	   		}
 		}
 	}
+	
+	/**
+	 * 将CRM的组织与岗位数据刷至TEMP_FOR_SYNC逾期投标保证金表
+	 */
+	@Scheduled(cron = "0 5 1 * * ?")
+	public void updatePosAndOrgForOverBidding() {
+		MethodLogger methodLogger = methodLogService.getMethodLogger("com.ibm.kstar.impl.report.ReportServiceImpl.updatePosAndOrgForOverBidding()",null,"Report");
+		Exception exception = new Exception();
+		BigDecimal count = new BigDecimal(0);
+		try {
+			StringBuffer countSql = new StringBuffer();
+		    countSql.append("    select count(0) ")
+				    .append("           from SYS_T_PERMISSION_EMPLOYEE employee,  ")
+				    .append(" 	  	         SYS_T_PERMISSION_USER     u,    ")
+				    .append(" 	             sys_t_lov_member          pos,  ")
+				    .append(" 	             sys_t_lov_member          lov,  ")
+				    .append(" 	             temp_for_sync             sync, ")
+				    .append(" 	             sys_t_lov_member          org   ")
+				    .append(" 	     where employee.no = sync.fd_emp_no        ")
+				    .append(" 	       and employee.row_id = u.row_id          ")
+				    .append(" 	       and pos.row_id = u.last_position_id     ")
+				    .append(" 	       and pos.opt_txt1 = lov.row_id           ")
+				    .append(" 	       and lov.parent_id = org.row_id          ")
+				    .append(" 	       and org.group_code = 'ORG'              ")
+				    .append(" 	       and pos.group_code = 'POSITION'         ")
+				    .append(" 	       and (sync.crm_position_id is null or sync.crm_position_name is null or ")
+				    .append(" 	            sync.crm_org_id is null or sync.crm_org_name is null or     ")
+				    .append(" 	            sync.crm_org_path is null )      ");
+			count =	baseDao.findUniqueBySql(countSql.toString());		
+			
+			StringBuffer posAndOrgSql = new StringBuffer();
+			posAndOrgSql.append(" update temp_for_sync sync  ")
+					   .append("    set (sync.crm_position_id, ")
+					   .append("         sync.crm_position_name, ")
+					   .append("         sync.crm_org_id, ")
+					   .append("         sync.crm_org_name,  ")
+					   .append(" 	  	 sync.crm_org_path,  ")
+					   .append(" 	     sync.crm_person_name) =  ")
+					   .append(" 	(select pos.row_id,   ")
+					   .append(" 	        pos.lov_name,	   ")
+					   .append(" 	        org.row_id,    ")
+					   .append(" 	        org.lov_name,          ")
+					   .append(" 	        org.lov_path,      ")
+					   .append(" 	        employee.name       ")
+					   .append(" 	 from SYS_T_PERMISSION_EMPLOYEE employee,   ")
+					   .append(" 	      SYS_T_PERMISSION_USER     u,       ")
+					   .append(" 	      SYS_T_LOV_MEMBER          pos,       ")
+					   .append(" 	      SYS_T_LOV_MEMBER          lov,        ")
+					   .append(" 	      SYS_T_LOV_MEMBER          org  )      ")
+					   .append(" 	where employee.no = sync.fd_emp_no       ")
+					   .append(" 	  and employee.row_id = u.row_id       ")
+					   .append(" 	  and pos.row_id = u.last_position_id       ")
+					   .append(" 	  and pos.opt_txt1 = lov.row_id       ")
+					   .append(" 	  and lov.parent_id = org.row_id       ")
+					   .append(" 	  and org.group_code = 'ORG'       ")
+					   .append(" 	  and pos.group_code = 'POSITION')       ")
+					   .append(" 	where sync.crm_position_id is null       ")
+					   .append(" 	   or sync.crm_position_name is null       ")
+					   .append(" 	   or sync.crm_org_id is null       ")
+					   .append(" 	   or sync.crm_org_name is null       ")
+					   .append(" 	   or sync.crm_org_path is null;       ");
+				baseDao.executeSQL(posAndOrgSql.toString());
+		}catch(Exception e) {
+			e.printStackTrace();
+			exception=e;
+		}finally {
+			methodLogService.setReturnDataNotes(true,methodLogger,exception,1,count.intValue());
+			if(StringUtil.isNullOrEmpty(exception.getMessage())) {
+				userService.sendMail("13430185107@163.com", "TEMP_FOR_SYNC", String.valueOf(count.intValue()));
+			}else {
+				userService.sendMail("13430185107@163.com", "TEMP_FOR_SYNC", "总数："+count.intValue()+"|"+exception.getMessage());
+	   		}
+		}
+	}
+	
 	/**
 	 * 商机报备授权比例
 	 */
@@ -3308,9 +3549,9 @@ public class ReportServiceImpl implements IReportService{
 				BigDecimal rmbRecAmount = (BigDecimal)obj[4];
 				BigDecimal usdRecAmount = (BigDecimal)obj[5];
 				if("USD".equals(currency)){					
-					vd.setReceiptAmount(usdRecAmount.toString());
+					vd.setReceiptAmount(usdRecAmount!=null?usdRecAmount.toString():"0");
 				}else {
-					vd.setReceiptAmount(rmbRecAmount.toString());
+					vd.setReceiptAmount(rmbRecAmount!=null?rmbRecAmount.toString():"0");
 				}
 				vd.setPaymentCustomerName((String)obj[6]);
 				vd.setErpCust((String)obj[7]);
@@ -3324,17 +3565,17 @@ public class ReportServiceImpl implements IReportService{
 				BigDecimal rmbPlanAmount = (BigDecimal)obj[14];
 				BigDecimal usdPlanAmount = (BigDecimal)obj[15];
 				if("USD".equals(currency)){					
-					vd.setPlanAmount(usdPlanAmount.toString());
+					vd.setPlanAmount(usdPlanAmount!=null?usdPlanAmount.toString():"0");
 				}else {
-					vd.setPlanAmount(rmbPlanAmount.toString());
+					vd.setPlanAmount(rmbPlanAmount!=null?rmbPlanAmount.toString():"0");
 				}
 				
 				BigDecimal rmbVeriAmount = (BigDecimal)obj[16];
 				BigDecimal usdVeriAmount = (BigDecimal)obj[17];
 				if("USD".equals(currency)){					
-					vd.setVeriAmount(usdVeriAmount.toString());
+					vd.setVeriAmount(usdVeriAmount!=null?usdVeriAmount.toString():"0");
 				}else {
-					vd.setVeriAmount(rmbVeriAmount.toString());
+					vd.setVeriAmount(rmbVeriAmount!=null?rmbVeriAmount.toString():"0");
 				}
 				vd.setBizDept((String)obj[18]);
 				vd.setSalesmanName((String)obj[19]);
@@ -3347,7 +3588,34 @@ public class ReportServiceImpl implements IReportService{
 		return page;
 	}
 
-	private String getVeriSql(String reportType) {
+    @Override
+    public Integer getBizOppAppeal(String reportType, UserObject user) {
+
+	    //language=SQL
+        StringBuilder sql = new StringBuilder();
+
+        List<Object> args = new ArrayList<>();
+
+        if ("ORG".equals(reportType)) {
+            sql.append("select count(TIMES) from V_REPORT_ORG_BIZ_appealtimes where instr(ORG_PATH,?) > 0 ");
+            args.add(user.getOid());
+        } else if ("Employee".equals(reportType)) {
+            sql.append("select count(TIMES) from V_REPORT_MAN_BIZ_appealtimes where ORG_ID=? and POSITION_ID=? and EMPLOYEE_ID=?");
+            args.add(user.getOrg().getId());
+            args.add(user.getPosition().getId());
+            args.add(user.getEmployee().getId());
+        } else {
+            throw new RuntimeException("错误的报表类型");
+        }
+        BigDecimal times = this.baseDao.findUniqueBySql(sql.toString(),args.toArray());
+        if (times == null) {
+            return 0;
+        } else {
+            return times.intValue();
+        }
+    }
+
+    private String getVeriSql(String reportType) {
 		String sql = " select * from kstart_receipt_veri t where 1=1 ";
 			sql += " and t.c_contr_rece_detail_id in (";
 			sql += " select a.ct_id from kstar_verification_v_1 a where ";
@@ -3358,5 +3626,235 @@ public class ReportServiceImpl implements IReportService{
 			sql += " and a.C_SALESMAN_POSITION = ?) ";
 		}
 		return sql;
+	}
+
+	@Override
+	public Double getOverBiddingSum(String type, String orgIdOrEmployeeId) {
+		StringBuffer sql = new StringBuffer();
+		sql.append(" select sum(FD_AMOUNT) from TEMP_FOR_SYNC sync where sync.FD_BACK_DATE < sysdate and sync.STATUS = '已放款' ");
+		if("ORG".equals(type)) {
+			sql.append(" and sync.CRM_ORG_PATH like '%"+orgIdOrEmployeeId+"%'");
+		}else {
+			sql.append(" and sync.CRM_POSITION_ID = '"+orgIdOrEmployeeId+"'");
+		}
+		BigDecimal sum = baseDao.findUniqueBySql(sql.toString());
+		if(sum == null) {
+			sum = new BigDecimal(0);
+		}
+		return sum.doubleValue();
+	}
+	
+	/**
+	 * 逾期投标保证金grid
+	 */
+	@Override
+	public IPage getOverBidding(PageCondition condition, String reportType, String orgIdOrEmployeeId) {
+		IPage page = null;
+		List<OverBiddingVO> list = null;
+		if("ORG".equals(reportType)){
+			page = getOverBiddingORGList(condition,orgIdOrEmployeeId);
+		}else{
+			page = getOverBiddingEMPList(condition,orgIdOrEmployeeId);
+		}
+		return page;
+	}
+	
+	private IPage getOverBiddingORGList(PageCondition condition, String orgIdOrEmployeeId) {
+		StringBuffer sql = new StringBuffer();
+		sql .append(" select  sync.id,")
+			.append("  		  sync.fd_emp_no,")
+			.append(" 		  sync.crm_position_name,")
+			.append(" 		  sync.crm_org_name,")
+			.append(" 		  sync.fd_request_date,")
+			.append(" 		  sync.fd_project,")
+			.append(" 		  sync.fd_pay_date,")
+			.append(" 		  sync.fd_back_date,")
+			.append(" 		  sync.fd_receipt_name,")
+			.append(" 		  sync.fd_bank_name,")
+			.append(" 		  sync.fd_bank_no,")
+			.append(" 		  sync.fd_amount,")
+			.append(" 		  sync.fd_memo,")
+			.append(" 		  sync.fd_number,")
+			.append(" 		  sync.doc_subject,")
+			.append(" 		  sync.status, ")
+			.append(" 		  sync.crm_person_name ")
+			.append(" from TEMP_FOR_SYNC sync")
+			.append(" where 1=1 ")
+			.append(" and sync.FD_BACK_DATE < sysdate ")
+			.append(" and sync.STATUS = '已放款' ")
+			.append(" and sync.CRM_ORG_PATH like ? ");
+		FilterObject filterObject = condition.getFilterObject(OverBiddingVO.class);
+        filterObject.addOrderBy("fdLastModifiedTime", "desc");
+        IPage  page = baseDao.searchBySql(sql.toString(),new Object[]{"%"+orgIdOrEmployeeId+"%"}, condition.getRows(), condition.getPage());
+        List<Object[]> list = (List<Object[]>) page.getList();
+        List<OverBiddingVO> OverBiddingVOList= OverBiddingVOListSetting(list);
+        page = new PageImpl(OverBiddingVOList,condition.getPage(), condition.getRows(),page.getCount());
+        return page;
+	}
+	
+	private IPage getOverBiddingEMPList(PageCondition condition, String orgIdOrEmployeeId) {
+		StringBuffer sql = new StringBuffer();
+		sql .append(" select  sync.id,")
+			.append("  		  sync.fd_emp_no,")
+			.append(" 		  sync.crm_position_name,")
+			.append(" 		  sync.crm_org_name,")
+			.append(" 		  sync.fd_request_date,")
+			.append(" 		  sync.fd_project,")
+			.append(" 		  sync.fd_pay_date,")
+			.append(" 		  sync.fd_back_date,")
+			.append(" 		  sync.fd_receipt_name,")
+			.append(" 		  sync.fd_bank_name,")
+			.append(" 		  sync.fd_bank_no,")
+			.append(" 		  sync.fd_amount,")
+			.append(" 		  sync.fd_memo,")
+			.append(" 		  sync.fd_number,")
+			.append(" 		  sync.doc_subject,")
+			.append(" 		  sync.status, ")
+			.append(" 		  sync.crm_person_name ")
+			.append(" from TEMP_FOR_SYNC sync")
+			.append(" where 1=1 ")
+			.append(" and sync.FD_BACK_DATE < sysdate ")
+			.append(" and sync.STATUS = '已放款' ")
+			.append(" and sync.CRM_POSITION_ID = ? ");
+		FilterObject filterObject = condition.getFilterObject(OverBiddingVO.class);
+        filterObject.addOrderBy("fdLastModifiedTime", "desc");
+        IPage  page = baseDao.searchBySql(sql.toString(),new Object[]{orgIdOrEmployeeId}, condition.getRows(), condition.getPage());
+        List<Object[]> list = (List<Object[]>) page.getList();
+        List<OverBiddingVO> OverBiddingVOList= OverBiddingVOListSetting(list);
+        page = new PageImpl(OverBiddingVOList,condition.getPage(), condition.getRows(),page.getCount());
+        return page;
+	}
+	
+	private List<OverBiddingVO> OverBiddingVOListSetting(List<Object[]> list){
+		List<OverBiddingVO> overBiddingVOList = new ArrayList<OverBiddingVO>();
+		if(list != null && list.size() > 0){
+			for(Object[] objects : list){
+				OverBiddingVO report = new OverBiddingVO();
+				report.setId((String)objects[0]);
+				report.setFdEmpNo((String)objects[1]);
+				report.setCrmPositionName((String)objects[2]);
+				report.setCrmOrgName((String)objects[3]);
+				report.setFdRequestDate((Date)objects[4]);
+				report.setFdProject((String)objects[5]);
+				report.setFdPayDate((Date)objects[6]);
+				report.setFdBackDate((Date)objects[7]);
+				report.setFdReceiptName((String)objects[8]);
+				report.setFdBankName((String)objects[9]);
+				report.setFdBankNo((String)objects[10]);
+				report.setFdAmount((BigDecimal)objects[11]);
+				report.setFdMemo((String)objects[12]);
+				report.setFdNumber((String)objects[13]);
+				report.setDocSubject((String)objects[14]);
+				report.setStatus((String)objects[15]);
+				report.setCrmPersonName((String)objects[16]);
+				overBiddingVOList.add(report);
+			}
+		}
+		return overBiddingVOList;
+	}
+
+	@Override
+	public ExpenseVO getExpenseSum(String reportType, String orgIdOrEmployeeId, String month, String year) {
+		ExpenseVO expenseVO = null;
+		if("ORG".equals(reportType)){
+			expenseVO = getExpenseORG(orgIdOrEmployeeId,month,year);
+		}else{
+			expenseVO = getExpenseEMP(orgIdOrEmployeeId,month,year);
+		}
+		return expenseVO;
+	}
+
+	private ExpenseVO getExpenseORG(String orgIdOrEmployeeId, String month, String year) {
+		String sql = " select t.account_name,t.group_name, sum(t.INVOICE_LINE_AMOUNT) ";
+			sql += " from crm_oa_view_expenses t ";
+			sql += " where 1=1 ";
+			sql += " and t.crm_org_path like ? ";
+			sql += " and t.year = ? ";
+			sql += " and t.month = ? ";
+			sql += " group by t.account_name,t.group_name ";
+			sql += " order by t.account_name ";
+		
+		List<Object[]> list = baseDao.findBySql(sql,new Object[]{"%"+orgIdOrEmployeeId+"%",year,month});
+		ExpenseVO expenseVO = new ExpenseVO();
+		List<ExpenseObj> hosExp = new ArrayList<ExpenseObj>();
+		List<ExpenseObj> traExp = new ArrayList<ExpenseObj>();
+		List<ExpenseObj> comExp = new ArrayList<ExpenseObj>();
+		List<ExpenseObj> carExp = new ArrayList<ExpenseObj>();
+		List<ExpenseObj> offExp = new ArrayList<ExpenseObj>();
+		List<ExpenseObj> otherExp = new ArrayList<ExpenseObj>();
+		for(Object[] obj:list){
+			ExpenseObj eObj = new ExpenseObj();
+			eObj.setName((String)obj[0]);
+			BigDecimal amount = (BigDecimal)obj[2];
+			eObj.setAmount(amount.doubleValue());
+			
+			if("招待费".equals((String)obj[1])){
+				hosExp.add(eObj);
+			}else if("差旅费".equals((String)obj[1])){
+				traExp.add(eObj);
+			}else if("通讯费".equals((String)obj[1])){
+				comExp.add(eObj);
+			}else if("交通费".equals((String)obj[1])){
+				carExp.add(eObj);
+			}else if("办公费".equals((String)obj[1])){
+				offExp.add(eObj);
+			}else {
+				otherExp.add(eObj);
+			}
+		}
+		expenseVO.setHosExp(hosExp);
+		expenseVO.setTraExp(traExp);
+		expenseVO.setCarExp(carExp);
+		expenseVO.setComExp(comExp);
+		expenseVO.setOffExp(offExp);
+		expenseVO.setOtherExp(otherExp);
+		return expenseVO;
+	}
+
+	private ExpenseVO getExpenseEMP(String orgIdOrEmployeeId, String month, String year) {
+		String sql = " select t.account_name,t.group_name, sum(t.INVOICE_LINE_AMOUNT) ";
+			sql += " from crm_oa_view_expenses t ";
+			sql += " where 1=1 ";
+			sql += " and t.crm_position_id = ? ";
+			sql += " and t.year = ? ";
+			sql += " and t.month = ? ";
+			sql += " group by t.account_name,t.group_name ";
+			sql += " order by t.account_name ";
+		
+		List<Object[]> list = baseDao.findBySql(sql,new Object[]{orgIdOrEmployeeId,year,month});
+		ExpenseVO expenseVO = new ExpenseVO();
+		List<ExpenseObj> hosExp = new ArrayList<ExpenseObj>();
+		List<ExpenseObj> traExp = new ArrayList<ExpenseObj>();
+		List<ExpenseObj> comExp = new ArrayList<ExpenseObj>();
+		List<ExpenseObj> carExp = new ArrayList<ExpenseObj>();
+		List<ExpenseObj> offExp = new ArrayList<ExpenseObj>();
+		List<ExpenseObj> otherExp = new ArrayList<ExpenseObj>();
+		for(Object[] obj:list){
+			ExpenseObj eObj = new ExpenseObj();
+			eObj.setName((String)obj[0]);
+			BigDecimal amount = (BigDecimal)obj[2];
+			eObj.setAmount(amount.doubleValue());
+			
+			if("招待费".equals((String)obj[1])){
+				hosExp.add(eObj);
+			}else if("差旅费".equals((String)obj[1])){
+				traExp.add(eObj);
+			}else if("通讯费".equals((String)obj[1])){
+				comExp.add(eObj);
+			}else if("交通费".equals((String)obj[1])){
+				carExp.add(eObj);
+			}else if("办公费".equals((String)obj[1])){
+				offExp.add(eObj);
+			}else {
+				otherExp.add(eObj);
+			}
+		}
+		expenseVO.setHosExp(hosExp);
+		expenseVO.setTraExp(traExp);
+		expenseVO.setCarExp(carExp);
+		expenseVO.setComExp(comExp);
+		expenseVO.setOffExp(offExp);
+		expenseVO.setOtherExp(otherExp);
+		return expenseVO;
 	}
 }

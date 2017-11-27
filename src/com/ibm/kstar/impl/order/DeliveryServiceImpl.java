@@ -73,6 +73,7 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 		// 更新字段
 		deliveryHeader.setUpdatedById(userObject.getEmployee().getId());
 		deliveryHeader.setUpdatedAt(new Date());
+		this.checkSameForReceiptAndDelivery(deliveryHeader);	
 		baseDao.save(deliveryHeader);
 		//保存发货单行
 		this.saveOrUpdateDeliveryLines(deliveryHeader,userObject);
@@ -95,6 +96,7 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 		BeanUtils.copyPropertiesIgnoreNull(deliveryHeader, oldDeliveryHeader);
 		oldDeliveryHeader.setUpdatedAt(new Date());
 		oldDeliveryHeader.setUpdatedById(userObject.getEmployee().getId());
+		this.checkSameForReceiptAndDelivery(deliveryHeader);
 		baseDao.update(oldDeliveryHeader);
 		//保存发货单行
 		this.saveOrUpdateDeliveryLines(deliveryHeader,userObject);
@@ -105,6 +107,49 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 		
 		if(IConstants.ORDER_CONTROL_STATUS_20.equals(status)){
 			this.updateDeliveryStatus(oldDeliveryHeader.getId(), status, userObject);
+		}
+	}
+	
+	/**
+	 * 校验签收单行与发货行是否对等
+	 * @param deliveryHeader
+	 * @throws Exception 
+	 */
+	private void checkSameForReceiptAndDelivery(DeliveryHeader deliveryHeader) throws Exception {
+		List<DeliveryLines> deliveryLines = new ArrayList<>();
+		List<DeliveryReceipt> deliveryReceipts = new ArrayList<>();
+		List<DeliveryReceipt> sameDeliveryReceipts = new ArrayList<>();
+		
+		List<Map<Object, Object>> linesList = deliveryHeader.getLinesList();
+		if(linesList != null){
+			for (Map<Object, Object> map : linesList) {
+				DeliveryLines deliveryLine = (DeliveryLines) BeanUtils.convertMap(DeliveryLines.class, map);
+				if(deliveryLine != null){
+					deliveryLines.add(deliveryLine);
+				}
+			}	
+		}	
+		List<Map<Object, Object>> receiptList = deliveryHeader.getReceiptList();
+		if(receiptList != null) {
+			for (Map<Object, Object> map : receiptList) {
+				DeliveryReceipt receipt = (DeliveryReceipt) BeanUtils.convertMap(DeliveryReceipt.class, map);
+				if(receipt!=null) {
+					deliveryReceipts.add(receipt);
+				}
+			}	
+		}
+		for(DeliveryReceipt deliveryReceipt:deliveryReceipts) {
+			for(DeliveryLines deliveryLine:deliveryLines) {
+				if(deliveryReceipt.getDeliveryLinesNum().equals(deliveryLine.getLineNum())) {
+					sameDeliveryReceipts.add(deliveryReceipt);
+				}
+			}
+		}
+		
+		if(deliveryReceipts.size()>0) {
+			if(deliveryReceipts.size()!=sameDeliveryReceipts.size()) {
+				throw new AnneException("签收单行与出货单行数据对应不正确，请刷新后重新操作！");
+			}
 		}
 	}
 
@@ -479,7 +524,7 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 						DeliveryHeader oldDeliveryHeader  = baseDao.get(DeliveryHeader.class,deliveryHeader.getId());
 						if(IConstants.ORDER_CONTROL_STATUS_30.equals(oldDeliveryHeader.getStatus())) {
 							String planStatus = oldDeliveryLines.getPlanStatus();
-							if("未回复交期".equals(planStatus)) {
+							if(!"已确认交期".equals(planStatus)||!"交期变更-同意".equals(planStatus)) {
 								throw new AnneException("已审批的出货单，不允许增加未确认交期的出货行！");
 							}
 						}
@@ -642,7 +687,7 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 	public void validateCanDelivery(String businessKey){
 		String sql = "select ol.c_erp_plan_status from CRM_T_DELIVERY_LINES dl,CRM_V_ORDER_LINES ol "
 				+ "where dl.c_order_id=ol.c_pid and dl.c_delivery_id='"+businessKey+"' and "
-						+ "dl.C_delete_flag='0' and ol.c_erp_plan_status!='已确认交期' and rownum=1";
+						+ "dl.C_delete_flag='0' and ol.c_erp_plan_status not in ('已确认交期','交期变更-同意') and rownum=1";
 		if(baseDao.findUniqueBySql(sql)!=null){
 			//该出货申请的订单行全部是"已确认交期"状态;
 			throw new AnneException("该出货申请存在未确认交期的订单行,不能提交");
@@ -670,7 +715,7 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 			methodLogService.setFunctionNameAndParameter(methodLogger, "this.deliveryAuditAfter(deliveryHeader.getDeliveryCode())",1, deliveryHeader.getDeliveryCode());
 			
 			try {
-					this.deliveryAuditAfter(deliveryHeader.getDeliveryCode());
+				msg = this.deliveryAuditAfter(deliveryHeader.getDeliveryCode());
 			}catch(Exception e) {
 	    		e.printStackTrace();
 	    		exception = e;
@@ -901,26 +946,6 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 		}else{
 			hql.append(" and rd.receiptsPlan is null ");
 		}
-		if(StringUtil.isNotEmpty(receiptsStage)){
-			hql.append(" and rd.receiptsStage = ? ");
-			args.add(receiptsStage);
-		}else{
-			hql.append(" and rd.receiptsStage is null ");
-		}
-		if(StringUtil.isNotEmpty(receiptsStage)){
-			hql.append(" and rd.receiptsStage = ? ");
-			args.add(receiptsStage);
-		}else{
-			hql.append(" and rd.receiptsStage is null ");
-		}
-		if(StringUtil.isNotEmpty(contrPayId)){
-			hql.append(" and rd.contrPayId = ? ");
-			args.add(contrPayId);
-		}else{
-			hql.append(" and rd.contrPayId is null ");
-		}
-
-
 
 		List<ContractReceiptDetail> contractReceiptDetails = baseDao.findEntity(hql.toString(),args.toArray());
 		if(contractReceiptDetails != null && contractReceiptDetails.size() > 0){
@@ -1551,7 +1576,7 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 	 * @return 
 	 * @since JDK 1.7
 	 */
-	public void deliveryAuditAfter(String deliveryCode) {
+	public String deliveryAuditAfter(String deliveryCode) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("{call CUX_CRM_CALL_ERP_PKG.MAIN_PROCESS(?,?,?,?)}");
 		Object[] result = baseDao.executeProcedure(sql.toString(),
@@ -1564,6 +1589,7 @@ public class DeliveryServiceImpl extends MessageAdapter<String>  implements IDel
 		if(!"S".equals((String) result[2])){
 			throw new AnneException("EPR接口调用错误:"+(String) result[3]);
 		}
+		return (String) result[2];
 	}
 
 	@Override

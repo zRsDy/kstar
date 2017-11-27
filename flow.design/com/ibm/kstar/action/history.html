@@ -117,6 +117,7 @@ body {
 					<tr>
 						<th class="center">${i18n.get('环节')}</th>
 						<th>${i18n.get('办理人')}</th>
+						<th>${i18n.get('操作类型')}</th>
 						<th>${i18n.get('意见建议')}</th>
 						<th>${i18n.get('开始时间')}</th>
 						<th>${i18n.get('结束时间')}</th>
@@ -129,9 +130,8 @@ body {
 							<tr class="">
 								<td class="center">${(history.activityName)!}</td>
 								<td>${(history.operatorName)!(history.assigneeName)!}  <span id='td_${history_index}'> </span>  </td>
-								<td>
-									${(history.comment)!''}
-								</td>
+                                <td>${(history.operationTypeName)!''}</td>
+								<td>${(history.comment)!''}</td>
 								<td>${(history.startTime?datetime)!}</td>
 								<td>[#if (history.endTime)??] ${(history.endTime?datetime)!} [/#if]</td>
 							</tr>
@@ -151,7 +151,6 @@ body {
 									});
 								</script>
 							[/#if]
-							
 						[/#if]
 					[/#list]
 				</tbody>

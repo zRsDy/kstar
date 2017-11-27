@@ -1,10 +1,11 @@
 package com.ibm.kstar.action;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.ibm.kstar.action.flow.design.FlowUtils;
+import com.ibm.kstar.api.system.permission.UserObject;
+import com.ibm.kstar.conf.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,22 +13,15 @@ import org.xsnake.web.action.BaseAction;
 import org.xsnake.web.exception.AnneException;
 import org.xsnake.web.utils.DateUtil;
 import org.xsnake.web.utils.StringUtil;
-import org.xsnake.xflow.api.IDefinitionService;
-import org.xsnake.xflow.api.IHistoryService;
-import org.xsnake.xflow.api.IProcessService;
-import org.xsnake.xflow.api.ITaskService;
-import org.xsnake.xflow.api.RejectPath;
+import org.xsnake.xflow.api.*;
 import org.xsnake.xflow.api.model.HistoryActivityInstance;
 import org.xsnake.xflow.api.model.HistoryProcessInstance;
 import org.xsnake.xflow.api.model.ProcessInstance;
 import org.xsnake.xflow.api.model.Task;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.ibm.kstar.action.flow.design.FlowUtils;
-import com.ibm.kstar.api.system.permission.UserObject;
-import com.ibm.kstar.conf.Configuration;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.List;
 
 
 @Controller
@@ -124,6 +118,7 @@ public class BaseFlowAction extends BaseAction {
 	public void history(Model model, String processInstanceId) throws Exception {
 		HistoryProcessInstance pi = historyService.get(processInstanceId);
 		List<HistoryActivityInstance> historyList = historyService.findHistoryActivityInstance(pi.getId());
+		loadOperateTypeName(historyList);
 		model.addAttribute("historyList",historyList);
 		JSONObject flow = new JSONObject();
 		JSONObject history = new JSONObject();
@@ -161,7 +156,38 @@ public class BaseFlowAction extends BaseAction {
 		}
 		model.addAttribute("json",json);
 	}
-	
+
+	private void loadOperateTypeName(List<HistoryActivityInstance> historyList) {
+		for (HistoryActivityInstance historyActivityInstance : historyList) {
+            String operationType = historyActivityInstance.getOperationType();
+            if (operationType == null) {
+				continue;
+			}
+            switch (operationType) {
+				case ITaskService.OperationType.COMMUNICATION:
+					historyActivityInstance.setOperationTypeName("沟通");
+					break;
+				case ITaskService.OperationType.AGREEMENT:
+					historyActivityInstance.setOperationTypeName("同意");
+					break;
+				case ITaskService.OperationType.DELEGATION:
+					historyActivityInstance.setOperationTypeName("委托");
+					break;
+				case ITaskService.OperationType.AUTO:
+					historyActivityInstance.setOperationTypeName("自动");
+					break;
+				case ITaskService.OperationType.REJECT:
+					historyActivityInstance.setOperationTypeName("驳回");
+					break;
+				case ITaskService.OperationType.CLOSE:
+					historyActivityInstance.setOperationTypeName("销毁");
+					break;
+				default:
+					historyActivityInstance.setOperationTypeName("其他");
+			}
+		}
+	}
+
 	public List<HistoryProcessInstance> sequence(List<HistoryProcessInstance> hisList){
 		UserObject user = getUserObject();
 		String name = user.getEmployee().getName();

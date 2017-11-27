@@ -7,7 +7,7 @@ import com.ibm.kstar.api.system.permission.entity.PositionVo;
 
 public interface IPositionService {
 
-	void save(PositionVo positionVo);
+	void save(PositionVo positionVo, String roles);
 
 	void update(PositionVo positionVo,String roles);
 	

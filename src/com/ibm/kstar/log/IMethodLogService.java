@@ -7,6 +7,8 @@ public interface IMethodLogService{
 	void log(MethodLogger methodLogger); 
 	
 	MethodLogger getMethodLogger(String from,String orderNumber);
+
+	MethodLogger getMethodLogger(String from,String orderNumber,String logType);
 	
 	void setFunctionNameAndParameter(MethodLogger methodLogger,String functionName,int i,Object ...objects); 
 	

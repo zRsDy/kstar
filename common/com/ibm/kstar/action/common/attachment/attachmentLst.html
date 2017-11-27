@@ -1,6 +1,6 @@
 <@pui.body>
 <#if !unableAdd>
-	<#assign addURL="'${ctx}/common/attachment/add.html?bizId=${bizId}&docGroupCode=${docGroupCode}&bizType=${bizType}&bizId1='+$('#businessId_${bizType!}').val()" />
+	<#assign addURL="'${ctx}/common/attachment/add.html?bizId=${bizId}&docGroupCode=${docGroupCode}&needDocType=${needDocType!}&bizType=${bizType}&bizId1='+$('#businessId_${bizType!}').val()" />
 </#if>
 <#if !unableDelete>
 	<#assign deleteURL="'${ctx}/common/attachment/delete.html'" />

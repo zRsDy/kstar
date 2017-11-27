@@ -40,8 +40,8 @@
 		{name:'amount',label:'${i18n.get('总额')}',hidden:false,width:100,sortable:false,align:'center' },
 		{name:'creator',label:'${i18n.get('创建人')}',hidden:false,width:80,sortable:false,align:'center' },
 		{name:'createTime',label:'${i18n.get('创建日期')}',hidden:false,width:90,sortable:false,formatter:function(cellvalue, options){ return formatDate_date(cellvalue) },align:'center' },
-		{name:'bidResults',label:'${i18n.get('投标结果')}',hidden:false,width:90,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatbidResultsArr(cellvalue) } },
-		{name:'bidResReason',label:'${i18n.get('丢标/赢标原因')}',hidden:false,width:100,sortable:false,align:'center' }
+		{name:'bidResults',label:'${i18n.get('投标结果')}',hidden:true,width:90,sortable:false,align:'center',formatter:function(cellvalue, options){ return formatbidResultsArr(cellvalue) } },
+		{name:'bidResReason',label:'${i18n.get('丢标/赢标原因')}',hidden:true,width:100,sortable:false,align:'center' }
 		]" 
 		ondblClickRow= "function(selectedData){
 				parent.addTab('${i18n.get('报价详细信息管理')}-'+selected_quot1.quotCode,'${ctx}/quot/tabs.html?qid='+selected_quot1.id+'&qnm='+selected_quot1.id+'&typ=0003');

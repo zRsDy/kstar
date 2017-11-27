@@ -1,13 +1,11 @@
 package com.ibm.kstar.impl.order;
 
-import com.ibm.kstar.action.common.IConstants;
-import com.ibm.kstar.api.order.IContractReceiptDetailService;
-import com.ibm.kstar.api.system.permission.UserObject;
-import com.ibm.kstar.api.team.ITeamService;
-import com.ibm.kstar.entity.order.ContractReceiptDetail;
-import com.ibm.kstar.entity.order.DeliveryHeader;
-import com.ibm.kstar.entity.order.Receipts;
-import com.ibm.kstar.entity.order.VerificationDetail;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,14 +14,23 @@ import org.xsnake.remote.server.Remote;
 import org.xsnake.web.action.PageCondition;
 import org.xsnake.web.dao.BaseDao;
 import org.xsnake.web.dao.HqlUtil;
+import org.xsnake.web.dao.utils.FilerRuler;
 import org.xsnake.web.dao.utils.FilterObject;
 import org.xsnake.web.dao.utils.HqlObject;
 import org.xsnake.web.exception.AnneException;
 import org.xsnake.web.page.IPage;
 import org.xsnake.web.utils.BeanUtils;
+import org.xsnake.web.utils.StringUtil;
 
-import java.math.BigDecimal;
-import java.util.*;
+import com.ibm.kstar.action.common.IConstants;
+import com.ibm.kstar.api.order.IContractReceiptDetailService;
+import com.ibm.kstar.api.system.permission.UserObject;
+import com.ibm.kstar.api.team.ITeamService;
+import com.ibm.kstar.entity.order.ContractReceiptDetail;
+import com.ibm.kstar.entity.order.DeliveryHeader;
+import com.ibm.kstar.entity.order.Receipts;
+import com.ibm.kstar.entity.order.VerificationDetail;
+import com.ibm.kstar.entity.order.vo.ContractReceiptDetailVO;
 
 @Service
 @Remote
@@ -64,12 +71,21 @@ public class ContractReceiptDetailServiceImpl implements IContractReceiptDetailS
 		baseDao.update(oldContractReceiptDetail);
 	}
 	@Override
-	public IPage queryContractReceiptDetails(PageCondition condition)
+	public IPage queryContractReceiptDetails(PageCondition condition,String isAgentBoxFlag)
 			throws AnneException {
-		FilterObject filterObject = condition.getFilterObject(ContractReceiptDetail.class);
+		FilterObject filterObject = condition.getFilterObject(ContractReceiptDetailVO.class);
+		String sql = null;
 		filterObject.addOrderBy("updatedAt", "desc");
 		HqlObject hqlObject = HqlUtil.getHqlObject(filterObject);
-		return baseDao.search(hqlObject.getHql(), hqlObject.getArgs(),
+		sql = hqlObject.getHql();
+		
+		if(!StringUtil.isNullOrEmpty(isAgentBoxFlag)) {
+			sql = sql.substring(0, sql.indexOf("order by"));
+			sql = sql +" and contractreceiptdetailvo.custId  in (select lov.optTxt4  from LovMember lov where lov.groupCode = 'ORG' and lov.optTxt3 = 'E') "+
+					   " order by contractreceiptdetailvo.updatedAt desc ";
+		}
+		
+		return baseDao.search(sql, hqlObject.getArgs(),
 				condition.getRows(), condition.getPage());
 	}
 
@@ -187,4 +203,22 @@ public class ContractReceiptDetailServiceImpl implements IContractReceiptDetailS
 		}
 	}
 
+	 /**
+     * 查询核销日期与收款日期显示在grid上
+     */
+	@Override
+	public void searchGatheringDateAndCheckDateForVO(List<ContractReceiptDetailVO> contractReceiptDetailList) {
+		for(ContractReceiptDetailVO contractReceiptDetail:contractReceiptDetailList) {
+			String vHql = "from VerificationDetail r where r.contrReceDetailId = ?  order by veriDate desc";//核销明细
+			List<VerificationDetail> VerificationDetail = this.baseDao.findEntity(vHql,new Object[]{contractReceiptDetail.getId()});
+			if(VerificationDetail.size()>0) {
+				contractReceiptDetail.setCheckDate(VerificationDetail.get(0).getVeriDate());
+				String rHql = "from Receipts r where r.id = ? ";//收款记录
+				Receipts receipts = this.baseDao.findUniqueEntity(rHql,new Object[]{VerificationDetail.get(0).getReceiptsId()});
+				if(receipts!=null) {
+					contractReceiptDetail.setGatheringDate(receipts.getReceiptsDate());
+				}
+			}
+		}
+	}
 }

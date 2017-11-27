@@ -1,5 +1,6 @@
 package com.ibm.kstar.impl.bizopp;
 
+import com.ibm.kstar.action.common.IConstants;
 import com.ibm.kstar.action.common.process.ProcessConstants;
 import com.ibm.kstar.action.common.process.ProcessStatusService;
 import com.ibm.kstar.api.bizopp.IBizBaseService;
@@ -1054,7 +1055,7 @@ public class BizoppServiceImpl extends BaseServiceImpl implements IBizoppService
             throw new AnneException(InternationWeeklyReport.class.getName()
                     + " internationWeeklyReport : 没有找到要更新的数据");
         }
-        BeanUtils.copyProperties(bizContact, oldbizContact);
+        BeanUtils.copyPropertiesIgnoreNull(bizContact, oldbizContact);
         baseDao.update(oldbizContact);
     }
 
@@ -1065,7 +1066,7 @@ public class BizoppServiceImpl extends BaseServiceImpl implements IBizoppService
             throw new AnneException(InternationWeeklyReport.class.getName()
                     + " internationWeeklyReport : 没有找到要更新的数据");
         }
-        BeanUtils.copyProperties(bizCompetitor, oldbizCompetitor);
+        BeanUtils.copyPropertiesIgnoreNull(bizCompetitor, oldbizCompetitor);
         baseDao.update(oldbizCompetitor);
     }
 
@@ -1076,7 +1077,7 @@ public class BizoppServiceImpl extends BaseServiceImpl implements IBizoppService
             throw new AnneException(InternationWeeklyReport.class.getName()
                     + " internationWeeklyReport : 没有找到要更新的数据");
         }
-        BeanUtils.copyProperties(supportApply, oldsupportApply);
+        BeanUtils.copyPropertiesIgnoreNull(supportApply, oldsupportApply);
         setReportPrice(oldsupportApply);
         baseDao.update(oldsupportApply);
     }
@@ -2059,7 +2060,7 @@ public class BizoppServiceImpl extends BaseServiceImpl implements IBizoppService
     }
 
     @Override
-    public List<BusinessOpportunity> getBizOppSelectAuth(PageCondition condition, String clientId, String userId) {
+    public List<BusinessOpportunity> getBizOppSelectAuth(PageCondition condition, String clientId, String userId,String salesCenterId) {
         String search = condition.getStringCondition("search");
         //        if (StringUtil.isNotEmpty(search)) {
         //            condition.getFilterObject().addOrCondition("opportunityName", "like", "%" + search + "%");
@@ -2088,7 +2089,9 @@ public class BizoppServiceImpl extends BaseServiceImpl implements IBizoppService
             sb.append(" and b.clientId = ?");
             args.add(clientId);
         }
-        sb.append(" and (b.conflictStatus = '40' or b.conflictStatus = '45') ");
+        if(IConstants.CONTR_ORG_GN_B1_STR.equals(salesCenterId)){
+        	sb.append(" and (b.conflictStatus = '40' or b.conflictStatus = '45') ");
+        }
         sb.append(" order by b.updatedAt desc");
 
         return baseDao.findEntity(sb.toString(), args.toArray());
@@ -2859,11 +2862,23 @@ public class BizoppServiceImpl extends BaseServiceImpl implements IBizoppService
         vmap.put("SalesCenter", salesCenter);
         vmap.put("EmployeeType", userObject.getEmployee().getFlag());
         
+        String businessId = "";
+        //从报价信息或者技术支持反馈 审批完成时，静默启动反馈流程
+        if(null == bFeedBack){
+        	BiddingFeedBack bf = new BiddingFeedBack();
+        	bf.setId(null);
+        	bf.setBidId(id);
+        	baseDao.save(bf);
+        	
+        	businessId = bf.getId();
+        }else {
+        	businessId = bFeedBack.getId();
+		}
         //更新流程状态为已发起,记录流程ID
-        processStatusService.updateProcessStatus("BiddingFeedBack", bFeedBack.getId(), "status", ProcessConstants.PROCESS_STATUS_Processing);
+        processStatusService.updateProcessStatus("BiddingFeedBack", businessId, "status", ProcessConstants.PROCESS_STATUS_Processing);
         
         xflowProcessServiceWrapper.start(
-                model, application, bo.getOpportunityName()+"_"+ProcessConstants.BIZOPP_BID_FEED_BACK, bFeedBack.getId(), userObject, vmap);
+                model, application, bo.getOpportunityName()+"_"+ProcessConstants.BIZOPP_BID_FEED_BACK, businessId, userObject, vmap);
 	}
 }
 	

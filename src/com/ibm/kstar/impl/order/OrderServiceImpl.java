@@ -2542,7 +2542,11 @@ public class OrderServiceImpl implements IOrderService {
                     //合同产品行产品数量
                     double proQty = kstarPrjLst.getAmt() == null ? 0 : kstarPrjLst.getAmt();
                     //计算变更数量 qty
-                    double qty = proQty - orderProQty;
+                    Double veriedNum = kstarPrjLst.getVeriedNum();
+                    if (veriedNum == null) {
+                        veriedNum = 0D;
+                    }
+                    double qty = proQty - orderProQty - veriedNum;
                     if (qty > 0) {
                         //数量增加
                         //如果变更后的产品数量大于订单产品数量
@@ -2717,7 +2721,10 @@ public class OrderServiceImpl implements IOrderService {
      */
     private void save(OrderLines orderLine, UserObject userObject) {
         orderLine.setCreateTime(new Date());
-        orderLine.setUpdatedAt(new Date());
+        // 已开票的订单行修改后不更新修改数量
+        if (!IConstants.ORDER_LINE_STATUS_CLOSED.equals(orderLine.getStatus())) {
+            orderLine.setUpdatedAt(new Date());
+        }
         if (userObject != null) {
             orderLine.setCreator(userObject.getEmployee().getId());
             orderLine.setUpdatedById(userObject.getEmployee().getId());
@@ -2735,7 +2742,10 @@ public class OrderServiceImpl implements IOrderService {
      * @since JDK 1.7
      */
     private void update(OrderLines orderLine, UserObject userObject) {
-        orderLine.setUpdatedAt(new Date());
+        // 已开票的订单行修改后不更新修改数量
+        if (!IConstants.ORDER_LINE_STATUS_CLOSED.equals(orderLine.getStatus())) {
+            orderLine.setUpdatedAt(new Date());
+        }
         if (userObject != null) {
             orderLine.setUpdatedById(userObject.getEmployee().getId());
         }
@@ -3417,7 +3427,6 @@ public class OrderServiceImpl implements IOrderService {
                 amount = price.multiply(proQty);
                 catalogPrice = priceLine.getCatalogPrice();//目录价格
                 tempAmount = price.multiply(proQty);
-
             } else {
                 price = new BigDecimal(0);
                 amount = new BigDecimal(0);

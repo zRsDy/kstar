@@ -81,7 +81,8 @@ public class PositionAction extends LovMemberAction{
 		PositionVo positionVo = new PositionVo();
 		BeanUtils.copyPropertiesIgnoreNull(lovMember, positionVo);
 		positionVo.setParentOrgId(request.getParameter("parentOrgId"));
-		positionService.save(positionVo);
+		String roles = request.getParameter("roles");
+		positionService.save(positionVo,roles);
 		return sendSuccessMessage();
 	}
 	

@@ -67,13 +67,13 @@
 		
 		if('${(center)!}' != 'int' ){
 			//提交检查金税发票明细字段是否为空
-			var ids = $("#goldenTaxListForm").jqGrid('getDataIDs');
-			if(ids == null||ids == '' || ids == undefined){
+			var ids_gold = $("#goldenTaxListForm").jqGrid('getDataIDs');
+			var flag = true;
+			if(ids_gold == null||ids_gold == '' || ids_gold == undefined){
 				alert('${i18n.get('金税发票明细不能为空！')}');
 				return;
 			}else{
-				var flag = true;
-		 		$.each(ids,function(i,id){
+		 		$.each(ids_gold,function(i,id){
 					var rowData = $("#goldenTaxListForm").jqGrid("getRowData",id);
 					if(!rowData.invoiceNo){
 						alert('${i18n.get('金税发票明细-开票单号不能为空！')}');
@@ -116,11 +116,10 @@
 						return;
 					}
 		 		});
-		 		if(!flag){
-		 			return;
-		 		}
 			}
-			
+	 		if(false == flag){
+	 			return;
+	 		}
 			var invoiceAmount = $("#invoiceAmount").val();
 			var gt_amount = calGoldenTaxAmount(); 
 			if(parseFloat(gt_amount) != parseFloat(invoiceAmount)){
@@ -128,6 +127,58 @@
 				return;
 			}
 		}
+		//debugger;
+		//校验已发货开票业务实体
+		var businessEntity = $('#businessEntity').val();
+		var flagDeli = true;
+		if(null != ids_deli || ids_deli != ''){
+			$.each(ids_deli,function(i,id){
+				var rowData = $("#invoiceLinesForm_Delivery").jqGrid("getRowData",id);
+				var orderCode = rowData.orderCode;
+				$.ajax({
+					type:"post",
+					async:false,
+					url:"${ctx}/invoice/validata.html",
+					data:"orderCode="+orderCode+"&businessEntity="+businessEntity,
+					success:function(data){
+						if(!data.message){						
+							alert('${i18n.get('订单：')}'+rowData.orderCode+'${i18n.get('与本单据业务实体不一致，不允许提交')}');
+							flagDeli = false;
+							return;
+						}
+					}
+				});
+			});
+		}
+		if(!flagDeli){
+			return;
+		}
+		
+		//校验提前开票业务实体
+		var flagOrder = true;
+		if(null != ids_order || ids_order != ''){
+			$.each(ids_order,function(i,id){
+				var rowData = $("#invoiceLinesForm_Order").jqGrid("getRowData",id);
+				var orderCode = rowData.orderCode;
+				$.ajax({
+					type:"post",
+					async:false,
+					url:"${ctx}/invoice/validata.html",
+					data:"orderCode="+orderCode+"&businessEntity="+businessEntity,
+					success:function(data){
+						if(!data.message){						
+							alert('${i18n.get('订单：')}'+rowData.orderCode+'${i18n.get('与本单据业务实体不一致，不允许提交')}');
+							flagOrder = false;
+							return;
+						}
+					}
+				});
+			});
+		} 
+		if(!flagOrder){
+			return;
+		}
+		
 		$("#status").removeAttr("disabled");
 		$("#status").select2("val", "20");
 		$("#invoice_submit").attr("disabled",true);

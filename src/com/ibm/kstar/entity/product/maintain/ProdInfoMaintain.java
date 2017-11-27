@@ -59,6 +59,9 @@ public class ProdInfoMaintain extends BaseEntity implements  Serializable{
 	@Column(name = "C_STATUS")
 	private String status;
 	
+	@Column(name = "C_APPLY_TYPE")
+	private String applyType;
+	
 	@Transient
 	private List<Map<Object, Object>> attrModLinesList;
 	
@@ -156,6 +159,14 @@ public class ProdInfoMaintain extends BaseEntity implements  Serializable{
 		this.status = status;
 	}
 	
+	public String getApplyType() {
+		return applyType;
+	}
+
+	public void setApplyType(String applyType) {
+		this.applyType = applyType;
+	}
+
 	public String getApplicantName(){
 		IEmployeeService employeeService = (IEmployeeService)ApplicationContextUtil.getBean("employeeServiceImpl");
 		if(employeeService != null){

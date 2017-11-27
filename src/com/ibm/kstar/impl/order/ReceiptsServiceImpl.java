@@ -21,12 +21,14 @@ import com.ibm.kstar.entity.common.doc.KstarAttachment;
 import com.ibm.kstar.entity.contract.Contract;
 import com.ibm.kstar.entity.custom.CustomInfo;
 import com.ibm.kstar.entity.order.*;
+import com.ibm.kstar.entity.order.vo.ContractReceiptDetailVO;
 import com.ibm.kstar.entity.order.vo.ReceiptsListVO;
 import com.ibm.kstar.entity.team.Team;
 import com.ibm.kstar.permission.utils.PermissionUtil;
 import org.datanucleus.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.xsnake.remote.server.Remote;
 import org.xsnake.web.action.Condition;
@@ -1813,10 +1815,17 @@ public class ReceiptsServiceImpl implements IReceiptsService {
      * @throws AnneException
      */
     @Override
+    @Transactional(readOnly=true)
     public List<List<Object>> exportSelectedReceiptLists(PageCondition condition,UserObject user,String[] ids,String typ) throws AnneException {
         List<List<Object>> lstOut = new ArrayList<List<Object>>();
         addHead(lstOut);
-        List<ContractReceiptDetail> lines = getSelectedReceiptList(condition, user, ids, typ);
+        List<ContractReceiptDetailVO> voLines = getSelectedReceiptList(condition, user, ids, typ);
+        List<ContractReceiptDetail> lines = new ArrayList<ContractReceiptDetail>();
+        for(ContractReceiptDetailVO receiptDetail : voLines) {
+        	ContractReceiptDetail crd = new ContractReceiptDetail();
+        	BeanUtils.copyPropertiesIgnoreNull(receiptDetail, crd);
+        	lines.add(crd);
+        }
         contractReceiptDetailService.searchGatheringDateAndCheckDate(lines);
         for (ContractReceiptDetail receiptDetail : lines) {
             List<Object> lstIn = new ArrayList<Object>();
@@ -1870,8 +1879,8 @@ public class ReceiptsServiceImpl implements IReceiptsService {
         lstOut.add(lstHead);
     }
 
-    private List<ContractReceiptDetail> getSelectedReceiptList(PageCondition condition,UserObject user,String[] ids,String typ) {
-    	FilterObject fo = condition.getFilterObject(ContractReceiptDetail.class);
+    private List<ContractReceiptDetailVO> getSelectedReceiptList(PageCondition condition,UserObject user,String[] ids,String typ) {
+    	FilterObject fo = condition.getFilterObject(ContractReceiptDetailVO.class);
 		HqlObject ho = HqlUtil.getHqlObject(fo);
 		String hql_search = ho.getHql();
 
@@ -1887,9 +1896,9 @@ public class ReceiptsServiceImpl implements IReceiptsService {
         }
         idsStr = idsStr.substring(0, idsStr.length() - 1);
         if (!StringUtil.isNullOrEmpty(idsStr) && !"''".equals(idsStr)) {
-			hql.append(" AND contractreceiptdetail.id in ("+ idsStr +")");
+			hql.append(" AND contractreceiptdetailvo.id in ("+ idsStr +")");
 		}
-        hql.append(" order by contractreceiptdetail.createdAt desc ");
+        hql.append(" order by contractreceiptdetailvo.createdAt desc ");
         return baseDao.findEntity(hql.toString());
     }
 

@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +43,7 @@ public class PositionServiceImpl implements IPositionService{
 	ICorePermissionService corePermissionService;
 	
 	@Override
-	public void save(PositionVo positionVo) {
+	public void save(PositionVo positionVo,String roles) {
 		LovMember position = new LovMember();
 		LovMember org = new LovMember();
 		BeanUtils.copyPropertiesIgnoreNull(positionVo, position);
@@ -76,6 +77,21 @@ public class PositionServiceImpl implements IPositionService{
 		position.setOptTxt1(org.getId());
 		position.setOptTxt2(approve.getId());
 		lovMemberService.save(position);
+		
+		//更新角色
+		if(StringUtils.isNotEmpty(roles)){
+			baseDao.executeHQL(" delete from RolePosition rp where rp.positionId = ? ",new Object[]{org.getId()});
+			Set<String> set = new HashSet<String>(Arrays.asList(roles.split(",")));
+			for(String roleId : set){
+				if(StringUtil.isEmpty(roleId)){
+					continue;
+				}
+				RolePosition up = new RolePosition();
+				up.setRoleId(roleId);
+				up.setPositionId(org.getId());
+				baseDao.save(up);
+			}
+		}
 	}
 	
 	public void update(PositionVo positionVo,String roles) {

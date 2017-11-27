@@ -101,10 +101,9 @@ public class CorePermissionServiceImpl implements ICorePermissionService {
                 " where o.groupId = 'ORG' and p.groupId = 'POSITION' and p.optTxt1 = o.id and up.userId = e.id and up.memberId = p.id and o.parentId = org.id "
                 + " and ( org.name like ? or p.name like ? or e.name like ? or e.no like ? ) and e.endDate > ? and e.startDate < ?  and e.no in (" +
                 "SELECT e.no " +
-                "FROM Employee e, UserPermission ur, LovMember r " +
-                "WHERE e.id = ur.userId AND ur.type = 'R' AND r.deleteFlag = 'N' AND r.leafFlag = 'Y' AND r.groupId = 'ROLE' AND " +
-                "      r.name LIKE '%商务%' AND ur.memberId = r.id)";
-
+                "FROM Employee e, UserPermission ur, LovMember p,RolePosition rp, LovMember r " +
+                "WHERE e.id = ur.userId AND ur.type = 'P' AND ur.memberId = p.id and p.optTxt1 = rp.positionId and rp.roleId=r.id AND r.deleteFlag = 'N' AND r.leafFlag = 'Y' AND r.groupId = 'ROLE' AND " +
+                "      r.name LIKE '%商务%' )";
         List<Object> args = new ArrayList<Object>();
         args.add("%" + search + "%");
         args.add("%" + search + "%");

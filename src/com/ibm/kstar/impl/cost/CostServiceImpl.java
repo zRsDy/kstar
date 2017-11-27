@@ -208,4 +208,45 @@ public class CostServiceImpl implements ICostService {
 	        StringBuffer hql = new StringBuffer(" from Cost where 1 = 1 and id in (" + idsStr + ")");
 	        return baseDao.findEntity(hql.toString());
 	    }
+
+	@Override
+	public IPage queryCostByReportParameter(PageCondition condition, String orgIdOrEmployeeId, String reportType, String name,
+			String year, String month) {
+		StringBuffer hql = new StringBuffer();
+		
+		if(StringUtil.isNotEmpty(orgIdOrEmployeeId)&&StringUtil.isNotEmpty(reportType)){
+			if("ORG".equals(reportType)) {
+				condition.getFilterObject().addCondition("crmOrgPath", "like", "%"+orgIdOrEmployeeId+"%");
+			}else {
+				condition.getFilterObject().addCondition("crmPositionId", "=", orgIdOrEmployeeId);
+			}
+		}
+		
+		if(StringUtil.isNotEmpty(name)){
+			condition.getFilterObject().addCondition("accountName", "=", name);
+		}
+		
+		if(StringUtil.isNotEmpty(year)){
+			condition.getFilterObject().addCondition("invoiceDate", ">=", year+"-"+month+"-"+01);
+		}
+		
+		if(StringUtil.isNotEmpty(month)){
+			condition.getFilterObject().addCondition("invoiceDate", "<=", year+"-"+month+"-"+31);
+		}
+		
+		FilterObject filterObject = condition.getFilterObject(Cost.class);
+        HqlObject hqlObject = HqlUtil.getHqlObject(filterObject);
+        filterObject.addOrderBy("creationDate", "desc");
+        /*hql.append(hqlObject.getHql());
+        
+        if(StringUtil.isNotEmpty(year)){
+        	hql.append(" to_char(cost.invoiceDate,'yyyy') = '"+year+"' ");
+		}
+		
+		if(StringUtil.isNotEmpty(month)){
+			hql.append(" to_char(cost.invoiceDate,'mm') = '"+month+"' ");
+		}
+		hql.append(" order by cost.creationDate desc ");*/
+        return baseDao.search(hqlObject.getHql(), hqlObject.getArgs(),condition.getRows(), condition.getPage());
+	}
 }

@@ -231,7 +231,7 @@ public class CustomHandoverServiceImpl implements ICustomHandoverService{
 		}
 		
 		for (HandoverOrderHeader temp : handoverOrderHeaders) {
-			//teamService.deletePositionByEmployee(temp.getBaseId(), IConstants.PERMISSION_BUSINESS_TYPE_ORDER, customHandoverList.getHandoverFrom());
+			teamService.deletePositionByEmployee(temp.getBaseId(), IConstants.PERMISSION_BUSINESS_TYPE_ORDER, customHandoverList.getHandoverFrom());
 			teamService.addPosition(
 				customHandoverList.getHandoverToPos(),
 				customHandoverList.getHandoverTo(), 

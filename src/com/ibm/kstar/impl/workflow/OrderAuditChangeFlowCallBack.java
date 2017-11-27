@@ -1,13 +1,18 @@
 package com.ibm.kstar.impl.workflow;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.xsnake.xflow.api.Participant;
 import org.xsnake.xflow.api.workflow.IXflowInterface;
 
 import com.ibm.kstar.action.common.IConstants;
 import com.ibm.kstar.api.order.IOrderService;
+import com.ibm.kstar.api.system.permission.UserObject;
 
 /**
  * 
@@ -29,16 +34,17 @@ public class OrderAuditChangeFlowCallBack extends IXflowInterface{
 	
 	@Override
 	public void onComplete(String businessKey, String flowModule, String processInstanceId,String comment) {
-		orderService.updateOrderChangeStatus(businessKey, IConstants.ORDER_CONTROL_STATUS_30,null);
+		
+		orderService.updateOrderChangeStatus(businessKey, IConstants.ORDER_CONTROL_STATUS_30,getUser());
 	}
 
 	@Override
 	public void onDestory(String businessKey, String flowModule, String processInstanceId,String comment) {
-		orderService.updateOrderChangeStatus(businessKey, IConstants.ORDER_CONTROL_STATUS_70,null);
+		orderService.updateOrderChangeStatus(businessKey, IConstants.ORDER_CONTROL_STATUS_70,getUser());
 	}
 	
 	public void onTaskComplete(String businessKey, String flowModule, String processInstanceId,Participant participant,String comment) {
-		orderService.updateOrderChangeStatus(businessKey, IConstants.ORDER_CONTROL_STATUS_20,null);
+		orderService.updateOrderChangeStatus(businessKey, IConstants.ORDER_CONTROL_STATUS_20,getUser());
 	}
 
 	@Override
@@ -48,7 +54,7 @@ public class OrderAuditChangeFlowCallBack extends IXflowInterface{
 
 	@Override
 	public void onReject(String businessKey, String flowModule, String processInstanceId, String comment) {
-		orderService.updateOrderChangeStatus(businessKey, IConstants.ORDER_CONTROL_STATUS_40,null);
+		orderService.updateOrderChangeStatus(businessKey, IConstants.ORDER_CONTROL_STATUS_40,getUser());
 	}
 
 	@Override
@@ -73,4 +79,9 @@ public class OrderAuditChangeFlowCallBack extends IXflowInterface{
 		return true;
 	}
 
+	private UserObject getUser() {
+		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+    	UserObject user = (UserObject) request.getSession().getAttribute("LOGIN_USER");
+		return user;
+	}
 }

@@ -32,6 +32,7 @@ import com.ibm.kstar.api.system.permission.UserObject;
 import com.ibm.kstar.entity.order.InvoiceDetail;
 import com.ibm.kstar.entity.order.InvoiceGoldenTax;
 import com.ibm.kstar.entity.order.InvoiceMaster;
+import com.ibm.kstar.entity.order.OrderHeader;
 import com.ibm.kstar.interceptor.system.permission.NoRight;
 
 @Controller
@@ -483,5 +484,17 @@ public class InvoiceAction extends BaseAction {
 		model.addAttribute("list",list);
 		model.addAttribute("toUpper",NumberToCN.number2CNMontrayUnit(totalAmount));
 		return forward("print_sales_contract");
+	}
+
+	@NoRight
+	@ResponseBody
+	@RequestMapping(value = "/validata", method = RequestMethod.POST)
+	public String validata(String orderCode,String businessEntity) throws Exception {
+		boolean flag = true;
+		OrderHeader oh = orderService.queryOrderHeaderByCode(orderCode);
+		if(!StringUtil.isNullOrEmpty(oh)&&!businessEntity.equals(oh.getBusinessEntity())){
+			flag = false;
+		}
+		return sendSuccessMessage(flag);
 	}
 }

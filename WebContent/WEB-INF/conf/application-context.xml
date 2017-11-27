@@ -40,7 +40,7 @@
     </xsnake:client>
     
     <!-- DEV -->
-	<!-- <xsnake:client id="clientFactory" zookeeperAddress="10.2.1.125:2181" timeout="15">
+	<!-- <xsnake:client id="clientFactory" zookeeperAddress="10.2.1.63:2181" timeout="15">
         <xsnake:service id="taskService" interface="org.xsnake.xflow.api.ITaskService" />
         <xsnake:service id="processService" interface="org.xsnake.xflow.api.IProcessService" />
         <xsnake:service id="historyService" interface="org.xsnake.xflow.api.IHistoryService" />

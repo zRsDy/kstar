@@ -12,29 +12,6 @@
             <label class="col-sm-3 control-label no-padding-right" for="directName">${i18n.get('目录名称')} : </label>
             <@form.input id="directName"  readonly="readOnly" style="width:210px;" name="directName" placeholder="" required="${i18n.get('不能为空')}" tip="" value="${(cmb.directName)!}" />
         </div>
-        <div class="form-group">
-            <label class="col-sm-3 control-label no-padding-right" for="">
-                <strong style="color: red;">*</strong>${i18n.get('映射类型')} :
-            </label>
-
-            <script>
-                function typeChange(e) {
-                    var select = $("#matchType").find("option:selected").attr("data")
-                    select = select && JSON.parse(select);
-                    select = select && select.code;
-                    if (select == 'Department') {
-                        $("div.department").show().find("input,select").removeAttr("disabled");
-                        $("div.proModel").hide().find("input,select").attr("disabled", "disabled");
-                        $("div.cproCategory").hide().find("input,select").attr("disabled", "disabled");
-                    } else {
-                        $("div.department").hide().find("input,select").attr("disabled", "disabled");
-                        $("div.proModel").show().find("input,select").removeAttr("disabled");
-                        $("div.cproCategory").show().find("input,select").removeAttr("disabled");
-                    }
-                }
-            </script>
-            <@form.select id="matchType" name="matchType" code="MatchType" idKey='code' style="width:163px;" value="${(cmb.matchType)!}" onChange="typeChange(this)" style="width:210px;"/>
-        </div>
 
         <div class="form-group crmCategory">
             <label class="col-sm-3 control-label no-padding-right" for="">
@@ -44,14 +21,14 @@
                     onChange="function(){crmCategoryChange();}"/>
         </div>
 
-        <div class="form-group cproCategory"  <#if !(cmb.matchType??) || cmb.matchType != 'Department'><#if !(cmb.matchType??)>style="display: none"</#if><#else>style="display: none"</#if>>
+        <div class="form-group cproCategory">
             <label class="col-sm-3 control-label no-padding-right" for="">
                 ${i18n.get('产品分类')}:
             </label>
             <@form.select id="cproCategory" name="cproCategory" style="width:210px;" viewKey="id" viewKey2="" idKey='id' url="function(){return '${ctx}/product/catalog/selectCCategory.html'}" value="${(cmb.cproCategory)!}" style="width:210px;"/>
         </div>
 
-        <div class="form-group proModel"  <#if !(cmb.matchType??) || cmb.matchType != 'Department'><#if !(cmb.matchType??)>style="display: none"</#if><#else>style="display: none"</#if>>
+        <div class="form-group proModel">
             <label class="col-sm-3 control-label no-padding-right" for="">${i18n.get('产品型号')} :</label>
             <div class="proModel-content">
 
@@ -72,7 +49,7 @@
 
 
 
-        <div class="form-group department"  <#if !(cmb.matchType??) || (cmb.matchType=='Department')><#if !(cmb.matchType??)>style="display: none"</#if><#else>style="display: none"</#if>>
+        <div class="form-group department">
             <label class="col-sm-3 control-label no-padding-right" for="">${i18n.get('部门')} :</label>
             <@form.input id="departmentName"  name="" readonly="readOnly" style="width:210px;"  placeholder="${i18n.get('请选择部门')}" tip="" value="${(cmb.departmentName)!}" />
             <@form.input id="department" type="hidden"  readonly="readOnly" name="department"  tip="" value="${(cmb.department)!}" />
@@ -170,20 +147,12 @@
         }
 
         function crmCategoryChange() {
-            debugger
-            var select = $("#matchType").find("option:selected").attr("data")
-            select = select && JSON.parse(select);
-            select = select && select.code;
-            if (select == 'Department') {
-//                $(".proModel-content").empty();
+            $proModel_input.remove();
+            $proModel_select.remove();
+            if (isOutsourcing()) {
+                $("div.proModel>div.proModel-content").empty().append($proModel_input.html());
             } else {
-                $proModel_input.remove();
-                $proModel_select.remove();
-                if (isOutsourcing()) {
-                    $("div.proModel>div.proModel-content").empty().append($proModel_input.html());
-                } else {
-                    $("div.proModel>div.proModel-content").empty().append($proModel_select.html());
-                }
+                $("div.proModel>div.proModel-content").empty().append($proModel_select.html());
             }
         }
 

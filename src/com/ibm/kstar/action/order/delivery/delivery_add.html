@@ -22,19 +22,11 @@ select {width: 200px;}
 		$("#status").attr("disabled","disabled");
 		$("#applyDate").attr("disabled","disabled");
 		
-		$("#delivery_submit").hide();
+		/* $("#delivery_submit").hide();
 		$("#delivery_create_receipts").hide();
+		$("#delivery_save_show").hide(); */
 		
-		//新增、拒绝时显示提交按钮
-		if("${(deliveryHeader.status)!}" == "10" || "${(deliveryHeader.status)!}" == "40"){
-			if("${(deliveryHeader.id)!}" != "" && "${(deliveryHeader.id)!}" != null){
-				$("#delivery_submit").show();
-			}
-		}
 		
-		if("${(deliveryHeader.status)!}" == "30"){
-			$("#delivery_create_receipts").show();
-		}
 		if("${(employeeType)!}" == "E"){
 			$("#receCustomerId").attr("disabled","disabled");
 			$("#billCustomerId").attr("disabled","disabled");
@@ -177,19 +169,19 @@ select {width: 200px;}
 				<#if (permission["P06OrderIssueSave"]?? && ("${(deliveryHeader.status)!}" == "10" || "${(deliveryHeader.status)!}" == "40") ) 
 					|| (permission["P06OrderIssueSave20"]?? && "${(deliveryHeader.status)!}" == "20" ) 
 					|| (permission["P06OrderIssueSave30"]?? && "${(deliveryHeader.status)!}" == "30" )  >
-					<button  id="delivery_save_show" class="btn btn-info" type="button" onclick="save_before()">
+					<button  id="delivery_save_show" class="btn btn-info" type="button" onclick="save_before()" style="background-color:#666666; display:none;">
 						<i class="icon-ok bigger-110"></i>
 						${i18n.get('保存')}
 					</button>
 				</#if>
 				<#if permission["P06OrderIssueSubmit"]?? >
-					<button id="delivery_submit" class="btn btn-info" type="button" onclick="submit_before();">
+					<button id="delivery_submit" class="btn btn-info" type="button" onclick="submit_before();" style="background-color:#666666; display:none;">
 						<i class="icon-ok bigger-110"></i>
 						${i18n.get('提交')}
 					</button>
 				</#if>
 				<#if permission["P06OrderIssueCreatePlan"]?? >
-					<button id="delivery_create_receipts" class="btn btn-info" type="button" onclick="createReceiptsPlan()">
+					<button id="delivery_create_receipts" class="btn btn-info" type="button" onclick="createReceiptsPlan()" style="background-color:#666666; display:none;">
 						<i class="icon-ok bigger-110"></i>
 						${i18n.get('生成回款计划')}
 					</button>

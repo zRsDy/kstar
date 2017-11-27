@@ -102,16 +102,8 @@
 						</button>
 					</#if>
 				</#if>
-			
 			</#if>
-			
-<!--${(quotInf.isBidPro)!}   /
-${(quotInf.marketDeptName)!} /
-${(quotInf.tchAdtstatus)!} /
-${(quotInf.bidAuditStatus)!}/
-${applycont!}
--->
-		
+
 				<#if ((quotInf.spAuditStatus)?? && quotInf.spAuditStatus == 'P01') || ((quotInf.prcAdtstatus)?? && quotInf.prcAdtstatus == 'S01') || ((quotInf.tchAdtstatus)?? && quotInf.tchAdtstatus == 'S01') || ((quotInf.bidRspstatus)?? && quotInf.bidRspstatus == 'S01') || ((quotInf.bidAuditStatus)?? && quotInf.bidAuditStatus == 'S01') || ((quotInf.mtrReqstatus)?? && quotInf.mtrReqstatus == 'S01') >
 					
 					<#if (permission["P04ParReqAggreement"])??>
@@ -189,24 +181,26 @@ ${applycont!}
 						function check(url){
 							var selectedIds = $('#prjlst').jqGrid('getDataIDs');
 							var selectedDatas = [];
-							var flag ;
-							if('${status!''}' == '1'){
-								alert("${i18n.get('申请价格小于金牌价格，走特价审批!')}");
-								flag = false;
-							}else if('${status!''}' == '2'){
-								alert("${i18n.get('工程清单列表不能为空！')}");
-								flag = false;
-							}else{
-								flag = true;
+							var flag = true;
+                            if (${emptyPrjList?string('true','false')} === true) {
+                                exalert(window.event,"${i18n.get('工程清单列表不能为空！')}");
+                                flag = false;
+							}else if (${needPrcReview?string('true','false')} === true) {
+                                exalert(window.event,"${i18n.get('存在金牌价为空的产品，请点击【价格评审】按钮发起评审流程')}");
+                                flag = false;
+                            } else if (${needRebateReview?string('true','false')} === true) {
+                                exalert(window.event,"${i18n.get('存在申请价格小于金牌价格的产品，请点击【价格评审】按钮发起走特价审批流程!')}");
+                                flag = false;
 							}
-					 		$.each(selectedIds,function(i,id){
-					 			var data = $('#prjlst').jqGrid('getRowData',id);
-					 			var f = $('#boName').val();
-					 			if(data.optTxt2=='1' && !(f)){
-					 				alert("${i18n.get('当前报价单含有报备机型，请关联商机')}");
-					 				flag = true;
-					 			}
-					 		})
+
+                            $.each(selectedIds, function (i, id) {
+                                var data = $('#prjlst').jqGrid('getRowData', id);
+                                var f = $('#boName').val();
+                                if (data.optTxt2 == '1' && !(f)) {
+                                    exalert("${i18n.get('当前报价单含有报备机型，请关联商机')}");
+                                    flag = false;
+                                }
+                            });
 							if(flag==true){
 								parent.dialog('${i18n.get('新建合同')}',url,window);
 							}
@@ -308,7 +302,7 @@ ${applycont!}
 					idKey='id'
 					style="width: 170px;"
 					formatResult="function(data) {return '<div >' +data.opportunityName + '</div>';}"
-					url="function(){ return '${ctx}/lovcontract/autocompleteproject.html'; }"
+					url="function(){ return '${ctx}/quot/autocompleteproject.html'; }"
 					value="{id:'${(quotInf.boCode)!}',opportunityName:'${(quotInf.boName)!}'
 					}"
 					
@@ -376,7 +370,7 @@ ${applycont!}
 	</table>
 	
 	<table>
-		<h5 style="background-color: #E9E9E9;">${i18n.get('招投标信息')}</h5>  
+		<h5 style="background-color: #E9E9E9;">${i18n.get('招投标信息')}<strong style="color: red;">*(${i18n.get('投标项目字段必填')})</strong></h5>  
 		<tr>
 
 			<td width="100px" align="right"><strong style="color: red;">*</strong>${i18n.get('是否投标项目')}:</td>
@@ -845,7 +839,7 @@ ${applycont!}
 	function reviseQuot(){
 		var d = {};
 		d.qid = '${qid}';
-		bootbox.confirm('${i18n.get('修订后会生成新版本的报价单，需重走流程，请确认是否需修订报价单')}？' , function(result) {		
+		bootbox.confirm('${i18n.get('修订后会生成新版本的报价单，需重走流程，请确认是否需修订报价单')}？' , function(result) {
 			if(result) {
 				ajax({
 					type:'post',
@@ -861,6 +855,61 @@ ${applycont!}
 	
 	
 	function startbiddocProcess(){ 
+		var isBidPro = $("#isBidPro").val();
+		var bidsbmDt = $('#bidsbmDt').val();
+		var bidstDt = $('#bidstDt').val();
+		var bidID = $('#bidID').val();
+		var bidTyp = $('#bidTyp').val();
+		var bidUnt = $('#bidUnt').val();
+		var bidCnct = $('#bidCnct').val();
+		var bidAddr = $('#bidAddr').val();
+		
+		$('#prjlst').trigger('blur');//触发工程清单被点击选择
+		var ids = $('#prjlst').jqGrid('getDataIDs'); 
+		
+		$('#attachment').trigger('blur');//触发附件选项被点击选择
+		var attachmentIds = $('#attachment_QUOTE_FILE').jqGrid('getDataIDs');
+		
+		//点击标书审批按钮时，判断是否投标项目字段，如是 则招标信息所有字段不能为空，工程清单内容不能为空
+		//附件内容不能为空
+		if(isBidPro == '1'){
+			if( bidsbmDt== '' || bidsbmDt == null){
+				alert("${i18n.get('标书递交日期不能为空')}!");
+				return
+			}
+			if( bidstDt== '' || bidstDt == null){
+				alert("${i18n.get('开标日期不能为空')}!");
+				return
+			}
+			if( bidID== '' || bidID == null){
+				alert("${i18n.get('招标编号不能为空')}!");
+				return
+			}
+			if( bidTyp== '' || bidTyp == null){
+				alert("${i18n.get('招标类型不能为空')}!");
+				return
+			}
+			if( bidUnt== '' || bidUnt == null){
+				alert("${i18n.get('招标单位不能为空')}!");
+				return
+			}
+			if( bidCnct== '' || bidCnct == null){
+				alert("${i18n.get('招标单位联系人不能为空')}!");
+				return
+			}
+			if( bidAddr== '' || bidAddr == null){
+				alert("${i18n.get('招标单位地址不能为空')}!");
+				return
+			}
+			if(ids == '' || ids == null){
+				alert("${i18n.get('工程清单内容不能为空')}!");
+				return
+			}
+			if(attachmentIds == '' || attachmentIds == null){
+				alert("${i18n.get('附件内容不能为空')}!");
+				return
+			}
+		}
 		var d = {};
 		d.qid = '${qid}';
 		bootbox.confirm('${i18n.get('您确定要开启标书审核吗')}？' , function(result) {		
@@ -918,7 +967,13 @@ ${applycont!}
 	}
 	
 	
-	function unlockSpProcess(){ 
+	function unlockSpProcess(){
+
+        if (${needPrcReview?string('true','false')} === true) {
+            exalert(window.event,'${i18n.get('存在金牌价为空的产品，请点击【价格评审】按钮发起评审流程')}！');
+            return
+        }
+
 		var d = {};
 		d.qid = '${qid}';
 		bootbox.confirm('${i18n.get('您确定要特价审批吗')}?' , function(result) {		

@@ -400,7 +400,7 @@ public interface IBizoppService {
      
      List<Map<String, Object>> selectBizOpp(Condition condition, UserObject user);
 
-     List<BusinessOpportunity> getBizOppSelectAuth(PageCondition condition,String clientId,String userId);
+     List<BusinessOpportunity> getBizOppSelectAuth(PageCondition condition,String clientId,String userId, String string);
 
 	 BizOppChange getBizOppChangeById(String id);
 	 

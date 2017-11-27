@@ -148,7 +148,7 @@ public class BizSupportApplyAction extends BaseAction {
 		TabMain tabMainInfo = new TabMain();
 		tabMainInfo.setInitAll(false);
 		if(hasPermission("P03PresSupportT3OppoConfigPage")){
-			tabMainInfo.addTab("商机配置", "/supportApply/bizConfig.html?bizOppId="+entity.getId());
+			tabMainInfo.addTab("商机配置", "/supportApply/bizConfig.html?bizOppId="+entity.getBizOppId());
 		}
 		if(hasPermission("P03PresSupportT2FeebackPage")){
 			tabMainInfo.addTab("支持反馈", "/sfb/sfbList.html?id="+id);

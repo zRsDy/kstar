@@ -77,6 +77,25 @@ public class MethodLogServiceImpl  extends MessageAdapter<MethodLogger> implemen
 		return methodLogger;
 	}
 
+	@Override
+	public MethodLogger getMethodLogger(String fromFunction,String orderNumber,String logType) {
+		MethodLogger methodLogger = new MethodLogger();
+		UserObject user = getUserObject();
+		methodLogger.setId(UUID.randomUUID().toString().replaceAll("\\-", ""));
+		methodLogger.setOrderNumber(orderNumber);
+		methodLogger.setLogType(logType);
+		methodLogger.setInterfaceStartDate(new Date());
+		methodLogger.setUserOrgId(user.getOrg().getId());
+		methodLogger.setUserOrgName(user.getOrg().getName());
+		methodLogger.setUserNum(user.getEmployeeNo());
+		methodLogger.setUserName(user.getEmployeeName());
+		methodLogger.setUserEmployeeId(user.getEmployee().getId());
+		methodLogger.setUserPosition(user.getPosition().getName());
+		methodLogger.setUserPositionId(user.getPosition().getId());
+		methodLogger.setFromFunction(fromFunction);
+		return methodLogger;
+	}
+	
 	final static String USER = "LOGIN_USER";
 	public UserObject getUserObject() {
 		HttpSession session = getSession();

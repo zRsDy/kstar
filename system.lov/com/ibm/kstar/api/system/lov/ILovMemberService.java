@@ -149,4 +149,16 @@ public interface ILovMemberService {
 	 * @return
 	 */
 	List<LovMember> getAllOrgList();
+	
+	/**
+	 * 获取所有组织岗位树
+	 * @return
+	 */
+	List<LovMember> getOrgAllList();
+	
+	/**
+	 * 获取所有组织岗位树
+	 * @return
+	 */
+	List<LovMember> getAllTreeByOrgList(List<LovMember> orgList);
 }
